@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup - Editor de Actividades Moodle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root {
+            --d-bg: #f5f6fa;
+            --d-card: #ffffff;
+            --d-card-border: #e9ecef;
+            --d-title: #2c3e50;
+            --d-body: #495057;
+            --d-muted: #6c757d;
+            --d-primary: #fc7b04;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--d-bg);
+            padding: 2rem;
+        }
+
+        .mockup-container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--d-card);
+            border: 1px solid var(--d-card-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* ===== ACT HEADER ===== */
+        .act-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--d-card-border);
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+        }
+        .act-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .act-header-left i {
+            color: var(--d-primary);
+            font-size: 1.2rem;
+        }
+        .act-header-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--d-title);
+        }
+        .act-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-outline-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.85rem;
+            border: 1px solid var(--d-card-border);
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--d-muted);
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+        .btn-outline-primary:hover {
+            border-color: var(--d-primary);
+            color: var(--d-primary);
+            background: rgba(252,123,4,0.05);
+        }
+        .btn-outline-primary i { font-size: 0.9rem; }
+
+        .btn-primary-solid {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.85rem;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-primary-solid:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+        }
+
+        .btn-ver-curso {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.85rem;
+            background: rgba(252,123,4,0.1);
+            color: var(--d-primary);
+            border: 1px solid rgba(252,123,4,0.25);
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+        .btn-ver-curso:hover {
+            background: var(--d-primary);
+            color: #fff;
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--d-bg);
+            border-bottom: 1px solid var(--d-card-border);
+            flex-wrap: wrap;
+        }
+        .toolbar-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--d-muted);
+            margin-right: 0.5rem;
+        }
+        .tool-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.35rem 0.7rem;
+            border: 1px solid var(--d-card-border);
+            border-radius: 6px;
+            background: #fff;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--d-body);
+            cursor: pointer;
+            transition: all 0.12s;
+        }
+        .tool-btn:hover {
+            background: rgba(99,102,241,0.06);
+            border-color: #6366f1;
+            color: #4f46e5;
+        }
+        .tool-btn i { font-size: 0.85rem; }
+        .tool-btn.add i { color: #16a34a; }
+        .tool-btn.add:hover { border-color: #16a34a; color: #16a34a; }
+
+        /* ===== SECTION CARD ===== */
+        .seccion-card {
+            border: 1px solid var(--d-card-border);
+            border-radius: 10px;
+            margin: 0.75rem 1.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+        .seccion-card.dragging { opacity: 0.5; }
+        .seccion-card.drag-over { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.15); }
+
+        .seccion-hdr {
+            padding: 0.7rem 1rem;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            gap: 0.5rem;
+        }
+        .seccion-hdr:hover { background: #f0f1f5; }
+
+        .seccion-hdr-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 0;
+        }
+        .drag-handle {
+            color: var(--d-muted);
+            cursor: grab;
+            font-size: 1rem;
+            opacity: 0.4;
+            padding: 2px;
+        }
+        .drag-handle:hover { opacity: 0.8; }
+        .seccion-hdr:active .drag-handle { cursor: grabbing; }
+
+        .seccion-nombre {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--d-title);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .seccion-nombre small {
+            font-weight: 400;
+            color: var(--d-muted);
+        }
+        .seccion-nombre-input {
+            border: 1px solid #6366f1;
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--d-title);
+            background: #fff;
+            width: 100%;
+            max-width: 350px;
+            outline: none;
+        }
+        .seccion-nombre-input:focus { box-shadow: 0 0 0 2px rgba(99,102,241,0.2); }
+
+        .seccion-hdr-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            flex-shrink: 0;
+        }
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: var(--d-muted);
+            transition: all 0.12s;
+        }
+        .btn-icon:hover { background: rgba(99,102,241,0.08); color: #4f46e5; border-color: var(--d-card-border); }
+        .btn-icon.delete:hover { background: rgba(220,38,38,0.08); color: #dc2626; }
+        .btn-icon.save:hover { background: rgba(22,163,74,0.08); color: #16a34a; }
+
+        .seccion-body { display: none; }
+        .seccion-body.open { display: block; }
+
+        .seccion-descripcion {
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: var(--d-body);
+            line-height: 1.6;
+            background: rgba(99,102,241,0.04);
+            border-bottom: 1px solid var(--d-card-border);
+        }
+        .seccion-descripcion p { margin: 0.5rem 0; }
+        .seccion-descripcion a { color: var(--d-primary); text-decoration: underline; }
+
+        /* Inline editor for description */
+        .desc-editor {
+            border: 1px solid var(--d-card-border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            min-height: 60px;
+            font-size: 0.8rem;
+            background: #fff;
+            outline: none;
+        }
+        .desc-editor:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
+        .desc-editor-toolbar {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 0.4rem;
+            flex-wrap: wrap;
+        }
+        .desc-editor-toolbar button {
+            width: 26px; height: 26px;
+            border: 1px solid var(--d-card-border);
+            border-radius: 4px;
+            background: #fff;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--d-muted);
+        }
+        .desc-editor-toolbar button:hover { background: var(--d-bg); color: var(--d-body); }
+
+        /* ===== ACTIVITY ITEM ===== */
+        .act-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 1rem;
+            border-top: 1px solid var(--d-card-border);
+            gap: 0.5rem;
+            transition: background 0.12s;
+            position: relative;
+        }
+        .act-item:hover { background: rgba(252,123,4,0.025); }
+        .act-item.dragging { opacity: 0.5; }
+        .act-item.drag-over { border-top-color: #6366f1; box-shadow: 0 -2px 0 0 #6366f1; }
+
+        .act-item-left {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex: 1;
+            min-width: 0;
+        }
+        .act-icon {
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .act-icon.assign  { background: rgba(99,102,241,0.12); color: #6366f1; }
+        .act-icon.quiz    { background: rgba(245,158,11,0.12); color: #d97706; }
+        .act-icon.forum   { background: rgba(34,197,94,0.12);  color: #16a34a; }
+        .act-icon.resource{ background: rgba(239,68,68,0.12);  color: #dc2626; }
+        .act-icon.url     { background: rgba(14,165,233,0.12); color: #0284c7; }
+        .act-icon.page    { background: rgba(156,163,175,0.12);color: #6b7280; }
+
+        .act-name  { font-size: 0.83rem; font-weight: 600; color: var(--d-body); }
+        .act-tipo  { font-size: 0.68rem; color: var(--d-muted); }
+
+        .act-actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
+
+        .btn-act-link {
+            padding: 0.22rem 0.6rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-act-moodle { background: rgba(252,123,4,0.1); color: var(--d-primary); }
+        .btn-act-moodle:hover { background: var(--d-primary); color: #fff; }
+        .btn-act-disc { background: rgba(34,197,94,0.1); color: #16a34a; }
+        .btn-act-disc:hover { background: #16a34a; color: #fff; }
+        .btn-act-edit { background: rgba(99,102,241,0.1); color: #4f46e5; }
+        .btn-act-edit:hover { background: #4f46e5; color: #fff; }
+        .btn-act-delete { background: rgba(220,38,38,0.1); color: #dc2626; }
+        .btn-act-delete:hover { background: #dc2626; color: #fff; }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--d-card-border);
+            position: sticky; top: 0; background: #fff; z-index: 1;
+        }
+        .modal-hdr-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--d-title);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .modal-hdr-title i { color: #4f46e5; }
+        .modal-close {
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            border: none;
+            background: var(--d-bg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--d-muted);
+            transition: all 0.12s;
+        }
+        .modal-close:hover { background: rgba(220,38,38,0.1); color: #dc2626; }
+
+        .modal-body { padding: 1.25rem; }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--d-title);
+            margin-bottom: 0.35rem;
+        }
+        .form-group label .required { color: #dc2626; }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--d-card-border);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--d-body);
+            background: #fff;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .form-control:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
+        textarea.form-control { resize: vertical; min-height: 80px; }
+        select.form-control { appearance: auto; }
+
+        .form-hint {
+            font-size: 0.7rem;
+            color: var(--d-muted);
+            margin-top: 0.25rem;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* WYSIWYG toolbar (CKEditor-like simulation) */
+        .wysiwyg-toolbar {
+            display: flex;
+            gap: 2px;
+            padding: 0.35rem;
+            background: var(--d-bg);
+            border: 1px solid var(--d-card-border);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            flex-wrap: wrap;
+        }
+        .wysiwyg-toolbar button {
+            width: 28px; height: 28px;
+            border: none;
+            border-radius: 4px;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: var(--d-muted);
+        }
+        .wysiwyg-toolbar button:hover { background: #fff; color: var(--d-body); }
+        .wysiwyg-toolbar .separator {
+            width: 1px;
+            background: var(--d-card-border);
+            margin: 0 3px;
+        }
+        .wysiwyg-editor {
+            border: 1px solid var(--d-card-border);
+            border-radius: 0 0 8px 8px;
+            padding: 0.75rem;
+            min-height: 120px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .wysiwyg-editor:focus { border-color: #6366f1; }
+
+        /* File upload */
+        .file-upload-zone {
+            border: 2px dashed var(--d-card-border);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .file-upload-zone:hover { border-color: #6366f1; background: rgba(99,102,241,0.03); }
+        .file-upload-zone i { font-size: 2rem; color: var(--d-muted); display: block; margin-bottom: 0.5rem; }
+        .file-upload-zone p { font-size: 0.82rem; color: var(--d-muted); margin: 0; }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--d-card-border);
+            position: sticky; bottom: 0; background: #fff;
+        }
+        .btn-cancel {
+            padding: 0.45rem 1.2rem;
+            border: 1px solid var(--d-card-border);
+            border-radius: 8px;
+            background: #fff;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--d-muted);
+            cursor: pointer;
+            transition: all 0.12s;
+        }
+        .btn-cancel:hover { background: var(--d-bg); }
+        .btn-save {
+            padding: 0.45rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(99,102,241,0.3); }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--d-body);
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid #16a34a;
+        }
+        .toast i { font-size: 1.1rem; }
+        .toast.success { border-left-color: #16a34a; }
+        .toast.success i { color: #16a34a; }
+        .toast.error { border-left-color: #dc2626; }
+        .toast.error i { color: #dc2626; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* ===== BADGE ===== */
+        .editing-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.15rem 0.5rem;
+            background: rgba(99,102,241,0.1);
+            color: #4f46e5;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Empty section */
+        .seccion-vacia {
+            padding: 1rem;
+            text-align: center;
+            color: var(--d-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--d-card-border);
+        }
+        .seccion-vacia i { font-size: 1.2rem; display: block; margin-bottom: 0.25rem; opacity: 0.5; }
+
+        /* Confirm dialog */
+        .confirm-dialog {
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .confirm-dialog i {
+            font-size: 2.5rem;
+            color: #dc2626;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+        .confirm-dialog h5 { font-size: 1rem; font-weight: 700; color: var(--d-title); margin-bottom: 0.5rem; }
+        .confirm-dialog p { font-size: 0.85rem; color: var(--d-muted); margin-bottom: 1rem; }
+
+        .badge-editing {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.5rem;
+            background: rgba(99,102,241,0.08);
+            color: #4f46e5;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        /* Tag chips for activity type badges */
+        .type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        /* ===== DEMO BANNER ===== */
+        .demo-banner {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .demo-banner small {
+            display: block;
+            font-weight: 400;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+            font-size: 0.75rem;
+        }
+        .interactive-hint {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin: 0.75rem 1.5rem;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .interactive-hint i { font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="mockup-container">
+
+        <!-- Demo banner -->
+        <div class="demo-banner">
+            <i class="ri-eye-line"></i> Mockup Interactivo — Editor de Actividades
+            <small>Haz clic en los botones para ver cómo funcionaría cada interacción</small>
+        </div>
+
+        <!-- ===== ACT HEADER ===== -->
+        <div class="act-header">
+            <div class="act-header-left">
+                <i class="ri-task-line"></i>
+                <span class="act-header-title">Actividades del Curso Moodle</span>
+                <span class="badge-editing"><i class="ri-pencil-line"></i> Editando</span>
+            </div>
+            <div class="act-header-actions">
+                <a href="#" class="btn-ver-curso" onclick="event.preventDefault()">
+                    <i class="ri-external-link-line"></i> Ver curso en Moodle
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== TOOLBAR ===== -->
+        <div class="toolbar">
+            <span class="toolbar-label"><i class="ri-add-line"></i> Nuevo</span>
+            <button class="tool-btn add" onclick="abrirModal('seccion')">
+                <i class="ri-layout-line"></i> Sección
+            </button>
+            <button class="tool-btn add" onclick="abrirModal('tarea')">
+                <i class="ri-task-line"></i> Tarea
+            </button>
+            <button class="tool-btn add" onclick="abrirModal('cuestionario')">
+                <i class="ri-questionnaire-line"></i> Cuestionario
+            </button>
+            <button class="tool-btn add" onclick="abrirModal('foro')">
+                <i class="ri-discuss-line"></i> Foro
+            </button>
+            <button class="tool-btn add" onclick="abrirModal('recurso')">
+                <i class="ri-file-line"></i> Recurso
+            </button>
+            <button class="tool-btn add" onclick="abrirModal('url')">
+                <i class="ri-link"></i> URL
+            </button>
+            <button class="tool-btn add" onclick="abrirModal('pagina')">
+                <i class="ri-file-text-line"></i> Página
+            </button>
+        </div>
+
+        <!-- ===== SECTION 1 ===== -->
+        <div class="seccion-card" data-seccion-id="1">
+            <div class="seccion-hdr open">
+                <div class="seccion-hdr-left">
+                    <span class="drag-handle"><i class="ri-draggable"></i></span>
+                    <span class="seccion-nombre">
+                        <i class="ri-layout-line"></i>
+                        <span id="secNombreDisplay1">Semana 1: Fundamentos</span>
+                        <small>(3 actividades)</small>
+                    </span>
+                </div>
+                <div class="seccion-hdr-actions">
+                    <button class="btn-icon" title="Editar nombre" onclick="editarSeccion(1)">
+                        <i class="ri-pencil-line"></i>
+                    </button>
+                    <button class="btn-icon" title="Editar descripción" onclick="editarDescripcion(1)">
+                        <i class="ri-edit-line"></i>
+                    </button>
+                    <button class="btn-icon delete" title="Eliminar sección" onclick="confirmarEliminar('sección', 'Semana 1: Fundamentos')">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="seccion-body open">
+                <div class="seccion-descripcion" id="secDesc1">
+                    <p>Introducción a los conceptos fundamentales de la materia.</p>
+                </div>
+
+                <!-- Activity: Tarea 1 -->
+                <div class="act-item" data-act-id="101">
+                    <div class="act-item-left">
+                        <span class="drag-handle"><i class="ri-draggable"></i></span>
+                        <div class="act-icon assign"><i class="ri-task-line"></i></div>
+                        <div>
+                            <div class="act-name">Tarea: Ensayo Semana 1</div>
+                            <div class="act-tipo">Tarea</div>
+                        </div>
+                    </div>
+                    <div class="act-actions">
+                        <button class="btn-act-link btn-act-edit" onclick="abrirModal('tarea', {id:101, name:'Tarea: Ensayo Semana 1'})">
+                            <i class="ri-pencil-line"></i> Editar
+                        </button>
+                        <button class="btn-act-link btn-act-delete" onclick="confirmarEliminar('actividad', 'Tarea: Ensayo Semana 1')">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                        <a href="#" class="btn-act-link btn-act-moodle" onclick="event.preventDefault()">
+                            <i class="ri-external-link-line"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Activity: Cuestionario 1 -->
+                <div class="act-item" data-act-id="102">
+                    <div class="act-item-left">
+                        <span class="drag-handle"><i class="ri-draggable"></i></span>
+                        <div class="act-icon quiz"><i class="ri-questionnaire-line"></i></div>
+                        <div>
+                            <div class="act-name">Cuestionario Diagnóstico</div>
+                            <div class="act-tipo">Cuestionario</div>
+                        </div>
+                    </div>
+                    <div class="act-actions">
+                        <button class="btn-act-link btn-act-edit" onclick="abrirModal('cuestionario', {id:102, name:'Cuestionario Diagnóstico'})">
+                            <i class="ri-pencil-line"></i> Editar
+                        </button>
+                        <button class="btn-act-link btn-act-delete" onclick="confirmarEliminar('actividad', 'Cuestionario Diagnóstico')">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                        <a href="#" class="btn-act-link btn-act-moodle" onclick="event.preventDefault()">
+                            <i class="ri-external-link-line"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Activity: Recurso PDF -->
+                <div class="act-item" data-act-id="103">
+                    <div class="act-item-left">
+                        <span class="drag-handle"><i class="ri-draggable"></i></span>
+                        <div class="act-icon resource"><i class="ri-file-pdf-line"></i></div>
+                        <div>
+                            <div class="act-name">Material de lectura Semana 1.pdf</div>
+                            <div class="act-tipo">Archivo</div>
+                        </div>
+                    </div>
+                    <div class="act-actions">
+                        <button class="btn-act-link btn-act-edit" onclick="abrirModal('recurso', {id:103, name:'Material de lectura Semana 1.pdf'})">
+                            <i class="ri-pencil-line"></i> Editar
+                        </button>
+                        <button class="btn-act-link btn-act-delete" onclick="confirmarEliminar('actividad', 'Material de lectura Semana 1.pdf')">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                        <a href="#" class="btn-act-link btn-act-moodle" onclick="event.preventDefault()">
+                            <i class="ri-external-link-line"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 2 ===== -->
+        <div class="seccion-card" data-seccion-id="2">
+            <div class="seccion-hdr">
+                <div class="seccion-hdr-left">
+                    <span class="drag-handle"><i class="ri-draggable"></i></span>
+                    <span class="seccion-nombre">
+                        <i class="ri-layout-line"></i>
+                        <span id="secNombreDisplay2">Semana 2: Desarrollo de Contenido</span>
+                        <small>(2 actividades)</small>
+                    </span>
+                </div>
+                <div class="seccion-hdr-actions">
+                    <button class="btn-icon" title="Editar nombre" onclick="editarSeccion(2)">
+                        <i class="ri-pencil-line"></i>
+                    </button>
+                    <button class="btn-icon" title="Editar descripción" onclick="editarDescripcion(2)">
+                        <i class="ri-edit-line"></i>
+                    </button>
+                    <button class="btn-icon delete" title="Eliminar sección" onclick="confirmarEliminar('sección', 'Semana 2: Desarrollo de Contenido')">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="seccion-body">
+                <div class="seccion-descripcion" id="secDesc2">
+                    <p>Profundización en los temas de la unidad.</p>
+                </div>
+
+                <div class="act-item" data-act-id="201">
+                    <div class="act-item-left">
+                        <span class="drag-handle"><i class="ri-draggable"></i></span>
+                        <div class="act-icon forum"><i class="ri-discuss-line"></i></div>
+                        <div>
+                            <div class="act-name">Foro de Discusión: Caso Práctico</div>
+                            <div class="act-tipo">Foro</div>
+                        </div>
+                    </div>
+                    <div class="act-actions">
+                        <button class="btn-act-link btn-act-disc" onclick="event.preventDefault()">
+                            <i class="ri-discuss-line"></i> Discusiones
+                        </button>
+                        <button class="btn-act-link btn-act-edit" onclick="abrirModal('foro', {id:201, name:'Foro de Discusión: Caso Práctico'})">
+                            <i class="ri-pencil-line"></i> Editar
+                        </button>
+                        <button class="btn-act-link btn-act-delete" onclick="confirmarEliminar('actividad', 'Foro de Discusión: Caso Práctico')">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                        <a href="#" class="btn-act-link btn-act-moodle" onclick="event.preventDefault()">
+                            <i class="ri-external-link-line"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="act-item" data-act-id="202">
+                    <div class="act-item-left">
+                        <span class="drag-handle"><i class="ri-draggable"></i></span>
+                        <div class="act-icon url"><i class="ri-video-line"></i></div>
+                        <div>
+                            <div class="act-name">Video complementario: Introducción</div>
+                            <div class="act-tipo">URL</div>
+                        </div>
+                    </div>
+                    <div class="act-actions">
+                        <button class="btn-act-link btn-act-edit" onclick="abrirModal('url', {id:202, name:'Video complementario: Introducción'})">
+                            <i class="ri-pencil-line"></i> Editar
+                        </button>
+                        <button class="btn-act-link btn-act-delete" onclick="confirmarEliminar('actividad', 'Video complementario: Introducción')">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                        <a href="#" class="btn-act-link btn-act-moodle" onclick="event.preventDefault()">
+                            <i class="ri-external-link-line"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 3 (empty) ===== -->
+        <div class="seccion-card" data-seccion-id="3">
+            <div class="seccion-hdr">
+                <div class="seccion-hdr-left">
+                    <span class="drag-handle"><i class="ri-draggable"></i></span>
+                    <span class="seccion-nombre">
+                        <i class="ri-layout-line"></i>
+                        <span id="secNombreDisplay3">Semana 3: Evaluación</span>
+                        <small>(0 actividades)</small>
+                    </span>
+                </div>
+                <div class="seccion-hdr-actions">
+                    <button class="btn-icon" title="Editar nombre" onclick="editarSeccion(3)">
+                        <i class="ri-pencil-line"></i>
+                    </button>
+                    <button class="btn-icon" title="Editar descripción" onclick="editarDescripcion(3)">
+                        <i class="ri-edit-line"></i>
+                    </button>
+                    <button class="btn-icon delete" title="Eliminar sección" onclick="confirmarEliminar('sección', 'Semana 3: Evaluación')">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="seccion-body">
+                <div class="seccion-vacia">
+                    <i class="ri-inbox-line"></i>
+                    Sin actividades en esta sección
+                    <div style="margin-top:0.5rem;">
+                        <button class="tool-btn add" style="font-size:0.7rem;" onclick="abrirModal('tarea')">
+                            <i class="ri-add-line"></i> Agregar actividad
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MODAL: Generic ===== -->
+        <div class="modal-overlay" id="modalForm">
+            <div class="modal-box">
+                <div class="modal-hdr">
+                    <span class="modal-hdr-title" id="modalTitle">
+                        <i class="ri-pencil-line"></i> <span id="modalTitleText">Nueva Actividad</span>
+                    </span>
+                    <button class="modal-close" onclick="cerrarModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Dynamic content loaded by JS -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                    <button class="btn-save" onclick="guardarModal()">
+                        <i class="ri-check-line"></i> Guardar en Moodle
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ===== Modal templates for each activity type =====
+
+        function renderFormTarea(data) {
+            const editando = data && data.id;
+            return `
+                <div class="form-group">
+                    <label>Nombre de la tarea <span class="required">*</span></label>
+                    <input class="form-control" id="fldName" value="${editando ? data.name : ''}" placeholder="Ej: Tarea Semana 1">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de entrega</label>
+                        <input class="form-control" id="fldDueDate" type="date">
+                    </div>
+                    <div class="form-group">
+                        <label>Calificación máxima</label>
+                        <input class="form-control" id="fldGrade" type="number" value="100" min="0" max="100">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción / Instrucciones</label>
+                    <div class="wysiwyg-toolbar">
+                        <button title="Negrita"><strong>B</strong></button>
+                        <button title="Cursiva"><em>I</em></button>
+                        <button title="Subrayado"><u>U</u></button>
+                        <span class="separator"></span>
+                        <button title="Lista"><i class="ri-list-unordered"></i></button>
+                        <button title="Enlace"><i class="ri-link"></i></button>
+                        <button title="Imagen"><i class="ri-image-line"></i></button>
+                    </div>
+                    <div class="wysiwyg-editor" contenteditable="true">${editando ? 'Descripción de la tarea...' : ''}</div>
+                </div>
+                <div class="form-group">
+                    <label>Archivos adjuntos</label>
+                    <div class="file-upload-zone" onclick="document.getElementById('fileInput').click()">
+                        <i class="ri-upload-cloud-line"></i>
+                        <p>Arrastra archivos aquí o haz clic para subir</p>
+                        <div class="form-hint">PDF, DOC, DOCX, ZIP (max 50MB)</div>
+                    </div>
+                    <input type="file" id="fileInput" style="display:none" multiple>
+                </div>
+            `;
+        }
+
+        function renderFormCuestionario(data) {
+            const editando = data && data.id;
+            return `
+                <div class="form-group">
+                    <label>Nombre del cuestionario <span class="required">*</span></label>
+                    <input class="form-control" id="fldName" value="${editando ? data.name : ''}" placeholder="Ej: Cuestionario Semana 1">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tiempo límite (minutos)</label>
+                        <input class="form-control" id="fldTime" type="number" value="30" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Calificación máxima</label>
+                        <input class="form-control" id="fldGrade" type="number" value="100" min="0" max="100">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Número de intentos</label>
+                        <select class="form-control" id="fldAttempts">
+                            <option value="1">1 intento</option>
+                            <option value="2">2 intentos</option>
+                            <option value="3" selected>3 intentos</option>
+                            <option value="0">Intentos ilimitados</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Visible desde</label>
+                        <input class="form-control" id="fldOpenDate" type="date">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <div class="wysiwyg-editor" contenteditable="true" style="min-height:80px;">${editando ? 'Descripción del cuestionario...' : ''}</div>
+                </div>
+            `;
+        }
+
+        function renderFormForo(data) {
+            const editando = data && data.id;
+            return `
+                <div class="form-group">
+                    <label>Nombre del foro <span class="required">*</span></label>
+                    <input class="form-control" id="fldName" value="${editando ? data.name : ''}" placeholder="Ej: Foro de Discusión Semana 1">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de foro</label>
+                    <select class="form-control" id="fldType">
+                        <option value="single">Una discusión única</option>
+                        <option value="general" selected>Foro general</option>
+                        <option value="qanda">Preguntas y respuestas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <div class="wysiwyg-editor" contenteditable="true" style="min-height:100px;">${editando ? 'Descripción del foro...' : ''}</div>
+                </div>
+                <div class="form-group">
+                    <label>Suscripción</label>
+                    <select class="form-control" id="fldSubscription">
+                        <option value="optional">Suscripción opcional</option>
+                        <option value="forced">Suscripción forzada</option>
+                        <option value="auto">Suscripción automática</option>
+                        <option value="disabled">Suscripción deshabilitada</option>
+                    </select>
+                </div>
+            `;
+        }
+
+        function renderFormRecurso(data) {
+            const editando = data && data.id;
+            return `
+                <div class="form-group">
+                    <label>Nombre del recurso <span class="required">*</span></label>
+                    <input class="form-control" id="fldName" value="${editando ? data.name : ''}" placeholder="Ej: Material de lectura Semana 1">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de recurso</label>
+                    <select class="form-control" id="fldResourceType" onchange="toggleResourceType()">
+                        <option value="file">Archivo (PDF, DOC, etc.)</option>
+                        <option value="page">Página de texto</option>
+                        <option value="url">Enlace externo</option>
+                    </select>
+                </div>
+                <div class="form-group" id="resourceFileGroup">
+                    <label>Seleccionar archivo <span class="required">*</span></label>
+                    <div class="file-upload-zone" onclick="document.getElementById('fileInputRes').click()">
+                        <i class="ri-upload-cloud-line"></i>
+                        <p>Arrastra el archivo aquí o haz clic para subir</p>
+                        <div class="form-hint">PDF, DOC, DOCX, PPT, XLS, ZIP, imágenes (max 50MB)</div>
+                    </div>
+                    <input type="file" id="fileInputRes" style="display:none">
+                </div>
+                <div class="form-group" id="resourceDescGroup" style="display:none;">
+                    <label>Contenido de la página</label>
+                    <div class="wysiwyg-editor" contenteditable="true" style="min-height:150px;">${editando ? 'Contenido de la página...' : 'Escribe aquí el contenido...'}</div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción (opcional)</label>
+                    <textarea class="form-control" rows="2" placeholder="Breve descripción del recurso..."></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Abrir en</label>
+                    <select class="form-control">
+                        <option value="current">Misma ventana</option>
+                        <option value="new" selected>Nueva ventana</option>
+                        <option value="embed">Incrustado</option>
+                    </select>
+                </div>
+            `;
+        }
+
+        function renderFormURL(data) {
+            const editando = data && data.id;
+            return `
+                <div class="form-group">
+                    <label>Nombre del enlace <span class="required">*</span></label>
+                    <input class="form-control" id="fldName" value="${editando ? data.name : ''}" placeholder="Ej: Video complementario">
+                </div>
+                <div class="form-group">
+                    <label>URL <span class="required">*</span></label>
+                    <input class="form-control" id="fldURL" type="url" placeholder="https://ejemplo.com/video">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea class="form-control" rows="3" placeholder="Descripción del enlace..."></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Abrir en</label>
+                    <select class="form-control">
+                        <option value="new" selected>Nueva ventana</option>
+                        <option value="current">Misma ventana</option>
+                        <option value="embed">Incrustado</option>
+                    </select>
+                </div>
+            `;
+        }
+
+        function renderFormPagina(data) {
+            const editando = data && data.id;
+            return `
+                <div class="form-group">
+                    <label>Nombre de la página <span class="required">*</span></label>
+                    <input class="form-control" id="fldName" value="${editando ? data.name : ''}" placeholder="Ej: Introducción al módulo">
+                </div>
+                <div class="form-group">
+                    <label>Contenido de la página</label>
+                    <div class="wysiwyg-toolbar">
+                        <button title="Negrita"><strong>B</strong></button>
+                        <button title="Cursiva"><em>I</em></button>
+                        <button title="Subrayado"><u>U</u></button>
+                        <span class="separator"></span>
+                        <button title="Título"><i class="ri-heading"></i></button>
+                        <button title="Lista"><i class="ri-list-unordered"></i></button>
+                        <button title="Enlace"><i class="ri-link"></i></button>
+                        <button title="Imagen"><i class="ri-image-line"></i></button>
+                        <button title="Video"><i class="ri-video-line"></i></button>
+                        <button title="Tabla"><i class="ri-table-line"></i></button>
+                    </div>
+                    <div class="wysiwyg-editor" contenteditable="true" style="min-height:200px;">
+                        ${editando ? 'Contenido existente...' : '<h2>Introducción</h2><p>Escribe aquí el contenido de la página...</p>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFormSeccion(data) {
+            return `
+                <div class="form-group">
+                    <label>Nombre de la sección <span class="required">*</span></label>
+                    <input class="form-control" id="fldName" placeholder="Ej: Semana 4: Evaluación Final">
+                </div>
+                <div class="form-group">
+                    <label>Descripción (opcional)</label>
+                    <div class="wysiwyg-editor" contenteditable="true" style="min-height:80px;"></div>
+                </div>
+            `;
+        }
+
+        const FORMS = {
+            seccion: { title: 'Nueva Sección', render: renderFormSeccion },
+            tarea: { title: 'Nueva Tarea', render: renderFormTarea },
+            cuestionario: { title: 'Nuevo Cuestionario', render: renderFormCuestionario },
+            foro: { title: 'Nuevo Foro', render: renderFormForo },
+            recurso: { title: 'Nuevo Recurso', render: renderFormRecurso },
+            url: { title: 'Nueva URL', render: renderFormURL },
+            pagina: { title: 'Nueva Página', render: renderFormPagina },
+        };
+
+        let currentModalType = null;
+
+        function abrirModal(tipo, data) {
+            currentModalType = tipo;
+            const config = FORMS[tipo];
+            if (!config) return;
+
+            const editando = data && data.id;
+            document.getElementById('modalTitleText').textContent = editando
+                ? `Editando: ${data.name}`
+                : config.title;
+
+            document.getElementById('modalBody').innerHTML = config.render(data || null);
+            document.getElementById('modalForm').classList.add('open');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalForm').classList.remove('open');
+            currentModalType = null;
+        }
+
+        function guardarModal() {
+            const tipo = currentModalType;
+            if (!tipo) return;
+            cerrarModal();
+            mostrarToast('success', `<i class="ri-checkbox-circle-line"></i> ${FORMS[tipo].title} guardada correctamente en Moodle`);
+        }
+
+        // ===== Interactions =====
+
+        function editarSeccion(id) {
+            const display = document.getElementById('secNombreDisplay' + id);
+            const currentName = display.textContent;
+            display.innerHTML = `<input class="seccion-nombre-input" id="secNombreInput${id}" value="${currentName}" autofocus>`;
+            const input = document.getElementById('secNombreInput' + id);
+            input.focus();
+            input.select();
+
+            const save = () => {
+                const newName = input.value.trim() || currentName;
+                display.textContent = newName;
+                // Show toast
+                mostrarToast('success', '<i class="ri-checkbox-circle-line"></i> Sección renombrada correctamente');
+            };
+
+            input.addEventListener('blur', save);
+            input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { input.blur(); } });
+        }
+
+        function editarDescripcion(id) {
+            const descDiv = document.getElementById('secDesc' + id);
+            const currentHTML = descDiv.innerHTML;
+            descDiv.innerHTML = `
+                <div class="desc-editor-toolbar">
+                    <button title="Negrita"><strong>B</strong></button>
+                    <button title="Cursiva"><em>I</em></button>
+                    <button title="Lista"><i class="ri-list-unordered"></i></button>
+                    <button title="Enlace"><i class="ri-link"></i></button>
+                </div>
+                <div class="desc-editor" contenteditable="true">${currentHTML}</div>
+                <div style="margin-top:0.5rem;display:flex;gap:0.4rem;">
+                    <button class="btn-act-link btn-act-edit" onclick="guardarDescripcion(${id})" style="background:rgba(22,163,74,0.1);color:#16a34a;">
+                        <i class="ri-check-line"></i> Guardar
+                    </button>
+                    <button class="btn-act-link" onclick="cancelarEdicionDesc(${id})" style="background:var(--d-bg);color:var(--d-muted);">
+                        Cancelar
+                    </button>
+                </div>
+            `;
+        }
+
+        window.guardarDescripcion = function(id) {
+            const descDiv = document.getElementById('secDesc' + id);
+            const editor = descDiv.querySelector('.desc-editor');
+            descDiv.innerHTML = editor.innerHTML;
+            mostrarToast('success', '<i class="ri-checkbox-circle-line"></i> Descripción guardada');
+        };
+
+        window.cancelarEdicionDesc = function(id) {
+            // Reload original - in real scenario would fetch from server
+            const descDiv = document.getElementById('secDesc' + id);
+            descDiv.innerHTML = `<p>Descripción de la sección ${id}.</p>`;
+        };
+
+        let toastCount = 0;
+        function mostrarToast(type, html) {
+            toastCount++;
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.id = 'toast-' + toastCount;
+            toast.innerHTML = html;
+            container.appendChild(toast);
+            setTimeout(() => {
+                const el = document.getElementById('toast-' + toastCount);
+                if (el) el.remove();
+            }, 3000);
+        }
+
+        function confirmarEliminar(tipo, nombre) {
+            const modalTitleText = document.getElementById('modalTitleText');
+            const modalBody = document.getElementById('modalBody');
+            const modalOverlay = document.getElementById('modalForm');
+
+            document.getElementById('modalTitleText').textContent = `Eliminar ${tipo}`;
+            modalBody.innerHTML = `
+                <div class="confirm-dialog">
+                    <i class="ri-delete-bin-6-line"></i>
+                    <h5>¿Eliminar "${nombre}"?</h5>
+                    <p>Esta acción eliminará la ${tipo} permanentemente de Moodle.<br>Esta operación no se puede deshacer.</p>
+                </div>
+            `;
+            modalOverlay.classList.add('open');
+
+            // Override save button
+            const footer = modalOverlay.querySelector('.modal-footer');
+            const saveBtn = footer.querySelector('.btn-save');
+            const cancelBtn = footer.querySelector('.btn-cancel');
+
+            const newSave = saveBtn.cloneNode(true);
+            newSave.innerHTML = '<i class="ri-delete-bin-line"></i> Eliminar';
+            newSave.style.background = 'linear-gradient(135deg, #dc2626, #b91c1c)';
+            saveBtn.parentNode.replaceChild(newSave, saveBtn);
+
+            const newCancel = cancelBtn.cloneNode(true);
+            cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+            newSave.onclick = () => {
+                cerrarModal();
+                mostrarToast('success', `<i class="ri-checkbox-circle-line"></i> ${tipo} eliminada de Moodle`);
+                // Restore buttons for next use
+                setTimeout(restoreModalButtons, 100);
+            };
+            newCancel.onclick = () => {
+                cerrarModal();
+                setTimeout(restoreModalButtons, 100);
+            };
+
+            // Also update close button
+            const closeBtn = modalOverlay.querySelector('.modal-close');
+            closeBtn.onclick = () => {
+                cerrarModal();
+                setTimeout(restoreModalButtons, 100);
+            };
+        }
+
+        function restoreModalButtons() {
+            const footer = document.querySelector('#modalForm .modal-footer');
+            if (!footer) return;
+            const saveBtn = footer.querySelector('.btn-save');
+            const cancelBtn = footer.querySelector('.btn-cancel');
+            if (saveBtn) {
+                saveBtn.innerHTML = '<i class="ri-check-line"></i> Guardar en Moodle';
+                saveBtn.style.background = '';
+                saveBtn.onclick = guardarModal;
+            }
+            if (cancelBtn) {
+                cancelBtn.onclick = cerrarModal;
+            }
+            const closeBtn = document.querySelector('#modalForm .modal-close');
+            if (closeBtn) closeBtn.onclick = cerrarModal;
+            document.getElementById('modalTitleText').textContent = 'Nueva Actividad';
+        }
+
+        function toggleResourceType() {
+            const sel = document.getElementById('fldResourceType');
+            const fileGroup = document.getElementById('resourceFileGroup');
+            const descGroup = document.getElementById('resourceDescGroup');
+            if (sel.value === 'file') {
+                fileGroup.style.display = '';
+                descGroup.style.display = 'none';
+            } else if (sel.value === 'page') {
+                fileGroup.style.display = 'none';
+                descGroup.style.display = '';
+            } else {
+                fileGroup.style.display = 'none';
+                descGroup.style.display = 'none';
+            }
+        }
+
+        // Close modal on overlay click
+        document.getElementById('modalForm').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModal();
+        });
+
+        // Prevent modal close when clicking inside
+        document.querySelector('#modalForm .modal-box').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // ===== Drag and drop simulation (visual only) =====
+        document.querySelectorAll('.drag-handle').forEach(handle => {
+            handle.addEventListener('mousedown', function(e) {
+                const parent = this.closest('.seccion-card, .act-item');
+                if (parent) {
+                    parent.style.opacity = '0.6';
+                    parent.style.border = '2px dashed #6366f1';
+                }
+            });
+            handle.addEventListener('mouseup', function(e) {
+                document.querySelectorAll('.seccion-card, .act-item').forEach(el => {
+                    el.style.opacity = '';
+                    el.style.border = '';
+                });
+            });
+        });
+
+        console.log('Mockup interactivo cargado. Haz clic en los botones para explorar las interacciones.');
+    </script>
+
+</body>
+</html>

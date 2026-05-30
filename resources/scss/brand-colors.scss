@@ -1,0 +1,39 @@
+// =================================================================
+// BRAND COLORS — Overrides del color primario del tema Velzon
+// Cambia azul (#3577f1) → naranja Innova (#fc7b04)
+// =================================================================
+
+:root {
+    --vz-primary:            #fc7b04;
+    --vz-primary-rgb:        252, 123, 4;
+    --vz-link-color:         #fc7b04;
+    --vz-link-color-rgb:     252, 123, 4;
+    --vz-link-hover-color:   #c96004;
+}
+
+// Sidebar: forzar fondo naranja sin importar el atributo data-sidebar
+[data-layout="vertical"] .app-menu {
+    background: #fc7b04 !important;
+}
+
+// Botones primarios
+.btn-primary {
+    background-color: #fc7b04 !important;
+    border-color:     #fc7b04 !important;
+
+    &:hover, &:focus, &:active {
+        background-color: #c96004 !important;
+        border-color:     #c96004 !important;
+    }
+}
+
+// Badges y pills del tema
+.bg-primary  { background-color: #fc7b04 !important; }
+.text-primary { color: #fc7b04 !important; }
+.border-primary { border-color: #fc7b04 !important; }
+
+// Nav links activos en topbar
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-item.active > .nav-link {
+    color: #fc7b04 !important;
+}

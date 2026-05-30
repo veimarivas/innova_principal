@@ -1,0 +1,19 @@
+Schema::create('pagos_respaldos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('inscripcione_id')->constrained('inscripciones')->onDelete('cascade');
+            $table->foreignId('cuota_id')->nullable()->constrained('cuotas')->onDelete('set null');
+            $table->string('archivo'); // Ruta del archivo
+            $table->text('observaciones')->nullable();
+            $table->enum('estado', ['pendiente', 'verificado', 'rechazado'])->default('pendiente');
+            $table->timestamps();
+        });
+
+Schema::create('pago_respaldo_cuota', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('pago_respaldo_id');
+            $table->unsignedBigInteger('cuota_id');
+            $table->timestamps();
+
+            $table->foreign('pago_respaldo_id')->references('id')->on('pagos_respaldos')->onDelete('cascade');
+            $table->foreign('cuota_id')->references('id')->on('cuotas')->onDelete('cascade');
+        });

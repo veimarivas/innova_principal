@@ -1,0 +1,801 @@
+================================================================================
+  INTEGRACIÓN LARAVEL + MOODLE - GUÍA COMPLETA PASO A PASO
+  Proyecto: Innova Ciencia Virtual
+  Fecha: Abril 2026
+  Versiones: Laravel 13 | Moodle 5.2 | PHP 8.3 | MariaDB 10.11
+================================================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ÍNDICE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  PARTE 1 - Configuración de Moodle (panel de administración web)
+    1.1  Habilitar Web Services
+    1.2  Habilitar el protocolo REST
+    1.3  Crear un Servicio Externo
+    1.4  Agregar funciones al servicio
+    1.5  Crear el token de acceso
+
+  PARTE 2 - Configuración en Laravel
+    2.1  Agregar variables al archivo .env
+    2.2  Crear el archivo de configuración config/moodle.php
+    2.3  Crear el servicio MoodleService
+    2.4  Agregar columna moodle_category_id al modelo Programa
+    2.5  Agregar columna moodle_course_id al modelo Modulo
+    2.6  Actualizar los controladores
+
+  PARTE 3 - Referencia de la API REST de Moodle
+    3.1  Funciones de categorías
+    3.2  Funciones de cursos
+    3.3  Otras funciones útiles
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTE 1 - CONFIGURACIÓN DE MOODLE (panel de administración web)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Accede como administrador a tu Moodle. En este proyecto la URL es:
+  http://moodle52.localhost
+
+
+──────────────────────────────────────────────────────────────────────────────
+1.1  HABILITAR WEB SERVICES
+──────────────────────────────────────────────────────────────────────────────
+
+Ruta en Moodle:
+  Administración del sitio
+    → Características avanzadas
+
+Acción:
+  Marcar la casilla "Habilitar servicios web"
+  Clic en "Guardar cambios"
+
+
+──────────────────────────────────────────────────────────────────────────────
+1.2  HABILITAR EL PROTOCOLO REST
+──────────────────────────────────────────────────────────────────────────────
+
+Ruta en Moodle:
+  Administración del sitio
+    → Plugins
+      → Servicios web
+        → Gestionar protocolos
+
+Acción:
+  Habilitar el protocolo "REST" haciendo clic en el ícono del ojo (activar)
+  Clic en "Guardar cambios"
+
+  NOTA: No es necesario habilitar los otros protocolos (SOAP, XML-RPC, AMF).
+        REST es suficiente y el más simple de consumir.
+
+
+──────────────────────────────────────────────────────────────────────────────
+1.3  CREAR UN SERVICIO EXTERNO
+──────────────────────────────────────────────────────────────────────────────
+
+Ruta en Moodle:
+  Administración del sitio
+    → Plugins
+      → Servicios web
+        → Servicios externos
+
+Acción:
+  Clic en "Agregar" o "Add"
+
+  Completar el formulario:
+    Nombre:     Laravel Integration          (puede ser cualquier nombre)
+    Shortname:  laravel_integration          (sin espacios, solo letras y _)
+    Habilitado: Sí (marcar la casilla)
+    Solo usuarios autorizados: No (dejar sin marcar por ahora)
+
+  Clic en "Agregar servicio"
+
+
+──────────────────────────────────────────────────────────────────────────────
+1.4  AGREGAR FUNCIONES AL SERVICIO
+──────────────────────────────────────────────────────────────────────────────
+
+Después de crear el servicio, entrar a él y buscar la opción
+"Agregar funciones" o "Add functions"
+
+Agregar las siguientes funciones según lo que necesites:
+
+  PARA CATEGORÍAS (Programas en Laravel):
+    core_course_create_categories    → Crear categorías
+    core_course_update_categories    → Actualizar categorías
+    core_course_delete_categories    → Eliminar categorías
+    core_course_get_categories       → Consultar categorías
+
+  PARA CURSOS (Módulos en Laravel):
+    core_course_create_courses       → Crear cursos
+    core_course_update_courses       → Actualizar cursos
+    core_course_delete_courses       → Eliminar cursos
+    core_course_get_courses          → Consultar cursos (opcional)
+
+  OTRAS FUNCIONES ÚTILES (agregar si se necesitan en el futuro):
+    core_user_create_users           → Crear usuarios
+    core_user_update_users           → Actualizar usuarios
+    core_user_delete_users           → Eliminar usuarios
+    core_user_get_users              → Consultar usuarios
+    enrol_manual_enrol_users         → Matricular usuarios en cursos
+    enrol_manual_unenrol_users       → Desmatricular usuarios
+
+  Clic en "Agregar funciones" para confirmar cada función.
+
+
+──────────────────────────────────────────────────────────────────────────────
+1.5  CREAR EL TOKEN DE ACCESO
+──────────────────────────────────────────────────────────────────────────────
+
+Ruta en Moodle:
+  Administración del sitio
+    → Plugins
+      → Servicios web
+        → Gestionar tokens
+
+Acción:
+  Clic en "Crear token" o "Add"
+
+  Completar el formulario:
+    Usuario:  admin    (el usuario administrador de Moodle)
+    Servicio: Laravel Integration   (el que creamos en el paso 1.3)
+    IP restringida: dejar vacío (en producción puedes poner la IP del servidor)
+    Fecha de expiración: dejar vacío (sin expiración)
+
+  Clic en "Guardar cambios"
+
+  ¡IMPORTANTE! Copiar el token generado. Es una cadena de 32 caracteres
+  como esta: e94eda5557683863e2ed748a40ad5f59
+
+  Ese token se pega en el archivo .env de Laravel (ver Parte 2).
+
+  NOTA DE SEGURIDAD: El token es equivalente a una contraseña.
+  Guárdalo en un lugar seguro y nunca lo subas a Git.
+  En producción usa HTTPS para proteger las llamadas a la API.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTE 2 - CONFIGURACIÓN EN LARAVEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+──────────────────────────────────────────────────────────────────────────────
+2.1  AGREGAR VARIABLES AL ARCHIVO .env
+──────────────────────────────────────────────────────────────────────────────
+
+Archivo: .env  (en la raíz del proyecto Laravel)
+
+Agregar al final del archivo:
+
+  # Moodle Web Services
+  MOODLE_URL=http://moodle52.localhost
+  MOODLE_TOKEN=e94eda5557683863e2ed748a40ad5f59
+  MOODLE_CATEGORY_PARENT_ID=0
+
+Descripción de cada variable:
+  MOODLE_URL              URL base de tu instalación Moodle (sin / al final)
+  MOODLE_TOKEN            Token generado en el paso 1.5
+  MOODLE_CATEGORY_PARENT_ID  ID de la categoría padre en Moodle donde se
+                             crearán las categorías. 0 = categoría raíz.
+                             Si quieres que todo quede dentro de una
+                             categoría "Posgrados", crea esa categoría en
+                             Moodle, anota su ID y ponlo aquí.
+
+Después de editar el .env, limpiar el caché de configuración:
+  php artisan config:clear
+
+
+──────────────────────────────────────────────────────────────────────────────
+2.2  CREAR EL ARCHIVO DE CONFIGURACIÓN config/moodle.php
+──────────────────────────────────────────────────────────────────────────────
+
+Archivo nuevo: config/moodle.php
+
+  <?php
+
+  return [
+      'url'             => env('MOODLE_URL', 'http://moodle52.localhost'),
+      'token'           => env('MOODLE_TOKEN', ''),
+      'category_parent' => env('MOODLE_CATEGORY_PARENT_ID', 0),
+  ];
+
+Este archivo permite acceder a la configuración de Moodle desde cualquier
+parte del proyecto con:
+  config('moodle.url')
+  config('moodle.token')
+  config('moodle.category_parent')
+
+
+──────────────────────────────────────────────────────────────────────────────
+2.3  CREAR EL SERVICIO MoodleService
+──────────────────────────────────────────────────────────────────────────────
+
+Archivo nuevo: app/Services/MoodleService.php
+
+NOTA: La carpeta app/Services/ se crea si no existe.
+
+  <?php
+
+  namespace App\Services;
+
+  use Illuminate\Support\Facades\Http;
+  use Illuminate\Support\Facades\Log;
+
+  class MoodleService
+  {
+      private string $url;
+      private string $token;
+
+      public function __construct()
+      {
+          $this->url   = rtrim(config('moodle.url'), '/');
+          $this->token = config('moodle.token');
+      }
+
+      // -----------------------------------------------------------------------
+      // CATEGORÍAS
+      // -----------------------------------------------------------------------
+
+      /**
+       * Crea una categoría en Moodle y devuelve su ID.
+       * Retorna null si falla.
+       *
+       * @param string $name      Nombre de la categoría
+       * @param int    $parentId  ID de la categoría padre (0 = raíz)
+       * @return int|null
+       */
+      public function createCategory(string $name, int $parentId = 0): ?int
+      {
+          $response = $this->call('core_course_create_categories', [
+              'categories[0][name]'   => $name,
+              'categories[0][parent]' => $parentId,
+          ]);
+
+          if ($response && isset($response[0]['id'])) {
+              return (int) $response[0]['id'];
+          }
+          return null;
+      }
+
+      /**
+       * Actualiza el nombre de una categoría en Moodle.
+       */
+      public function updateCategory(int $moodleCategoryId, string $name): bool
+      {
+          $response = $this->call('core_course_update_categories', [
+              'categories[0][id]'   => $moodleCategoryId,
+              'categories[0][name]' => $name,
+          ]);
+          return $response !== null && empty($response);
+      }
+
+      /**
+       * Elimina una categoría en Moodle.
+       */
+      public function deleteCategory(int $moodleCategoryId): bool
+      {
+          $response = $this->call('core_course_delete_categories', [
+              'categories[0][id]' => $moodleCategoryId,
+          ]);
+          return $response !== null;
+      }
+
+      /**
+       * Obtiene todas las categorías de Moodle.
+       */
+      public function getCategories(): array
+      {
+          return $this->call('core_course_get_categories') ?? [];
+      }
+
+      // -----------------------------------------------------------------------
+      // CURSOS
+      // -----------------------------------------------------------------------
+
+      /**
+       * Crea un curso en Moodle dentro de una categoría y devuelve su ID.
+       *
+       * @param string      $fullname    Nombre completo del curso
+       * @param string      $shortname   Nombre corto ÚNICO en todo Moodle
+       * @param int         $categoryId  ID de la categoría Moodle donde se crea
+       * @param string|null $startDate   Fecha inicio (formato Y-m-d)
+       * @param string|null $endDate     Fecha fin    (formato Y-m-d)
+       * @return int|null
+       */
+      public function createCourse(
+          string  $fullname,
+          string  $shortname,
+          int     $categoryId,
+          ?string $startDate = null,
+          ?string $endDate   = null
+      ): ?int {
+          $params = [
+              'courses[0][fullname]'   => $fullname,
+              'courses[0][shortname]'  => $shortname,
+              'courses[0][categoryid]' => $categoryId,
+          ];
+          if ($startDate) {
+              $params['courses[0][startdate]'] = strtotime($startDate);
+          }
+          if ($endDate) {
+              $params['courses[0][enddate]'] = strtotime($endDate);
+          }
+
+          $response = $this->call('core_course_create_courses', $params);
+
+          if ($response && isset($response[0]['id'])) {
+              return (int) $response[0]['id'];
+          }
+          return null;
+      }
+
+      /**
+       * Actualiza los datos de un curso en Moodle.
+       */
+      public function updateCourse(
+          int     $moodleCourseId,
+          string  $fullname,
+          string  $shortname,
+          ?string $startDate = null,
+          ?string $endDate   = null
+      ): bool {
+          $params = [
+              'courses[0][id]'        => $moodleCourseId,
+              'courses[0][fullname]'  => $fullname,
+              'courses[0][shortname]' => $shortname,
+          ];
+          if ($startDate) {
+              $params['courses[0][startdate]'] = strtotime($startDate);
+          }
+          if ($endDate) {
+              $params['courses[0][enddate]'] = strtotime($endDate);
+          }
+
+          $response = $this->call('core_course_update_courses', $params);
+          return $response !== null && empty($response);
+      }
+
+      /**
+       * Elimina un curso en Moodle.
+       */
+      public function deleteCourse(int $moodleCourseId): bool
+      {
+          $response = $this->call('core_course_delete_courses', [
+              'courseids[0]' => $moodleCourseId,
+          ]);
+          return $response !== null;
+      }
+
+      /**
+       * Genera un shortname único para un curso de módulo.
+       * Formato: OFR{oferta_id}-MOD{n_modulo}
+       * Ejemplo: OFR5-MOD1
+       *
+       * IMPORTANTE: El shortname debe ser único en toda la instalación Moodle.
+       * Adapta el formato si tienes múltiples proyectos apuntando al mismo Moodle.
+       */
+      public function buildCourseShortname(int $ofertaId, int $nModulo): string
+      {
+          return "OFR{$ofertaId}-MOD{$nModulo}";
+      }
+
+      // -----------------------------------------------------------------------
+      // MÉTODO PRIVADO: Llamada HTTP a la API REST
+      // -----------------------------------------------------------------------
+
+      /**
+       * Realiza la llamada HTTP POST a la API REST de Moodle.
+       *
+       * Endpoint universal: {MOODLE_URL}/webservice/rest/server.php
+       *
+       * Parámetros obligatorios en toda llamada:
+       *   wstoken            → El token de acceso
+       *   wsfunction         → Nombre de la función Moodle a ejecutar
+       *   moodlewsrestformat → Siempre "json"
+       *
+       * Si Moodle devuelve un error, el campo "exception" estará presente
+       * en la respuesta JSON. Lo registramos en el log y retornamos null.
+       */
+      private function call(string $function, array $params = []): mixed
+      {
+          try {
+              $response = Http::asForm()->post(
+                  "{$this->url}/webservice/rest/server.php",
+                  array_merge([
+                      'wstoken'            => $this->token,
+                      'wsfunction'         => $function,
+                      'moodlewsrestformat' => 'json',
+                  ], $params)
+              );
+
+              $data = $response->json();
+
+              if (isset($data['exception'])) {
+                  Log::error("Moodle API error [{$function}]: " . ($data['message'] ?? 'Unknown error'));
+                  return null;
+              }
+
+              return $data;
+
+          } catch (\Exception $e) {
+              Log::error("Moodle conexión fallida [{$function}]: " . $e->getMessage());
+              return null;
+          }
+      }
+  }
+
+NOTA SOBRE DISEÑO:
+  El método call() siempre retorna null ante cualquier error, en vez de
+  lanzar una excepción. Esto hace que la aplicación Laravel funcione
+  aunque Moodle esté caído. Los errores quedan registrados en
+  storage/logs/laravel.log para su revisión.
+
+
+──────────────────────────────────────────────────────────────────────────────
+2.4  COLUMNA moodle_category_id EN LA TABLA programas
+──────────────────────────────────────────────────────────────────────────────
+
+Creamos una columna para guardar el ID de la categoría Moodle correspondiente
+a cada Programa de Laravel. Esto es necesario para poder actualizar o eliminar
+la categoría en Moodle en el futuro.
+
+PASO A) Crear la migración:
+
+  php artisan make:migration add_moodle_category_id_to_programas_table --table=programas
+
+PASO B) Editar el archivo de migración generado:
+
+  public function up(): void
+  {
+      Schema::table('programas', function (Blueprint $table) {
+          $table->unsignedBigInteger('moodle_category_id')->nullable()->after('nombre');
+      });
+  }
+
+  public function down(): void
+  {
+      Schema::table('programas', function (Blueprint $table) {
+          $table->dropColumn('moodle_category_id');
+      });
+  }
+
+PASO C) Ejecutar la migración:
+
+  php artisan migrate
+
+PASO D) Actualizar el modelo Programa (app/Models/Programa.php):
+  Agregar 'moodle_category_id' al array $fillable:
+
+  protected $fillable = [
+      'nombre',
+      'moodle_category_id',
+  ];
+
+PASO E) Actualizar el controlador ProgramaController:
+  Inyectar MoodleService y sincronizar al guardar/actualizar/eliminar.
+
+  Ejemplo completo del método guardar():
+
+  public function guardar(Request $request)
+  {
+      $validator = Validator::make($request->all(), [
+          'nombre' => 'required|string|max:200|unique:programas,nombre',
+      ]);
+
+      if ($validator->fails()) {
+          return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+      }
+
+      $nombre = strtoupper($request->nombre);
+
+      // Crear la categoría en Moodle
+      $moodleCategoryId = $this->moodle->createCategory(
+          $nombre,
+          config('moodle.category_parent')
+      );
+
+      $programa = Programa::create([
+          'nombre'             => $nombre,
+          'moodle_category_id' => $moodleCategoryId,  // null si Moodle no respondió
+      ]);
+
+      return response()->json([
+          'success' => true,
+          'message' => 'Programa registrado.' . ($moodleCategoryId ? ' Categoría creada en Moodle.' : ''),
+          'data'    => $programa,
+      ]);
+  }
+
+
+──────────────────────────────────────────────────────────────────────────────
+2.5  COLUMNA moodle_course_id EN LA TABLA modulos
+──────────────────────────────────────────────────────────────────────────────
+
+Mismo proceso que la sección anterior pero para la tabla modulos.
+Cada Módulo de Laravel se convierte en un Curso de Moodle.
+
+PASO A) Crear la migración:
+
+  php artisan make:migration add_moodle_course_id_to_modulos_table --table=modulos
+
+PASO B) Editar el archivo de migración:
+
+  public function up(): void
+  {
+      Schema::table('modulos', function (Blueprint $table) {
+          $table->unsignedBigInteger('moodle_course_id')->nullable()->after('ofertas_academica_id');
+      });
+  }
+
+  public function down(): void
+  {
+      Schema::table('modulos', function (Blueprint $table) {
+          $table->dropColumn('moodle_course_id');
+      });
+  }
+
+PASO C) Ejecutar la migración:
+
+  php artisan migrate
+
+PASO D) Actualizar el modelo Modulo:
+  Agregar 'moodle_course_id' al array $fillable.
+
+PASO E) Actualizar ModuloController:
+  Ver sección 2.6.
+
+RELACIÓN ENTRE MODELOS Y MOODLE:
+
+  Laravel (tabla)         Moodle (concepto)       Columna de enlace
+  ─────────────────────   ─────────────────────   ──────────────────
+  programas               Categoría               moodle_category_id
+  modulos                 Curso                   moodle_course_id
+
+  La cadena de relación es:
+    Modulo → ofertas_academica_id → OfertasAcademica
+           → programa_id          → Programa
+           → moodle_category_id   → Categoría en Moodle
+                                    ↑ aquí se crean los cursos
+
+
+──────────────────────────────────────────────────────────────────────────────
+2.6  ACTUALIZAR LOS CONTROLADORES
+──────────────────────────────────────────────────────────────────────────────
+
+En cada controlador que necesite sincronizar con Moodle:
+
+A) Agregar el import:
+   use App\Services\MoodleService;
+
+B) Inyectar el servicio en el constructor:
+   public function __construct(private MoodleService $moodle) {}
+
+   NOTA: Laravel resuelve automáticamente la dependencia por inyección
+   de contenedor (Service Container). No necesitas instanciar la clase
+   manualmente con "new MoodleService()".
+
+C) Llamar los métodos del servicio dentro de las acciones CRUD:
+
+   AL CREAR:
+     $moodleCourseId = $this->moodle->createCourse(
+         $nombre,
+         $shortname,
+         $moodleCategoryId,
+         $fechaInicio,
+         $fechaFin
+     );
+
+   AL ACTUALIZAR:
+     if ($modulo->moodle_course_id) {
+         $this->moodle->updateCourse(
+             $modulo->moodle_course_id,
+             $nombre,
+             $shortname,
+             $fechaInicio,
+             $fechaFin
+         );
+     }
+
+   AL ELIMINAR:
+     if ($modulo->moodle_course_id) {
+         $this->moodle->deleteCourse($modulo->moodle_course_id);
+     }
+     $modulo->delete();
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTE 3 - REFERENCIA DE LA API REST DE MOODLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ENDPOINT UNIVERSAL (siempre el mismo para todas las funciones):
+  POST  {MOODLE_URL}/webservice/rest/server.php
+
+PARÁMETROS OBLIGATORIOS EN TODA LLAMADA:
+  wstoken             → Token de acceso (generado en paso 1.5)
+  wsfunction          → Nombre de la función a ejecutar
+  moodlewsrestformat  → Siempre "json"
+
+
+──────────────────────────────────────────────────────────────────────────────
+3.1  FUNCIONES DE CATEGORÍAS
+──────────────────────────────────────────────────────────────────────────────
+
+CREAR CATEGORÍA: core_course_create_categories
+  Parámetros:
+    categories[0][name]     → Nombre de la categoría (obligatorio)
+    categories[0][parent]   → ID categoría padre, 0 para raíz (obligatorio)
+    categories[0][idnumber] → Identificador externo (opcional)
+    categories[0][description] → Descripción (opcional)
+  Respuesta exitosa:
+    [{"id": 5, "name": "DIPLOMADO EN DERECHO"}]
+
+ACTUALIZAR CATEGORÍA: core_course_update_categories
+  Parámetros:
+    categories[0][id]    → ID de la categoría en Moodle (obligatorio)
+    categories[0][name]  → Nuevo nombre (opcional)
+  Respuesta exitosa:
+    []  (array vacío = sin errores)
+
+ELIMINAR CATEGORÍA: core_course_delete_categories
+  Parámetros:
+    categories[0][id]       → ID de la categoría a eliminar (obligatorio)
+    categories[0][newparent] → ID a donde mover los cursos hijos (opcional)
+    categories[0][recursive] → 1 para eliminar subcategorías (opcional)
+  Respuesta exitosa:
+    null o []
+
+OBTENER CATEGORÍAS: core_course_get_categories
+  Parámetros:
+    criteria[0][key]   → Campo de filtro (ej: "parent", "id", "name")
+    criteria[0][value] → Valor del filtro
+    addsubcategories   → 1 para incluir subcategorías (opcional)
+  Respuesta exitosa:
+    [{id, name, parent, coursecount, ...}, ...]
+
+
+──────────────────────────────────────────────────────────────────────────────
+3.2  FUNCIONES DE CURSOS
+──────────────────────────────────────────────────────────────────────────────
+
+CREAR CURSO: core_course_create_courses
+  Parámetros:
+    courses[0][fullname]   → Nombre completo (obligatorio)
+    courses[0][shortname]  → Nombre corto ÚNICO en todo Moodle (obligatorio)
+    courses[0][categoryid] → ID de la categoría donde se crea (obligatorio)
+    courses[0][startdate]  → Timestamp Unix de inicio (opcional)
+    courses[0][enddate]    → Timestamp Unix de fin (opcional)
+    courses[0][visible]    → 1 visible, 0 oculto (opcional, default 1)
+    courses[0][summary]    → Descripción del curso (opcional)
+    courses[0][format]     → Formato: topics, weeks, social... (opcional)
+  Respuesta exitosa:
+    [{"id": 12, "shortname": "OFR5-MOD1"}]
+
+  IMPORTANTE sobre shortname:
+    - Debe ser único en toda la instalación de Moodle
+    - No puede repetirse aunque el curso anterior haya sido eliminado
+      (a menos que Moodle lo permita en la configuración)
+    - Recomendación: usar un prefijo del proyecto para evitar colisiones
+      Ejemplo: "INNOVA-OFR5-MOD1" en vez de "OFR5-MOD1"
+
+ACTUALIZAR CURSO: core_course_update_courses
+  Parámetros:
+    courses[0][id]        → ID del curso en Moodle (obligatorio)
+    courses[0][fullname]  → Nuevo nombre completo (opcional)
+    courses[0][shortname] → Nuevo nombre corto (opcional)
+    courses[0][startdate] → Nuevo timestamp de inicio (opcional)
+    courses[0][enddate]   → Nuevo timestamp de fin (opcional)
+  Respuesta exitosa:
+    []  (array vacío = sin errores)
+
+ELIMINAR CURSO: core_course_delete_courses
+  Parámetros:
+    courseids[0] → ID del curso a eliminar (obligatorio)
+    courseids[1] → Segundo curso (si se eliminan varios)
+  Respuesta exitosa:
+    []  (array vacío = sin errores)
+
+OBTENER CURSOS POR CATEGORÍA: core_course_get_courses
+  Parámetros:
+    options[ids][0] → ID específico de curso (opcional)
+  Respuesta exitosa:
+    [{id, shortname, fullname, categoryid, startdate, enddate, ...}, ...]
+
+
+──────────────────────────────────────────────────────────────────────────────
+3.3  OTRAS FUNCIONES ÚTILES (para futuras integraciones)
+──────────────────────────────────────────────────────────────────────────────
+
+USUARIOS:
+  core_user_create_users          → Crear usuarios en Moodle
+  core_user_update_users          → Actualizar datos de usuario
+  core_user_delete_users          → Eliminar usuarios
+  core_user_get_users             → Buscar usuarios por criterio
+  core_user_get_users_by_field    → Buscar por campo específico (email, username)
+
+MATRICULACIONES:
+  enrol_manual_enrol_users        → Matricular usuario en un curso
+    Parámetros:
+      enrolments[0][roleid]    → ID del rol (5 = estudiante, 3 = docente)
+      enrolments[0][userid]    → ID del usuario en Moodle
+      enrolments[0][courseid]  → ID del curso en Moodle
+  enrol_manual_unenrol_users      → Desmatricular usuario de un curso
+
+ROLES COMUNES EN MOODLE:
+  1 → Manager (administrador del curso)
+  3 → Teacher  (docente con permisos de edición)
+  4 → Non-editing teacher (docente sin edición)
+  5 → Student  (estudiante)
+  6 → Guest    (invitado)
+
+INFORMACIÓN DEL SITIO:
+  core_webservice_get_site_info   → Info del sitio y del usuario del token
+    Útil para verificar que el token es válido antes de hacer otras llamadas.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHECKLIST RÁPIDA PARA REPLICAR EN OTRO PROYECTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EN MOODLE:
+  [ ] Habilitar Web Services (Características avanzadas)
+  [ ] Habilitar protocolo REST (Plugins → Web Services → Protocolos)
+  [ ] Crear Servicio Externo con nombre descriptivo
+  [ ] Agregar las funciones necesarias al servicio
+  [ ] Crear token para el usuario admin
+  [ ] Copiar el token
+
+EN LARAVEL:
+  [ ] Agregar MOODLE_URL, MOODLE_TOKEN y MOODLE_CATEGORY_PARENT_ID al .env
+  [ ] Crear config/moodle.php
+  [ ] Crear app/Services/MoodleService.php
+  [ ] Por cada entidad que se sincroniza con Moodle:
+      [ ] Crear migración para agregar columna moodle_*_id (nullable)
+      [ ] Agregar el campo al $fillable del modelo
+      [ ] Inyectar MoodleService en el constructor del controlador
+      [ ] Llamar createX() al guardar
+      [ ] Llamar updateX() al actualizar
+      [ ] Llamar deleteX() al eliminar
+  [ ] Ejecutar: php artisan migrate
+  [ ] Ejecutar: php artisan config:clear
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEPURACIÓN DE ERRORES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Los errores de la API Moodle quedan registrados en:
+  storage/logs/laravel.log
+
+Errores comunes:
+
+  "invalidtoken" (token inválido o expirado)
+  → Verifica MOODLE_TOKEN en .env y que no haya espacios al copiar el token.
+
+  "accessexception" (función no permitida)
+  → La función no fue agregada al Servicio Externo. Ver paso 1.4.
+
+  "invalidparameter" (parámetro incorrecto)
+  → Revisa los nombres de los parámetros. Son case-sensitive.
+
+  "shortnametaken" (shortname duplicado)
+  → El shortname del curso ya existe en Moodle. Cambia el formato en
+    buildCourseShortname() para que sea más único.
+
+  "Can't connect" o timeout
+  → Moodle no está corriendo o la URL en MOODLE_URL es incorrecta.
+    Verifica que Apache/Nginx esté activo y la URL sea accesible.
+
+VERIFICAR TOKEN MANUALMENTE (con curl o en el navegador):
+  GET {MOODLE_URL}/webservice/rest/server.php
+      ?wstoken=TU_TOKEN
+      &wsfunction=core_webservice_get_site_info
+      &moodlewsrestformat=json
+
+  Si devuelve datos del sitio → el token es válido.
+  Si devuelve {"exception":...} → revisar token o permisos.
+
+
+================================================================================
+  Fin del documento
+  Proyecto: Innova Ciencia Virtual - Integración Laravel + Moodle
+================================================================================
