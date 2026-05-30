@@ -335,19 +335,19 @@
         <!-- Logo para sidebar claro (fallback) -->
         <a href="index" class="logo logo-dark">
             <span class="logo-sm">
-                <img src="<?php echo e(URL::asset('build/images/logo_chico.png')); ?>" alt="Logo" height="22">
+                <img src="<?php echo e(asset('images/logo-secundario.png')); ?>" alt="Logo" height="28">
             </span>
             <span class="logo-lg">
-                <img src="<?php echo e(URL::asset('build/images/logo_grande.png')); ?>" alt="Logo" height="17">
+                <img src="<?php echo e(asset('images/logo-principal.png')); ?>" alt="Logo" height="36">
             </span>
         </a>
         <!-- Logo blanco para sidebar naranja/oscuro -->
         <a href="index" class="logo logo-light">
             <span class="logo-sm">
-                <img src="<?php echo e(URL::asset('build/images/logo_chico.png')); ?>" alt="Logo" height="22">
+                <img src="<?php echo e(asset('images/logo-secundario.png')); ?>" alt="Logo" height="28">
             </span>
             <span class="logo-lg">
-                <img src="<?php echo e(URL::asset('build/images/logo_grande.png')); ?>" alt="Logo" height="17">
+                <img src="<?php echo e(asset('images/logo-principal.png')); ?>" alt="Logo" height="36">
             </span>
         </a>
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"

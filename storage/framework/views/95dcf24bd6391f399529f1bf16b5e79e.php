@@ -1247,7 +1247,7 @@
                                                                     class="rounded-circle border shadow"
                                                                     style="width: 90px; height: 90px; object-fit: cover; border: 3px solid #C0C0C0 !important;">
                                                             <?php elseif(isset($rankingGeneralTop3[1])): ?>
-                                                                <img src="<?php echo e($rankingGeneralTop3[1]->avatar ?? asset('backend/assets/images/hombre.png')); ?>"
+                                                                <img src="<?php echo e($rankingGeneralTop3[1]->sexo === 'M' ? asset('images/chico.png') : asset('images/mujer.png')); ?>"
                                                                     alt="<?php echo e($rankingGeneralTop3[1]->nombre_completo ?? ''); ?>"
                                                                     class="rounded-circle border shadow"
                                                                     style="width: 90px; height: 90px; object-fit: cover; border: 3px solid #C0C0C0 !important;">
@@ -1299,7 +1299,7 @@
                                                                     class="rounded-circle border shadow-lg"
                                                                     style="width: 100px; height: 100px; object-fit: cover; border: 4px solid #FFD700 !important;">
                                                             <?php else: ?>
-                                                                <img src="<?php echo e($rankingGeneralTop3[0]->avatar); ?>"
+                                                                <img src="<?php echo e($rankingGeneralTop3[0]->sexo === 'M' ? asset('images/chico.png') : asset('images/mujer.png')); ?>"
                                                                     alt="<?php echo e($rankingGeneralTop3[0]->nombre_completo); ?>"
                                                                     class="rounded-circle border shadow-lg"
                                                                     style="width: 100px; height: 100px; object-fit: cover; border: 4px solid #FFD700 !important;">
@@ -1350,7 +1350,7 @@
                                                                     class="rounded-circle border shadow"
                                                                     style="width: 90px; height: 90px; object-fit: cover; border: 3px solid #CD7F32 !important;">
                                                             <?php elseif(isset($rankingGeneralTop3[2])): ?>
-                                                                <img src="<?php echo e($rankingGeneralTop3[2]->avatar ?? asset('backend/assets/images/hombre.png')); ?>"
+                                                                <img src="<?php echo e($rankingGeneralTop3[2]->sexo === 'M' ? asset('images/chico.png') : asset('images/mujer.png')); ?>"
                                                                     alt="<?php echo e($rankingGeneralTop3[2]->nombre_completo ?? ''); ?>"
                                                                     class="rounded-circle border shadow"
                                                                     style="width: 90px; height: 90px; object-fit: cover; border: 3px solid #CD7F32 !important;">
@@ -1466,7 +1466,7 @@
                                 $avatarUrl = $persona->fotografia
                                     ? asset('images/personas/' . $persona->fotografia)
                                     : ($persona->sexo === 'M'
-                                        ? asset('images/hombre.png')
+                                        ? asset('images/chico.png')
                                         : asset('images/mujer.png'));
                             ?>
                             <tr class="<?php echo e($index < 3 ? 'top-' . ($index + 1) : ''); ?>">
@@ -1554,8 +1554,9 @@
                                                         $persona->fotografia &&
                                                         file_exists(public_path($persona->fotografia))
                                                             ? asset($persona->fotografia)
-                                                            : $persona->avatar ??
-                                                                asset('backend/assets/images/hombre.png');
+                                                            : ($persona->sexo === 'M'
+                                                                ? asset('images/chico.png')
+                                                                : asset('images/mujer.png'));
                                                 ?>
                                                 <tr class="<?php echo e($rowClass); ?>">
                                                     <td class="align-middle text-center">
@@ -1862,7 +1863,7 @@
                 <div class="card-body text-center py-3 px-3 d-flex flex-column justify-content-between h-100">
                     <div>
                         <div class="position-relative d-inline-block mb-2">
-                            <img src="${persona.fotografia ? ('<?php echo e(url('images/personas')); ?>/' + persona.fotografia) : (persona.sexo === 'M' ? '<?php echo e(url('images/hombre.png')); ?>' : '<?php echo e(url('images/mujer.png')); ?>')}"
+                            <img src="${persona.fotografia ? ('<?php echo e(url('images/personas')); ?>/' + persona.fotografia) : (persona.sexo === 'M' ? '<?php echo e(url('images/chico.png')); ?>' : '<?php echo e(url('images/mujer.png')); ?>')}"
                                  alt="${persona.nombre_completo}"
                                  class="rounded-circle border ${index === 0 ? 'shadow-lg' : 'shadow'}"
                                  style="width: ${imageSizes[index]}; height: ${imageSizes[index]}; object-fit: cover; border: ${borderWidths[index]} solid ${borders[index]} !important;">
@@ -1922,7 +1923,7 @@
 
                     const avatarSrc = persona.fotografia ?
                         ('<?php echo e(url('images/personas')); ?>/' + persona.fotografia) :
-                        (persona.sexo === 'M' ? '<?php echo e(url('images/hombre.png')); ?>' :
+                        (persona.sexo === 'M' ? '<?php echo e(url('images/chico.png')); ?>' :
                             '<?php echo e(url('images/mujer.png')); ?>');
 
                     const tiposCells = tipoNombres.map(tipo => {
