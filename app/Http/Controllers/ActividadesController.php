@@ -31,10 +31,25 @@ class ActividadesController extends Controller
         $cuestionarios = $this->moodle->getQuizzes($courseId);
         $foros         = $this->moodle->getForums($courseId);
 
+        // Fechas desde BD directa (no depende del WS mod_assign_get_assignments)
+        $tareasFechas = $this->moodle->getAssignDatesByCourseDirect($courseId);
+
+        // Complementar con datos del WS si la BD no los devolvió
+        if (empty($tareasFechas)) {
+            foreach ($tareas as $t) {
+                $open  = (int) ($t['allowsubmissionsfromdate'] ?? 0);
+                $due   = (int) ($t['duedate']                  ?? 0);
+                $entry = ['open' => $open ?: null, 'due' => $due ?: null];
+                if (!empty($t['id']))           $tareasFechas[(int) $t['id']]                 = $entry;
+                if (!empty($t['coursemodule'])) $tareasFechas['cm_' . (int) $t['coursemodule']] = $entry;
+            }
+        }
+
         return response()->json([
             'success'        => true,
             'secciones'      => $secciones,
             'tareas'         => $tareas,
+            'tareas_fechas'  => $tareasFechas,
             'cuestionarios'  => $cuestionarios,
             'foros'          => $foros,
             'moodle_course_id' => $courseId,

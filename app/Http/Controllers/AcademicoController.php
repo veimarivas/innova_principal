@@ -165,11 +165,12 @@ class AcademicoController extends Controller
             $estudiantes[] = [
                 'moodle_user_id' => (int) $mat->moodle_user_id,
                 'nombre' => $persona
-                    ? trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''))
+                    ? trim(($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '') . ' ' . ($persona->nombres ?? ''))
                     : 'Sin nombre',
                 'ci' => $persona?->carnet ?? '—',
             ];
         }
+        usort($estudiantes, fn($a, $b) => strcmp($a['nombre'], $b['nombre']));
         return $estudiantes;
     }
 
@@ -454,7 +455,7 @@ class AcademicoController extends Controller
 
             $estudiantes[] = [
                 'nombre'       => $persona
-                    ? trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''))
+                    ? trim(($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '') . ' ' . ($persona->nombres ?? ''))
                     : 'Sin nombre',
                 'ci'           => $persona?->carnet ?? '—',
                 'notas'        => $notasPorActividad,

@@ -604,6 +604,58 @@ return $result !== null ? [] : false;
     }
 
     /**
+     * Lee fechas de tareas directamente de la BD de Moodle (sin depender del WS).
+     * Devuelve mapa keyed por instance_id y por 'cm_{cmid}'.
+     */
+    public function getAssignDatesByCourseDirect(int $moodleCourseId): array
+    {
+        $db = DB::connection('moodle');
+        try {
+            // 1. Obtener el module_id del tipo 'assign'
+            $moduleId = $db->table('modules')->where('name', 'assign')->value('id');
+            if (!$moduleId) return [];
+
+            // 2. Obtener course_modules de tipo assign para este curso
+            $cmRows = $db->table('course_modules')
+                ->where('course', $moodleCourseId)
+                ->where('module', $moduleId)
+                ->select('id as cmid', 'instance')
+                ->get();
+
+            if ($cmRows->isEmpty()) return [];
+
+            // 3. Obtener fechas de la tabla assign
+            $instanceIds = $cmRows->pluck('instance')->filter()->unique()->values()->toArray();
+            $assignRows  = $db->table('assign')
+                ->whereIn('id', $instanceIds)
+                ->get(['id', 'allowsubmissionsfromdate', 'duedate']);
+
+            // Índice assign_id → fechas
+            $assignIndex = [];
+            foreach ($assignRows as $a) {
+                $assignIndex[$a->id] = [
+                    'open' => $a->allowsubmissionsfromdate ?: null,
+                    'due'  => $a->duedate                  ?: null,
+                ];
+            }
+
+            // 4. Construir mapa final keyed por instance y por cmid
+            $map = [];
+            foreach ($cmRows as $cm) {
+                $entry = $assignIndex[$cm->instance] ?? ['open' => null, 'due' => null];
+                $map[(int) $cm->instance]       = $entry;
+                $map['cm_' . (int) $cm->cmid]   = $entry;
+            }
+            Log::debug("getAssignDatesByCourseDirect course={$moodleCourseId} assigns=" . count($assignRows) . " map_keys=" . count($map));
+            return $map;
+
+        } catch (\Exception $e) {
+            Log::warning("getAssignDatesByCourseDirect ERROR: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
      * Devuelve los cuestionarios (quizzes) de un curso.
      */
     public function getQuizzes(int $moodleCourseId): array

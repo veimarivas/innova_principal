@@ -10,6 +10,10 @@
         window.CSRF = CSRF;
         window.MOODLE_URL = '<?php echo e(config('moodle.url')); ?>';
         window.PROGRAMA_NOMBRE = '<?php echo e(addslashes($oferta->programa?->nombre ?? $oferta->codigo)); ?>';
+        window.OFERTA_VERSION    = '<?php echo e($oferta->version); ?>';
+        window.OFERTA_GRUPO      = '<?php echo e($oferta->grupo); ?>';
+        window.OFERTA_GESTION    = '<?php echo e($oferta->gestion); ?>';
+        window.OFERTA_POSGRADO   = '<?php echo e(addslashes($oferta->posgrado?->nombre ?? '')); ?>';
         let currentModuloId = null;
         let currentHorarioId = null;
         let allModulos = [];
@@ -699,13 +703,52 @@
             const username = btn.data('username');
             const password = btn.data('password');
 
-            const mensaje = '*¡Bienvenido/a a ' + programa + '!*\n\n' +
-                'Estimado/a ' + nombre + ',\n\n' +
-                'Su inscripción ha sido registrada exitosamente. A continuación, le proporcionamos sus datos de acceso a la plataforma:\n\n' +
-                '*Plataforma:* http://moodle52.localhost/\n' +
-                '*Usuario:* ' + username + '\n' +
-                '*Contraseña:* ' + password + '\n\n' +
-                '*Área Académica Innova-Ciencia-Virtual*';
+            const displayUrl = 'https://posgradosinnovaciencia.com';
+            const v = window.OFERTA_VERSION;
+            const g = window.OFERTA_GRUPO;
+            const gestion = window.OFERTA_GESTION;
+            const posgrado = window.OFERTA_POSGRADO;
+            const subtitleParts = [];
+            if (posgrado) subtitleParts.push(posgrado);
+            if (gestion) subtitleParts.push(gestion);
+            if (v || g) subtitleParts.push('V' + (v || '?') + ' G' + (g || '?'));
+            const subtitle = subtitleParts.length ? '\n_' + subtitleParts.join(' - ') + '_' : '';
+
+            const mensaje = [
+                '\uD83C\uDF93 *INNOVA CIENCIA VIRTUAL*',
+                subtitle ? subtitle + '\n' : '',
+                '\u2728 \u00A1Bienvenido/a a tu plataforma acad\u00E9mica!',
+                '',
+                '\uD83D\uDC4B Estimado/a *' + nombre + '*,',
+                'Te damos la bienvenida al *' + programa + '*.',
+                'A continuaci\u00F3n encontrar\u00E1s tus credenciales de acceso a la plataforma virtual.',
+                '',
+                '\uD83D\uDD10 *ACCESO A LA PLATAFORMA*',
+                '\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC',
+                '\uD83C\uDF10  *Sitio web:*  ' + displayUrl,
+                '\uD83D\uDC64  *Usuario:*      `' + username + '`',
+                '\uD83D\uDD11  *Contrase\u00F1a:*  `' + password + '`',
+                '\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC',
+                '',
+                '\uD83D\uDCCC *PASOS PARA INGRESAR*',
+                '1\uFE0F\u20E3 Abre tu navegador (Chrome, Edge o Firefox)',
+                '2\uFE0F\u20E3 Visita \u2192 ' + displayUrl,
+                '3\uFE0F\u20E3 Ingresa tu usuario y contrase\u00F1a',
+                '4\uFE0F\u20E3 Completa tu perfil en el primer acceso',
+                '',
+                '\u26A0\uFE0F *IMPORTANTE*',
+                '\u2022 Guarda tus credenciales en un lugar seguro.',
+                '\u2022 No compartas tu contrase\u00F1a con nadie.',
+                '\u2022 Si olvidas tu acceso, cont\u00E1ctanos de inmediato.',
+                '',
+                '\uD83D\uDE80 *\u00A1\u00C9xitos en tu proceso de formaci\u00F3n!*',
+                '',
+                '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',
+                '\uD83C\uDFE2 *\u00C1rea Acad\u00E9mica*',
+                '\uD83D\uDCCD Innova Ciencia Virtual',
+                '\uD83D\uDCE7 soporte@posgradosinnovaciencia.com',
+                '\uD83D\uDCF1 +591 XXX XXX XXX',
+            ].join('\n');
 
             const url = 'https://wa.me/' + celular + '?text=' + encodeURIComponent(mensaje);
             window.open(url, '_blank');
@@ -3790,16 +3833,58 @@
             });
         }
 
+        function buildSubtitle() {
+            const v = window.OFERTA_VERSION;
+            const g = window.OFERTA_GRUPO;
+            const gestion = window.OFERTA_GESTION;
+            const posgrado = window.OFERTA_POSGRADO;
+            const parts = [];
+            if (posgrado) parts.push(posgrado);
+            if (gestion) parts.push(gestion);
+            if (v || g) parts.push('V' + (v || '?') + ' G' + (g || '?'));
+            return parts.length ? '_' + parts.join(' - ') + '_' : '';
+        }
+
         function buildMensajeWhatsApp(nombre, username, password) {
-            const moodleUrl = window.MOODLE_URL || 'http://moodle52.localhost';
-            return '*¡Bienvenido/a a ' + moduloActual.programa + '!*\n\n' +
-                'Estimado/a ' + nombre + ',\n\n' +
-                'A continuación sus datos de acceso a la plataforma académica:\n\n' +
-                '*Plataforma:* ' + moodleUrl + '\n' +
-                '*Usuario:* ' + username + '\n' +
-                '*Contraseña:* ' + password + '\n\n' +
-                '_Si ya cambió su contraseña, use la opción "¿Olvidé mi contraseña?" en Moodle._\n\n' +
-                '*Área Académica Innova-Ciencia-Virtual*';
+            const displayUrl = 'https://posgradosinnovaciencia.com';
+            const programa   = moduloActual.programa || window.PROGRAMA_NOMBRE || 'Programa';
+            const subtitulo  = buildSubtitle();
+
+            return [
+                '\uD83C\uDF93 *INNOVA CIENCIA VIRTUAL*',
+                subtitulo ? subtitulo + '\n' : '',
+                '\u2728 \u00A1Bienvenido/a a tu plataforma acad\u00E9mica!',
+                '',
+                '\uD83D\uDC4B Estimado/a *' + nombre + '*,',
+                'Te damos la bienvenida al *' + programa + '*.',
+                'A continuaci\u00F3n encontrar\u00E1s tus credenciales de acceso a la plataforma virtual.',
+                '',
+                '\uD83D\uDD10 *ACCESO A LA PLATAFORMA*',
+                '\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC',
+                '\uD83C\uDF10  *Sitio web:*  ' + displayUrl,
+                '\uD83D\uDC64  *Usuario:*      `' + username + '`',
+                '\uD83D\uDD11  *Contrase\u00F1a:*  `' + password + '`',
+                '\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC',
+                '',
+                '\uD83D\uDCCC *PASOS PARA INGRESAR*',
+                '1\uFE0F\u20E3 Abre tu navegador (Chrome, Edge o Firefox)',
+                '2\uFE0F\u20E3 Visita \u2192 ' + displayUrl,
+                '3\uFE0F\u20E3 Ingresa tu usuario y contrase\u00F1a',
+                '4\uFE0F\u20E3 Completa tu perfil en el primer acceso',
+                '',
+                '\u26A0\uFE0F *IMPORTANTE*',
+                '\u2022 Guarda tus credenciales en un lugar seguro.',
+                '\u2022 No compartas tu contrase\u00F1a con nadie.',
+                '\u2022 Si olvidas tu acceso, cont\u00E1ctanos de inmediato.',
+                '',
+                '\uD83D\uDE80 *\u00A1\u00C9xitos en tu proceso de formaci\u00F3n!*',
+                '',
+                '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',
+                '\uD83C\uDFE2 *\u00C1rea Acad\u00E9mica*',
+                '\uD83D\uDCCD Innova Ciencia Virtual',
+                '\uD83D\uDCE7 soporte@posgradosinnovaciencia.com',
+                '\uD83D\uDCF1 +591 XXX XXX XXX',
+            ].join('\n');
         }
 
         function actualizarContadorSeleccion() {
@@ -4033,31 +4118,55 @@
                 const anio      = parts[0];
                 const horaInicio = h.hora_inicio ? h.hora_inicio.substring(0, 5) : '';
                 const horaFin    = h.hora_fin    ? h.hora_fin.substring(0, 5)    : '';
-                sesionesTexto += '▸ Sesión ' + (idx + 1) + ': ' + diaNombre + ' ' + diaNum + ' de ' + mesNombre + ' ' + anio;
-                if (horaInicio && horaFin) sesionesTexto += ' — ' + horaInicio + ' a ' + horaFin + ' hrs';
+                const sesNum = String(idx + 1).padStart(2, '0');
+                sesionesTexto += '📌 *Sesión ' + sesNum + ':*  ';
+                sesionesTexto += diaNombre.charAt(0).toUpperCase() + diaNombre.slice(1) + ' ' + diaNum + ' de ' + mesNombre + ' ' + anio;
+                if (horaInicio && horaFin) sesionesTexto += '\n       🕐 ' + horaInicio + ' – ' + horaFin + ' hrs';
                 sesionesTexto += '\n';
             });
 
             // Enlace de videollamada del módulo
             const enlaceNombre = mod.enlace_videollamada_nombre || '';
             const enlaceUrl    = mod.enlace_videollamada_url    || '';
-            let enlaceTexto = '';
-            if (enlaceUrl) {
-                enlaceTexto = '\n🔗 *Sesión Virtual:*\n';
-                if (enlaceNombre) enlaceTexto += enlaceNombre + '\n';
-                enlaceTexto += enlaceUrl;
-            }
+            const programa  = moduloActual.programa || window.PROGRAMA_NOMBRE || 'Innova-Ciencia-Virtual';
+            const subtitulo = buildSubtitle();
 
-            const programa = moduloActual.programa || window.PROGRAMA_NOMBRE || 'Innova-Ciencia-Virtual';
+            const parteEnlace = enlaceUrl
+                ? [
+                    '',
+                    '🔗 *ENLACE DE SESIÓN VIRTUAL*',
+                    '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬',
+                    (enlaceNombre ? '📌 ' + enlaceNombre + '\n' : '') + '👉 ' + enlaceUrl,
+                    '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬',
+                  ].join('\n')
+                : '';
 
-            const msg =
-                '📚 *' + programa + '*\n\n' +
-                '📖 *Módulo:* ' + mod.nombre + '\n\n' +
-                '👨‍🏫 *Docente:* ' + docente + '\n\n' +
-                '📅 *Calendario de Sesiones:*\n' +
-                (sesionesTexto || '(Sin sesiones registradas)\n') +
-                enlaceTexto + '\n\n' +
-                '_Innova-Ciencia-Virtual — Área Académica_';
+            const msg = [
+                '🎓 *INNOVA CIENCIA VIRTUAL*',
+                subtitulo ? subtitulo + '\n' : '',
+                '📢 *Información de tu Módulo Académico*',
+                '',
+                '📖 *Módulo:*   ' + mod.nombre,
+                '👨‍🏫 *Docente:*  ' + docente,
+                '📚 *Programa:* ' + programa,
+                '',
+                '📅 *CALENDARIO DE SESIONES*',
+                '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬',
+                sesionesTexto || '  (Sin sesiones registradas)',
+                '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬',
+                parteEnlace,
+                '',
+                '💡 *RECOMENDACIONES*',
+                '• Conecta 5 minutos antes de la sesión.',
+                '• Ten tu cámara y micrófono listos.',
+                '• Anota tus dudas para resolverlas al final.',
+                '',
+                '────────────────────',
+                '🏢 *Área Académica*',
+                '📍 Innova Ciencia Virtual',
+                '📧 soporte@posgradosinnovaciencia.com',
+                '📱 +591 XXX XXX XXX',
+            ].join('\n');
 
             const preview = document.getElementById('moodleInfoMsgPreview');
             if (preview) preview.textContent = msg;

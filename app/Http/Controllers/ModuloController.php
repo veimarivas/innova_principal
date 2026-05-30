@@ -80,7 +80,7 @@ class ModuloController extends Controller
                 'id' => $inscripcion->id,
                 'estudiante_id' => $inscripcion->estudiante_id,
                 'estudiante_nombre' => $persona
-                    ? trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''))
+                    ? trim(($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '') . ' ' . ($persona->nombres ?? ''))
                     : 'Sin nombre',
                 'nombres' => $persona->nombres ?? '',
                 'apellido_paterno' => $persona->apellido_paterno ?? '',

@@ -617,7 +617,7 @@
 
     .act-item {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         padding: 0.55rem 1rem;
         border-top: 1px solid var(--d-card-border);
@@ -625,7 +625,8 @@
     }
     .act-item:hover { background: rgba(252, 123, 4, 0.025); }
 
-    .act-item-left { display: flex; align-items: center; gap: 0.65rem; }
+    .act-item-left { display: flex; align-items: flex-start; gap: 0.65rem; }
+    .act-item-left .act-icon { margin-top: 2px; }
 
     .act-icon {
         width: 30px; height: 30px;
@@ -648,6 +649,45 @@
     .act-duedate { margin-top: 2px; }
     .act-duedate div { font-size: 0.75rem; color: var(--d-muted); margin-top: 2px; }
     .act-duedate div i { margin-right: 3px; }
+
+    .act-dates-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-top: 5px;
+    }
+    .act-date-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        white-space: nowrap;
+        border: 1px solid transparent;
+    }
+    .act-date-open {
+        background: rgba(14,165,233,.1);
+        color: #0369a1;
+        border-color: rgba(14,165,233,.3);
+    }
+    .act-date-open.act-date-active {
+        background: rgba(34,197,94,.1);
+        color: #15803d;
+        border-color: rgba(34,197,94,.3);
+    }
+    .act-date-due {
+        background: rgba(252,123,4,.1);
+        color: #c96004;
+        border-color: rgba(252,123,4,.3);
+    }
+    .act-date-due.act-date-overdue {
+        background: rgba(239,68,68,.1);
+        color: #dc2626;
+        border-color: rgba(239,68,68,.3);
+    }
+
     .act-actions { display: flex; gap: 0.35rem; flex-shrink: 0; }
 
     .btn-toggle-contenido {

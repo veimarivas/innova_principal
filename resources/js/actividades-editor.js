@@ -137,7 +137,7 @@ var ActividadesEditor = (function () {
             document.getElementById('cntForos').textContent = foros.length;
             document.getElementById('actResumen').style.display = 'grid';
 
-            renderSecciones(secciones, data.tareas || [], data.cuestionarios || [], data.foros || []);
+            renderSecciones(secciones, data.tareas || [], data.cuestionarios || [], data.foros || [], data.tareas_fechas || {});
             renderForos(foros);
             habilitarDragDrop();
 
@@ -171,7 +171,8 @@ var ActividadesEditor = (function () {
         return Math.floor(d.getTime() / 1000);
     }
 
-    function renderSecciones(secciones, tareas, cuestionarios, foros) {
+    function renderSecciones(secciones, tareas, cuestionarios, foros, tareasFechas) {
+        tareasFechas = tareasFechas || {};
         var container = document.getElementById('seccionesContainer');
         container.innerHTML = '';
 
@@ -282,23 +283,36 @@ var ActividadesEditor = (function () {
                                 }
                             }
                         }
-                        var opents = (mod.activity_dates && (mod.activity_dates.open || mod.activity_dates.allowsubmissionsfromdate))
+                        // Fuente primaria: mapa explícito del servidor (más confiable)
+                        var tfEntry = tareasFechas[mod.instance] || tareasFechas['cm_' + mod.id] || {};
+                        var opents = tfEntry.open
+                            || (mod.activity_dates && mod.activity_dates.open)
                             || (tarea && (tarea.allowsubmissionsfromdate || tarea.timeopen))
                             || 0;
-                        var duets = (mod.activity_dates && (mod.activity_dates.due || mod.activity_dates.duedate || mod.activity_dates.close))
-                            || (tarea && (tarea.duedate || tarea.timeclose || tarea.cutoffdate))
+                        var duets = tfEntry.due
+                            || (mod.activity_dates && mod.activity_dates.due)
+                            || (tarea && (tarea.duedate || tarea.cutoffdate))
                             || 0;
-                        
+
                         var htmlFechas = '';
+                        var now = Math.floor(Date.now() / 1000);
                         if (opents) {
                             var fechaApertura = new Date(opents * 1000);
-                            htmlFechas += '<div style="font-size:0.75rem;color:var(--d-muted);margin-top:2px;"><i class="ri-calendar-event-line"></i> Abierto: ' + fechaApertura.toLocaleString('es-BO', { dateStyle: 'long', timeStyle: 'short' }) + '</div>';
+                            var abierto = opents <= now;
+                            htmlFechas += '<span class="act-date-chip act-date-open' + (abierto ? ' act-date-active' : '') + '">'
+                                + '<i class="ri-calendar-event-line"></i> Inicio: '
+                                + fechaApertura.toLocaleString('es-BO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+                                + '</span>';
                         }
                         if (duets) {
                             var fechaTarea = new Date(duets * 1000);
-                            htmlFechas += '<div style="font-size:0.75rem;color:var(--d-muted);margin-top:2px;"><i class="ri-calendar-check-line"></i> Cierra: ' + fechaTarea.toLocaleString('es-BO', { dateStyle: 'long', timeStyle: 'short' }) + '</div>';
+                            var vencido = duets < now;
+                            htmlFechas += '<span class="act-date-chip act-date-due' + (vencido ? ' act-date-overdue' : '') + '">'
+                                + '<i class="ri-calendar-check-line"></i> Entrega: '
+                                + fechaTarea.toLocaleString('es-BO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+                                + '</span>';
                         }
-                        if (htmlFechas) extraInfo = '<div class="act-duedate">' + htmlFechas + '</div>';
+                        if (htmlFechas) extraInfo = '<div class="act-dates-row">' + htmlFechas + '</div>';
 
                         if (tarea) {
                             editExtra.duedate = tarea.duedate || 0;
@@ -317,15 +331,18 @@ var ActividadesEditor = (function () {
                             || 0;
                             
                         var htmlFechas = '';
+                        var nowQ = Math.floor(Date.now() / 1000);
                         if (opents) {
                             var fechaApertura = new Date(opents * 1000);
-                            htmlFechas += '<div style="font-size:0.75rem;color:var(--d-muted);margin-top:2px;"><i class="ri-calendar-event-line"></i> Abierto: ' + fechaApertura.toLocaleString('es-BO', { dateStyle: 'long', timeStyle: 'short' }) + '</div>';
+                            var abiertoQ = opents <= nowQ;
+                            htmlFechas += '<span class="act-date-chip act-date-open' + (abiertoQ ? ' act-date-active' : '') + '"><i class="ri-calendar-event-line"></i> Inicio: ' + fechaApertura.toLocaleString('es-BO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) + '</span>';
                         }
                         if (closets) {
                             var fechaQuiz = new Date(closets * 1000);
-                            htmlFechas += '<div style="font-size:0.75rem;color:var(--d-muted);margin-top:2px;"><i class="ri-calendar-check-line"></i> Cierra: ' + fechaQuiz.toLocaleString('es-BO', { dateStyle: 'long', timeStyle: 'short' }) + '</div>';
+                            var vencidoQ = closets < nowQ;
+                            htmlFechas += '<span class="act-date-chip act-date-due' + (vencidoQ ? ' act-date-overdue' : '') + '"><i class="ri-calendar-check-line"></i> Cierre: ' + fechaQuiz.toLocaleString('es-BO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) + '</span>';
                         }
-                        if (htmlFechas) extraInfo = '<div class="act-duedate">' + htmlFechas + '</div>';
+                        if (htmlFechas) extraInfo = '<div class="act-dates-row">' + htmlFechas + '</div>';
 
                         if (quiz) {
                             editExtra.timeopen = quiz.timeopen || 0;
@@ -343,11 +360,13 @@ var ActividadesEditor = (function () {
                             || 0;
 
                         var htmlFechas = '';
+                        var nowF = Math.floor(Date.now() / 1000);
                         if (opents) {
                             var fechaApertura = new Date(opents * 1000);
-                            htmlFechas += '<div style="font-size:0.75rem;color:var(--d-muted);margin-top:2px;"><i class="ri-calendar-event-line"></i> Abierto: ' + fechaApertura.toLocaleString('es-BO', { dateStyle: 'long', timeStyle: 'short' }) + '</div>';
+                            var abiertoF = opents <= nowF;
+                            htmlFechas += '<span class="act-date-chip act-date-open' + (abiertoF ? ' act-date-active' : '') + '"><i class="ri-calendar-event-line"></i> Vencimiento: ' + fechaApertura.toLocaleString('es-BO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) + '</span>';
                         }
-                        if (htmlFechas) extraInfo = '<div class="act-duedate">' + htmlFechas + '</div>';
+                        if (htmlFechas) extraInfo = '<div class="act-dates-row">' + htmlFechas + '</div>';
 
                         if (foro) {
                             editExtra.forum_type = foro.type || 'general';

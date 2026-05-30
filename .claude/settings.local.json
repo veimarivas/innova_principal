@@ -20,7 +20,9 @@
       "Bash(php -r ' *)",
       "Bash(Get-ChildItem -Path \"C:\\\\xampp_82_12\\\\htdocs\\\\innova-ciencia-virtual\" -Force)",
       "Bash(Select-Object Name, FullName)",
-      "Bash(grep -E \"\\\\.\\(js|vue|jsx|tsx\\)$\")"
+      "Bash(grep -E \"\\\\.\\(js|vue|jsx|tsx\\)$\")",
+      "Bash(Get-Content \"C:\\\\xampp_82_12\\\\htdocs\\\\innova-ciencia-virtual\\\\storage\\\\logs\\\\laravel.log\" -Tail 30)",
+      "Bash(Select-String \"getAssignDates|assign\")"
     ]
   }
 }

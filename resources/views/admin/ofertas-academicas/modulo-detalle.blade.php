@@ -1221,26 +1221,37 @@ function toggleAccesoMoodle(inscripcionId, moduloId, suspender, btn) {
     .then(data => {
         console.log('Response data:', data);
         if (data.success) {
-            // Si suspender=true (estábamos suspendiendo), ahora queda suspendido
-            // Si suspender=false (estábamos activando), ahora queda activo
             const quedaSuspendido = suspender;
-            
-            console.log('Nuevo estado - quedaSuspendido:', quedaSuspendido);
-            
-            // Actualizar el data-suspender para el próximo clic (invertido)
-            // Si quedó suspendido (true), el próximo clic será para activar (suspender=false -> data-suspender="0")
-            // Si quedó activo (false), el próximo clic será para suspender (suspender=true -> data-suspender="1")
+
             btn.setAttribute('data-suspender', quedaSuspendido ? '0' : '1');
-            
+
             if (quedaSuspendido) {
                 btn.className = 'btn-activar btn-toggle-acceso';
+                btn.style.cssText = 'padding:.35rem .75rem;font-size:.75rem;font-weight:600;background:rgba(252,123,4,.1);color:#c96004;border:none;border-radius:6px;cursor:pointer;transition:all .2s;';
+                btn.onmouseover = function(){ this.style.background='#fc7b04'; this.style.color='#fff'; };
+                btn.onmouseout  = function(){ this.style.background='rgba(252,123,4,.1)'; this.style.color='#c96004'; };
                 btn.innerHTML = '<i class="ri-play-circle-line"></i> Reactivar';
             } else {
                 btn.className = 'btn-suspender btn-toggle-acceso';
-                btn.innerHTML = '<i class="ri-pause-circle-line"></i> Suspender';
+                btn.style.cssText = 'padding:.35rem .75rem;font-size:.75rem;font-weight:600;background:rgba(239,68,68,.1);color:#dc2626;border:none;border-radius:6px;cursor:pointer;transition:all .2s;';
+                btn.onmouseover = function(){ this.style.background='#dc2626'; this.style.color='#fff'; };
+                btn.onmouseout  = function(){ this.style.background='rgba(239,68,68,.1)'; this.style.color='#dc2626'; };
+                btn.innerHTML = '<i class="ri-forbid-line"></i> Suspender';
             }
             btn.disabled = false;
-            console.log('Botón actualizado correctamente');
+
+            // Actualizar celda "Estado Moodle" de la misma fila
+            const row = btn.closest('tr');
+            if (row) {
+                const celdaEstado = row.cells[6];
+                if (celdaEstado) {
+                    if (quedaSuspendido) {
+                        celdaEstado.innerHTML = '<span style="display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .6rem;border-radius:6px;font-size:.75rem;font-weight:600;background:rgba(239,68,68,.1);color:#dc2626;"><i class="ri-forbid-line"></i> Suspendido</span>';
+                    } else {
+                        celdaEstado.innerHTML = '<span style="display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .6rem;border-radius:6px;font-size:.75rem;font-weight:600;background:rgba(34,197,94,.1);color:#16a34a;"><i class="ri-check-line"></i> Activo</span>';
+                    }
+                }
+            }
         } else {
             console.error('Error del servidor:', data.message);
             btn.disabled = false;
