@@ -3516,4 +3516,4 @@ html[data-bs-theme="dark"] .est-ci-dato {
     }
     .pagos-mini-table tbody tr:last-child { border-bottom: none; }
 }
-</style>
+</style><?php /**PATH C:\xampp_82_12\htdocs\innova-ciencia-virtual\resources\views/virtual/partials/styles.blade.php ENDPATH**/ ?>

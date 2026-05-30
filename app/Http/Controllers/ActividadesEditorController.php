@@ -188,7 +188,7 @@ class ActividadesEditorController extends Controller
 
         if ($request->input('modname') === 'assign') {
             $rules['duedate']                 = 'nullable|integer';
-            $rules['grade']                   = 'nullable|integer|min:0|max:100';
+            $rules['grade']                   = 'nullable|integer|min:0';
             $rules['allowsubmissionsfromdate'] = 'nullable|integer';
             $rules['cutoffdate']              = 'nullable|integer';
             $rules['onlinetext']              = 'nullable|integer|in:0,1';
@@ -201,14 +201,14 @@ class ActividadesEditorController extends Controller
         if ($request->input('modname') === 'quiz') {
             $rules['timelimit'] = 'nullable|integer|min:0';
             $rules['attempts']  = 'nullable|integer|min:0';
-            $rules['grade']     = 'nullable|integer|min:0|max:100';
+            $rules['grade']     = 'nullable|integer|min:0';
             $rules['timeopen']  = 'nullable|integer';
             $rules['timeclose'] = 'nullable|integer';
         }
         if ($request->input('modname') === 'forum') {
             $rules['forum_type']   = 'nullable|string|in:single,general,qanda';
             $rules['subscription'] = 'nullable|integer|in:0,1,2';
-            $rules['grade']        = 'nullable|integer|min:0|max:100';
+            $rules['grade']        = 'nullable|integer|min:0';
             $rules['timeopen']     = 'nullable|integer';
             $rules['timeclose']    = 'nullable|integer';
             $rules['duedate']      = 'nullable|integer';

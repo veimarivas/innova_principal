@@ -79,14 +79,16 @@ class ActividadesGestionController extends Controller
         $moodleUserIds = $matriculas->pluck('moodle_user_id')->filter()->unique()->values()->toArray();
         $gradesByUser = $this->moodle->getAssignGradesByUsers($cmid, $courseId, $moodleUserIds);
 
-        // Obtener duedate para calcular tardanza
-        $dueDate = 0;
+        // Obtener duedate y nota máxima de la tarea
+        $dueDate  = 0;
+        $gradeMax = 100;
         if ($instanceId) {
             try {
-                $assign = DB::connection('moodle')->table('assign')->where('id', $instanceId)->first(['duedate']);
-                $dueDate = $assign ? (int) $assign->duedate : 0;
+                $assign = DB::connection('moodle')->table('assign')->where('id', $instanceId)->first(['duedate', 'grade']);
+                $dueDate  = $assign ? (int) $assign->duedate : 0;
+                $gradeMax = $assign && $assign->grade > 0 ? (float) $assign->grade : 100;
             } catch (\Exception $e) {
-                Log::error("getSubmissions: error al obtener duedate para assign={$instanceId}: " . $e->getMessage());
+                Log::error("getSubmissions: error al obtener datos de assign={$instanceId}: " . $e->getMessage());
             }
         }
 
@@ -120,8 +122,9 @@ class ActividadesGestionController extends Controller
         }
 
         return response()->json([
-            'success'  => true,
-            'students' => $students,
+            'success'   => true,
+            'grade_max' => $gradeMax,
+            'students'  => $students,
         ]);
     }
 
@@ -134,7 +137,7 @@ class ActividadesGestionController extends Controller
 
         $data = $request->validate([
             'user_id'  => 'required|integer',
-            'grade'    => 'required|numeric|min:0|max:100',
+            'grade'    => 'required|numeric|min:0',
             'feedback' => 'nullable|string|max:10000',
         ]);
 
@@ -315,6 +318,19 @@ class ActividadesGestionController extends Controller
 
         $moodleUserIds = $matriculas->pluck('moodle_user_id')->filter()->unique()->values()->toArray();
 
+        // Obtener la nota máxima del foro: se guarda en forum.scale (no forum.grade)
+        $gradeMax = 100;
+        if ($forumId) {
+            try {
+                $forum = DB::connection('moodle')->table('forum')->where('id', $forumId)->first(['scale', 'assessed']);
+                if ($forum && $forum->assessed > 0 && $forum->scale > 0) {
+                    $gradeMax = (float) $forum->scale;
+                }
+            } catch (\Exception $e) {
+                \Log::error("getForumGrades: error obteniendo grade_max foro={$forumId}: " . $e->getMessage());
+            }
+        }
+
         $gradesData = $this->moodle->getForumGradesWithParticipation($cmid, $forumId, $modulo->moodle_course_id, $moodleUserIds);
 
         $students = [];
@@ -325,19 +341,18 @@ class ActividadesGestionController extends Controller
             $nombre = $persona
                 ? trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''))
                 : 'Usuario #' . $uid;
-            $gd = $gradesData[$uid] ?? ['grade' => null, 'grade_max' => 100, 'post_count' => 0];
+            $gd = $gradesData[$uid] ?? ['grade' => null, 'post_count' => 0];
 
             $students[] = [
                 'userid'     => $uid,
                 'name'       => $nombre,
                 'carnet'     => $persona?->carnet ?? '',
                 'grade'      => $gd['grade'],
-                'grade_max'  => $gd['grade_max'],
                 'post_count' => $gd['post_count'],
             ];
         }
 
-        return response()->json(['success' => true, 'students' => $students]);
+        return response()->json(['success' => true, 'grade_max' => $gradeMax, 'students' => $students]);
     }
 
     /**
@@ -349,7 +364,7 @@ class ActividadesGestionController extends Controller
 
         $data = $request->validate([
             'user_id' => 'required|integer',
-            'grade'   => 'required|numeric|min:0|max:100',
+            'grade'   => 'required|numeric|min:0',
         ]);
 
         $cm = DB::connection('moodle')

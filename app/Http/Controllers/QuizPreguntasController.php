@@ -140,6 +140,85 @@ class QuizPreguntasController extends Controller
     }
 
     /**
+     * GET /admin/posgrads/modulos/{modulo}/actividades/quiz/{quizId}/preguntas/{questionId}
+     */
+    public function show(int $moduloId, int $quizId, int $questionId)
+    {
+        $this->getModulo($moduloId);
+        $details = $this->questionBank->getQuestionDetails($questionId);
+        if (empty($details)) {
+            return response()->json(['success' => false, 'message' => 'Pregunta no encontrada.'], 404);
+        }
+        return response()->json(['success' => true, 'question' => $details]);
+    }
+
+    /**
+     * PUT /admin/posgrads/modulos/{modulo}/actividades/quiz/{quizId}/preguntas/{questionId}/multichoice
+     */
+    public function updateMultichoice(Request $request, int $moduloId, int $quizId, int $questionId)
+    {
+        $this->getModulo($moduloId);
+        $data = $request->validate([
+            'name'                   => 'required|string|max:255',
+            'questiontext'           => 'required|string',
+            'defaultmark'            => 'nullable|numeric|min:0',
+            'single'                 => 'nullable|in:true,false',
+            'options'                => 'required|array|min:2',
+            'options.*.text'         => 'required|string',
+            'options.*.fraction'     => 'required|numeric|between:0,1',
+            'options.*.feedback'     => 'nullable|string',
+        ]);
+        try {
+            $this->questionBank->updateMultipleChoice($questionId, $data);
+            return response()->json(['success' => true, 'message' => 'Pregunta actualizada correctamente.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al actualizar: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * PUT /admin/posgrads/modulos/{modulo}/actividades/quiz/{quizId}/preguntas/{questionId}/truefalse
+     */
+    public function updateTrueFalse(Request $request, int $moduloId, int $quizId, int $questionId)
+    {
+        $this->getModulo($moduloId);
+        $data = $request->validate([
+            'name'          => 'required|string|max:255',
+            'questiontext'  => 'required|string',
+            'defaultmark'   => 'nullable|numeric|min:0',
+            'correctanswer' => 'required|in:true,false',
+        ]);
+        try {
+            $this->questionBank->updateTrueFalse($questionId, $data);
+            return response()->json(['success' => true, 'message' => 'Pregunta actualizada correctamente.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al actualizar: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * PUT /admin/posgrads/modulos/{modulo}/actividades/quiz/{quizId}/preguntas/{questionId}/matching
+     */
+    public function updateMatching(Request $request, int $moduloId, int $quizId, int $questionId)
+    {
+        $this->getModulo($moduloId);
+        $data = $request->validate([
+            'name'               => 'required|string|max:255',
+            'questiontext'       => 'required|string',
+            'defaultmark'        => 'nullable|numeric|min:0',
+            'pairs'              => 'required|array|min:2',
+            'pairs.*.question'   => 'required|string',
+            'pairs.*.answer'     => 'required|string',
+        ]);
+        try {
+            $this->questionBank->updateMatching($questionId, $data);
+            return response()->json(['success' => true, 'message' => 'Pregunta actualizada correctamente.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al actualizar: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * DELETE /admin/posgrads/modulos/{modulo}/actividades/quiz/{quizId}/preguntas/{slotId}
      */
     public function destroy(int $moduloId, int $quizId, int $slotId)

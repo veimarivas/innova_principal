@@ -819,33 +819,41 @@
 
 
 <div class="disc-modal-overlay" id="modalCalificarTarea">
-    <div class="disc-modal" style="max-width:720px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title"><i class="ri-bar-chart-line"></i> Calificar: <span id="calificarTareaNombre"></span></span>
-            <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModalCalificar()">&times;</button>
+    <div class="disc-modal" style="max-width:760px;border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+        
+        <div class="disc-modal-hdr" style="background:linear-gradient(135deg,#1e293b,#334155);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:.6rem;">
+                <span id="calificarTipoIcono" style="width:34px;height:34px;border-radius:9px;background:rgba(252,123,4,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="ri-bar-chart-line" style="color:#fc7b04;font-size:1.05rem;"></i>
+                </span>
+                <span style="line-height:1.25;">
+                    <span style="display:block;font-size:.72rem;font-weight:600;color:#94a3b8;" id="calificarTipoLabel">Calificar</span>
+                    <span style="font-size:.93rem;font-weight:700;color:#f1f5f9;" id="calificarTareaNombre"></span>
+                </span>
+            </span>
+            <button onclick="ActividadesEditor.cerrarModalCalificar()" style="background:none;border:none;color:#94a3b8;font-size:1.4rem;cursor:pointer;line-height:1;padding:0;transition:color .15s;" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'">&times;</button>
         </div>
-        <div class="disc-modal-body">
+
+        
+        <div class="disc-modal-body" style="padding:1rem 1.25rem;max-height:62vh;overflow-y:auto;">
             <div id="calificarLoading" class="text-center py-4">
-                <div class="spinner-border"></div>
-                <p class="mt-2">Cargando entregas...</p>
+                <i class="ri-loader-4-line" style="font-size:1.8rem;color:#fc7b04;animation:spin 1s linear infinite;display:block;margin-bottom:.5rem;"></i>
+                <p style="font-size:.85rem;color:#64748b;margin:0;">Cargando datos...</p>
             </div>
-            <div id="calificarError" class="alert alert-danger d-none">
-                <span id="calificarErrorMsg"></span>
-                <button class="btn btn-sm btn-outline-danger ms-2" onclick="ActividadesEditor.calificarTarea(moduloId, cmid, nombre)">Reintentar</button>
+            <div id="calificarError" class="d-none" style="display:flex;align-items:center;gap:.75rem;padding:.9rem 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;margin-bottom:.75rem;">
+                <i class="ri-error-warning-line" style="color:#dc2626;font-size:1.2rem;flex-shrink:0;"></i>
+                <div style="flex:1;">
+                    <span id="calificarErrorMsg" style="font-size:.85rem;color:#991b1b;"></span>
+                </div>
+                <button onclick="ActividadesEditor.reintentarCalificar()" style="padding:.3rem .75rem;border-radius:7px;font-size:.78rem;font-weight:600;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#dc2626;cursor:pointer;white-space:nowrap;">Reintentar</button>
             </div>
             <div id="calificarContent" class="d-none">
-                <div class="table-responsive">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr><th>Estudiante</th><th>Estado</th><th>Nota</th><th>Feedback</th><th>Acción</th></tr>
-                        </thead>
-                        <tbody id="calificarTableBody"></tbody>
-                    </table>
-                </div>
+                <div id="calificarTableBody"></div>
             </div>
         </div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModalCalificar()">Cerrar</button>
+
+        <div class="disc-modal-footer" style="border-top:1.5px solid #e2e8f0;padding:.8rem 1.25rem;background:#fafbfc;">
+            <button onclick="ActividadesEditor.cerrarModalCalificar()" style="padding:.42rem 1.1rem;border-radius:8px;font-size:.83rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">Cerrar</button>
         </div>
     </div>
 </div>
@@ -903,92 +911,251 @@
 
 
 <div class="disc-modal-overlay" id="modalPreguntasQuiz">
-    <div class="disc-modal" style="max-width:640px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title"><i class="ri-question-line"></i> Preguntas: <span id="preguntasQuizNombre"></span></span>
-            <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModalPreguntas()">&times;</button>
+    <div class="disc-modal" style="max-width:680px;border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+        
+        <div class="disc-modal-hdr" style="background:linear-gradient(135deg,#1e293b,#334155);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:.6rem;">
+                <span style="width:34px;height:34px;border-radius:9px;background:rgba(217,119,6,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="ri-question-line" style="color:#f59e0b;font-size:1.05rem;"></i>
+                </span>
+                <span style="font-size:.93rem;font-weight:700;color:#f1f5f9;line-height:1.25;">
+                    Banco de preguntas
+                    <span style="display:block;font-size:.72rem;font-weight:400;color:#94a3b8;" id="preguntasQuizNombre"></span>
+                </span>
+            </span>
+            <button onclick="ActividadesEditor.cerrarModalPreguntas()" style="background:none;border:none;color:#94a3b8;font-size:1.4rem;cursor:pointer;line-height:1;padding:0;transition:color .15s;" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'">&times;</button>
         </div>
-        <div class="disc-modal-body">
-            <div id="preguntasLoading" class="text-center py-4"><div class="spinner-border"></div><p class="mt-2">Cargando preguntas...</p></div>
-            <div id="preguntasError" class="alert alert-danger d-none"><span id="preguntasErrorTxt"></span></div>
+
+        
+        <div style="padding:.75rem 1.25rem;background:#f8fafc;border-bottom:1.5px solid #e2e8f0;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <span style="font-size:.73rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-right:.1rem;white-space:nowrap;">
+                <i class="ri-add-circle-line" style="color:#fc7b04;"></i> Nueva pregunta
+            </span>
+            <button onclick="ActividadesEditor.mostrarFormMC()"
+                style="display:inline-flex;align-items:center;gap:.35rem;padding:.33rem .85rem;border-radius:20px;font-size:.79rem;font-weight:600;border:1.5px solid #6366f1;background:rgba(99,102,241,.07);color:#4f46e5;cursor:pointer;transition:all .18s;"
+                onmouseover="this.style.background='#6366f1';this.style.color='#fff'" onmouseout="this.style.background='rgba(99,102,241,.07)';this.style.color='#4f46e5'">
+                <i class="ri-list-check"></i> Opción múltiple
+            </button>
+            <button onclick="ActividadesEditor.mostrarFormTF()"
+                style="display:inline-flex;align-items:center;gap:.35rem;padding:.33rem .85rem;border-radius:20px;font-size:.79rem;font-weight:600;border:1.5px solid #16a34a;background:rgba(22,163,74,.07);color:#15803d;cursor:pointer;transition:all .18s;"
+                onmouseover="this.style.background='#16a34a';this.style.color='#fff'" onmouseout="this.style.background='rgba(22,163,74,.07)';this.style.color='#15803d'">
+                <i class="ri-toggle-line"></i> Verdadero / Falso
+            </button>
+            <button onclick="ActividadesEditor.mostrarFormMatch()"
+                style="display:inline-flex;align-items:center;gap:.35rem;padding:.33rem .85rem;border-radius:20px;font-size:.79rem;font-weight:600;border:1.5px solid #0284c7;background:rgba(2,132,199,.07);color:#0369a1;cursor:pointer;transition:all .18s;"
+                onmouseover="this.style.background='#0284c7';this.style.color='#fff'" onmouseout="this.style.background='rgba(2,132,199,.07)';this.style.color='#0369a1'">
+                <i class="ri-links-line"></i> Coincidencia
+            </button>
+        </div>
+
+        
+        <div class="disc-modal-body" style="padding:1rem 1.25rem;max-height:52vh;overflow-y:auto;">
+            <div id="preguntasLoading" class="text-center py-4">
+                <i class="ri-loader-4-line" style="font-size:1.8rem;color:#d97706;animation:spin 1s linear infinite;display:block;margin-bottom:.5rem;"></i>
+                <p style="font-size:.85rem;color:#64748b;margin:0;">Cargando preguntas...</p>
+            </div>
+            <div id="preguntasError" class="alert alert-danger d-none" style="border-radius:8px;font-size:.85rem;">
+                <i class="ri-error-warning-line"></i> <span id="preguntasErrorTxt"></span>
+            </div>
             <div id="preguntasContent" class="d-none">
-                <div style="margin-bottom:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
-                    <button class="btn btn-sm btn-primary" onclick="ActividadesEditor.mostrarFormMC()">+ Opción múltiple</button>
-                    <button class="btn btn-sm btn-primary" onclick="ActividadesEditor.mostrarFormTF()">+ V/F</button>
-                    <button class="btn btn-sm btn-primary" onclick="ActividadesEditor.mostrarFormMatch()">+ Coincidencia</button>
-                </div>
                 <div id="preguntasList"></div>
             </div>
         </div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModalPreguntas()">Cerrar</button>
+
+        <div class="disc-modal-footer" style="border-top:1.5px solid #e2e8f0;padding:.8rem 1.25rem;background:#fafbfc;">
+            <button onclick="ActividadesEditor.cerrarModalPreguntas()"
+                style="padding:.42rem 1.1rem;border-radius:8px;font-size:.83rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;"
+                onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
+                Cerrar
+            </button>
         </div>
     </div>
 </div>
 
 
 <div class="disc-modal-overlay" id="modalMC">
-    <div class="disc-modal" style="max-width:560px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title">Nueva pregunta: Opción múltiple</span>
-            <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModalMC()">&times;</button>
+    <div class="disc-modal" style="max-width:580px;border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+        <div class="disc-modal-hdr" style="background:linear-gradient(135deg,#4338ca,#6366f1);padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:.5rem;color:#fff;font-size:.92rem;font-weight:700;">
+                <i class="ri-list-check" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Opción múltiple
+            </span>
+            <button onclick="ActividadesEditor.cerrarModalMC()" style="background:none;border:none;color:rgba(255,255,255,.65);font-size:1.4rem;cursor:pointer;line-height:1;padding:0;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">&times;</button>
         </div>
-        <div class="disc-modal-body">
-            <div class="form-group"><label>Nombre</label><input class="form-control" id="mcName" placeholder="Ej: Pregunta 1"></div>
-            <div class="form-group"><label>Texto de la pregunta</label><textarea class="form-control" id="mcQuestionText" rows="3" placeholder="¿Cuál es la capital de Bolivia?"></textarea></div>
-            <div class="form-row">
-                <div class="form-group"><label>Puntaje</label><input class="form-control" id="mcDefaultMark" type="number" value="1" step="0.5"></div>
-                <div class="form-group"><label>Tipo</label><select class="form-control" id="mcSingle"><option value="true">Única respuesta</option><option value="false">Múltiple respuesta</option></select></div>
+        <div class="disc-modal-body" style="padding:1.1rem 1.25rem;max-height:62vh;overflow-y:auto;">
+
+            
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;margin-bottom:.8rem;">
+                <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem;display:flex;align-items:center;gap:.35rem;">
+                    <i class="ri-pencil-line" style="color:#6366f1;"></i> General
+                </div>
+                <div style="margin-bottom:.65rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Nombre interno <span style="color:#dc2626;">*</span></label>
+                    <input class="form-control" id="mcName" placeholder="Ej: Pregunta 1" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;">
+                </div>
+                <div style="margin-bottom:.65rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Texto de la pregunta <span style="color:#dc2626;">*</span></label>
+                    <textarea class="form-control" id="mcQuestionText" rows="3" placeholder="¿Cuál es...?" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;resize:vertical;"></textarea>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+                    <div>
+                        <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Puntaje</label>
+                        <div style="display:flex;align-items:center;gap:.4rem;">
+                            <input class="form-control" id="mcDefaultMark" type="number" value="1" step="0.5" min="0" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;width:80px;">
+                            <span style="font-size:.78rem;color:#94a3b8;">pts</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Tipo de respuesta</label>
+                        <select class="form-control" id="mcSingle" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.38rem .5rem;">
+                            <option value="true">Única respuesta</option>
+                            <option value="false">Múltiple respuesta</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <div class="form-group"><label>Opciones (fraction = peso de la nota, 1 = correcta)</label><div id="mcOptionsContainer"></div>
-            <button class="btn btn-sm btn-outline-secondary mt-1" onclick="var c=document.querySelectorAll('#mcOptionsContainer .mc-option').length;document.getElementById('mcOptionsContainer').innerHTML+='<div class=\'mc-option\' style=\'display:flex;gap:0.5rem;margin-top:4px;\'><input style=\'width:60%;\' class=\'form-control form-control-sm\' placeholder=\'Texto\' id=\'mcOpt'+c+'\'><input style=\'width:60px;\' class=\'form-control form-control-sm\' type=\'number\' step=\'0.01\' value=\'0\' id=\'mcFrac'+c+'\'><button class=\'btn btn-sm btn-outline-danger\' onclick=\'this.parentElement.remove()\'>X</button></div>'">+ Agregar opción</button></div>
+
+            
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem;">
+                    <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:.35rem;">
+                        <i class="ri-checkbox-multiple-line" style="color:#6366f1;"></i> Opciones de respuesta
+                    </div>
+                    <span style="font-size:.7rem;color:#4f46e5;background:rgba(99,102,241,.1);padding:2px 8px;border-radius:10px;font-weight:600;">fracción 1 = correcta</span>
+                </div>
+                
+                <div style="display:grid;grid-template-columns:1fr 76px 32px;gap:.4rem;margin-bottom:.3rem;padding:0 .1rem;">
+                    <span style="font-size:.7rem;font-weight:600;color:#94a3b8;text-transform:uppercase;">Texto de la opción</span>
+                    <span style="font-size:.7rem;font-weight:600;color:#94a3b8;text-transform:uppercase;text-align:center;">Fracción</span>
+                    <span></span>
+                </div>
+                <div id="mcOptionsContainer"></div>
+                <button onclick="addMcOption()"
+                    style="margin-top:.6rem;display:inline-flex;align-items:center;gap:.35rem;padding:.32rem .85rem;border-radius:20px;font-size:.78rem;font-weight:600;border:1.5px solid #6366f1;background:rgba(99,102,241,.07);color:#4f46e5;cursor:pointer;transition:all .15s;"
+                    onmouseover="this.style.background='rgba(99,102,241,.15)'" onmouseout="this.style.background='rgba(99,102,241,.07)'">
+                    <i class="ri-add-line"></i> Agregar opción
+                </button>
+            </div>
         </div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModalMC()">Cancelar</button>
-            <button class="btn-guardar-disc" onclick="ActividadesEditor.guardarMC()"><i class="ri-check-line"></i> Crear pregunta</button>
+        <div class="disc-modal-footer" style="border-top:1.5px solid #e2e8f0;padding:.85rem 1.25rem;display:flex;gap:.5rem;justify-content:flex-end;background:#fafbfc;">
+            <button onclick="ActividadesEditor.cerrarModalMC()" style="padding:.42rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">Cancelar</button>
+            <button onclick="ActividadesEditor.guardarMC()" style="padding:.42rem 1.1rem;border-radius:8px;font-size:.82rem;font-weight:700;background:linear-gradient(135deg,#4338ca,#6366f1);color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+                <i class="ri-check-line"></i> Crear pregunta
+            </button>
         </div>
     </div>
 </div>
 
 
 <div class="disc-modal-overlay" id="modalTF">
-    <div class="disc-modal" style="max-width:480px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title">Nueva pregunta: Verdadero / Falso</span>
-            <button class="disc-modal-close" onclick="cerrarModalTF()">&times;</button>
+    <div class="disc-modal" style="max-width:500px;border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+        <div class="disc-modal-hdr" style="background:linear-gradient(135deg,#15803d,#16a34a);padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:.5rem;color:#fff;font-size:.92rem;font-weight:700;">
+                <i class="ri-toggle-line" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Verdadero / Falso
+            </span>
+            <button onclick="ActividadesEditor.cerrarModalTF()" style="background:none;border:none;color:rgba(255,255,255,.65);font-size:1.4rem;cursor:pointer;line-height:1;padding:0;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">&times;</button>
         </div>
-        <div class="disc-modal-body">
-            <div class="form-group"><label>Nombre</label><input class="form-control" id="tfName" placeholder="Ej: Pregunta 2"></div>
-            <div class="form-group"><label>Texto de la pregunta</label><textarea class="form-control" id="tfQuestionText" rows="3" placeholder="La capital de Bolivia es Sucre."></textarea></div>
-            <div class="form-row">
-                <div class="form-group"><label>Puntaje</label><input class="form-control" id="tfDefaultMark" type="number" value="1" step="0.5"></div>
-                <div class="form-group"><label>Respuesta correcta</label><select class="form-control" id="tfCorrect"><option value="true">Verdadero</option><option value="false">Falso</option></select></div>
+        <div class="disc-modal-body" style="padding:1.1rem 1.25rem;">
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;margin-bottom:.8rem;">
+                <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem;display:flex;align-items:center;gap:.35rem;">
+                    <i class="ri-pencil-line" style="color:#16a34a;"></i> General
+                </div>
+                <div style="margin-bottom:.65rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Nombre interno <span style="color:#dc2626;">*</span></label>
+                    <input class="form-control" id="tfName" placeholder="Ej: Pregunta 2" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;">
+                </div>
+                <div>
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Texto de la pregunta <span style="color:#dc2626;">*</span></label>
+                    <textarea class="form-control" id="tfQuestionText" rows="3" placeholder="La capital de Bolivia es Sucre." style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;resize:vertical;"></textarea>
+                </div>
+            </div>
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;">
+                <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem;display:flex;align-items:center;gap:.35rem;">
+                    <i class="ri-bar-chart-line" style="color:#16a34a;"></i> Calificación y respuesta
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+                    <div>
+                        <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Puntaje</label>
+                        <div style="display:flex;align-items:center;gap:.4rem;">
+                            <input class="form-control" id="tfDefaultMark" type="number" value="1" step="0.5" min="0" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;width:80px;">
+                            <span style="font-size:.78rem;color:#94a3b8;">pts</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Respuesta correcta</label>
+                        <select class="form-control" id="tfCorrect" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.38rem .5rem;">
+                            <option value="true">✓ Verdadero</option>
+                            <option value="false">✗ Falso</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModalTF()">Cancelar</button>
-            <button class="btn-guardar-disc" onclick="ActividadesEditor.guardarTF()"><i class="ri-check-line"></i> Crear pregunta</button>
+        <div class="disc-modal-footer" style="border-top:1.5px solid #e2e8f0;padding:.85rem 1.25rem;display:flex;gap:.5rem;justify-content:flex-end;background:#fafbfc;">
+            <button onclick="ActividadesEditor.cerrarModalTF()" style="padding:.42rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">Cancelar</button>
+            <button onclick="ActividadesEditor.guardarTF()" style="padding:.42rem 1.1rem;border-radius:8px;font-size:.82rem;font-weight:700;background:linear-gradient(135deg,#15803d,#16a34a);color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+                <i class="ri-check-line"></i> Crear pregunta
+            </button>
         </div>
     </div>
 </div>
 
 
 <div class="disc-modal-overlay" id="modalMatch">
-    <div class="disc-modal" style="max-width:560px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title">Nueva pregunta: Coincidencia</span>
-            <button class="disc-modal-close" onclick="cerrarModalMatch()">&times;</button>
+    <div class="disc-modal" style="max-width:580px;border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+        <div class="disc-modal-hdr" style="background:linear-gradient(135deg,#0369a1,#0284c7);padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:.5rem;color:#fff;font-size:.92rem;font-weight:700;">
+                <i class="ri-links-line" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Coincidencia
+            </span>
+            <button onclick="ActividadesEditor.cerrarModalMatch()" style="background:none;border:none;color:rgba(255,255,255,.65);font-size:1.4rem;cursor:pointer;line-height:1;padding:0;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">&times;</button>
         </div>
-        <div class="disc-modal-body">
-            <div class="form-group"><label>Nombre</label><input class="form-control" id="matchName" placeholder="Ej: Pregunta 3"></div>
-            <div class="form-group"><label>Texto</label><textarea class="form-control" id="matchQuestionText" rows="2" placeholder="Empareja cada capital con su país."></textarea></div>
-            <div class="form-group"><label>Puntaje</label><input class="form-control" id="matchDefaultMark" type="number" value="1" step="0.5"></div>
-            <div class="form-group"><label>Pares (pregunta → respuesta)</label><div id="matchPairsContainer"></div>
-            <button class="btn btn-sm btn-outline-secondary mt-1" onclick="var c=document.querySelectorAll('#matchPairsContainer .match-pair').length;document.getElementById('matchPairsContainer').innerHTML+='<div class=\'match-pair\' style=\'display:flex;gap:0.5rem;margin-top:4px;\'><input style=\'width:40%;\' class=\'form-control form-control-sm\' placeholder=\'Pregunta\' id=\'mpQ'+c+'\'><input style=\'width:40%;\' class=\'form-control form-control-sm\' placeholder=\'Respuesta\' id=\'mpA'+c+'\'><button class=\'btn btn-sm btn-outline-danger\' onclick=\'this.parentElement.remove()\'>X</button></div>'">+ Agregar par</button></div>
+        <div class="disc-modal-body" style="padding:1.1rem 1.25rem;max-height:62vh;overflow-y:auto;">
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;margin-bottom:.8rem;">
+                <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem;display:flex;align-items:center;gap:.35rem;">
+                    <i class="ri-pencil-line" style="color:#0284c7;"></i> General
+                </div>
+                <div style="margin-bottom:.65rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Nombre interno <span style="color:#dc2626;">*</span></label>
+                    <input class="form-control" id="matchName" placeholder="Ej: Pregunta 3" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;">
+                </div>
+                <div style="margin-bottom:.65rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Texto de la pregunta <span style="color:#dc2626;">*</span></label>
+                    <textarea class="form-control" id="matchQuestionText" rows="2" placeholder="Empareja cada capital con su país." style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;resize:vertical;"></textarea>
+                </div>
+                <div>
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Puntaje</label>
+                    <div style="display:flex;align-items:center;gap:.4rem;">
+                        <input class="form-control" id="matchDefaultMark" type="number" value="1" step="0.5" min="0" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;width:80px;">
+                        <span style="font-size:.78rem;color:#94a3b8;">pts</span>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem;">
+                    <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:.35rem;">
+                        <i class="ri-links-line" style="color:#0284c7;"></i> Pares pregunta → respuesta
+                    </div>
+                </div>
+                
+                <div style="display:grid;grid-template-columns:1fr 1fr 32px;gap:.4rem;margin-bottom:.3rem;padding:0 .1rem;">
+                    <span style="font-size:.7rem;font-weight:600;color:#94a3b8;text-transform:uppercase;display:flex;align-items:center;gap:.25rem;"><i class="ri-question-mark" style="color:#0284c7;font-size:.75rem;"></i> Pregunta</span>
+                    <span style="font-size:.7rem;font-weight:600;color:#94a3b8;text-transform:uppercase;display:flex;align-items:center;gap:.25rem;"><i class="ri-check-line" style="color:#16a34a;font-size:.75rem;"></i> Respuesta</span>
+                    <span></span>
+                </div>
+                <div id="matchPairsContainer"></div>
+                <button onclick="addMatchPair()"
+                    style="margin-top:.6rem;display:inline-flex;align-items:center;gap:.35rem;padding:.32rem .85rem;border-radius:20px;font-size:.78rem;font-weight:600;border:1.5px solid #0284c7;background:rgba(2,132,199,.07);color:#0369a1;cursor:pointer;transition:all .15s;"
+                    onmouseover="this.style.background='rgba(2,132,199,.15)'" onmouseout="this.style.background='rgba(2,132,199,.07)'">
+                    <i class="ri-add-line"></i> Agregar par
+                </button>
+            </div>
         </div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModalMatch()">Cancelar</button>
-            <button class="btn-guardar-disc" onclick="ActividadesEditor.guardarMatch()"><i class="ri-check-line"></i> Crear pregunta</button>
+        <div class="disc-modal-footer" style="border-top:1.5px solid #e2e8f0;padding:.85rem 1.25rem;display:flex;gap:.5rem;justify-content:flex-end;background:#fafbfc;">
+            <button onclick="ActividadesEditor.cerrarModalMatch()" style="padding:.42rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">Cancelar</button>
+            <button onclick="ActividadesEditor.guardarMatch()" style="padding:.42rem 1.1rem;border-radius:8px;font-size:.82rem;font-weight:700;background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+                <i class="ri-check-line"></i> Crear pregunta
+            </button>
         </div>
     </div>
 </div>
@@ -2006,6 +2173,31 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================================
 // FIN CENTRALIZADOR DE NOTAS
 // ============================================================
+
+// ── Helpers para modales de preguntas ──
+function addMcOption() {
+    var d = document.getElementById('mcOptionsContainer');
+    var row = document.createElement('div');
+    row.className = 'mc-option';
+    row.style.cssText = 'display:grid;grid-template-columns:1fr 76px 32px;gap:.4rem;margin-top:.35rem;align-items:center;';
+    row.innerHTML =
+        '<input class="form-control" placeholder="Texto" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .55rem;">' +
+        '<input class="form-control" type="number" step="0.01" value="0" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .4rem;text-align:center;">' +
+        '<button onclick="this.closest(\'.mc-option\').remove()" style="width:28px;height:28px;border-radius:6px;background:rgba(239,68,68,.1);border:none;color:#dc2626;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .15s;" onmouseover="this.style.background=\'rgba(239,68,68,.25)\'" onmouseout="this.style.background=\'rgba(239,68,68,.1)\'"><i class="ri-delete-bin-line"></i></button>';
+    d.appendChild(row);
+}
+
+function addMatchPair() {
+    var d = document.getElementById('matchPairsContainer');
+    var row = document.createElement('div');
+    row.className = 'match-pair';
+    row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 32px;gap:.4rem;margin-top:.35rem;align-items:center;';
+    row.innerHTML =
+        '<input class="form-control" placeholder="Pregunta" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .55rem;">' +
+        '<input class="form-control" placeholder="Respuesta" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .55rem;">' +
+        '<button onclick="this.closest(\'.match-pair\').remove()" style="width:28px;height:28px;border-radius:6px;background:rgba(239,68,68,.1);border:none;color:#dc2626;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .15s;" onmouseover="this.style.background=\'rgba(239,68,68,.25)\'" onmouseout="this.style.background=\'rgba(239,68,68,.1)\'"><i class="ri-delete-bin-line"></i></button>';
+    d.appendChild(row);
+}
 
 // Editor — subida de archivos
 function abrirModalSubirArchivo() {

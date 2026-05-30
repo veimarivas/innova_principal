@@ -1,18 +1,18 @@
-@extends('layouts.virtual')
-@section('title')
+<?php $__env->startSection('title'); ?>
     Mi Portal Virtual
-@endsection
+<?php $__env->stopSection(); ?>
 
-@if (session('route_not_found'))
+<?php if(session('route_not_found')): ?>
     <div class="container mt-3">
         <div class="alert alert-warning" role="alert">
-            {{ session('route_not_found') }}
+            <?php echo e(session('route_not_found')); ?>
+
         </div>
     </div>
-@endif
+<?php endif; ?>
 
-@section('css')
-    @include('virtual.partials.styles')
+<?php $__env->startSection('css'); ?>
+    <?php echo $__env->make('virtual.partials.styles', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <style>
     .quiz-pregunta-html .qtext { font-size:.85rem; color:#334155; margin-bottom:.75rem; line-height:1.65; }
     .quiz-pregunta-html .ablock .answer { display:flex; flex-direction:column; gap:.35rem; }
@@ -70,149 +70,152 @@
         font-size: .8rem; flex-shrink: 0;
     }
     </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="est-hero">
-        @if ($persona && $persona->fotografia)
-            <img src="{{ url('images/personas/' . $persona->fotografia) }}" alt="Foto" class="est-hero-avatar"
-                onerror="this.src='{{ URL::asset('build/images/users/avatar-1.jpg') }}'">
-        @else
-            <img src="{{ URL::asset('build/images/users/avatar-1.jpg') }}" alt="Foto" class="est-hero-avatar">
-        @endif
+        <?php if($persona && $persona->fotografia): ?>
+            <img src="<?php echo e(url('images/personas/' . $persona->fotografia)); ?>" alt="Foto" class="est-hero-avatar"
+                onerror="this.src='<?php echo e(URL::asset('build/images/users/avatar-1.jpg')); ?>'">
+        <?php else: ?>
+            <img src="<?php echo e(URL::asset('build/images/users/avatar-1.jpg')); ?>" alt="Foto" class="est-hero-avatar">
+        <?php endif; ?>
         <div style="flex:1;min-width:0;">
             <div class="est-hero-name">
-                {{ $persona ? trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '')) : $user->name }}
+                <?php echo e($persona ? trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '')) : $user->name); ?>
+
             </div>
-            @if ($persona)
+            <?php if($persona): ?>
                 <div class="est-hero-sub">
-                    <i class="ri-id-card-line"></i> {{ $persona->carnet }}
-                    @if ($persona->correo)
-                        &nbsp;·&nbsp;<i class="ri-mail-line"></i> {{ $persona->correo }}
-                    @endif
+                    <i class="ri-id-card-line"></i> <?php echo e($persona->carnet); ?>
+
+                    <?php if($persona->correo): ?>
+                        &nbsp;·&nbsp;<i class="ri-mail-line"></i> <?php echo e($persona->correo); ?>
+
+                    <?php endif; ?>
                 </div>
-            @endif
+            <?php endif; ?>
             <div class="est-hero-badges">
-                @if ($esEstudiante && $esDocente)
+                <?php if($esEstudiante && $esDocente): ?>
                     <span class="est-hero-badge est-hero-role ambos"><i class="ri-shield-user-line"></i> Estudiante y Docente</span>
-                @elseif ($esEstudiante)
+                <?php elseif($esEstudiante): ?>
                     <span class="est-hero-badge est-hero-role estudiante"><i class="ri-graduation-cap-line"></i> Estudiante</span>
-                @elseif ($esDocente)
+                <?php elseif($esDocente): ?>
                     <span class="est-hero-badge est-hero-role docente"><i class="ri-user-settings-line"></i> Docente</span>
-                @endif
-                @if ($moodleUserId)
+                <?php endif; ?>
+                <?php if($moodleUserId): ?>
                     <span class="est-hero-badge"><i class="ri-links-line"></i> Moodle activo</span>
-                @else
+                <?php else: ?>
                     <span class="est-hero-badge sin"><i class="ri-close-circle-line"></i> Sin Moodle</span>
-                @endif
+                <?php endif; ?>
                 <span class="est-hero-badge"><i class="ri-checkbox-circle-line"></i> Sesión activa</span>
             </div>
         </div>
     </div>
 
-    {{-- ── SELECTOR DE ROL (solo si tiene ambos roles) ────────────────── --}}
-    @if ($esEstudiante && $esDocente)
+    
+    <?php if($esEstudiante && $esDocente): ?>
     <div class="rol-switcher" id="rol-switcher">
         <span class="rol-switcher-label">Ver como</span>
         <div class="rol-switcher-btns">
 
             <button type="button"
                     id="rol-btn-estudiante"
-                    class="rol-btn {{ $perfilActivo === 'estudiante' ? 'active' : '' }}"
+                    class="rol-btn <?php echo e($perfilActivo === 'estudiante' ? 'active' : ''); ?>"
                     onclick="cambiarPerfil('estudiante')"
-                    {{ $perfilActivo === 'estudiante' ? 'disabled' : '' }}>
+                    <?php echo e($perfilActivo === 'estudiante' ? 'disabled' : ''); ?>>
                 <div class="rol-btn-icon"><i class="ri-graduation-cap-line"></i></div>
                 <div class="rol-btn-text">
                     <span class="rol-btn-title">Estudiante</span>
                     <span class="rol-btn-sub">Inscripciones, pagos y cronograma</span>
                 </div>
-                @if ($perfilActivo === 'estudiante')
+                <?php if($perfilActivo === 'estudiante'): ?>
                     <div class="rol-btn-check"><i class="ri-check-line"></i></div>
-                @endif
+                <?php endif; ?>
                 <div class="rol-btn-spinner"></div>
             </button>
 
             <button type="button"
                     id="rol-btn-docente"
-                    class="rol-btn {{ $perfilActivo === 'docente' ? 'active' : '' }}"
+                    class="rol-btn <?php echo e($perfilActivo === 'docente' ? 'active' : ''); ?>"
                     onclick="cambiarPerfil('docente')"
-                    {{ $perfilActivo === 'docente' ? 'disabled' : '' }}>
+                    <?php echo e($perfilActivo === 'docente' ? 'disabled' : ''); ?>>
                 <div class="rol-btn-icon"><i class="ri-user-settings-line"></i></div>
                 <div class="rol-btn-text">
                     <span class="rol-btn-title">Docente</span>
                     <span class="rol-btn-sub">Módulos, sesiones y horario</span>
                 </div>
-                @if ($perfilActivo === 'docente')
+                <?php if($perfilActivo === 'docente'): ?>
                     <div class="rol-btn-check"><i class="ri-check-line"></i></div>
-                @endif
+                <?php endif; ?>
                 <div class="rol-btn-spinner"></div>
             </button>
 
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    @if ($esEstudiante)
-    {{-- ── STATS BAR ESTUDIANTE ───────────────────────────────────────── --}}
-    @php
+    <?php if($esEstudiante): ?>
+    
+    <?php
         $totalProgramas = $inscripciones->count();
         $totalModulos = $inscripciones->sum(fn($i) => $i->moodleMatriculas->count());
         $activas = $inscripciones->whereIn('estado', ['Inscrito', 'Confirmado'])->count();
-    @endphp
-    <div class="est-stats" id="stats-estudiante" {!! $perfilActivo !== 'estudiante' ? 'style="display:none"' : '' !!}>
+    ?>
+    <div class="est-stats" id="stats-estudiante" <?php echo $perfilActivo !== 'estudiante' ? 'style="display:none"' : ''; ?>>
         <div class="est-stat-card-sm">
             <div class="est-stat-icon-sm orange"><i class="ri-book-open-line"></i></div>
             <div>
-                <div class="est-stat-num">{{ $totalProgramas }}</div>
+                <div class="est-stat-num"><?php echo e($totalProgramas); ?></div>
                 <div class="est-stat-label">Programa(s)</div>
             </div>
         </div>
         <div class="est-stat-card-sm">
             <div class="est-stat-icon-sm blue"><i class="ri-stack-line"></i></div>
             <div>
-                <div class="est-stat-num">{{ $totalModulos }}</div>
+                <div class="est-stat-num"><?php echo e($totalModulos); ?></div>
                 <div class="est-stat-label">Módulo(s)</div>
             </div>
         </div>
         <div class="est-stat-card-sm">
             <div class="est-stat-icon-sm green"><i class="ri-check-double-line"></i></div>
             <div>
-                <div class="est-stat-num">{{ $activas }}</div>
+                <div class="est-stat-num"><?php echo e($activas); ?></div>
                 <div class="est-stat-label">Inscripción(es) activa(s)</div>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    @if ($esDocente)
-    @php
+    <?php if($esDocente): ?>
+    <?php
         $totalCursos = $modulosDocente->count();
         $totalSesiones = $modulosDocente->sum(fn($m) => $m->horarios->count());
-    @endphp
-    <div class="est-stats" id="stats-docente" {!! $perfilActivo !== 'docente' ? 'style="display:none"' : '' !!}>
+    ?>
+    <div class="est-stats" id="stats-docente" <?php echo $perfilActivo !== 'docente' ? 'style="display:none"' : ''; ?>>
         <div class="est-stat-card-sm">
             <div class="est-stat-icon-sm orange"><i class="ri-book-3-line"></i></div>
             <div>
-                <div class="est-stat-num">{{ $totalCursos }}</div>
+                <div class="est-stat-num"><?php echo e($totalCursos); ?></div>
                 <div class="est-stat-label">Curso(s)</div>
             </div>
         </div>
         <div class="est-stat-card-sm">
             <div class="est-stat-icon-sm blue"><i class="ri-calendar-event-line"></i></div>
             <div>
-                <div class="est-stat-num">{{ $totalSesiones }}</div>
+                <div class="est-stat-num"><?php echo e($totalSesiones); ?></div>
                 <div class="est-stat-label">Sesión(es)</div>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- ── TABS ──────────────────────────────────────────────────────── --}}
+    
     <div class="est-tabs-card">
 
-        @if ($esEstudiante)
-        {{-- Navegación estudiante --}}
-        <div class="est-tabs-nav" id="nav-estudiante" {!! $perfilActivo !== 'estudiante' ? 'style="display:none"' : '' !!}>
+        <?php if($esEstudiante): ?>
+        
+        <div class="est-tabs-nav" id="nav-estudiante" <?php echo $perfilActivo !== 'estudiante' ? 'style="display:none"' : ''; ?>>
             <button class="est-tab-btn active" onclick="switchTab(this,'tab-personal')">
                 <i class="ri-user-3-line"></i> Personal
             </button>
@@ -232,10 +235,10 @@
                 <i class="ri-calendar-line"></i> Cronograma
             </button>
         </div>
-        @endif
+        <?php endif; ?>
 
-        @if ($esDocente)
-        <div class="est-tabs-nav" id="nav-docente" {!! $perfilActivo !== 'docente' ? 'style="display:none"' : '' !!}>
+        <?php if($esDocente): ?>
+        <div class="est-tabs-nav" id="nav-docente" <?php echo $perfilActivo !== 'docente' ? 'style="display:none"' : ''; ?>>
             <button class="est-tab-btn active" onclick="switchTabDocente(this,'tab-personal-docente')">
                 <i class="ri-user-3-line"></i> Personal
             </button>
@@ -249,13 +252,13 @@
                 <i class="ri-calendar-check-line"></i> Mi Horario
             </button>
         </div>
-        @endif
+        <?php endif; ?>
 
-        @if ($esDocente)
-        <div id="content-docente" {!! $perfilActivo !== 'docente' ? 'style="display:none"' : '' !!}>
+        <?php if($esDocente): ?>
+        <div id="content-docente" <?php echo $perfilActivo !== 'docente' ? 'style="display:none"' : ''; ?>>
 
         <div class="est-tabs-body active" id="tab-personal-docente">
-            @php
+            <?php
                 $tieneFotoDoc = $persona && $persona->fotografia && file_exists(public_path('images/personas/' . $persona->fotografia));
                 $avatarUrlDoc = $tieneFotoDoc ? asset('images/personas/' . $persona->fotografia) : null;
                 $nombreCompletoDoc = $persona
@@ -267,70 +270,71 @@
                     ? optional($persona->ciudad)->nombre . ', ' . (optional(optional($persona->ciudad)->departamento)->nombre ?? '')
                     : null;
                 $docenteModel = $persona?->docente;
-            @endphp
+            ?>
             <div class="est-ci-wrap">
                 <div class="est-ci-stripe"></div>
                 <div class="est-ci-body">
-                    {{-- Izquierda: foto --}}
+                    
                     <div class="est-ci-left">
                         <div class="est-ci-foto-label"><i class="ri-building-2-line"></i><span>INNOVA CIENCIA</span></div>
                         <div class="est-ci-foto">
-                            <img src="{{ $avatarUrlDoc ?? '' }}" alt="Foto" id="doc-ci-foto-img"
-                                style="{{ $tieneFotoDoc ? '' : 'display:none;' }}"
+                            <img src="<?php echo e($avatarUrlDoc ?? ''); ?>" alt="Foto" id="doc-ci-foto-img"
+                                style="<?php echo e($tieneFotoDoc ? '' : 'display:none;'); ?>"
                                 onerror="this.style.display='none';document.getElementById('doc-ci-initials').style.display='flex';">
                             <div id="doc-ci-initials" class="est-ci-initials"
-                                style="{{ $tieneFotoDoc ? 'display:none;' : '' }}">
-                                {{ $inicialesDoc ?: '?' }}
+                                style="<?php echo e($tieneFotoDoc ? 'display:none;' : ''); ?>">
+                                <?php echo e($inicialesDoc ?: '?'); ?>
+
                             </div>
                         </div>
                         <div class="est-ci-quick-data">
-                            @if ($persona?->carnet)
+                            <?php if($persona?->carnet): ?>
                                 <div class="est-ci-qd-item">
                                     <i class="ri-shield-check-line"></i>
                                     <span class="est-ci-qd-label">CI</span>
-                                    <span class="est-ci-qd-val">{{ $persona->carnet }}{{ $persona->expedido ? ' ' . $persona->expedido : '' }}</span>
+                                    <span class="est-ci-qd-val"><?php echo e($persona->carnet); ?><?php echo e($persona->expedido ? ' ' . $persona->expedido : ''); ?></span>
                                 </div>
-                            @endif
-                            @if ($persona?->fecha_nacimiento)
+                            <?php endif; ?>
+                            <?php if($persona?->fecha_nacimiento): ?>
                                 <div class="est-ci-qd-item">
                                     <i class="ri-cake-line"></i>
                                     <span class="est-ci-qd-label">Nacimiento</span>
-                                    <span class="est-ci-qd-val">{{ \Carbon\Carbon::parse($persona->fecha_nacimiento)->format('d/m/Y') }}</span>
+                                    <span class="est-ci-qd-val"><?php echo e(\Carbon\Carbon::parse($persona->fecha_nacimiento)->format('d/m/Y')); ?></span>
                                 </div>
-                            @endif
-                            @if ($edadDoc)
+                            <?php endif; ?>
+                            <?php if($edadDoc): ?>
                                 <div class="est-ci-qd-item">
                                     <i class="ri-user-line"></i>
                                     <span class="est-ci-qd-label">Edad</span>
-                                    <span class="est-ci-qd-val">{{ $edadDoc }} años</span>
+                                    <span class="est-ci-qd-val"><?php echo e($edadDoc); ?> años</span>
                                 </div>
-                            @endif
-                            @if ($persona?->sexo)
+                            <?php endif; ?>
+                            <?php if($persona?->sexo): ?>
                                 <div class="est-ci-qd-item">
                                     <i class="ri-genderless-line"></i>
                                     <span class="est-ci-qd-label">Sexo</span>
-                                    <span class="est-ci-qd-val">{{ $persona->sexo == 'M' ? 'Masculino' : ($persona->sexo == 'F' ? 'Femenino' : '—') }}</span>
+                                    <span class="est-ci-qd-val"><?php echo e($persona->sexo == 'M' ? 'Masculino' : ($persona->sexo == 'F' ? 'Femenino' : '—')); ?></span>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         <div class="pers-acc-chips">
-                            @if ($moodleUserId)
+                            <?php if($moodleUserId): ?>
                             <div class="pers-acc-chip pers-chip-ok">
                                 <i class="ri-links-line"></i><span>Moodle: Activo</span>
                             </div>
-                            @else
+                            <?php else: ?>
                             <div class="pers-acc-chip pers-chip-no">
                                 <i class="ri-links-line"></i><span>Moodle: Sin cuenta</span>
                             </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
 
-                    {{-- Centro: datos de contacto --}}
+                    
                     <div class="est-ci-center">
                         <div class="est-ci-nombre-wrap">
                             <div>
-                                <div class="est-ci-nombre">{{ $nombreCompletoDoc }}</div>
+                                <div class="est-ci-nombre"><?php echo e($nombreCompletoDoc); ?></div>
                                 <div class="est-ci-estado-label">Docente</div>
                             </div>
                             <span class="est-ci-estado-badge est-ci-badge-activo">
@@ -338,91 +342,91 @@
                             </span>
                         </div>
                         <div class="est-ci-section-title"><i class="ri-contacts-line"></i> Datos de Contacto</div>
-                        @if($persona?->correo)
+                        <?php if($persona?->correo): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-mail-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Correo electrónico</div>
-                                <div class="pers-contact-val"><a href="mailto:{{ $persona->correo }}" class="pers-contact-link">{{ $persona->correo }}</a></div>
+                                <div class="pers-contact-val"><a href="mailto:<?php echo e($persona->correo); ?>" class="pers-contact-link"><?php echo e($persona->correo); ?></a></div>
                             </div>
-                            <a href="mailto:{{ $persona->correo }}" class="pers-contact-act" title="Enviar correo"><i class="ri-send-plane-line"></i></a>
+                            <a href="mailto:<?php echo e($persona->correo); ?>" class="pers-contact-act" title="Enviar correo"><i class="ri-send-plane-line"></i></a>
                         </div>
-                        @endif
-                        @if($persona?->celular)
+                        <?php endif; ?>
+                        <?php if($persona?->celular): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-smartphone-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Celular</div>
-                                <div class="pers-contact-val"><a href="tel:{{ $persona->celular }}" class="pers-contact-link">{{ $persona->celular }}</a></div>
+                                <div class="pers-contact-val"><a href="tel:<?php echo e($persona->celular); ?>" class="pers-contact-link"><?php echo e($persona->celular); ?></a></div>
                             </div>
-                            <a href="https://wa.me/{{ preg_replace('/\D/', '', $persona->celular) }}" target="_blank" class="pers-contact-act wa" title="WhatsApp"><i class="ri-whatsapp-line"></i></a>
+                            <a href="https://wa.me/<?php echo e(preg_replace('/\D/', '', $persona->celular)); ?>" target="_blank" class="pers-contact-act wa" title="WhatsApp"><i class="ri-whatsapp-line"></i></a>
                         </div>
-                        @endif
-                        @if($persona?->telefono)
+                        <?php endif; ?>
+                        <?php if($persona?->telefono): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-phone-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Teléfono</div>
-                                <div class="pers-contact-val">{{ $persona->telefono }}</div>
+                                <div class="pers-contact-val"><?php echo e($persona->telefono); ?></div>
                             </div>
                         </div>
-                        @endif
-                        @if($persona?->estado_civil)
+                        <?php endif; ?>
+                        <?php if($persona?->estado_civil): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-heart-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Estado Civil</div>
-                                <div class="pers-contact-val">{{ $persona->estado_civil }}</div>
+                                <div class="pers-contact-val"><?php echo e($persona->estado_civil); ?></div>
                             </div>
                         </div>
-                        @endif
-                        @if($ubicacionDoc)
+                        <?php endif; ?>
+                        <?php if($ubicacionDoc): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-map-pin-2-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Ciudad / Departamento</div>
-                                <div class="pers-contact-val">{{ $ubicacionDoc }}</div>
+                                <div class="pers-contact-val"><?php echo e($ubicacionDoc); ?></div>
                             </div>
                         </div>
-                        @endif
-                        @if($persona?->direccion)
+                        <?php endif; ?>
+                        <?php if($persona?->direccion): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-home-3-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Dirección</div>
-                                <div class="pers-contact-val">{{ $persona->direccion }}</div>
+                                <div class="pers-contact-val"><?php echo e($persona->direccion); ?></div>
                             </div>
                         </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
-                    {{-- Derecha: datos del docente --}}
+                    
                     <div class="est-ci-right">
                         <div class="est-ci-right-header">
                             <i class="ri-user-star-line"></i><span>Datos del Docente</span>
                         </div>
                         <div style="display:flex;flex-direction:column;gap:6px;">
-                            @if ($docenteModel?->created_at)
+                            <?php if($docenteModel?->created_at): ?>
                             <div class="pers-info-item">
                                 <div class="pers-info-ico"><i class="ri-calendar-check-line"></i></div>
                                 <div>
                                     <div class="pers-info-lbl">Fecha Registro</div>
-                                    <div class="pers-info-val">{{ $docenteModel->created_at->format('d/m/Y') }}</div>
+                                    <div class="pers-info-val"><?php echo e($docenteModel->created_at->format('d/m/Y')); ?></div>
                                 </div>
                             </div>
-                            @endif
+                            <?php endif; ?>
                             <div class="pers-info-item">
                                 <div class="pers-info-ico"><i class="ri-book-3-line"></i></div>
                                 <div>
                                     <div class="pers-info-lbl">Módulos asignados</div>
-                                    <div class="pers-info-val">{{ $modulosDocente->count() }} módulo(s)</div>
+                                    <div class="pers-info-val"><?php echo e($modulosDocente->count()); ?> módulo(s)</div>
                                 </div>
                             </div>
                             <div class="pers-info-item">
                                 <div class="pers-info-ico"><i class="ri-time-line"></i></div>
                                 <div>
                                     <div class="pers-info-lbl">Total de sesiones</div>
-                                    <div class="pers-info-val">{{ $modulosDocente->sum(fn($m) => $m->horarios->count()) }} sesión(es)</div>
+                                    <div class="pers-info-val"><?php echo e($modulosDocente->sum(fn($m) => $m->horarios->count())); ?> sesión(es)</div>
                                 </div>
                             </div>
                         </div>
@@ -430,16 +434,14 @@
                 </div>
                 <div class="est-ci-bottom-bar">
                     <span><i class="ri-id-card-line"></i> Carnet de Identificación · Docente</span>
-                    <span>{{ now()->format('Y') }}</span>
+                    <span><?php echo e(now()->format('Y')); ?></span>
                 </div>
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════
-             TAB DOCUMENTOS DOCENTE
-        ══════════════════════════════════════════════════════════ --}}
+        
         <div class="est-tabs-body" id="tab-documentos-docente">
-            @php
+            <?php
                 $estadoDocDoc = function ($archivo, $verificado) {
                     if (!$archivo) {
                         return ['label' => 'Pendiente', 'cls' => 'pending', 'icon' => 'ri-add-circle-line'];
@@ -477,7 +479,7 @@
                     if ($estudioDocente->documento_provision_verificado) $verificadosDoc++;
                 }
                 $pctDocsDoc = $totalDocsDoc > 0 ? ($verificadosDoc / $totalDocsDoc) * 100 : 0;
-            @endphp
+            ?>
 
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:16px;">
                 <h3 style="margin:0;font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:8px;">
@@ -485,9 +487,9 @@
                 </h3>
                 <div style="display:flex;align-items:center;gap:12px;">
                     <div style="flex:1;max-width:150px;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;">
-                        <div style="height:100%;background:linear-gradient(90deg,#fc7b04,#f97316);border-radius:4px;width:{{ $pctDocsDoc }}%;transition:width .3s;"></div>
+                        <div style="height:100%;background:linear-gradient(90deg,#fc7b04,#f97316);border-radius:4px;width:<?php echo e($pctDocsDoc); ?>%;transition:width .3s;"></div>
                     </div>
-                    <span style="font-size:.875rem;font-weight:700;color:#fc7b04;">{{ number_format($pctDocsDoc, 0) }}%</span>
+                    <span style="font-size:.875rem;font-weight:700;color:#fc7b04;"><?php echo e(number_format($pctDocsDoc, 0)); ?>%</span>
                 </div>
             </div>
 
@@ -495,72 +497,74 @@
                 <i class="ri-id-card-line" style="color:#fc7b04;"></i> Documentación Personal
             </h4>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:32px;">
-                @foreach ($docsIdentidadDoc as $doc)
-                    @php
+                <?php $__currentLoopData = $docsIdentidadDoc; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php
                         $estado = $estadoDocDoc($doc['archivo'], $doc['verificado']);
                         $bgIcon   = $estado['cls'] == 'approved' ? '#dcfce7' : ($estado['cls'] == 'review' ? '#e0f2fe' : '#fef3c7');
                         $colorIcon= $estado['cls'] == 'approved' ? '#16a34a' : ($estado['cls'] == 'review' ? '#0891b2' : '#d97706');
-                    @endphp
+                    ?>
                     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);">
                         <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
-                            <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:{{ $bgIcon }};color:{{ $colorIcon }};flex-shrink:0;">
-                                <i class="{{ $doc['icono'] }}"></i>
+                            <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:<?php echo e($bgIcon); ?>;color:<?php echo e($colorIcon); ?>;flex-shrink:0;">
+                                <i class="<?php echo e($doc['icono']); ?>"></i>
                             </div>
-                            <div style="flex:1;min-width:0;font-size:.875rem;font-weight:600;">{{ $doc['nombre'] }}</div>
-                            <span style="padding:4px 10px;border-radius:20px;font-size:.6875rem;font-weight:600;text-transform:uppercase;background:{{ $bgIcon }};color:{{ $colorIcon }};">
-                                {{ $estado['label'] }}
+                            <div style="flex:1;min-width:0;font-size:.875rem;font-weight:600;"><?php echo e($doc['nombre']); ?></div>
+                            <span style="padding:4px 10px;border-radius:20px;font-size:.6875rem;font-weight:600;text-transform:uppercase;background:<?php echo e($bgIcon); ?>;color:<?php echo e($colorIcon); ?>;">
+                                <?php echo e($estado['label']); ?>
+
                             </span>
                         </div>
                         <div style="padding:16px;">
-                            @if ($doc['archivo'])
+                            <?php if($doc['archivo']): ?>
                                 <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8fafc;border-radius:8px;">
                                     <div style="width:36px;height:36px;border-radius:8px;background:#fee2e2;display:flex;align-items:center;justify-content:center;color:#dc2626;font-size:1.1rem;">
                                         <i class="ri-file-pdf-fill"></i>
                                     </div>
                                     <div style="flex:1;min-width:0;">
-                                        <div style="font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $doc['tipo'] }}.pdf</div>
-                                        <div style="font-size:.6875rem;display:flex;align-items:center;gap:4px;color:{{ $doc['verificado'] ? '#16a34a' : '#d97706' }};">
-                                            @if ($doc['verificado'])
+                                        <div style="font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><?php echo e($doc['tipo']); ?>.pdf</div>
+                                        <div style="font-size:.6875rem;display:flex;align-items:center;gap:4px;color:<?php echo e($doc['verificado'] ? '#16a34a' : '#d97706'); ?>;">
+                                            <?php if($doc['verificado']): ?>
                                                 <i class="ri-shield-check-fill"></i> Verificado
-                                            @else
+                                            <?php else: ?>
                                                 <i class="ri-time-fill"></i> En revisión
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
-                            @else
+                            <?php else: ?>
                                 <div style="text-align:center;padding:20px;color:#94a3b8;font-size:.85rem;">
                                     <i class="ri-file-unknown-line" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
                                     Documento no subido
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <h4 style="font-size:1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
                 <i class="ri-graduation-cap-line" style="color:#fc7b04;"></i> Formación Académica
             </h4>
-            @if ($estudioDocente)
+            <?php if($estudioDocente): ?>
                 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);">
                     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
                         <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:#e0f2fe;color:#0891b2;">
                             <i class="ri-school-line"></i>
                         </div>
                         <div>
-                            <div style="font-size:.875rem;font-weight:600;">{{ $estudioDocente->grado_academico->nombre ?? 'Sin grado' }}</div>
-                            <div style="font-size:.75rem;color:#64748b;">{{ $estudioDocente->profesion->nombre ?? 'Sin profesión' }} | {{ $estudioDocente->estado ?? '—' }}</div>
+                            <div style="font-size:.875rem;font-weight:600;"><?php echo e($estudioDocente->grado_academico->nombre ?? 'Sin grado'); ?></div>
+                            <div style="font-size:.75rem;color:#64748b;"><?php echo e($estudioDocente->profesion->nombre ?? 'Sin profesión'); ?> | <?php echo e($estudioDocente->estado ?? '—'); ?></div>
                         </div>
                         <span class="ms-auto badge" style="background:#dcfce7;color:#16a34a;font-size:.6875rem;padding:4px 10px;border-radius:20px;">Principal</span>
                     </div>
-                    @if ($estudioDocente->universidad)
+                    <?php if($estudioDocente->universidad): ?>
                         <div style="font-size:.8125rem;color:#64748b;border-top:1px solid #e2e8f0;padding-top:12px;">
-                            <i class="ri-building-line me-1"></i> {{ $estudioDocente->universidad->nombre }}
+                            <i class="ri-building-line me-1"></i> <?php echo e($estudioDocente->universidad->nombre); ?>
+
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
-                @php
+                <?php
                     $docsAcademicoDoc = [
                         [
                             'nombre'    => 'Título/Bachiller',
@@ -577,62 +581,61 @@
                             'tipo'      => 'documento_provision_nacional',
                         ],
                     ];
-                @endphp
+                ?>
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
-                    @foreach ($docsAcademicoDoc as $doc)
-                        @php
+                    <?php $__currentLoopData = $docsAcademicoDoc; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
                             $estado = $estadoDocDoc($doc['archivo'], $doc['verificado']);
                             $bgIcon   = $estado['cls'] == 'approved' ? '#dcfce7' : ($estado['cls'] == 'review' ? '#e0f2fe' : '#fef3c7');
                             $colorIcon= $estado['cls'] == 'approved' ? '#16a34a' : ($estado['cls'] == 'review' ? '#0891b2' : '#d97706');
-                        @endphp
+                        ?>
                         <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);">
                             <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
-                                <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:{{ $bgIcon }};color:{{ $colorIcon }};flex-shrink:0;">
-                                    <i class="{{ $doc['icono'] }}"></i>
+                                <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:<?php echo e($bgIcon); ?>;color:<?php echo e($colorIcon); ?>;flex-shrink:0;">
+                                    <i class="<?php echo e($doc['icono']); ?>"></i>
                                 </div>
-                                <div style="flex:1;min-width:0;font-size:.875rem;font-weight:600;">{{ $doc['nombre'] }}</div>
-                                <span style="padding:4px 10px;border-radius:20px;font-size:.6875rem;font-weight:600;text-transform:uppercase;background:{{ $bgIcon }};color:{{ $colorIcon }};">
-                                    {{ $estado['label'] }}
+                                <div style="flex:1;min-width:0;font-size:.875rem;font-weight:600;"><?php echo e($doc['nombre']); ?></div>
+                                <span style="padding:4px 10px;border-radius:20px;font-size:.6875rem;font-weight:600;text-transform:uppercase;background:<?php echo e($bgIcon); ?>;color:<?php echo e($colorIcon); ?>;">
+                                    <?php echo e($estado['label']); ?>
+
                                 </span>
                             </div>
                             <div style="padding:16px;">
-                                @if ($doc['archivo'])
+                                <?php if($doc['archivo']): ?>
                                     <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8fafc;border-radius:8px;">
                                         <div style="width:36px;height:36px;border-radius:8px;background:#fee2e2;display:flex;align-items:center;justify-content:center;color:#dc2626;font-size:1.1rem;">
                                             <i class="ri-file-pdf-fill"></i>
                                         </div>
                                         <div style="flex:1;min-width:0;">
-                                            <div style="font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $doc['tipo'] }}.pdf</div>
-                                            <div style="font-size:.6875rem;display:flex;align-items:center;gap:4px;color:{{ $doc['verificado'] ? '#16a34a' : '#d97706' }};">
-                                                @if ($doc['verificado'])
+                                            <div style="font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><?php echo e($doc['tipo']); ?>.pdf</div>
+                                            <div style="font-size:.6875rem;display:flex;align-items:center;gap:4px;color:<?php echo e($doc['verificado'] ? '#16a34a' : '#d97706'); ?>;">
+                                                <?php if($doc['verificado']): ?>
                                                     <i class="ri-shield-check-fill"></i> Verificado
-                                                @else
+                                                <?php else: ?>
                                                     <i class="ri-time-fill"></i> En revisión
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <div style="text-align:center;padding:20px;color:#94a3b8;font-size:.85rem;">
                                         <i class="ri-file-unknown-line" style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
                                         Documento no subido
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @else
+            <?php else: ?>
                 <div style="text-align:center;padding:40px 20px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;">
                     <i class="ri-user-unfollow-line" style="font-size:2.5rem;color:#94a3b8;opacity:.5;"></i>
                     <p style="margin:16px 0 0;color:#64748b;">Sin registro académico registrado</p>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════
-             TAB ACADÉMICO DOCENTE
-        ══════════════════════════════════════════════════════════ --}}
+        
         <div class="est-tabs-body" id="tab-academico-docente">
 
             <div class="tab-banner academico">
@@ -641,151 +644,154 @@
                     <p class="tab-banner-title">Mis Módulos Asignados</p>
                     <p class="tab-banner-sub">Programas en los que participas como docente</p>
                 </div>
-                @php $totalOfertasDoc = $modulosDocente->groupBy('ofertas_academica_id')->count(); @endphp
+                <?php $totalOfertasDoc = $modulosDocente->groupBy('ofertas_academica_id')->count(); ?>
                 <span class="tab-banner-badge">
-                    <i class="ri-stack-line"></i> {{ $totalOfertasDoc }} oferta(s)
+                    <i class="ri-stack-line"></i> <?php echo e($totalOfertasDoc); ?> oferta(s)
                 </span>
             </div>
 
-            @if ($modulosDocente->isEmpty())
+            <?php if($modulosDocente->isEmpty()): ?>
                 <div class="est-no-cuenta">
                     <i class="ri-book-open-line"></i>
                     <h5>Sin módulos asignados</h5>
                     <p>Aún no tienes módulos asignados como docente. Contacta con administración para más información.</p>
                 </div>
-            @else
-                @php
+            <?php else: ?>
+                <?php
                     $modulosPorOferta = $modulosDocente->groupBy('ofertas_academica_id');
-                @endphp
+                ?>
 
-                {{-- Selector de oferta (solo si hay más de una) --}}
-                @if ($modulosPorOferta->count() > 1)
+                
+                <?php if($modulosPorOferta->count() > 1): ?>
                 <div class="acad-prog-selector">
                     <div class="acad-prog-selector-header">
                         <i class="ri-book-open-line"></i>
                         <span>Seleccionar oferta académica</span>
-                        <span class="acad-prog-count">{{ $modulosPorOferta->count() }}</span>
+                        <span class="acad-prog-count"><?php echo e($modulosPorOferta->count()); ?></span>
                     </div>
                     <div class="acad-prog-pills">
-                        @foreach ($modulosPorOferta as $ofertaId => $mods)
-                        @php
+                        <?php $__currentLoopData = $modulosPorOferta; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ofertaId => $mods): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
                             $primerMod    = $mods->first();
                             $nombreOferta = $primerMod->ofertaAcademica?->programa?->nombre
                                 ?? $primerMod->ofertaAcademica?->posgrado?->nombre
                                 ?? 'Oferta #' . $ofertaId;
-                        @endphp
+                        ?>
                         <button type="button"
-                            class="acad-prog-pill est-oferta-tab-btn {{ $loop->first ? 'active' : '' }}"
-                            data-target="doc-oferta-{{ $loop->index }}">
-                            <span class="acad-prog-pill-num">{{ $loop->iteration }}</span>
+                            class="acad-prog-pill est-oferta-tab-btn <?php echo e($loop->first ? 'active' : ''); ?>"
+                            data-target="doc-oferta-<?php echo e($loop->index); ?>">
+                            <span class="acad-prog-pill-num"><?php echo e($loop->iteration); ?></span>
                             <div class="acad-prog-pill-info">
-                                <span class="acad-prog-pill-name">{{ $nombreOferta }}</span>
-                                @if ($primerMod->ofertaAcademica?->codigo)
-                                    <span class="acad-prog-pill-code">{{ $primerMod->ofertaAcademica->codigo }}</span>
-                                @endif
+                                <span class="acad-prog-pill-name"><?php echo e($nombreOferta); ?></span>
+                                <?php if($primerMod->ofertaAcademica?->codigo): ?>
+                                    <span class="acad-prog-pill-code"><?php echo e($primerMod->ofertaAcademica->codigo); ?></span>
+                                <?php endif; ?>
                             </div>
-                            <span class="acad-prog-pill-estado inscrito">{{ $mods->count() }} mód.</span>
+                            <span class="acad-prog-pill-estado inscrito"><?php echo e($mods->count()); ?> mód.</span>
                         </button>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
-                @endif
+                <?php endif; ?>
 
-                {{-- Contenido por oferta --}}
-                @foreach ($modulosPorOferta as $ofertaId => $mods)
-                @php
+                
+                <?php $__currentLoopData = $modulosPorOferta; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ofertaId => $mods): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
                     $primerMod    = $mods->first();
                     $oferta       = $primerMod->ofertaAcademica;
                     $nombreOferta = $oferta?->programa?->nombre
                         ?? $oferta?->posgrado?->nombre
                         ?? 'Oferta #' . $ofertaId;
-                @endphp
-                <div class="est-oferta-content {{ $loop->first ? 'active' : '' }}"
-                    id="doc-oferta-{{ $loop->index }}">
+                ?>
+                <div class="est-oferta-content <?php echo e($loop->first ? 'active' : ''); ?>"
+                    id="doc-oferta-<?php echo e($loop->index); ?>">
 
-                    {{-- Cabecera de la oferta --}}
+                    
                     <div class="acad-prog-header-bar">
                         <div class="acad-prog-header-info">
-                            <div class="acad-prog-header-name">{{ $nombreOferta }}</div>
+                            <div class="acad-prog-header-name"><?php echo e($nombreOferta); ?></div>
                             <div class="acad-prog-header-meta">
-                                @if ($oferta?->codigo)
-                                    <span><i class="ri-hashtag"></i>{{ $oferta->codigo }}</span>
-                                @endif
-                                @if ($oferta?->fecha_inicio)
-                                    <span><i class="ri-calendar-line"></i>Inicio: {{ \Carbon\Carbon::parse($oferta->fecha_inicio)->format('d/m/Y') }}</span>
-                                @endif
-                                <span><i class="ri-stack-line"></i>{{ $mods->count() }} módulo(s) asignado(s)</span>
+                                <?php if($oferta?->codigo): ?>
+                                    <span><i class="ri-hashtag"></i><?php echo e($oferta->codigo); ?></span>
+                                <?php endif; ?>
+                                <?php if($oferta?->fecha_inicio): ?>
+                                    <span><i class="ri-calendar-line"></i>Inicio: <?php echo e(\Carbon\Carbon::parse($oferta->fecha_inicio)->format('d/m/Y')); ?></span>
+                                <?php endif; ?>
+                                <span><i class="ri-stack-line"></i><?php echo e($mods->count()); ?> módulo(s) asignado(s)</span>
                             </div>
                         </div>
                         <span class="est-estado-badge inscrito">Docente</span>
                     </div>
 
-                    {{-- Grid de módulos --}}
+                    
                     <div class="acad-modulos-grid">
-                        @foreach ($mods->sortBy('n_modulo') as $modulo)
-                        @php $modColor = $modulo->color ?? '#6366f1'; @endphp
+                        <?php $__currentLoopData = $mods->sortBy('n_modulo'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $modulo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php $modColor = $modulo->color ?? '#6366f1'; ?>
                         <div class="acad-mod-card">
-                            <div class="acad-mod-stripe" style="background:{{ $modColor }};"></div>
+                            <div class="acad-mod-stripe" style="background:<?php echo e($modColor); ?>;"></div>
                             <div class="acad-mod-body">
                                 <div class="acad-mod-top">
                                     <span class="acad-mod-num"
-                                        style="background:{{ $modColor }}22;color:{{ $modColor }};">
-                                        M{{ $modulo->n_modulo }}
+                                        style="background:<?php echo e($modColor); ?>22;color:<?php echo e($modColor); ?>;">
+                                        M<?php echo e($modulo->n_modulo); ?>
+
                                     </span>
-                                    <span class="acad-mod-name">{{ $modulo->nombre }}</span>
+                                    <span class="acad-mod-name"><?php echo e($modulo->nombre); ?></span>
                                     <span class="acad-mod-badge activo">
                                         <i class="ri-user-settings-line"></i> Docente
                                     </span>
                                 </div>
                                 <div class="acad-mod-meta">
-                                    @if ($modulo->fecha_inicio)
+                                    <?php if($modulo->fecha_inicio): ?>
                                         <span>
                                             <i class="ri-calendar-line"></i>
-                                            {{ \Carbon\Carbon::parse($modulo->fecha_inicio)->format('d/m/Y') }}
-                                            @if ($modulo->fecha_fin)
-                                                — {{ \Carbon\Carbon::parse($modulo->fecha_fin)->format('d/m/Y') }}
-                                            @endif
+                                            <?php echo e(\Carbon\Carbon::parse($modulo->fecha_inicio)->format('d/m/Y')); ?>
+
+                                            <?php if($modulo->fecha_fin): ?>
+                                                — <?php echo e(\Carbon\Carbon::parse($modulo->fecha_fin)->format('d/m/Y')); ?>
+
+                                            <?php endif; ?>
                                         </span>
-                                    @endif
+                                    <?php endif; ?>
                                     <span>
                                         <i class="ri-time-line"></i>
-                                        {{ $modulo->horarios->count() }} sesión(es)
+                                        <?php echo e($modulo->horarios->count()); ?> sesión(es)
                                     </span>
                                 </div>
                                 <div class="acad-mod-actions">
-                                    <a href="{{ route('virtual.docente.modulo', $modulo->id) }}"
+                                    <a href="<?php echo e(route('virtual.docente.modulo', $modulo->id)); ?>"
                                         class="acad-mod-btn">
                                         <i class="ri-layout-grid-line"></i> Ver detalle
                                     </a>
-                                    @if ($modulo->moodle_course_id)
-                                        <a href="{{ route('virtual.moodle-sso', ['target' => config('moodle.url') . '/course/view.php?id=' . $modulo->moodle_course_id]) }}"
+                                    <?php if($modulo->moodle_course_id): ?>
+                                        <a href="<?php echo e(route('virtual.moodle-sso', ['target' => config('moodle.url') . '/course/view.php?id=' . $modulo->moodle_course_id])); ?>"
                                             target="_blank" class="acad-mod-btn acad-mod-btn-go">
                                             <i class="ri-external-link-line"></i> Ir al curso
                                         </a>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
 
-                </div>{{-- /est-oferta-content --}}
-                @endforeach
+                </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-            @endif
+            <?php endif; ?>
         </div>
 
         <div class="est-tabs-body" id="tab-horario-docente">
-            @if($modulosDocente->isEmpty())
+            <?php if($modulosDocente->isEmpty()): ?>
                 <div class="est-empty-state">
                     <i class="ri-calendar-close-line"></i>
                     <h5>Sin módulos asignados</h5>
                     <p>No tienes módulos asignados como docente para mostrar horario.</p>
                 </div>
-            @else
+            <?php else: ?>
                 <div class="cronograma-container d-flex" style="min-height:600px;">
 
-                    {{-- Sidebar: selector de oferta + lista de módulos --}}
+                    
                     <div class="cronograma-sidebar">
                         <div class="cronograma-sidebar-head">
                             <i class="ri-book-3-line"></i>
@@ -796,11 +802,12 @@
                                     id="select-oferta-horario-docente"
                                     onchange="cargarModulosHorarioDocente()">
                                 <option value="">Seleccionar oferta académica</option>
-                                @foreach($ofertasHorariosDocente as $ofHD)
-                                    <option value="{{ $ofHD['id'] }}">
-                                        {{ $ofHD['codigo'] }} — {{ $ofHD['nombre'] }}
+                                <?php $__currentLoopData = $ofertasHorariosDocente; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ofHD): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($ofHD['id']); ?>">
+                                        <?php echo e($ofHD['codigo']); ?> — <?php echo e($ofHD['nombre']); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                             <button class="cronograma-btn-all active"
                                     id="btnTodosModulosHorarioDocente"
@@ -816,7 +823,7 @@
                         </div>
                     </div>
 
-                    {{-- Área principal: calendario --}}
+                    
                     <div class="cronograma-main">
                         <div class="cronograma-title-section">
                             <div class="cronograma-title-left">
@@ -851,14 +858,14 @@
                     </div>
 
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
 
-        @endif
+        <?php endif; ?>
 
-        </div>{{-- /content-docente --}}
-        <div id="content-estudiante" {!! $perfilActivo !== 'estudiante' ? 'style="display:none"' : '' !!}>
-        @php
+        </div>
+        <div id="content-estudiante" <?php echo $perfilActivo !== 'estudiante' ? 'style="display:none"' : ''; ?>>
+        <?php
             $tieneFoto =
                 $persona && $persona->fotografia && file_exists(public_path('images/personas/' . $persona->fotografia));
             $avatarUrl = $tieneFoto ? asset('images/personas/' . $persona->fotografia) : null;
@@ -885,201 +892,203 @@
                         (optional(optional($persona->ciudad)->departamento)->nombre ?? '')
                     : null;
             $estudio = $persona?->estudios?->first();
-        @endphp
+        ?>
         <div class="est-tabs-body active" id="tab-personal">
             <div class="est-ci-wrap">
                 <div class="est-ci-stripe"></div>
                 <div class="est-ci-body">
-                    {{-- Izquierda: foto --}}
+                    
                     <div class="est-ci-left">
                         <div class="est-ci-foto-label"><i class="ri-building-2-line"></i><span>INNOVA CIENCIA</span></div>
                         <div class="est-ci-foto">
-                            <img src="{{ $avatarUrl ?? '' }}" alt="Foto" id="est-ci-foto-img"
-                                style="{{ $tieneFoto ? '' : 'display:none;' }}"
+                            <img src="<?php echo e($avatarUrl ?? ''); ?>" alt="Foto" id="est-ci-foto-img"
+                                style="<?php echo e($tieneFoto ? '' : 'display:none;'); ?>"
                                 onerror="this.style.display='none';document.getElementById('est-ci-initials').style.display='flex';">
                             <div id="est-ci-initials" class="est-ci-initials"
-                                style="{{ $tieneFoto ? 'display:none;' : '' }}">
-                                {{ $iniciales ?: '?' }}
+                                style="<?php echo e($tieneFoto ? 'display:none;' : ''); ?>">
+                                <?php echo e($iniciales ?: '?'); ?>
+
                             </div>
                         </div>
                         <div class="est-ci-quick-data">
-                            @if ($persona?->carnet)
+                            <?php if($persona?->carnet): ?>
                                 <div class="est-ci-qd-item">
                                     <i class="ri-shield-check-line"></i>
                                     <span class="est-ci-qd-label">CI</span>
                                     <span
-                                        class="est-ci-qd-val">{{ trim($persona->carnet . ($persona->expedido ? ' ' . trim($persona->expedido) : '')) }}</span>
+                                        class="est-ci-qd-val"><?php echo e(trim($persona->carnet . ($persona->expedido ? ' ' . trim($persona->expedido) : ''))); ?></span>
                                 </div>
-                            @endif
-                            @if ($persona?->fecha_nacimiento)
+                            <?php endif; ?>
+                            <?php if($persona?->fecha_nacimiento): ?>
                                 <div class="est-ci-qd-item">
                                     <i class="ri-cake-line"></i>
                                     <span class="est-ci-qd-label">Nacimiento</span>
                                     <span
-                                        class="est-ci-qd-val">{{ \Carbon\Carbon::parse($persona->fecha_nacimiento)->format('d/m/Y') }}</span>
+                                        class="est-ci-qd-val"><?php echo e(\Carbon\Carbon::parse($persona->fecha_nacimiento)->format('d/m/Y')); ?></span>
                                 </div>
-                            @endif
-                            @if ($edad)
+                            <?php endif; ?>
+                            <?php if($edad): ?>
                                 <div class="est-ci-qd-item">
                                     <i class="ri-user-line"></i>
                                     <span class="est-ci-qd-label">Edad</span>
-                                    <span class="est-ci-qd-val">{{ $edad }} años</span>
+                                    <span class="est-ci-qd-val"><?php echo e($edad); ?> años</span>
                                 </div>
-                            @endif
-                            @if ($persona?->sexo)
+                            <?php endif; ?>
+                            <?php if($persona?->sexo): ?>
                                 <div class="est-ci-qd-item">
                                     <i class="ri-genderless-line"></i>
                                     <span class="est-ci-qd-label">Sexo</span>
                                     <span
-                                        class="est-ci-qd-val">{{ $persona->sexo == 'M' ? 'Masculino' : ($persona->sexo == 'F' ? 'Femenino' : '—') }}</span>
+                                        class="est-ci-qd-val"><?php echo e($persona->sexo == 'M' ? 'Masculino' : ($persona->sexo == 'F' ? 'Femenino' : '—')); ?></span>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         <div class="pers-acc-chips">
-                            @if ($moodleUserId)
+                            <?php if($moodleUserId): ?>
                             <div class="pers-acc-chip pers-chip-ok">
                                 <i class="ri-links-line"></i><span>Moodle: Activo</span>
                             </div>
-                            @else
+                            <?php else: ?>
                             <div class="pers-acc-chip pers-chip-no">
                                 <i class="ri-links-line"></i><span>Moodle: Sin cuenta</span>
                             </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
 
-                    {{-- Centro: datos de contacto --}}
+                    
                     <div class="est-ci-center">
                         <div class="est-ci-nombre-wrap">
                             <div>
-                                <div class="est-ci-nombre">{{ $nombreCompleto }}</div>
+                                <div class="est-ci-nombre"><?php echo e($nombreCompleto); ?></div>
                                 <div class="est-ci-estado-label">Estudiante</div>
                             </div>
-                            @if ($estudiante)
+                            <?php if($estudiante): ?>
                                 <span
-                                    class="est-ci-estado-badge est-ci-badge-{{ ($estudiante->estado ?? 'Activo') === 'Activo' ? 'activo' : 'inactivo' }}">
+                                    class="est-ci-estado-badge est-ci-badge-<?php echo e(($estudiante->estado ?? 'Activo') === 'Activo' ? 'activo' : 'inactivo'); ?>">
                                     <i class="ri-checkbox-circle-line"></i>
-                                    {{ $estudiante->estado ?? 'Activo' }}
+                                    <?php echo e($estudiante->estado ?? 'Activo'); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         <div class="est-ci-section-title"><i class="ri-contacts-line"></i> Datos de Contacto</div>
-                        @if($persona?->correo)
+                        <?php if($persona?->correo): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-mail-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Correo electrónico</div>
-                                <div class="pers-contact-val"><a href="mailto:{{ $persona->correo }}" class="pers-contact-link">{{ $persona->correo }}</a></div>
+                                <div class="pers-contact-val"><a href="mailto:<?php echo e($persona->correo); ?>" class="pers-contact-link"><?php echo e($persona->correo); ?></a></div>
                             </div>
-                            <a href="mailto:{{ $persona->correo }}" class="pers-contact-act" title="Enviar correo"><i class="ri-send-plane-line"></i></a>
+                            <a href="mailto:<?php echo e($persona->correo); ?>" class="pers-contact-act" title="Enviar correo"><i class="ri-send-plane-line"></i></a>
                         </div>
-                        @endif
-                        @if($persona?->celular)
+                        <?php endif; ?>
+                        <?php if($persona?->celular): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-smartphone-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Celular</div>
-                                <div class="pers-contact-val"><a href="tel:{{ $persona->celular }}" class="pers-contact-link">{{ $persona->celular }}</a></div>
+                                <div class="pers-contact-val"><a href="tel:<?php echo e($persona->celular); ?>" class="pers-contact-link"><?php echo e($persona->celular); ?></a></div>
                             </div>
-                            <a href="https://wa.me/{{ preg_replace('/\D/', '', $persona->celular) }}" target="_blank" class="pers-contact-act wa" title="WhatsApp"><i class="ri-whatsapp-line"></i></a>
+                            <a href="https://wa.me/<?php echo e(preg_replace('/\D/', '', $persona->celular)); ?>" target="_blank" class="pers-contact-act wa" title="WhatsApp"><i class="ri-whatsapp-line"></i></a>
                         </div>
-                        @endif
-                        @if($persona?->telefono)
+                        <?php endif; ?>
+                        <?php if($persona?->telefono): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-phone-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Teléfono</div>
-                                <div class="pers-contact-val">{{ $persona->telefono }}</div>
+                                <div class="pers-contact-val"><?php echo e($persona->telefono); ?></div>
                             </div>
                         </div>
-                        @endif
-                        @if($persona?->estado_civil)
+                        <?php endif; ?>
+                        <?php if($persona?->estado_civil): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-heart-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Estado Civil</div>
-                                <div class="pers-contact-val">{{ $persona->estado_civil }}</div>
+                                <div class="pers-contact-val"><?php echo e($persona->estado_civil); ?></div>
                             </div>
                         </div>
-                        @endif
-                        @if($ubicacion)
+                        <?php endif; ?>
+                        <?php if($ubicacion): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-map-pin-2-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Ciudad / Departamento</div>
-                                <div class="pers-contact-val">{{ $ubicacion }}</div>
+                                <div class="pers-contact-val"><?php echo e($ubicacion); ?></div>
                             </div>
                         </div>
-                        @endif
-                        @if($persona?->direccion)
+                        <?php endif; ?>
+                        <?php if($persona?->direccion): ?>
                         <div class="pers-contact-row">
                             <div class="pers-contact-ico"><i class="ri-home-3-line"></i></div>
                             <div class="pers-contact-body">
                                 <div class="pers-contact-lbl">Dirección</div>
-                                <div class="pers-contact-val">{{ $persona->direccion }}</div>
+                                <div class="pers-contact-val"><?php echo e($persona->direccion); ?></div>
                             </div>
                         </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
-                    {{-- Derecha: datos del estudiante --}}
+                    
                     <div class="est-ci-right">
                         <div class="est-ci-right-header">
                             <i class="ri-graduation-cap-line"></i><span>Datos del Estudiante</span>
                         </div>
                         <div style="display:flex;flex-direction:column;gap:6px;">
-                            @if ($estudio?->universidad)
+                            <?php if($estudio?->universidad): ?>
                             <div class="pers-info-item">
                                 <div class="pers-info-ico"><i class="ri-building-4-line"></i></div>
                                 <div>
                                     <div class="pers-info-lbl">Universidad</div>
-                                    <div class="pers-info-val">{{ $estudio->universidad->nombre ?? '—' }}</div>
+                                    <div class="pers-info-val"><?php echo e($estudio->universidad->nombre ?? '—'); ?></div>
                                 </div>
                             </div>
-                            @endif
-                            @if ($estudio?->profesion)
+                            <?php endif; ?>
+                            <?php if($estudio?->profesion): ?>
                             <div class="pers-info-item">
                                 <div class="pers-info-ico"><i class="ri-graduation-cap-line"></i></div>
                                 <div>
                                     <div class="pers-info-lbl">Carrera / Programa</div>
-                                    <div class="pers-info-val">{{ $estudio->profesion->nombre ?? '—' }}</div>
+                                    <div class="pers-info-val"><?php echo e($estudio->profesion->nombre ?? '—'); ?></div>
                                 </div>
                             </div>
-                            @endif
-                            @if ($estudiante)
+                            <?php endif; ?>
+                            <?php if($estudiante): ?>
                             <div class="pers-info-item">
                                 <div class="pers-info-ico"><i class="ri-calendar-check-line"></i></div>
                                 <div>
                                     <div class="pers-info-lbl">Fecha Inscripción</div>
-                                    <div class="pers-info-val">{{ $estudiante->created_at->format('d/m/Y') }}</div>
+                                    <div class="pers-info-val"><?php echo e($estudiante->created_at->format('d/m/Y')); ?></div>
                                 </div>
                             </div>
                             <div class="pers-info-item">
                                 <div class="pers-info-ico"><i class="ri-vip-diamond-line"></i></div>
                                 <div>
                                     <div class="pers-info-lbl">Estado</div>
-                                    <div class="pers-info-val">{{ $estudiante->estado ?? 'Activo' }}</div>
+                                    <div class="pers-info-val"><?php echo e($estudiante->estado ?? 'Activo'); ?></div>
                                 </div>
                             </div>
-                            @endif
-                            @if ($inscripciones->count())
+                            <?php endif; ?>
+                            <?php if($inscripciones->count()): ?>
                             <div class="pers-info-item">
                                 <div class="pers-info-ico"><i class="ri-book-open-line"></i></div>
                                 <div>
                                     <div class="pers-info-lbl">Ofertas Académicas</div>
-                                    <div class="pers-info-val">{{ $inscripciones->count() }} inscripción(es)</div>
+                                    <div class="pers-info-val"><?php echo e($inscripciones->count()); ?> inscripción(es)</div>
                                 </div>
                             </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
-                        @if ($inscripciones->count() > 0)
+                        <?php if($inscripciones->count() > 0): ?>
                         <div class="pers-section-sep">
                             <i class="ri-book-2-line"></i> Programas
-                            <span style="background:rgba(252,123,4,.1);color:#c96004;padding:1px 7px;border-radius:5px;font-size:.65rem;">{{ $inscripciones->count() }}</span>
+                            <span style="background:rgba(252,123,4,.1);color:#c96004;padding:1px 7px;border-radius:5px;font-size:.65rem;"><?php echo e($inscripciones->count()); ?></span>
                         </div>
                         <div style="display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:200px;padding-right:2px;">
-                            @foreach($inscripciones as $ins)
-                            @php
+                            <?php $__currentLoopData = $inscripciones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ins): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
                                 $nombreOferta = $ins->ofertaAcademica?->programa?->nombre ??
                                     ($ins->ofertaAcademica?->posgrado?->nombre ?? 'Oferta #' . $ins->ofertas_academica_id);
                                 $saldoPendiente = 0;
@@ -1088,38 +1097,36 @@
                                     $pendiente = $cuota->monto_bs - $pagado;
                                     if ($pendiente > 0) { $saldoPendiente += $pendiente; }
                                 }
-                            @endphp
+                            ?>
                             <div class="pers-study-card">
-                                <span class="pers-study-grado"><i class="ri-book-2-line"></i> {{ $ins->estado }}</span>
-                                <div class="pers-study-profesion">{{ $nombreOferta }}</div>
-                                @if ($saldoPendiente > 0)
+                                <span class="pers-study-grado"><i class="ri-book-2-line"></i> <?php echo e($ins->estado); ?></span>
+                                <div class="pers-study-profesion"><?php echo e($nombreOferta); ?></div>
+                                <?php if($saldoPendiente > 0): ?>
                                 <div class="pers-study-univ">
                                     <i class="ri-money-dollar-circle-line" style="font-size:.7rem;flex-shrink:0;color:#ef4444;"></i>
-                                    <span style="color:#ef4444;">Bs. {{ number_format($saldoPendiente, 2, ',', '.') }} pendiente</span>
+                                    <span style="color:#ef4444;">Bs. <?php echo e(number_format($saldoPendiente, 2, ',', '.')); ?> pendiente</span>
                                 </div>
-                                @else
+                                <?php else: ?>
                                 <div class="pers-study-univ">
                                     <i class="ri-checkbox-circle-line" style="font-size:.7rem;flex-shrink:0;color:#16a34a;"></i>
                                     <span style="color:#16a34a;">Al día</span>
                                 </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="est-ci-bottom-bar">
                     <span><i class="ri-id-card-line"></i> Carnet de Identificación</span>
-                    <span>{{ now()->format('Y') }}</span>
+                    <span><?php echo e(now()->format('Y')); ?></span>
                 </div>
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════
-             TAB DOCUMENTOS (solo lectura)
-        ══════════════════════════════════════════════════════════ --}}
-        @php
+        
+        <?php
             $estadoDoc = function ($archivo, $verificado) {
                 if (!$archivo) {
                     return ['label' => 'Pendiente', 'cls' => 'pending', 'icon' => 'ri-add-circle-line'];
@@ -1162,7 +1169,7 @@
                 }
             }
             $pctDocs = $totalDocs > 0 ? ($verificados / $totalDocs) * 100 : 0;
-        @endphp
+        ?>
         <div class="est-tabs-body" id="tab-documentos">
             <div
                 style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:16px;">
@@ -1172,22 +1179,22 @@
                 <div style="display:flex;align-items:center;gap:12px;">
                     <div style="flex:1;max-width:150px;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;">
                         <div
-                            style="height:100%;background:linear-gradient(90deg,#fc7b04,#f97316);border-radius:4px;width:{{ $pctDocs }}%;transition:width .3s;">
+                            style="height:100%;background:linear-gradient(90deg,#fc7b04,#f97316);border-radius:4px;width:<?php echo e($pctDocs); ?>%;transition:width .3s;">
                         </div>
                     </div>
                     <span
-                        style="font-size:.875rem;font-weight:700;color:#fc7b04;">{{ number_format($pctDocs, 0) }}%</span>
+                        style="font-size:.875rem;font-weight:700;color:#fc7b04;"><?php echo e(number_format($pctDocs, 0)); ?>%</span>
                 </div>
             </div>
 
-            {{-- Identidad --}}
+            
             <h4 style="font-size:1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
                 <i class="ri-id-card-line" style="color:#fc7b04;"></i> Documentación Personal
             </h4>
             <div
                 style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:32px;">
-                @foreach ($docsIdentidad as $doc)
-                    @php
+                <?php $__currentLoopData = $docsIdentidad; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php
                         $estado = $estadoDoc($doc['archivo'], $doc['verificado']);
                         $bgIcon =
                             $estado['cls'] == 'approved'
@@ -1201,23 +1208,24 @@
                                 : ($estado['cls'] == 'review'
                                     ? '#0891b2'
                                     : '#d97706');
-                    @endphp
+                    ?>
                     <div
                         style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);">
                         <div
                             style="padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
                             <div
-                                style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:{{ $bgIcon }};color:{{ $colorIcon }};flex-shrink:0;">
-                                <i class="{{ $doc['icono'] }}"></i>
+                                style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:<?php echo e($bgIcon); ?>;color:<?php echo e($colorIcon); ?>;flex-shrink:0;">
+                                <i class="<?php echo e($doc['icono']); ?>"></i>
                             </div>
-                            <div style="flex:1;min-width:0;font-size:.875rem;font-weight:600;">{{ $doc['nombre'] }}</div>
+                            <div style="flex:1;min-width:0;font-size:.875rem;font-weight:600;"><?php echo e($doc['nombre']); ?></div>
                             <span
-                                style="padding:4px 10px;border-radius:20px;font-size:.6875rem;font-weight:600;text-transform:uppercase;background:{{ $bgIcon }};color:{{ $colorIcon }};">
-                                {{ $estado['label'] }}
+                                style="padding:4px 10px;border-radius:20px;font-size:.6875rem;font-weight:600;text-transform:uppercase;background:<?php echo e($bgIcon); ?>;color:<?php echo e($colorIcon); ?>;">
+                                <?php echo e($estado['label']); ?>
+
                             </span>
                         </div>
                         <div style="padding:16px;">
-                            @if ($doc['archivo'])
+                            <?php if($doc['archivo']): ?>
                                 <div
                                     style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8fafc;border-radius:8px;">
                                     <div
@@ -1227,34 +1235,34 @@
                                     <div style="flex:1;min-width:0;">
                                         <div
                                             style="font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                            {{ $doc['tipo'] }}.pdf</div>
+                                            <?php echo e($doc['tipo']); ?>.pdf</div>
                                         <div
-                                            style="font-size:.6875rem;display:flex;align-items:center;gap:4px;color:{{ $doc['verificado'] ? '#16a34a' : '#d97706' }};">
-                                            @if ($doc['verificado'])
+                                            style="font-size:.6875rem;display:flex;align-items:center;gap:4px;color:<?php echo e($doc['verificado'] ? '#16a34a' : '#d97706'); ?>;">
+                                            <?php if($doc['verificado']): ?>
                                                 <i class="ri-shield-check-fill"></i> Verificado
-                                            @else
+                                            <?php else: ?>
                                                 <i class="ri-time-fill"></i> En revisión
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
-                            @else
+                            <?php else: ?>
                                 <div style="text-align:center;padding:20px;color:#94a3b8;font-size:.85rem;">
                                     <i class="ri-file-unknown-line"
                                         style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
                                     Documento no subido
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
-            {{-- Formación académica --}}
+            
             <h4 style="font-size:1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
                 <i class="ri-graduation-cap-line" style="color:#fc7b04;"></i> Formación Académica
             </h4>
-            @if ($estudioPrincipal)
+            <?php if($estudioPrincipal): ?>
                 <div
                     style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);">
                     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
@@ -1264,21 +1272,22 @@
                         </div>
                         <div>
                             <div style="font-size:.875rem;font-weight:600;">
-                                {{ $estudioPrincipal->grado_academico->nombre ?? 'Sin grado' }}</div>
+                                <?php echo e($estudioPrincipal->grado_academico->nombre ?? 'Sin grado'); ?></div>
                             <div style="font-size:.75rem;color:#64748b;">
-                                {{ $estudioPrincipal->profesion->nombre ?? 'Sin profesión' }} |
-                                {{ $estudioPrincipal->estado ?? '—' }}</div>
+                                <?php echo e($estudioPrincipal->profesion->nombre ?? 'Sin profesión'); ?> |
+                                <?php echo e($estudioPrincipal->estado ?? '—'); ?></div>
                         </div>
                         <span class="ms-auto badge"
                             style="background:#dcfce7;color:#16a34a;font-size:.6875rem;padding:4px 10px;border-radius:20px;">Principal</span>
                     </div>
-                    @if ($estudioPrincipal->universidad)
+                    <?php if($estudioPrincipal->universidad): ?>
                         <div style="font-size:.8125rem;color:#64748b;border-top:1px solid #e2e8f0;padding-top:12px;">
-                            <i class="ri-building-line me-1"></i> {{ $estudioPrincipal->universidad->nombre }}
+                            <i class="ri-building-line me-1"></i> <?php echo e($estudioPrincipal->universidad->nombre); ?>
+
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
-                @php
+                <?php
                     $docsAcademico = [
                         [
                             'nombre' => 'Título/Bachiller',
@@ -1295,10 +1304,10 @@
                             'tipo' => 'documento_provision_nacional',
                         ],
                     ];
-                @endphp
+                ?>
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
-                    @foreach ($docsAcademico as $doc)
-                        @php
+                    <?php $__currentLoopData = $docsAcademico; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
                             $estado = $estadoDoc($doc['archivo'], $doc['verificado']);
                             $bgIcon =
                                 $estado['cls'] == 'approved'
@@ -1312,24 +1321,26 @@
                                     : ($estado['cls'] == 'review'
                                         ? '#0891b2'
                                         : '#d97706');
-                        @endphp
+                        ?>
                         <div
                             style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);">
                             <div
                                 style="padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
                                 <div
-                                    style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:{{ $bgIcon }};color:{{ $colorIcon }};flex-shrink:0;">
-                                    <i class="{{ $doc['icono'] }}"></i>
+                                    style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:<?php echo e($bgIcon); ?>;color:<?php echo e($colorIcon); ?>;flex-shrink:0;">
+                                    <i class="<?php echo e($doc['icono']); ?>"></i>
                                 </div>
-                                <div style="flex:1;min-width:0;font-size:.875rem;font-weight:600;">{{ $doc['nombre'] }}
+                                <div style="flex:1;min-width:0;font-size:.875rem;font-weight:600;"><?php echo e($doc['nombre']); ?>
+
                                 </div>
                                 <span
-                                    style="padding:4px 10px;border-radius:20px;font-size:.6875rem;font-weight:600;text-transform:uppercase;background:{{ $bgIcon }};color:{{ $colorIcon }};">
-                                    {{ $estado['label'] }}
+                                    style="padding:4px 10px;border-radius:20px;font-size:.6875rem;font-weight:600;text-transform:uppercase;background:<?php echo e($bgIcon); ?>;color:<?php echo e($colorIcon); ?>;">
+                                    <?php echo e($estado['label']); ?>
+
                                 </span>
                             </div>
                             <div style="padding:16px;">
-                                @if ($doc['archivo'])
+                                <?php if($doc['archivo']): ?>
                                     <div
                                         style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8fafc;border-radius:8px;">
                                         <div
@@ -1339,40 +1350,38 @@
                                         <div style="flex:1;min-width:0;">
                                             <div
                                                 style="font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                                {{ $doc['tipo'] }}.pdf</div>
+                                                <?php echo e($doc['tipo']); ?>.pdf</div>
                                             <div
-                                                style="font-size:.6875rem;display:flex;align-items:center;gap:4px;color:{{ $doc['verificado'] ? '#16a34a' : '#d97706' }};">
-                                                @if ($doc['verificado'])
+                                                style="font-size:.6875rem;display:flex;align-items:center;gap:4px;color:<?php echo e($doc['verificado'] ? '#16a34a' : '#d97706'); ?>;">
+                                                <?php if($doc['verificado']): ?>
                                                     <i class="ri-shield-check-fill"></i> Verificado
-                                                @else
+                                                <?php else: ?>
                                                     <i class="ri-time-fill"></i> En revisión
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <div style="text-align:center;padding:20px;color:#94a3b8;font-size:.85rem;">
                                         <i class="ri-file-unknown-line"
                                             style="font-size:1.5rem;display:block;margin-bottom:6px;"></i>
                                         Documento no subido
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @else
+            <?php else: ?>
                 <div
                     style="text-align:center;padding:40px 20px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;">
                     <i class="ri-user-unfollow-line" style="font-size:2.5rem;color:#94a3b8;opacity:.5;"></i>
                     <p style="margin:16px 0 0;color:#64748b;">Sin registro académico registrado</p>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════
-             TAB ACADÉMICO (contenido actual del dashboard)
-        ══════════════════════════════════════════════════════════ --}}
+        
         <div class="est-tabs-body" id="tab-academico">
 
             <div class="tab-banner academico">
@@ -1382,51 +1391,52 @@
                     <p class="tab-banner-sub">Módulos matriculados y acceso a cursos por inscripción</p>
                 </div>
                 <span class="tab-banner-badge">
-                    <i class="ri-stack-line"></i> {{ $inscripciones->count() }} programa(s)
+                    <i class="ri-stack-line"></i> <?php echo e($inscripciones->count()); ?> programa(s)
                 </span>
             </div>
 
-            @if ($inscripciones->count() > 0)
+            <?php if($inscripciones->count() > 0): ?>
 
-                {{-- Selector de programa (solo si hay más de uno) --}}
-                @if ($inscripciones->count() > 1)
+                
+                <?php if($inscripciones->count() > 1): ?>
                 <div class="acad-prog-selector">
                     <div class="acad-prog-selector-header">
                         <i class="ri-book-open-line"></i>
                         <span>Seleccionar programa</span>
-                        <span class="acad-prog-count">{{ $inscripciones->count() }}</span>
+                        <span class="acad-prog-count"><?php echo e($inscripciones->count()); ?></span>
                     </div>
                     <div class="acad-prog-pills">
-                        @foreach ($inscripciones as $key => $insc)
-                        @php
+                        <?php $__currentLoopData = $inscripciones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $insc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
                             $pillEstado = match ($insc->estado) {
                                 'Inscrito', 'Confirmado' => 'inscrito',
                                 'Pre-Inscrito'           => 'pendiente',
                                 default                  => 'otro',
                             };
-                        @endphp
+                        ?>
                         <button type="button"
-                            class="acad-prog-pill est-oferta-tab-btn {{ $key == 0 ? 'active' : '' }}"
-                            data-target="academico-oferta-{{ $key }}">
-                            <span class="acad-prog-pill-num">{{ $key + 1 }}</span>
+                            class="acad-prog-pill est-oferta-tab-btn <?php echo e($key == 0 ? 'active' : ''); ?>"
+                            data-target="academico-oferta-<?php echo e($key); ?>">
+                            <span class="acad-prog-pill-num"><?php echo e($key + 1); ?></span>
                             <div class="acad-prog-pill-info">
                                 <span class="acad-prog-pill-name">
-                                    {{ $insc->ofertaAcademica?->programa?->nombre ?? ($insc->ofertaAcademica?->posgrado?->nombre ?? 'Programa ' . ($key + 1)) }}
+                                    <?php echo e($insc->ofertaAcademica?->programa?->nombre ?? ($insc->ofertaAcademica?->posgrado?->nombre ?? 'Programa ' . ($key + 1))); ?>
+
                                 </span>
-                                @if ($insc->ofertaAcademica?->codigo)
-                                <span class="acad-prog-pill-code">{{ $insc->ofertaAcademica->codigo }}</span>
-                                @endif
+                                <?php if($insc->ofertaAcademica?->codigo): ?>
+                                <span class="acad-prog-pill-code"><?php echo e($insc->ofertaAcademica->codigo); ?></span>
+                                <?php endif; ?>
                             </div>
-                            <span class="acad-prog-pill-estado {{ $pillEstado }}">{{ $insc->estado }}</span>
+                            <span class="acad-prog-pill-estado <?php echo e($pillEstado); ?>"><?php echo e($insc->estado); ?></span>
                         </button>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
-                @endif
+                <?php endif; ?>
 
-                {{-- Contenido de cada programa --}}
-                @foreach ($inscripciones as $key => $insc)
-                @php
+                
+                <?php $__currentLoopData = $inscripciones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $insc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
                     $oferta     = $insc->ofertaAcademica;
                     $programa   = $oferta?->programa;
                     $matriculas = $insc->moodleMatriculas->sortBy(fn($m) => $m->modulo?->n_modulo);
@@ -1435,145 +1445,148 @@
                         'Pre-Inscrito'           => 'pendiente',
                         default                  => 'otro',
                     };
-                @endphp
-                <div class="est-oferta-content {{ $key == 0 ? 'active' : '' }}"
-                    id="academico-oferta-{{ $key }}">
+                ?>
+                <div class="est-oferta-content <?php echo e($key == 0 ? 'active' : ''); ?>"
+                    id="academico-oferta-<?php echo e($key); ?>">
 
-                    {{-- Cabecera del programa --}}
+                    
                     <div class="acad-prog-header-bar">
                         <div class="acad-prog-header-info">
                             <div class="acad-prog-header-name">
-                                {{ $programa?->nombre ?? ($oferta?->posgrado?->nombre ?? 'Programa') }}
+                                <?php echo e($programa?->nombre ?? ($oferta?->posgrado?->nombre ?? 'Programa')); ?>
+
                             </div>
                             <div class="acad-prog-header-meta">
-                                @if ($oferta?->codigo)
-                                    <span><i class="ri-hashtag"></i>{{ $oferta->codigo }}</span>
-                                @endif
-                                @if ($oferta?->fecha_inicio)
-                                    <span><i class="ri-calendar-line"></i>Inicio: {{ \Carbon\Carbon::parse($oferta->fecha_inicio)->format('d/m/Y') }}</span>
-                                @endif
-                                <span><i class="ri-stack-line"></i>{{ $matriculas->count() }} módulo(s)</span>
+                                <?php if($oferta?->codigo): ?>
+                                    <span><i class="ri-hashtag"></i><?php echo e($oferta->codigo); ?></span>
+                                <?php endif; ?>
+                                <?php if($oferta?->fecha_inicio): ?>
+                                    <span><i class="ri-calendar-line"></i>Inicio: <?php echo e(\Carbon\Carbon::parse($oferta->fecha_inicio)->format('d/m/Y')); ?></span>
+                                <?php endif; ?>
+                                <span><i class="ri-stack-line"></i><?php echo e($matriculas->count()); ?> módulo(s)</span>
                             </div>
                         </div>
-                        <span class="est-estado-badge {{ $estadoClass }}">{{ $insc->estado }}</span>
+                        <span class="est-estado-badge <?php echo e($estadoClass); ?>"><?php echo e($insc->estado); ?></span>
                     </div>
 
-                    {{-- Grid de módulos --}}
-                    @if ($matriculas->isEmpty())
+                    
+                    <?php if($matriculas->isEmpty()): ?>
                         <div class="acad-empty-state">
                             <i class="ri-information-line"></i>
                             <p>Aún no tienes módulos matriculados en este programa.</p>
                         </div>
-                    @else
+                    <?php else: ?>
                         <div class="acad-modulos-grid">
-                            @foreach ($matriculas as $matricula)
-                            @php
+                            <?php $__currentLoopData = $matriculas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $matricula): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
                                 $modulo      = $matricula->modulo;
                                 $tieneMoodle = $matricula->moodle_course_id && $matricula->moodle_user_id;
                                 $suspendido  = (bool) $matricula->acceso_suspendido;
                                 $modColor    = $modulo->color ?? '#6366f1';
-                            @endphp
-                            @if (!$modulo) @continue @endif
+                            ?>
+                            <?php if(!$modulo): ?> <?php continue; ?> <?php endif; ?>
 
                             <div class="acad-mod-card">
-                                <div class="acad-mod-stripe" style="background:{{ $modColor }};"></div>
+                                <div class="acad-mod-stripe" style="background:<?php echo e($modColor); ?>;"></div>
                                 <div class="acad-mod-body">
                                     <div class="acad-mod-top">
                                         <span class="acad-mod-num"
-                                            style="background:{{ $modColor }}22;color:{{ $modColor }};">
-                                            M{{ $modulo->n_modulo }}
+                                            style="background:<?php echo e($modColor); ?>22;color:<?php echo e($modColor); ?>;">
+                                            M<?php echo e($modulo->n_modulo); ?>
+
                                         </span>
-                                        <span class="acad-mod-name">{{ $modulo->nombre }}</span>
-                                        @if ($tieneMoodle)
-                                            @if ($suspendido)
+                                        <span class="acad-mod-name"><?php echo e($modulo->nombre); ?></span>
+                                        <?php if($tieneMoodle): ?>
+                                            <?php if($suspendido): ?>
                                                 <span class="acad-mod-badge blocked">
                                                     <i class="ri-lock-line"></i> Bloqueado
                                                 </span>
-                                            @else
+                                            <?php else: ?>
                                                 <span class="acad-mod-badge activo">
                                                     <i class="ri-checkbox-circle-line"></i> Activo
                                                 </span>
-                                            @endif
-                                        @else
+                                            <?php endif; ?>
+                                        <?php else: ?>
                                             <span class="acad-mod-badge pending">
                                                 <i class="ri-time-line"></i> Sin acceso
                                             </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                     <div class="acad-mod-meta">
-                                        @if ($modulo->fecha_inicio)
+                                        <?php if($modulo->fecha_inicio): ?>
                                             <span>
                                                 <i class="ri-calendar-line"></i>
-                                                {{ \Carbon\Carbon::parse($modulo->fecha_inicio)->format('d/m/Y') }}
-                                                @if ($modulo->fecha_fin)
-                                                    — {{ \Carbon\Carbon::parse($modulo->fecha_fin)->format('d/m/Y') }}
-                                                @endif
+                                                <?php echo e(\Carbon\Carbon::parse($modulo->fecha_inicio)->format('d/m/Y')); ?>
+
+                                                <?php if($modulo->fecha_fin): ?>
+                                                    — <?php echo e(\Carbon\Carbon::parse($modulo->fecha_fin)->format('d/m/Y')); ?>
+
+                                                <?php endif; ?>
                                             </span>
-                                        @endif
-                                        @if ($modulo->docente?->persona)
+                                        <?php endif; ?>
+                                        <?php if($modulo->docente?->persona): ?>
                                             <span>
                                                 <i class="ri-user-line"></i>
-                                                {{ trim(($modulo->docente->persona->nombres ?? '') . ' ' . ($modulo->docente->persona->apellido_paterno ?? '')) }}
+                                                <?php echo e(trim(($modulo->docente->persona->nombres ?? '') . ' ' . ($modulo->docente->persona->apellido_paterno ?? ''))); ?>
+
                                             </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
-                                    @if ($tieneMoodle)
-                                        @if ($suspendido)
+                                    <?php if($tieneMoodle): ?>
+                                        <?php if($suspendido): ?>
                                             <div class="acad-mod-blocked">
                                                 <i class="ri-lock-2-line"></i>
                                                 Acceso bloqueado por pendientes de pago
                                             </div>
-                                        @else
+                                        <?php else: ?>
                                             <div class="acad-mod-actions">
                                                 <button class="acad-mod-btn btn-ver-actividades"
-                                                    data-modulo="{{ $modulo->id }}"
-                                                    data-panel="panel-mod-{{ $modulo->id }}">
+                                                    data-modulo="<?php echo e($modulo->id); ?>"
+                                                    data-panel="panel-mod-<?php echo e($modulo->id); ?>">
                                                     <i class="ri-eye-line"></i> Actividades
                                                 </button>
-                                                @php
+                                                <?php
                                                     $moodleBase = rtrim(config('moodle.url'), '/');
                                                     $courseUrl  = $moodleBase . '/course/view.php?id=' . $matricula->moodle_course_id;
                                                     $ssoUrl     = route('virtual.moodle-sso') . '?target=' . urlencode($courseUrl);
-                                                @endphp
-                                                <a href="{{ $ssoUrl }}" target="_blank"
+                                                ?>
+                                                <a href="<?php echo e($ssoUrl); ?>" target="_blank"
                                                     class="acad-mod-btn acad-mod-btn-go">
                                                     <i class="ri-external-link-line"></i> Ir al curso
                                                 </a>
                                             </div>
-                                        @endif
-                                    @endif
+                                        <?php endif; ?>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
-                            @if ($tieneMoodle && !$suspendido)
-                                <div class="est-act-panel" id="panel-mod-{{ $modulo->id }}">
-                                    <div class="est-spinner" id="spinner-mod-{{ $modulo->id }}">
+                            <?php if($tieneMoodle && !$suspendido): ?>
+                                <div class="est-act-panel" id="panel-mod-<?php echo e($modulo->id); ?>">
+                                    <div class="est-spinner" id="spinner-mod-<?php echo e($modulo->id); ?>">
                                         <div class="spinner-border spinner-border-sm"></div> Cargando actividades…
                                     </div>
-                                    <div id="contenido-mod-{{ $modulo->id }}"></div>
+                                    <div id="contenido-mod-<?php echo e($modulo->id); ?>"></div>
                                 </div>
-                            @endif
+                            <?php endif; ?>
 
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
-                </div>{{-- /est-oferta-content --}}
-                @endforeach
+                </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-            @else
+            <?php else: ?>
                 <div class="est-no-cuenta">
                     <i class="ri-book-open-line"></i>
                     <h5>Sin inscripciones</h5>
                     <p>Aún no tienes programas inscritos. Contacta con administración para gestionar tu inscripción.</p>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════
-             TAB CONTABLE (solo lectura)
-        ══════════════════════════════════════════════════════════ --}}
-        @php
+        
+        <?php
             $totalPagado = 0;
             $totalPendiente = 0;
             $totalVencido = 0;
@@ -1593,15 +1606,15 @@
                     }
                 }
             }
-        @endphp
+        ?>
         <div class="est-tabs-body" id="tab-contable">
 
-            @php
+            <?php
                 $totalOferta = $totalPagado + $totalPendiente + $totalVencido;
                 $pctPagadoGlobal = $totalOferta > 0 ? round(($totalPagado / $totalOferta) * 100) : 0;
-            @endphp
+            ?>
 
-            {{-- Resumen financiero global con barra de progreso --}}
+            
             <div class="contable-balance-card">
                 <div class="contable-balance-header">
                     <i class="ri-bar-chart-grouped-line"></i>
@@ -1611,52 +1624,53 @@
                     <div class="contable-stat-item">
                         <div class="contable-stat-icon pagado"><i class="ri-checkbox-circle-line"></i></div>
                         <div>
-                            <div class="contable-stat-value pagado">Bs. {{ number_format($totalPagado, 2) }}</div>
+                            <div class="contable-stat-value pagado">Bs. <?php echo e(number_format($totalPagado, 2)); ?></div>
                             <div class="contable-stat-label">Total Pagado</div>
                         </div>
                     </div>
                     <div class="contable-stat-item">
                         <div class="contable-stat-icon pendiente"><i class="ri-time-line"></i></div>
                         <div>
-                            <div class="contable-stat-value pendiente">Bs. {{ number_format($totalPendiente, 2) }}</div>
+                            <div class="contable-stat-value pendiente">Bs. <?php echo e(number_format($totalPendiente, 2)); ?></div>
                             <div class="contable-stat-label">Pendiente</div>
                         </div>
                     </div>
                     <div class="contable-stat-item">
                         <div class="contable-stat-icon vencido"><i class="ri-alert-line"></i></div>
                         <div>
-                            <div class="contable-stat-value vencido">Bs. {{ number_format($totalVencido, 2) }}</div>
+                            <div class="contable-stat-value vencido">Bs. <?php echo e(number_format($totalVencido, 2)); ?></div>
                             <div class="contable-stat-label">Vencido</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            @if ($inscripciones->count() > 0)
+            <?php if($inscripciones->count() > 0): ?>
                 <div class="contable-tabs-wrapper">
-                    {{-- Navegación por programas con pills que envuelven en vez de scroll --}}
+                    
                     <div class="contable-tabs-header">
                         <div class="contable-prog-pills">
-                            @foreach ($inscripciones as $key => $ins)
-                                @php
+                            <?php $__currentLoopData = $inscripciones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $ins): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php
                                     $insNombre = $ins->ofertaAcademica?->programa?->nombre
                                         ?? ($ins->ofertaAcademica?->posgrado?->nombre
                                         ?? 'Oferta #' . ($key + 1));
-                                @endphp
+                                ?>
                                 <button type="button"
-                                    class="contable-prog-pill est-oferta-tab-btn {{ $key == 0 ? 'active' : '' }}"
-                                    data-target="contable-oferta-{{ $key }}">
-                                    <span class="pill-badge">{{ $key + 1 }}</span>
-                                    {{ $insNombre }}
+                                    class="contable-prog-pill est-oferta-tab-btn <?php echo e($key == 0 ? 'active' : ''); ?>"
+                                    data-target="contable-oferta-<?php echo e($key); ?>">
+                                    <span class="pill-badge"><?php echo e($key + 1); ?></span>
+                                    <?php echo e($insNombre); ?>
+
                                     <span class="pill-arrow"><i class="ri-arrow-right-s-line"></i></span>
                                 </button>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
 
                     <div class="contable-tabs-body">
-                        @foreach ($inscripciones as $key => $ins)
-                            @php
+                        <?php $__currentLoopData = $inscripciones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $ins): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
                                 $insPagado = 0;
                                 $insPendiente = 0;
                                 $insVencido = 0;
@@ -1683,66 +1697,69 @@
                                 }
                                 $pctPagado = $insTotal > 0 ? round(($insPagado / $insTotal) * 100) : 0;
                                 $pctClass = $pctPagado >= 90 ? '' : ($pctPagado >= 50 ? 'some' : 'low');
-                            @endphp
-                            <div class="est-oferta-content {{ $key == 0 ? 'active' : '' }}"
-                                id="contable-oferta-{{ $key }}">
+                            ?>
+                            <div class="est-oferta-content <?php echo e($key == 0 ? 'active' : ''); ?>"
+                                id="contable-oferta-<?php echo e($key); ?>">
 
-                                {{-- Header de la oferta --}}
+                                
                                 <div class="est-data-card-header" style="padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--est-border);background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);">
                                     <div style="width:34px;height:34px;border-radius:10px;background:var(--est-primary-light);color:var(--est-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                                         <i class="ri-money-dollar-circle-line"></i>
                                     </div>
                                     <div style="flex:1;min-width:0;">
                                         <div style="font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;color:#1e293b;">
-                                            {{ $ins->ofertaAcademica?->programa?->nombre ?? ($ins->ofertaAcademica?->posgrado?->nombre ?? 'Oferta #' . $ins->ofertas_academica_id) }}
+                                            <?php echo e($ins->ofertaAcademica?->programa?->nombre ?? ($ins->ofertaAcademica?->posgrado?->nombre ?? 'Oferta #' . $ins->ofertas_academica_id)); ?>
+
                                         </div>
                                         <div style="font-size:.73rem;color:#94a3b8;">
-                                            Plan: {{ $ins->planesPago?->nombre ?? '—' }}
-                                            &middot; {{ $totalCuotas }} cuota(s)
+                                            Plan: <?php echo e($ins->planesPago?->nombre ?? '—'); ?>
+
+                                            &middot; <?php echo e($totalCuotas); ?> cuota(s)
                                         </div>
                                     </div>
-                                    <span class="estado-badge-est {{ $pctPagado >= 100 ? 'pagado' : ($insVencido > 0 ? 'vencido' : 'pendiente') }}">
-                                        {{ $pctPagado >= 100 ? 'Cancelado' : ($insVencido > 0 ? 'Con vencidos' : 'Al día') }}
+                                    <span class="estado-badge-est <?php echo e($pctPagado >= 100 ? 'pagado' : ($insVencido > 0 ? 'vencido' : 'pendiente')); ?>">
+                                        <?php echo e($pctPagado >= 100 ? 'Cancelado' : ($insVencido > 0 ? 'Con vencidos' : 'Al día')); ?>
+
                                     </span>
                                 </div>
 
-                                {{-- Barra de progreso de pago --}}
+                                
                                 <div class="contable-pay-progress">
                                     <i class="ri-percent-line" style="color:#94a3b8;font-size:.9rem;"></i>
                                     <div class="contable-pay-track">
-                                        <div class="contable-pay-track-fill {{ $pctClass }}"
-                                            style="width:{{ $pctPagado }}%;"></div>
+                                        <div class="contable-pay-track-fill <?php echo e($pctClass); ?>"
+                                            style="width:<?php echo e($pctPagado); ?>%;"></div>
                                     </div>
-                                    <span class="contable-pay-pct">{{ $pctPagado }}%</span>
+                                    <span class="contable-pay-pct"><?php echo e($pctPagado); ?>%</span>
                                 </div>
 
-                                {{-- Mini stats: Pagado / Pendiente / Vencido --}}
+                                
                                 <div class="contable-mini-stats">
                                     <div class="contable-mini-stat">
                                         <div class="contable-mini-icon green"><i class="ri-checkbox-circle-line"></i></div>
                                         <div>
-                                            <div class="contable-mini-val green">Bs. {{ number_format($insPagado, 2) }}</div>
+                                            <div class="contable-mini-val green">Bs. <?php echo e(number_format($insPagado, 2)); ?></div>
                                             <div class="contable-mini-lbl">Pagado</div>
                                         </div>
                                     </div>
                                     <div class="contable-mini-stat">
                                         <div class="contable-mini-icon amber"><i class="ri-time-line"></i></div>
                                         <div>
-                                            <div class="contable-mini-val amber">Bs. {{ number_format($insPendiente, 2) }}</div>
+                                            <div class="contable-mini-val amber">Bs. <?php echo e(number_format($insPendiente, 2)); ?></div>
                                             <div class="contable-mini-lbl">Pendiente</div>
                                         </div>
                                     </div>
                                     <div class="contable-mini-stat">
                                         <div class="contable-mini-icon red"><i class="ri-alert-line"></i></div>
                                         <div>
-                                            <div class="contable-mini-val red">Bs. {{ number_format($insVencido, 2) }}</div>
+                                            <div class="contable-mini-val red">Bs. <?php echo e(number_format($insVencido, 2)); ?></div>
                                             <div class="contable-mini-lbl">Vencido</div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {{-- Tabla de cuotas compacta --}}
-                                @if ($ins->cuotas && $ins->cuotas->count() > 0)
+                                
+                                <?php if($ins->cuotas && $ins->cuotas->count() > 0): ?>
                                     <div style="overflow-x:auto;">
                                         <table class="contable-cuotas-table">
                                             <thead>
@@ -1757,8 +1774,8 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($ins->cuotas as $cuota)
-                                                    @php
+                                                <?php $__currentLoopData = $ins->cuotas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cuota): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php
                                                         $totalPagadoCuota = $cuota->pagosCuota->sum('monto_bs');
                                                         $pctCuota = $cuota->monto_bs > 0 ? round(($totalPagadoCuota / $cuota->monto_bs) * 100) : 0;
                                                         $pctCuotaClass = $pctCuota >= 100 ? 'full' : ($pctCuota > 0 ? 'part' : 'empty');
@@ -1807,75 +1824,75 @@
                                                                 ];
                                                             }
                                                         }
-                                                    @endphp
+                                                    ?>
                                                     <tr>
-                                                        <td><span class="mono">{{ $cuota->n_cuota }}</span></td>
-                                                        <td><span class="cuota-name">{{ $cuota->nombre }}</span></td>
+                                                        <td><span class="mono"><?php echo e($cuota->n_cuota); ?></span></td>
+                                                        <td><span class="cuota-name"><?php echo e($cuota->nombre); ?></span></td>
                                                         <td>
-                                                            <span class="mono">Bs. {{ number_format($montoNeto, 2) }}</span>
-                                                            @if (($cuota->descuento_bs ?? 0) > 0)
-                                                                <br><span class="text-muted-sm">-{{ number_format($cuota->descuento_bs, 2) }} desc.</span>
-                                                            @endif
+                                                            <span class="mono">Bs. <?php echo e(number_format($montoNeto, 2)); ?></span>
+                                                            <?php if(($cuota->descuento_bs ?? 0) > 0): ?>
+                                                                <br><span class="text-muted-sm">-<?php echo e(number_format($cuota->descuento_bs, 2)); ?> desc.</span>
+                                                            <?php endif; ?>
                                                         </td>
                                                         <td>
-                                                            {{ $cuota->fecha_vencimiento ? \Carbon\Carbon::parse($cuota->fecha_vencimiento)->format('d/m/Y') : '—' }}
+                                                            <?php echo e($cuota->fecha_vencimiento ? \Carbon\Carbon::parse($cuota->fecha_vencimiento)->format('d/m/Y') : '—'); ?>
+
                                                         </td>
                                                         <td>
                                                             <div class="cuota-pay-micro">
                                                                 <div class="track">
-                                                                    <div class="fill {{ $pctCuotaClass }}" style="width:{{ $pctCuota }}%;"></div>
+                                                                    <div class="fill <?php echo e($pctCuotaClass); ?>" style="width:<?php echo e($pctCuota); ?>%;"></div>
                                                                 </div>
-                                                                <span class="pct">{{ $pctCuota }}%</span>
+                                                                <span class="pct"><?php echo e($pctCuota); ?>%</span>
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <span class="estado-badge-est {{ $cuota->estado == 'Pagado' ? 'pagado' : ($cuota->estado == 'Vencido' ? 'vencido' : 'pendiente') }}">
-                                                                {{ $cuota->estado }}
+                                                            <span class="estado-badge-est <?php echo e($cuota->estado == 'Pagado' ? 'pagado' : ($cuota->estado == 'Vencido' ? 'vencido' : 'pendiente')); ?>">
+                                                                <?php echo e($cuota->estado); ?>
+
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            @if (count($pagosData) > 0)
+                                                            <?php if(count($pagosData) > 0): ?>
                                                                 <button type="button"
                                                                     class="btn btn-sm btn-outline-primary btn-ver-detalle-pago"
-                                                                    data-pagos='{{ json_encode($pagosData) }}'
+                                                                    data-pagos='<?php echo e(json_encode($pagosData)); ?>'
                                                                     style="border-radius:8px;font-size:.72rem;padding:3px 10px;"
                                                                     title="Ver detalle de pagos">
                                                                     <i class="ri-eye-line"></i>
                                                                 </button>
-                                                            @else
+                                                            <?php else: ?>
                                                                 <span style="font-size:.7rem;color:#cbd5e1;">—</span>
-                                                            @endif
+                                                            <?php endif; ?>
                                                         </td>
                                                     </tr>
-                                                @endforeach
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </tbody>
                                         </table>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <div style="padding:24px;text-align:center;color:#94a3b8;">
                                         <i class="ri-money-dollar-line" style="font-size:1.5rem;opacity:.5;display:block;margin-bottom:6px;"></i>
                                         <span style="font-size:.85rem;">Sin cuotas registradas</span>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
-                        @endforeach
-                    </div>{{-- /contable-tabs-body --}}
-                </div>{{-- /contable-tabs-wrapper --}}
-            @else
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+            <?php else: ?>
                 <div class="est-empty-state">
                     <i class="ri-money-dollar-line"></i>
                     <h5>Sin información contable</h5>
                     <p>No hay ofertas académicas registradas</p>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
 
-        {{-- ══════════════════════════════════════════════════════════
-             TAB PAGOS — Comprobantes de Pago
-        ══════════════════════════════════════════════════════════ --}}
+        
         <div class="est-tabs-body" id="tab-pagos">
 
-            @php
+            <?php
                 $totalComprobantes = 0;
                 $comprobantesVerificados = 0;
                 $comprobantesPendientes = 0;
@@ -1888,9 +1905,9 @@
                         else $comprobantesPendientes++;
                     }
                 }
-            @endphp
+            ?>
 
-            {{-- Stats al estilo del contable (balance card) --}}
+            
             <div class="contable-balance-card" style="margin-bottom:20px;">
                 <div class="contable-balance-header">
                     <i class="ri-file-list-3-line"></i>
@@ -1900,145 +1917,149 @@
                     <div class="contable-stat-item">
                         <div class="contable-stat-icon pagado"><i class="ri-checkbox-circle-line"></i></div>
                         <div>
-                            <div class="contable-stat-value pagado">{{ $comprobantesVerificados }}</div>
+                            <div class="contable-stat-value pagado"><?php echo e($comprobantesVerificados); ?></div>
                             <div class="contable-stat-label">Verificados</div>
                         </div>
                     </div>
                     <div class="contable-stat-item">
                         <div class="contable-stat-icon pendiente"><i class="ri-time-line"></i></div>
                         <div>
-                            <div class="contable-stat-value pendiente">{{ $comprobantesPendientes }}</div>
+                            <div class="contable-stat-value pendiente"><?php echo e($comprobantesPendientes); ?></div>
                             <div class="contable-stat-label">En revisión</div>
                         </div>
                     </div>
                     <div class="contable-stat-item">
                         <div class="contable-stat-icon vencido"><i class="ri-close-circle-line"></i></div>
                         <div>
-                            <div class="contable-stat-value vencido">{{ $comprobantesRechazados }}</div>
+                            <div class="contable-stat-value vencido"><?php echo e($comprobantesRechazados); ?></div>
                             <div class="contable-stat-label">Rechazados</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- ── CUENTAS BANCARIAS PARA PAGOS (rediseñado) ──────────── --}}
-            @if($bancos->isNotEmpty())
+            
+            <?php if($bancos->isNotEmpty()): ?>
             <div class="contable-balance-card" style="margin-bottom:20px;">
                 <div class="contable-balance-header">
                     <i class="ri-bank-line"></i>
                     <p class="contable-balance-title">Cuentas Bancarias para Pagos</p>
                 </div>
                 <div class="pagos-bancos-grid">
-                    @foreach($bancos as $banco)
-                        @if($banco->cuentas->isNotEmpty())
+                    <?php $__currentLoopData = $bancos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $banco): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php if($banco->cuentas->isNotEmpty()): ?>
                         <div class="pagos-banco-card">
                             <div class="pagos-banco-head">
                                 <div class="pagos-banco-icon">
                                     <i class="ri-bank-line"></i>
                                 </div>
                                 <div>
-                                    <div class="pagos-banco-name">{{ $banco->nombre }}</div>
-                                    @if($banco->sigla)
-                                    <div class="pagos-banco-sigla">{{ $banco->sigla }}</div>
-                                    @endif
+                                    <div class="pagos-banco-name"><?php echo e($banco->nombre); ?></div>
+                                    <?php if($banco->sigla): ?>
+                                    <div class="pagos-banco-sigla"><?php echo e($banco->sigla); ?></div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="pagos-banco-body">
-                                @foreach($banco->cuentas as $cuenta)
+                                <?php $__currentLoopData = $banco->cuentas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cuenta): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="pagos-banco-cuenta">
                                     <div class="pagos-banco-cuenta-main">
                                         <div class="pagos-banco-cuenta-num">
                                             <i class="ri-exchange-dollar-line"></i>
-                                            {{ $cuenta->numero_cuenta }}
+                                            <?php echo e($cuenta->numero_cuenta); ?>
+
                                         </div>
                                         <div class="pagos-banco-cuenta-meta">
-                                            <span class="pagos-banco-badge {{ $cuenta->tipo_cuenta === 'Cuenta Corriente' ? 'cc' : 'ca' }}">
-                                                {{ $cuenta->tipo_cuenta === 'Cuenta Corriente' ? 'Cta. Corriente' : 'Cta. Ahorro' }}
+                                            <span class="pagos-banco-badge <?php echo e($cuenta->tipo_cuenta === 'Cuenta Corriente' ? 'cc' : 'ca'); ?>">
+                                                <?php echo e($cuenta->tipo_cuenta === 'Cuenta Corriente' ? 'Cta. Corriente' : 'Cta. Ahorro'); ?>
+
                                             </span>
-                                            @if($cuenta->titular)
+                                            <?php if($cuenta->titular): ?>
                                             <span class="pagos-banco-titular">
-                                                <i class="ri-user-line"></i> {{ $cuenta->titular }}
+                                                <i class="ri-user-line"></i> <?php echo e($cuenta->titular); ?>
+
                                             </span>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </div>
-                                    @if($cuenta->imagen_qr)
+                                    <?php if($cuenta->imagen_qr): ?>
                                     <div class="pagos-banco-qr" onclick="abrirQrModal(this.querySelector('img').src)">
-                                        <img src="{{ asset('storage/' . $cuenta->imagen_qr) }}" alt="QR" loading="lazy">
+                                        <img src="<?php echo e(asset('storage/' . $cuenta->imagen_qr)); ?>" alt="QR" loading="lazy">
                                         <span><i class="ri-qr-code-line"></i> Ver QR</span>
                                     </div>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
-                        @endif
-                    @endforeach
+                        <?php endif; ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
-            @endif
+            <?php endif; ?>
 
-            @if ($inscripciones->count() > 0)
+            <?php if($inscripciones->count() > 0): ?>
 
-                {{-- Sub-tabs por inscripción con pills que envuelven (estilo contable) --}}
+                
                 <div class="pagos-tabs-wrapper">
                     <div class="pagos-tabs-header">
                         <div class="contable-prog-pills">
-                            @foreach ($inscripciones as $key => $ins)
-                                @php
+                            <?php $__currentLoopData = $inscripciones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $ins): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php
                                     $insNombre = $ins->ofertaAcademica?->programa?->nombre
                                         ?? ($ins->ofertaAcademica?->posgrado?->nombre
                                         ?? 'Oferta #' . ($key + 1));
-                                @endphp
+                                ?>
                                 <button type="button"
-                                    class="contable-prog-pill pagos-tab-btn {{ $key == 0 ? 'active' : '' }}"
-                                    data-target="pagos-oferta-{{ $key }}">
-                                    <span class="pill-badge">{{ $key + 1 }}</span>
+                                    class="contable-prog-pill pagos-tab-btn <?php echo e($key == 0 ? 'active' : ''); ?>"
+                                    data-target="pagos-oferta-<?php echo e($key); ?>">
+                                    <span class="pill-badge"><?php echo e($key + 1); ?></span>
                                     <i class="ri-book-2-line" style="font-size:.85rem;"></i>
-                                    {{ $insNombre }}
+                                    <?php echo e($insNombre); ?>
+
                                     <span class="pill-arrow"><i class="ri-arrow-right-s-line"></i></span>
                                 </button>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
 
-                    @foreach ($inscripciones as $key => $ins)
-                        @php
+                    <?php $__currentLoopData = $inscripciones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $ins): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
                             $cuotasPendIns = $ins->cuotas->filter(fn($c) => (float)($c->pago_pendiente_bs ?? $c->monto_bs) > 0);
                             $tienePendientes = $cuotasPendIns->isNotEmpty();
-                        @endphp
-                        <div class="pagos-oferta-content {{ $key == 0 ? 'active' : '' }}" id="pagos-oferta-{{ $key }}">
+                        ?>
+                        <div class="pagos-oferta-content <?php echo e($key == 0 ? 'active' : ''); ?>" id="pagos-oferta-<?php echo e($key); ?>">
 
-                            {{-- Grid 2 columnas: Cuotas + Comprobantes --}}
+                            
                             <div class="pagos-grid-2">
 
-                                {{-- ── COLUMNA IZQUIERDA: Cuotas ──────────────────── --}}
+                                
                                 <div class="pagos-card">
                                     <div class="pagos-card-header">
                                         <div class="pagos-card-header-left">
                                             <div class="pagos-card-icon orange"><i class="ri-installment-line"></i></div>
                                             <div>
                                                 <div class="pagos-card-title">Estado de Cuotas</div>
-                                                <div class="pagos-card-sub">{{ $ins->planesPago?->nombre ?? 'Sin plan' }} &middot; {{ $ins->cuotas->count() }} cuota(s)</div>
+                                                <div class="pagos-card-sub"><?php echo e($ins->planesPago?->nombre ?? 'Sin plan'); ?> &middot; <?php echo e($ins->cuotas->count()); ?> cuota(s)</div>
                                             </div>
                                         </div>
-                                        @if ($tienePendientes)
-                                            @php
+                                        <?php if($tienePendientes): ?>
+                                            <?php
                                                 $progNombre = addslashes($ins->ofertaAcademica?->programa?->nombre ?? ($ins->ofertaAcademica?->posgrado?->nombre ?? 'Oferta'));
                                                 $planNombre = addslashes($ins->planesPago?->nombre ?? '');
-                                            @endphp
+                                            ?>
                                             <button type="button" class="pagos-btn-subir"
-                                                onclick="estAbrirModal('{{ $ins->id }}', '{{ $progNombre }}', '{{ $planNombre }}')">
+                                                onclick="estAbrirModal('<?php echo e($ins->id); ?>', '<?php echo e($progNombre); ?>', '<?php echo e($planNombre); ?>')">
                                                 <i class="ri-upload-cloud-line"></i> Subir
                                             </button>
-                                        @else
+                                        <?php else: ?>
                                             <span class="pagos-btn-al-dia">
                                                 <i class="ri-checkbox-circle-fill"></i> Al día
                                             </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                     <div class="pagos-card-body">
-                                        @if ($ins->cuotas && $ins->cuotas->count() > 0)
+                                        <?php if($ins->cuotas && $ins->cuotas->count() > 0): ?>
                                             <table class="pagos-mini-table">
                                                 <thead>
                                                     <tr>
@@ -2051,112 +2072,112 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($ins->cuotas as $cuota)
-                                                        @php
+                                                    <?php $__currentLoopData = $ins->cuotas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cuota): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <?php
                                                             $estadoClass = $cuota->estado == 'Pagado' ? 'pagado' : ($cuota->estado == 'Vencido' ? 'vencido' : 'pendiente');
                                                             $totalPagadoCuota = $cuota->pagosCuota->sum('monto_bs');
                                                             $pctCuota = $cuota->monto_bs > 0 ? round(($totalPagadoCuota / $cuota->monto_bs) * 100) : 0;
                                                             $pctCuotaClass = $pctCuota >= 100 ? 'full' : ($pctCuota > 0 ? 'part' : 'empty');
-                                                        @endphp
+                                                        ?>
                                                         <tr>
-                                                            <td data-label="#"><span class="num-cuota">{{ $cuota->n_cuota }}</span></td>
-                                                            <td data-label="Cuota" style="font-weight:600;color:#1e293b;">{{ $cuota->nombre }}</td>
-                                                            <td data-label="Monto" style="font-weight:600;color:#1e293b;font-family:'Outfit',sans-serif;">Bs. {{ number_format($cuota->monto_bs, 2) }}</td>
-                                                            <td data-label="Vencimiento" class="fecha-cell">{{ $cuota->fecha_vencimiento ? \Carbon\Carbon::parse($cuota->fecha_vencimiento)->format('d/m/Y') : '—' }}</td>
+                                                            <td data-label="#"><span class="num-cuota"><?php echo e($cuota->n_cuota); ?></span></td>
+                                                            <td data-label="Cuota" style="font-weight:600;color:#1e293b;"><?php echo e($cuota->nombre); ?></td>
+                                                            <td data-label="Monto" style="font-weight:600;color:#1e293b;font-family:'Outfit',sans-serif;">Bs. <?php echo e(number_format($cuota->monto_bs, 2)); ?></td>
+                                                            <td data-label="Vencimiento" class="fecha-cell"><?php echo e($cuota->fecha_vencimiento ? \Carbon\Carbon::parse($cuota->fecha_vencimiento)->format('d/m/Y') : '—'); ?></td>
                                                             <td data-label="Avance">
                                                                 <div class="cuota-pay-micro">
                                                                     <div class="track">
-                                                                        <div class="fill {{ $pctCuotaClass }}" style="width:{{ $pctCuota }}%;"></div>
+                                                                        <div class="fill <?php echo e($pctCuotaClass); ?>" style="width:<?php echo e($pctCuota); ?>%;"></div>
                                                                     </div>
-                                                                    <span class="pct">{{ $pctCuota }}%</span>
+                                                                    <span class="pct"><?php echo e($pctCuota); ?>%</span>
                                                                 </div>
                                                             </td>
-                                                            <td data-label="Estado"><span class="pagos-cuota-badge {{ $estadoClass }}">{{ $cuota->estado }}</span></td>
+                                                            <td data-label="Estado"><span class="pagos-cuota-badge <?php echo e($estadoClass); ?>"><?php echo e($cuota->estado); ?></span></td>
                                                         </tr>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </tbody>
                                             </table>
-                                        @else
+                                        <?php else: ?>
                                             <div class="pagos-card-empty">
                                                 <i class="ri-inbox-line"></i>
                                                 <p>Sin cuotas registradas</p>
                                             </div>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
 
-                                {{-- ── COLUMNA DERECHA: Comprobantes ──────────────── --}}
+                                
                                 <div class="pagos-card">
                                     <div class="pagos-card-header">
                                         <div class="pagos-card-header-left">
                                             <div class="pagos-card-icon indigo"><i class="ri-file-list-3-line"></i></div>
                                             <div>
                                                 <div class="pagos-card-title">Comprobantes Enviados</div>
-                                                <div class="pagos-card-sub">{{ $ins->pagosRespaldos->count() }} total(es)</div>
+                                                <div class="pagos-card-sub"><?php echo e($ins->pagosRespaldos->count()); ?> total(es)</div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="pagos-card-body">
-                                        @if ($ins->pagosRespaldos->count() > 0)
-                                            @foreach ($ins->pagosRespaldos->sortByDesc('created_at') as $resp)
-                                                @php
+                                        <?php if($ins->pagosRespaldos->count() > 0): ?>
+                                            <?php $__currentLoopData = $ins->pagosRespaldos->sortByDesc('created_at'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $resp): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <?php
                                                     $stClass = $resp->estado === 'verificado' ? 'verificado' : ($resp->estado === 'rechazado' ? 'rechazado' : 'revision');
                                                     $stLabel = $resp->estado === 'verificado' ? 'Verificado' : ($resp->estado === 'rechazado' ? 'Rechazado' : 'En revisión');
                                                     $archivoUrl = asset('storage/comprobantes/' . $resp->archivo);
                                                     $esImagen = preg_match('/\.(jpg|jpeg|png)$/i', $resp->archivo);
-                                                @endphp
+                                                ?>
                                                 <div class="pagos-comp-row">
-                                                    <div class="pagos-comp-icon {{ $esImagen ? 'img' : 'pdf' }}">
-                                                        <i class="{{ $esImagen ? 'ri-image-fill' : 'ri-file-pdf-fill' }}"></i>
+                                                    <div class="pagos-comp-icon <?php echo e($esImagen ? 'img' : 'pdf'); ?>">
+                                                        <i class="<?php echo e($esImagen ? 'ri-image-fill' : 'ri-file-pdf-fill'); ?>"></i>
                                                     </div>
                                                     <div class="pagos-comp-body">
                                                         <div class="top">
-                                                            <span class="fecha"><i class="ri-calendar-line"></i> {{ $resp->created_at->format('d/m/Y') }} <span style="color:#cbd5e1;">{{ $resp->created_at->format('H:i') }}</span></span>
+                                                            <span class="fecha"><i class="ri-calendar-line"></i> <?php echo e($resp->created_at->format('d/m/Y')); ?> <span style="color:#cbd5e1;"><?php echo e($resp->created_at->format('H:i')); ?></span></span>
                                                             <div class="cuota-tags">
-                                                                @forelse ($resp->cuotas as $cq)
-                                                                    <span class="cuota-tag">{{ $cq->nombre }}</span>
-                                                                @empty
+                                                                <?php $__empty_1 = true; $__currentLoopData = $resp->cuotas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cq): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                                    <span class="cuota-tag"><?php echo e($cq->nombre); ?></span>
+                                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                                                     <span style="font-size:.65rem;color:#94a3b8;">—</span>
-                                                                @endforelse
+                                                                <?php endif; ?>
                                                             </div>
                                                         </div>
-                                                        @if ($resp->observaciones)
-                                                            <div class="obs">{{ $resp->observaciones }}</div>
-                                                        @endif
+                                                        <?php if($resp->observaciones): ?>
+                                                            <div class="obs"><?php echo e($resp->observaciones); ?></div>
+                                                        <?php endif; ?>
                                                     </div>
                                                     <div class="pagos-comp-actions">
-                                                        <span class="pagos-comp-badge {{ $stClass }}">{{ $stLabel }}</span>
-                                                        <a href="{{ $archivoUrl }}" target="_blank" class="pagos-comp-link" title="Ver archivo">
-                                                            <i class="{{ $esImagen ? 'ri-eye-line' : 'ri-file-pdf-line' }}"></i>
+                                                        <span class="pagos-comp-badge <?php echo e($stClass); ?>"><?php echo e($stLabel); ?></span>
+                                                        <a href="<?php echo e($archivoUrl); ?>" target="_blank" class="pagos-comp-link" title="Ver archivo">
+                                                            <i class="<?php echo e($esImagen ? 'ri-eye-line' : 'ri-file-pdf-line'); ?>"></i>
                                                         </a>
                                                     </div>
                                                 </div>
-                                            @endforeach
-                                        @else
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        <?php else: ?>
                                             <div class="pagos-card-empty">
                                                 <i class="ri-file-upload-line"></i>
                                                 <p>No has enviado comprobantes aún</p>
                                             </div>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
 
-                            </div>{{-- /pagos-grid-2 --}}
+                            </div>
 
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
 
-            @else
+            <?php else: ?>
                 <div class="est-empty-state">
                     <i class="ri-file-list-3-line"></i>
                     <h5>Sin inscripciones</h5>
                     <p>No hay inscripciones para mostrar</p>
                 </div>
-            @endif
-        </div>{{-- /tab-pagos --}}
+            <?php endif; ?>
+        </div>
 
-    {{-- QR Lightbox --}}
+    
     <div id="qrOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75);align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="cerrarQrOverlay(event)">
         <div style="background:#fff;border-radius:18px;padding:2rem;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:360px;margin:1rem;position:relative;" onclick="event.stopPropagation()">
             <button onclick="cerrarQrOverlay()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.3rem;color:#94a3b8;cursor:pointer;padding:4px;line-height:1;"><i class="ri-close-line"></i></button>
@@ -2165,11 +2186,11 @@
         </div>
     </div>
 
-    {{-- Modal Subir Comprobante (estudiante) — rediseñado --}}
+    
     <div class="modal fade" id="modalEstComprobante" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width:580px;">
             <div class="modal-content" style="border-radius:16px;overflow:hidden;border:none;box-shadow:0 25px 60px rgba(0,0,0,.25);">
-                {{-- Header con gradiente oscuro (estilo contable) --}}
+                
                 <div style="background:linear-gradient(135deg,#1e293b 0%,#2d3748 100%);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;">
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="width:34px;height:34px;border-radius:10px;background:rgba(252,123,4,.15);color:#fc7b04;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0;">
@@ -2184,7 +2205,7 @@
                 </div>
 
                 <div style="padding:22px 24px;background:#fff;">
-                    {{-- Info programa/plan con icono --}}
+                    
                     <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#f8fafc 0%,#f1f5f9 100%);border-radius:12px;padding:14px 16px;margin-bottom:20px;border-left:4px solid #fc7b04;">
                         <div style="width:36px;height:36px;border-radius:10px;background:rgba(252,123,4,.1);color:#fc7b04;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">
                             <i class="ri-book-2-line"></i>
@@ -2195,7 +2216,7 @@
                         </div>
                     </div>
 
-                    {{-- Archivo --}}
+                    
                     <div style="margin-bottom:18px;">
                         <label style="font-size:.78rem;font-weight:700;color:#475569;margin-bottom:7px;display:block;">
                             Archivo del comprobante <span style="color:#dc2626;">*</span>
@@ -2212,7 +2233,7 @@
                         <input type="file" id="estCompArchivo" accept=".jpg,.jpeg,.png,.pdf" style="display:none;">
                     </div>
 
-                    {{-- Observaciones --}}
+                    
                     <div style="margin-bottom:18px;">
                         <label style="font-size:.78rem;font-weight:700;color:#475569;margin-bottom:7px;display:block;">Observaciones</label>
                         <textarea id="estCompObservaciones" rows="2"
@@ -2222,7 +2243,7 @@
                             onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none';this.style.background='#f8fafc'"></textarea>
                     </div>
 
-                    {{-- Cuotas que cubre --}}
+                    
                     <div>
                         <label style="font-size:.78rem;font-weight:700;color:#475569;margin-bottom:7px;display:block;">
                             Cuotas que cubre este comprobante <span style="color:#dc2626;">*</span>
@@ -2235,7 +2256,7 @@
                     </div>
                 </div>
 
-                {{-- Footer --}}
+                
                 <div style="border-top:1px solid #e2e8f0;padding:14px 24px;background:#f8fafc;display:flex;justify-content:flex-end;gap:10px;">
                     <button type="button" data-bs-dismiss="modal"
                         style="padding:11px 20px;border-radius:10px;border:2px solid #e2e8f0;background:#fff;color:#475569;font-weight:600;font-size:.82rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;"
@@ -2254,10 +2275,10 @@
         </div>
     </div>
 
-    {{-- Toast container (estudiante) --}}
+    
     <div id="est-toast-container" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:.5rem;"></div>
 
-    {{-- Modal Ver Detalle Pago (usado por tab contable) --}}
+    
     <div class="modal fade modal-detalle-pago" id="modalVerDetallePago" tabindex="-1" aria-labelledby="modalVerDetallePagoLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -2271,7 +2292,7 @@
                         <div class="detalle-header">
                             <div class="detalle-header-top">
                                 <div class="detalle-logo">
-                                    <img src="{{ asset('build/images/logo-dark.png') }}" alt="Logo" style="width: 40px;">
+                                    <img src="<?php echo e(asset('build/images/logo-dark.png')); ?>" alt="Logo" style="width: 40px;">
                                     <div>
                                         <div class="detalle-logo-text">INNOVA CIENCIA VIRTUAL</div>
                                         <div class="detalle-logo-sub">Educación Superior Virtual</div>
@@ -2355,18 +2376,16 @@
         </div>
     </div>
 
-{{-- ══════════════════════════════════════════════════════════
-     TAB CRONOGRAMA — Cronograma de Clases
-═════════════════════════════════════════════════════════ --}}
+
 <div class="est-tabs-body" id="tab-cronograma">
 
-    @if($ofertasCronograma->isEmpty())
+    <?php if($ofertasCronograma->isEmpty()): ?>
         <div class="est-empty-state">
             <i class="ri-calendar-close-line"></i>
             <h5>No tienes ofertas inscritas</h5>
             <p>No tienes ofertas académicas con inscripción activa para mostrar cronograma.</p>
         </div>
-    @else
+    <?php else: ?>
         <div class="cronograma-container d-flex" style="min-height: 600px;">
             <div class="cronograma-sidebar">
                 <div class="cronograma-sidebar-head">
@@ -2376,9 +2395,9 @@
                 <div class="cronograma-sidebar-body">
                     <select class="cronograma-select" id="select-oferta-cronograma" onchange="cargarModulosCronograma()">
                         <option value="">Seleccionar oferta académica</option>
-                        @foreach($ofertasCronograma as $oferta)
-                            <option value="{{ $oferta['id'] }}">{{ $oferta['codigo'] }} - {{ $oferta['nombre'] }}</option>
-                        @endforeach
+                        <?php $__currentLoopData = $ofertasCronograma; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $oferta): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($oferta['id']); ?>"><?php echo e($oferta['codigo']); ?> - <?php echo e($oferta['nombre']); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                     <button class="cronograma-btn-all" id="btnTodosModulosCronograma" onclick="verTodosModulosCronograma()">
                         <i class="ri-layout-grid-line"></i> Todos los módulos
@@ -2421,16 +2440,14 @@
                 </div>
             </div>
         </div>
-    @endif
-        </div>{{-- /content-estudiante --}}
+    <?php endif; ?>
+        </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════════════════════════
-     MODAL ACTIVIDADES ESTUDIANTE
-══════════════════════════════════════════════════════════════════════════ --}}
+
 <div id="modal-act-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;overflow-y:auto;padding:2rem 1rem;">
     <div id="modal-act-box" style="background:#fff;border-radius:16px;max-width:780px;margin:0 auto;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column;max-height:90vh;">
-        {{-- Header --}}
+        
         <div style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid #e9ecef;flex-shrink:0;">
             <div style="display:flex;align-items:center;gap:.75rem;">
                 <span id="modal-act-icon" style="font-size:1.4rem;"></span>
@@ -2441,7 +2458,7 @@
             </div>
             <button onclick="cerrarModalAct()" style="background:none;border:none;font-size:1.5rem;color:#6c757d;cursor:pointer;line-height:1;padding:.25rem .5rem;">&times;</button>
         </div>
-        {{-- Body --}}
+        
         <div id="modal-act-body" style="padding:1.5rem;overflow-y:auto;flex:1;">
             <div id="modal-act-loading" style="text-align:center;padding:2rem;color:#6c757d;">
                 <div class="spinner-border spinner-border-sm" style="color:#fc7b04;"></div>
@@ -2451,9 +2468,7 @@
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════════════════════════
-     MODAL DETALLE SESIÓN ESTUDIANTE
-══════════════════════════════════════════════════════════════════════════ --}}
+
 <div class="modal fade" id="modalDetalleSesionEst" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:780px;">
         <div class="modal-content border-0 shadow-lg" style="border-radius:18px;overflow:hidden;">
@@ -2474,10 +2489,10 @@
             <div class="modal-body p-0">
                 <div class="row g-0">
 
-                    {{-- Columna izquierda: info académica (rediseñada) --}}
+                    
                     <div class="col-md-5 d-flex flex-column" style="padding:1.25rem 1.35rem;border-right:1px solid #e9ecef;background:#f8fafc;gap:14px;">
 
-                        {{-- Módulo --}}
+                        
                         <div class="d-flex align-items-start gap-3">
                             <div class="cronograma-modal-icon" style="background:rgba(252,123,4,.1);color:#fc7b04;">
                                 <i class="ri-book-open-line"></i>
@@ -2488,7 +2503,7 @@
                             </div>
                         </div>
 
-                        {{-- Fecha y hora en grid compacto --}}
+                        
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                             <div class="d-flex align-items-start gap-2">
                                 <div class="cronograma-modal-icon-sm" style="background:rgba(41,156,219,.1);color:#299cdb;">
@@ -2510,7 +2525,7 @@
                             </div>
                         </div>
 
-                        {{-- Docente --}}
+                        
                         <div class="d-flex align-items-start gap-2">
                             <div class="cronograma-modal-icon-sm" style="background:rgba(99,102,241,.1);color:#6366f1;">
                                 <i class="ri-user-star-line"></i>
@@ -2521,7 +2536,7 @@
                             </div>
                         </div>
 
-                        {{-- Estado + Reprogramado compacto --}}
+                        
                         <div>
                             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                                 <div class="d-flex align-items-start gap-2">
@@ -2544,10 +2559,10 @@
 
                     </div>
 
-                    {{-- Columna derecha: enlaces (rediseñada) --}}
+                    
                     <div class="col-md-7 d-flex flex-column" style="padding:1.25rem 1.35rem;gap:12px;">
 
-                        {{-- Enlace sesión virtual --}}
+                        
                         <div id="estDetEnlaceWrap" style="display:none;border-radius:12px;border:1.5px solid rgba(99,102,241,.2);overflow:hidden;">
                             <div style="background:linear-gradient(135deg,rgba(99,102,241,.06) 0%,rgba(99,102,241,.02) 100%);padding:14px 16px;">
                                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
@@ -2568,7 +2583,7 @@
                             </div>
                         </div>
 
-                        {{-- Grabación --}}
+                        
                         <div id="estDetGrabacionWrap" style="display:none;border-radius:12px;border:1.5px solid rgba(220,38,38,.15);overflow:hidden;">
                             <div style="background:linear-gradient(135deg,rgba(220,38,38,.04) 0%,rgba(220,38,38,.01) 100%);padding:14px 16px;">
                                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
@@ -2586,7 +2601,7 @@
                             </div>
                         </div>
 
-                        {{-- Sin enlaces --}}
+                        
                         <div id="estDetSinEnlaces" class="d-flex flex-column align-items-center justify-content-center flex-grow-1 text-center" style="color:#94a3b8;padding:20px;">
                             <i class="ri-calendar-check-line" style="font-size:2.2rem;margin-bottom:10px;opacity:.35;"></i>
                             <div style="font-size:.82rem;font-weight:600;color:#64748b;">Sesión confirmada</div>
@@ -2609,21 +2624,21 @@
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('script')
-    <script src="{{ URL::asset('build/libs/fullcalendar/index.global.min.js') }}"></script>
+<?php $__env->startSection('script'); ?>
+    <script src="<?php echo e(URL::asset('build/libs/fullcalendar/index.global.min.js')); ?>"></script>
     <script>
         /* ── Variables globales ── */
         const loaded = {};
         let calendarioCronograma    = null;
         let calendarioDocente       = null;   // legacy — ya no se usa directamente
         let calendarioHorarioDocente = null;  // nuevo calendario docente (cronograma style)
-        let datosCronograma = @json($ofertasCronograma);
-        @if ($esDocente)
-        let datosHorariosDocente = {!! json_encode($horariosDocente) !!};
-        let datosOfertasDocente  = @json($ofertasHorariosDocente);
-        @endif
+        let datosCronograma = <?php echo json_encode($ofertasCronograma, 15, 512) ?>;
+        <?php if($esDocente): ?>
+        let datosHorariosDocente = <?php echo json_encode($horariosDocente); ?>;
+        let datosOfertasDocente  = <?php echo json_encode($ofertasHorariosDocente, 15, 512) ?>;
+        <?php endif; ?>
         let moduloSeleccionadoId = null;
         let moduloSeleccionadoHorarioDocenteId = null;
 
@@ -3594,7 +3609,7 @@
                 if (!cuotasChecked.length) { estMostrarToast('error', 'Selecciona al menos una cuota.'); return; }
 
                 var formData = new FormData();
-                formData.append('_token', '{{ csrf_token() }}');
+                formData.append('_token', '<?php echo e(csrf_token()); ?>');
                 formData.append('inscripcion_id', estCompInscripcionId);
                 formData.append('archivo', archivo);
                 formData.append('observaciones', document.getElementById('estCompObservaciones').value);
@@ -3603,7 +3618,7 @@
                 btnEstEnviar.disabled = true;
                 btnEstEnviar.innerHTML = '<i class="ri-loader-4-line me-1"></i>Enviando...';
 
-                fetch('{{ route("virtual.comprobante.subir") }}', { method: 'POST', body: formData })
+                fetch('<?php echo e(route("virtual.comprobante.subir")); ?>', { method: 'POST', body: formData })
                     .then(function(r) { return r.json(); })
                     .then(function(data) {
                         btnEstEnviar.disabled = false;
@@ -3634,10 +3649,10 @@
             if (btnDoc) btnDoc.disabled = true;
             if (btnActivo) btnActivo.classList.add('loading');
 
-            fetch('{{ route('virtual.cambiarPerfil') }}', {
+            fetch('<?php echo e(route('virtual.cambiarPerfil')); ?>', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ perfil: perfil })
@@ -3858,7 +3873,7 @@
             }
         };
 
-        @if ($esDocente && $perfilActivo === 'docente')
+        <?php if($esDocente && $perfilActivo === 'docente'): ?>
         document.addEventListener('DOMContentLoaded', function() {
             if (datosOfertasDocente && datosOfertasDocente.length > 0) {
                 const sel = document.getElementById('select-oferta-horario-docente');
@@ -3868,7 +3883,7 @@
                 }
             }
         });
-        @endif
+        <?php endif; ?>
 
         /* ══════════════════════════════════════════════════════════════════
            MODAL ACTIVIDADES ESTUDIANTE
@@ -4743,12 +4758,14 @@
                 '<div style="font-size:.88rem;font-weight:700;color:#2c3e50;">' + value + '</div></div>';
         }
 
-        @if ($esDocente && $perfilActivo === 'docente')
+        <?php if($esDocente && $perfilActivo === 'docente'): ?>
         document.addEventListener('DOMContentLoaded', function() {
             if (datosHorariosDocente && datosHorariosDocente.length > 0) {
                 initCalendarDocente(datosHorariosDocente);
             }
         });
-        @endif
+        <?php endif; ?>
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.virtual', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp_82_12\htdocs\innova-ciencia-virtual\resources\views/virtual/dashboard.blade.php ENDPATH**/ ?>

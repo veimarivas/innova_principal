@@ -90,6 +90,10 @@ Route::prefix('virtual')->name('virtual.')->middleware(['auth', 'isMoodle'])->gr
         Route::post('/actividades/quiz/{quizId}/preguntas/multichoice',                         [QuizPreguntasController::class, 'storeMultichoice']);
         Route::post('/actividades/quiz/{quizId}/preguntas/truefalse',                           [QuizPreguntasController::class, 'storeTrueFalse']);
         Route::post('/actividades/quiz/{quizId}/preguntas/matching',                            [QuizPreguntasController::class, 'storeMatching']);
+        Route::get('/actividades/quiz/{quizId}/preguntas/{questionId}',                         [QuizPreguntasController::class, 'show']);
+        Route::put('/actividades/quiz/{quizId}/preguntas/{questionId}/multichoice',             [QuizPreguntasController::class, 'updateMultichoice']);
+        Route::put('/actividades/quiz/{quizId}/preguntas/{questionId}/truefalse',               [QuizPreguntasController::class, 'updateTrueFalse']);
+        Route::put('/actividades/quiz/{quizId}/preguntas/{questionId}/matching',                [QuizPreguntasController::class, 'updateMatching']);
         Route::delete('/actividades/quiz/{quizId}/preguntas/{slotId}',                          [QuizPreguntasController::class, 'destroy']);
         // Centralizador
         Route::get('/academico/calificaciones',                      [AcademicoController::class, 'getGradeBook']);
@@ -311,6 +315,10 @@ Route::prefix('admin/posgrads')->name('admin.posgrads.')->middleware(['auth', 'i
         Route::post('actividades/quiz/{quizId}/preguntas/multichoice',   [QuizPreguntasController::class, 'storeMultichoice'])->name('actividades.quiz.preguntas.multichoice');
         Route::post('actividades/quiz/{quizId}/preguntas/truefalse',     [QuizPreguntasController::class, 'storeTrueFalse'])->name('actividades.quiz.preguntas.truefalse');
         Route::post('actividades/quiz/{quizId}/preguntas/matching',      [QuizPreguntasController::class, 'storeMatching'])->name('actividades.quiz.preguntas.matching');
+        Route::get('actividades/quiz/{quizId}/preguntas/{questionId}',   [QuizPreguntasController::class, 'show'])->name('actividades.quiz.preguntas.show');
+        Route::put('actividades/quiz/{quizId}/preguntas/{questionId}/multichoice', [QuizPreguntasController::class, 'updateMultichoice'])->name('actividades.quiz.preguntas.update.multichoice');
+        Route::put('actividades/quiz/{quizId}/preguntas/{questionId}/truefalse',   [QuizPreguntasController::class, 'updateTrueFalse'])->name('actividades.quiz.preguntas.update.truefalse');
+        Route::put('actividades/quiz/{quizId}/preguntas/{questionId}/matching',    [QuizPreguntasController::class, 'updateMatching'])->name('actividades.quiz.preguntas.update.matching');
         Route::delete('actividades/quiz/{quizId}/preguntas/{slotId}',    [QuizPreguntasController::class, 'destroy'])->name('actividades.quiz.preguntas.destroy');
     });
 

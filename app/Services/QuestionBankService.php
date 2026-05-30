@@ -304,6 +304,141 @@ class QuestionBankService
         return true;
     }
 
+    /**
+     * Devuelve los detalles completos de una pregunta (incluyendo opciones/pares).
+     */
+    public function getQuestionDetails(int $questionId): array
+    {
+        $db = DB::connection('moodle');
+        $q  = $db->table('question')->find($questionId);
+        if (!$q) return [];
+
+        $result = [
+            'id'           => (int)$q->id,
+            'name'         => $q->name,
+            'qtype'        => $q->qtype,
+            'questiontext' => $q->questiontext,
+            'defaultmark'  => (float)$q->defaultmark,
+            'single'       => 'true',
+            'correctanswer'=> null,
+            'options'      => [],
+            'pairs'        => [],
+        ];
+
+        if ($q->qtype === 'multichoice') {
+            $opts = $db->table('qtype_multichoice_options')->where('questionid', $questionId)->first();
+            $result['single'] = ($opts && $opts->single) ? 'true' : 'false';
+            $answers = $db->table('question_answers')->where('question', $questionId)->orderBy('id')->get();
+            foreach ($answers as $a) {
+                $result['options'][] = [
+                    'id'       => (int)$a->id,
+                    'text'     => $a->answer,
+                    'fraction' => (float)$a->fraction,
+                    'feedback' => $a->feedback ?? '',
+                ];
+            }
+        } elseif ($q->qtype === 'truefalse') {
+            $tf = $db->table('question_truefalse')->where('question', $questionId)->first();
+            if ($tf) {
+                $trueAns = $db->table('question_answers')->find($tf->trueanswer);
+                $result['correctanswer'] = ($trueAns && (float)$trueAns->fraction == 1) ? 'true' : 'false';
+            }
+        } elseif ($q->qtype === 'match') {
+            $pairs = $db->table('qtype_match_subquestions')->where('questionid', $questionId)->orderBy('id')->get();
+            foreach ($pairs as $p) {
+                $result['pairs'][] = [
+                    'question' => $p->questiontext,
+                    'answer'   => $p->answertext,
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Actualiza una pregunta de opción múltiple.
+     */
+    public function updateMultipleChoice(int $questionId, array $data): void
+    {
+        $db  = DB::connection('moodle');
+        $now = time();
+
+        $db->table('question')->where('id', $questionId)->update([
+            'name'          => $data['name'],
+            'questiontext'  => $data['questiontext'],
+            'defaultmark'   => $data['defaultmark'] ?? 1,
+            'timemodified'  => $now,
+            'modifiedby'    => 0,
+        ]);
+
+        $single = ($data['single'] ?? 'true') === 'true' ? 1 : 0;
+        $db->table('qtype_multichoice_options')->where('questionid', $questionId)->update(['single' => $single]);
+
+        $db->table('question_answers')->where('question', $questionId)->delete();
+        foreach ($data['options'] as $opt) {
+            $db->table('question_answers')->insert([
+                'question'       => $questionId,
+                'answer'         => $opt['text'],
+                'answerformat'   => 1,
+                'fraction'       => (float)($opt['fraction'] ?? 0),
+                'feedback'       => $opt['feedback'] ?? '',
+                'feedbackformat' => 1,
+            ]);
+        }
+    }
+
+    /**
+     * Actualiza una pregunta verdadero/falso.
+     */
+    public function updateTrueFalse(int $questionId, array $data): void
+    {
+        $db  = DB::connection('moodle');
+        $now = time();
+
+        $db->table('question')->where('id', $questionId)->update([
+            'name'         => $data['name'],
+            'questiontext' => $data['questiontext'],
+            'defaultmark'  => $data['defaultmark'] ?? 1,
+            'timemodified' => $now,
+            'modifiedby'   => 0,
+        ]);
+
+        $tf = $db->table('question_truefalse')->where('question', $questionId)->first();
+        if ($tf) {
+            $correctFraction = ($data['correctanswer'] ?? 'true') === 'true' ? 1 : 0;
+            $db->table('question_answers')->where('id', $tf->trueanswer)->update(['fraction' => (float)$correctFraction]);
+            $db->table('question_answers')->where('id', $tf->falseanswer)->update(['fraction' => (float)(1 - $correctFraction)]);
+        }
+    }
+
+    /**
+     * Actualiza una pregunta de coincidencia (matching).
+     */
+    public function updateMatching(int $questionId, array $data): void
+    {
+        $db  = DB::connection('moodle');
+        $now = time();
+
+        $db->table('question')->where('id', $questionId)->update([
+            'name'         => $data['name'],
+            'questiontext' => $data['questiontext'],
+            'defaultmark'  => $data['defaultmark'] ?? 1,
+            'timemodified' => $now,
+            'modifiedby'   => 0,
+        ]);
+
+        $db->table('qtype_match_subquestions')->where('questionid', $questionId)->delete();
+        foreach ($data['pairs'] as $pair) {
+            $db->table('qtype_match_subquestions')->insert([
+                'questionid'          => $questionId,
+                'questiontext'        => $pair['question'],
+                'questiontextformat'  => 1,
+                'answertext'          => $pair['answer'],
+            ]);
+        }
+    }
+
     // ── Métodos privados ──
 
     private function insertBaseQuestion($db, array $data, ?int $catId = null): int

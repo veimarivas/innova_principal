@@ -804,7 +804,7 @@ var ActividadesEditor = (function () {
 
             '<div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.8rem 1rem;margin:.8rem 0;">' +
             '<div style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:700;color:#1e293b;margin-bottom:.7rem;"><i class="ri-bar-chart-line" style="color:#d97706;"></i> Calificación</div>' +
-            '<div class="form-row"><div class="form-group" style="flex:1;"><label style="font-size:.78rem;font-weight:600;color:#475569;">Máxima calificación</label><div style="display:flex;align-items:center;gap:.4rem;"><input class="form-control" id="fldGrade" type="number" value="' + (editando && data.grade ? data.grade : 100) + '" min="0" max="100" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .6rem;width:100px;"> <span style="font-size:.78rem;color:#94a3b8;">puntos</span></div></div></div></div>' +
+            '<div class="form-row"><div class="form-group" style="flex:1;"><label style="font-size:.78rem;font-weight:600;color:#475569;">Máxima calificación</label><div style="display:flex;align-items:center;gap:.4rem;"><input class="form-control" id="fldGrade" type="number" value="' + (editando && data.grade ? data.grade : 100) + '" min="0" max="10000" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .6rem;width:100px;"> <span style="font-size:.78rem;color:#94a3b8;">puntos</span></div></div></div></div>' +
 
             '<div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.8rem 1rem;margin:.8rem 0;">' +
             '<div style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:700;color:#1e293b;margin-bottom:.6rem;"><i class="ri-settings-line" style="color:#64748b;"></i> Configuración de entrega</div>' +
@@ -826,15 +826,32 @@ var ActividadesEditor = (function () {
         }).join('');
 
         var quizHTML =
-            '<div class="form-group"><label>Nombre del cuestionario <span class="required">*</span></label><input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Cuestionario Semana 1"></div>' +
-            '<div class="form-group"><label>Descripción</label><textarea class="form-control" id="fldDescription" rows="3" placeholder="Instrucciones del cuestionario...">' + introVal + '</textarea></div>' +
-            '<div class="form-section-title">Temporalización</div><div class="form-row">' +
-            '<div class="form-group"><label>Abierto desde</label><input class="form-control" id="fldOpenDate" type="date" value="' + (editando ? tsToDateInput(data.timeopen) : '') + '"></div>' +
-            '<div class="form-group"><label>Cierra</label><input class="form-control" id="fldCloseDate" type="date" value="' + (editando ? tsToDateInput(data.timeclose) : '') + '"></div>' +
-            '<div class="form-group"><label>Tiempo (min.)</label><input class="form-control" id="fldTime" type="number" value="' + (editando && data.timelimit != null ? data.timelimit : 30) + '" min="0"></div></div>' +
-            '<div class="form-section-title">Calificación</div><div class="form-row">' +
-            '<div class="form-group"><label>Máxima calificación</label><input class="form-control" id="fldGrade" type="number" value="' + (editando && data.grade ? data.grade : 100) + '" min="0" max="100"></div>' +
-            '<div class="form-group"><label>Intentos permitidos</label><select class="form-control" id="fldAttempts">' + quizAttemptsSel + '</select></div></div>';
+            '<div class="form-group" style="margin-bottom:.85rem;">' +
+            '<label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;margin-bottom:.3rem;"><i class="ri-questionnaire-line" style="color:#d97706;"></i> Nombre del cuestionario <span class="required" style="color:#dc2626;">*</span></label>' +
+            '<input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Cuestionario Semana 1" style="font-size:.87rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;"></div>' +
+
+            '<div class="form-group" style="margin-bottom:.85rem;">' +
+            '<label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;margin-bottom:.3rem;"><i class="ri-file-text-line" style="color:#64748b;"></i> Descripción / Instrucciones</label>' +
+            '<textarea class="form-control" id="fldDescription" rows="3" placeholder="Instrucciones del cuestionario..." style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;">' + introVal + '</textarea></div>' +
+
+            '<div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;margin:.8rem 0;">' +
+            '<div style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:700;color:#1e293b;margin-bottom:.75rem;"><i class="ri-calendar-line" style="color:#2563eb;"></i> Temporalización</div>' +
+            '<div class="form-row" style="gap:.6rem;">' +
+            '<div class="form-group" style="flex:1;min-width:0;"><label style="font-size:.78rem;font-weight:600;color:#475569;display:flex;align-items:center;gap:.3rem;margin-bottom:.25rem;"><i class="ri-calendar-check-line" style="color:#16a34a;font-size:.8rem;"></i> Abierto desde</label><input class="form-control" id="fldOpenDate" type="datetime-local" value="' + (editando ? tsToDateInput(data.timeopen) : '') + '" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .6rem;"></div>' +
+            '<div class="form-group" style="flex:1;min-width:0;"><label style="font-size:.78rem;font-weight:600;color:#475569;display:flex;align-items:center;gap:.3rem;margin-bottom:.25rem;"><i class="ri-calendar-close-line" style="color:#dc2626;font-size:.8rem;"></i> Cierra</label><input class="form-control" id="fldCloseDate" type="datetime-local" value="' + (editando ? tsToDateInput(data.timeclose) : '') + '" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .6rem;"></div>' +
+            '</div>' +
+            '<div class="form-row" style="gap:.6rem;margin-top:.5rem;">' +
+            '<div class="form-group" style="flex:1;min-width:0;max-width:180px;"><label style="font-size:.78rem;font-weight:600;color:#475569;display:flex;align-items:center;gap:.3rem;margin-bottom:.25rem;"><i class="ri-timer-line" style="color:#7c3aed;font-size:.8rem;"></i> Límite de tiempo</label>' +
+            '<div style="display:flex;align-items:center;gap:.4rem;"><input class="form-control" id="fldTime" type="number" value="' + (editando && data.timelimit != null ? data.timelimit : 30) + '" min="0" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .6rem;width:80px;"> <span style="font-size:.78rem;color:#94a3b8;white-space:nowrap;">minutos</span></div></div>' +
+            '<div style="flex:1;min-width:0;padding:.5rem .75rem;background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.15);border-radius:8px;font-size:.75rem;color:#1e40af;display:flex;align-items:center;gap:.4rem;"><i class="ri-information-line" style="flex-shrink:0;"></i><span>Poner <strong>0</strong> en tiempo para desactivar el límite.</span></div>' +
+            '</div></div>' +
+
+            '<div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;margin:.8rem 0;">' +
+            '<div style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:700;color:#1e293b;margin-bottom:.75rem;"><i class="ri-bar-chart-line" style="color:#d97706;"></i> Calificación</div>' +
+            '<div class="form-row" style="gap:.6rem;">' +
+            '<div class="form-group" style="flex:1;min-width:0;"><label style="font-size:.78rem;font-weight:600;color:#475569;margin-bottom:.25rem;display:block;">Máxima calificación</label><div style="display:flex;align-items:center;gap:.4rem;"><input class="form-control" id="fldGrade" type="number" value="' + (editando && data.grade ? data.grade : 100) + '" min="0" max="1000" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .6rem;width:100px;"> <span style="font-size:.78rem;color:#94a3b8;">puntos</span></div></div>' +
+            '<div class="form-group" style="flex:1;min-width:0;"><label style="font-size:.78rem;font-weight:600;color:#475569;margin-bottom:.25rem;display:block;">Intentos permitidos</label><select class="form-control" id="fldAttempts" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.35rem .5rem;">' + quizAttemptsSel + '</select></div>' +
+            '</div></div>';
 
         var forumTypeOpts = ['general','single','qanda'].map(function(v) {
             var labels = { general: 'General', single: 'Discusión única', qanda: 'Preguntas y respuestas' };
@@ -865,7 +882,7 @@ var ActividadesEditor = (function () {
 
             '<div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.8rem 1rem;margin:.8rem 0;">' +
             '<div style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:700;color:#1e293b;margin-bottom:.7rem;"><i class="ri-bar-chart-line" style="color:#d97706;"></i> Calificación</div>' +
-            '<div class="form-row"><div class="form-group" style="flex:1;"><label style="font-size:.78rem;font-weight:600;color:#475569;">Máxima calificación</label><div style="display:flex;align-items:center;gap:.4rem;"><input class="form-control" id="fldGrade" type="number" value="' + (editando && data.grade ? data.grade : 100) + '" min="0" max="100" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .6rem;width:100px;"> <span style="font-size:.78rem;color:#94a3b8;">puntos</span></div></div></div></div>';
+            '<div class="form-row"><div class="form-group" style="flex:1;"><label style="font-size:.78rem;font-weight:600;color:#475569;">Máxima calificación</label><div style="display:flex;align-items:center;gap:.4rem;"><input class="form-control" id="fldGrade" type="number" value="' + (editando && data.grade ? data.grade : 100) + '" min="0" max="10000" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .6rem;width:100px;"> <span style="font-size:.78rem;color:#94a3b8;">puntos</span></div></div></div></div>';
 
         var templates = {
             assign: assignHTML,
@@ -1270,47 +1287,63 @@ var ActividadesEditor = (function () {
     }
 
     // ============================================================
+    function _emptyCalificar(msg) {
+        return '<div style="text-align:center;padding:2.5rem 1rem;">' +
+            '<div style="width:52px;height:52px;border-radius:14px;background:rgba(148,163,184,.1);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">' +
+            '<i class="ri-user-unfollow-line" style="font-size:1.5rem;color:#94a3b8;"></i></div>' +
+            '<p style="font-size:.87rem;color:#64748b;margin:0;">' + escHtml(msg) + '</p></div>';
+    }
+
     // CALIFICAR FORO
     // ============================================================
 
     function calificarForo(moduloId, cmid, forumId, nombre) {
-        var modal = document.getElementById('modalCalificarTarea');
-        if (!modal) return;
-        document.getElementById('calificarTareaNombre').textContent = nombre + ' (Foro)';
-        document.getElementById('calificarLoading').classList.remove('d-none');
-        document.getElementById('calificarContent').classList.add('d-none');
-        document.getElementById('calificarError').classList.add('d-none');
-        // Cambiar headers para foro
-        var ths = document.querySelectorAll('#modalCalificarTarea thead th');
-        if (ths.length >= 5) { ths[1].textContent = 'Posts'; ths[3].textContent = ''; }
-        modal.style.display = 'flex';
+        _calificarCtx = { tipo: 'foro', moduloId: moduloId, cmid: cmid, nombre: nombre };
+        _abrirModalCalificar(nombre, 'foro');
 
         fetch(getApiBase() + '/' + moduloId + '/actividades/' + cmid + '/foro/calificaciones', {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
         })
-            .then(function (r) { if (!r.ok) return r.json().catch(function () { throw new Error('Error del servidor (' + r.status + ')'); }).then(function (d) { throw new Error(d.message || d.error || 'Error del servidor'); }); return r.json(); })
+            .then(function (r) { if (!r.ok) return r.json().catch(function () { throw new Error('Error ' + r.status); }).then(function (d) { throw new Error(d.message || d.error || 'Error del servidor'); }); return r.json(); })
             .then(function (data) {
                 document.getElementById('calificarLoading').classList.add('d-none');
                 if (!data.success) throw new Error(data.message);
-                var tbody = document.getElementById('calificarTableBody');
-                tbody.innerHTML = '';
+                var container = document.getElementById('calificarTableBody');
                 if (!data.students || data.students.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">No hay estudiantes matriculados.</td></tr>';
+                    container.innerHTML = _emptyCalificar('No hay estudiantes matriculados en este módulo.');
                     document.getElementById('calificarContent').classList.remove('d-none');
                     return;
                 }
-                data.students.forEach(function (s) {
-                    var postsLabel = s.post_count + ' post' + (s.post_count !== 1 ? 's' : '');
+                var foroGradeMax = data.grade_max || 100;
+                container.innerHTML = data.students.map(function (s) {
+                    var postCount = s.post_count || 0;
+                    var postBg = postCount > 0 ? 'rgba(22,163,74,.1)' : 'rgba(148,163,184,.1)';
+                    var postColor = postCount > 0 ? '#15803d' : '#94a3b8';
+                    var postsHtml = '<span style="display:inline-flex;align-items:center;gap:.35rem;padding:.22rem .7rem;border-radius:20px;background:' + postBg + ';color:' + postColor + ';font-size:.78rem;font-weight:600;">' +
+                        '<i class="ri-chat-1-line"></i> ' + postCount + ' post' + (postCount !== 1 ? 's' : '') + '</span>';
+
                     var gradeVal = s.grade !== null && s.grade !== undefined ? s.grade : '';
-                    tbody.innerHTML +=
-                        '<tr>' +
-                            '<td><strong>' + escHtml(s.name) + '</strong><br><small style="color:#6c757d;">' + escHtml(s.carnet) + '</small></td>' +
-                            '<td>' + postsLabel + '</td>' +
-                            '<td><input type="number" class="form-control form-control-sm grade-input" data-user="' + s.userid + '" value="' + gradeVal + '" min="0" max="100" step="0.5"></td>' +
-                            '<td></td>' +
-                            '<td><button class="btn btn-sm btn-primary" onclick="ActividadesEditor.guardarCalificacionForo(' + moduloId + ', ' + cmid + ', ' + s.userid + ')">Guardar</button></td>' +
-                        '</tr>';
-                });
+                    var gradeMax = foroGradeMax;
+
+                    return '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:.85rem 1rem;margin-bottom:.6rem;transition:box-shadow .15s;" onmouseover="this.style.boxShadow=\'0 2px 12px rgba(0,0,0,.07)\'" onmouseout="this.style.boxShadow=\'none\'">' +
+                        '<div style="display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;">' +
+                        '<div style="display:flex;align-items:center;gap:.6rem;flex:1;min-width:180px;">' +
+                        '<span style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.85rem;flex-shrink:0;">' + escHtml((s.name || 'E').charAt(0).toUpperCase()) + '</span>' +
+                        '<div><div style="font-size:.87rem;font-weight:700;color:#1e293b;">' + escHtml(s.name) + '</div>' +
+                        '<div style="font-size:.72rem;color:#94a3b8;">CI: ' + escHtml(s.carnet) + '</div></div></div>' +
+                        '<div style="flex:1;min-width:120px;">' + postsHtml + '</div>' +
+                        '<div style="display:flex;flex-direction:column;gap:.25rem;min-width:130px;">' +
+                        '<label style="font-size:.72rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Nota</label>' +
+                        '<div style="display:flex;align-items:center;gap:.4rem;">' +
+                        '<input type="number" class="form-control grade-input" data-user="' + s.userid + '" data-grade-max="' + gradeMax + '" value="' + gradeVal + '" min="0" max="' + gradeMax + '" step="0.5" style="width:80px;font-size:.85rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .5rem;text-align:center;" oninput="ActividadesEditor.validarNota(this)">' +
+                        '<span style="font-size:.75rem;color:#94a3b8;">/ ' + gradeMax + '</span></div>' +
+                        '<div id="err-' + s.userid + '" style="font-size:.7rem;color:#dc2626;display:none;margin-top:2px;"></div></div>' +
+                        '<div style="display:flex;align-items:flex-end;">' +
+                        '<button onclick="ActividadesEditor.guardarCalificacionForo(' + moduloId + ', ' + cmid + ', ' + s.userid + ')" ' +
+                        'style="padding:.4rem .95rem;border-radius:8px;font-size:.8rem;font-weight:700;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:.35rem;transition:opacity .15s;" onmouseover="this.style.opacity=\'.85\'" onmouseout="this.style.opacity=\'1\'">' +
+                        '<i class="ri-save-line"></i> Guardar</button></div>' +
+                        '</div></div>';
+                }).join('');
                 document.getElementById('calificarContent').classList.remove('d-none');
             })
             .catch(function (err) {
@@ -1322,6 +1355,10 @@ var ActividadesEditor = (function () {
 
     function guardarCalificacionForo(moduloId, cmid, userId) {
         var gradeInput = document.querySelector('.grade-input[data-user="' + userId + '"]') || document.querySelector('.grade-input-foro[data-user="' + userId + '"]');
+        if (gradeInput && !validarNota(gradeInput)) {
+            mostrarToast('error', 'Corrige la nota antes de guardar.');
+            return;
+        }
         var grade = gradeInput ? gradeInput.value : 0;
         var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
@@ -1453,66 +1490,110 @@ var ActividadesEditor = (function () {
     // CALIFICAR TAREA
     // ============================================================
 
-    function calificarTarea(moduloId, cmid, nombre) {
-        var modal = document.getElementById('modalCalificarTarea');
-        if (!modal) return;
+    var _calificarCtx = null; // { tipo, moduloId, cmid, nombre }
+
+    function _abrirModalCalificar(nombre, tipo) {
         document.getElementById('calificarTareaNombre').textContent = nombre;
+        var tipoLabel = document.getElementById('calificarTipoLabel');
+        var tipoIcono = document.getElementById('calificarTipoIcono');
+        if (tipoLabel) tipoLabel.textContent = tipo === 'foro' ? 'Calificar foro' : 'Calificar tarea';
+        if (tipoIcono) {
+            var icon = tipo === 'foro' ? 'ri-discuss-line' : 'ri-task-line';
+            var color = tipo === 'foro' ? '#16a34a' : '#fc7b04';
+            tipoIcono.style.background = tipo === 'foro' ? 'rgba(22,163,74,.18)' : 'rgba(252,123,4,.18)';
+            tipoIcono.innerHTML = '<i class="' + icon + '" style="color:' + color + ';font-size:1.05rem;"></i>';
+        }
         document.getElementById('calificarLoading').classList.remove('d-none');
         document.getElementById('calificarContent').classList.add('d-none');
         document.getElementById('calificarError').classList.add('d-none');
-        // Restaurar headers por defecto
-        var ths = document.querySelectorAll('#modalCalificarTarea thead th');
-        if (ths.length >= 5) { ths[1].textContent = 'Estado'; ths[3].textContent = 'Feedback'; }
-        modal.style.display = 'flex';
+        document.getElementById('modalCalificarTarea').style.display = 'flex';
+    }
+
+    function _renderStudentCardTarea(s, moduloId, cmid, gradeMax) {
+        gradeMax = gradeMax || 100;
+        var hasSubmission = s.has_submission;
+        var statusBadge = '';
+        var filesHtml = '';
+
+        if (hasSubmission) {
+            var isSubmitted = s.status === 'submitted';
+            var badgeBg = isSubmitted ? 'rgba(22,163,74,.12)' : 'rgba(234,179,8,.12)';
+            var badgeColor = isSubmitted ? '#15803d' : '#92400e';
+            var badgeIcon = isSubmitted ? 'ri-checkbox-circle-line' : 'ri-edit-line';
+            var badgeLabel = isSubmitted ? 'Entregado' : 'Borrador';
+            var lateHtml = s.late
+                ? '<span style="margin-left:.4rem;font-size:.68rem;font-weight:700;color:#dc2626;background:rgba(220,38,38,.1);padding:1px 6px;border-radius:8px;"><i class="ri-time-warning-line"></i> Tardía</span>'
+                : '';
+            var timeHtml = s.timemodified
+                ? '<div style="font-size:.7rem;color:#94a3b8;margin-top:2px;">' + fmtTsAdmin(s.timemodified) + '</div>'
+                : '';
+            statusBadge = '<div style="display:inline-flex;align-items:center;gap:.3rem;padding:.22rem .65rem;border-radius:20px;background:' + badgeBg + ';color:' + badgeColor + ';font-size:.78rem;font-weight:600;">' +
+                '<i class="' + badgeIcon + '"></i> ' + badgeLabel + lateHtml + '</div>' + timeHtml;
+
+            if (s.files && s.files.length > 0) {
+                filesHtml = '<div style="margin-top:.5rem;display:flex;flex-direction:column;gap:.25rem;">';
+                s.files.forEach(function (f) {
+                    var dlUrl = getApiBase() + '/' + moduloId + '/actividades/' + cmid + '/archivo/' + s.userid + '/' + encodeURIComponent(f.filename);
+                    filesHtml += '<a href="' + dlUrl + '" download style="display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;color:#3b82f6;text-decoration:none;padding:.2rem .55rem;background:rgba(59,130,246,.07);border-radius:6px;width:fit-content;">' +
+                        '<i class="ri-download-2-line"></i>' + escHtml(f.filename) + '</a>';
+                });
+                filesHtml += '</div>';
+            }
+        } else {
+            statusBadge = '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.22rem .65rem;border-radius:20px;background:rgba(148,163,184,.1);color:#94a3b8;font-size:.78rem;font-weight:600;"><i class="ri-close-circle-line"></i> Sin entregar</span>';
+        }
+
+        var gradeVal = s.grade !== null && s.grade !== undefined ? s.grade : '';
+        var feedbackVal = s.feedback || '';
+
+        return '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:.85rem 1rem;margin-bottom:.6rem;transition:box-shadow .15s;" onmouseover="this.style.boxShadow=\'0 2px 12px rgba(0,0,0,.07)\'" onmouseout="this.style.boxShadow=\'none\'">' +
+            '<div style="display:flex;align-items:flex-start;gap:.85rem;flex-wrap:wrap;">' +
+            // Avatar + nombre
+            '<div style="display:flex;align-items:center;gap:.6rem;flex:1;min-width:180px;">' +
+            '<span style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#fc7b04,#c96004);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.85rem;flex-shrink:0;">' + escHtml((s.name || 'E').charAt(0).toUpperCase()) + '</span>' +
+            '<div><div style="font-size:.87rem;font-weight:700;color:#1e293b;">' + escHtml(s.name) + '</div>' +
+            '<div style="font-size:.72rem;color:#94a3b8;">CI: ' + escHtml(s.carnet) + '</div></div>' +
+            '</div>' +
+            // Estado
+            '<div style="flex:1;min-width:150px;">' + statusBadge + filesHtml + '</div>' +
+            // Nota
+            '<div style="display:flex;flex-direction:column;gap:.25rem;min-width:130px;">' +
+            '<label style="font-size:.72rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.04em;">Nota</label>' +
+            '<div style="display:flex;align-items:center;gap:.4rem;">' +
+            '<input type="number" class="form-control grade-input" data-user="' + s.userid + '" data-grade-max="' + gradeMax + '" value="' + gradeVal + '" min="0" max="' + gradeMax + '" step="0.5" style="width:80px;font-size:.85rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .5rem;text-align:center;" oninput="ActividadesEditor.validarNota(this)">' +
+            '<span style="font-size:.75rem;color:#94a3b8;">/ ' + gradeMax + '</span></div>' +
+            '<div id="err-' + s.userid + '" style="font-size:.7rem;color:#dc2626;display:none;margin-top:2px;"></div></div>' +
+            // Feedback
+            '<div style="flex:2;min-width:200px;">' +
+            '<label style="font-size:.72rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:.2rem;">Retroalimentación</label>' +
+            '<textarea class="form-control feedback-input" data-user="' + s.userid + '" rows="2" placeholder="Comentario al estudiante..." style="font-size:.82rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .55rem;resize:none;">' + escHtml(feedbackVal) + '</textarea></div>' +
+            // Botón guardar
+            '<div style="display:flex;align-items:flex-end;">' +
+            '<button onclick="ActividadesEditor.guardarCalificacion(' + moduloId + ', ' + cmid + ', ' + s.userid + ')" ' +
+            'style="padding:.4rem .95rem;border-radius:8px;font-size:.8rem;font-weight:700;background:linear-gradient(135deg,#fc7b04,#c96004);color:#fff;border:none;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:.35rem;transition:opacity .15s;" onmouseover="this.style.opacity=\'.85\'" onmouseout="this.style.opacity=\'1\'">' +
+            '<i class="ri-save-line"></i> Guardar</button></div>' +
+            '</div></div>';
+    }
+
+    function calificarTarea(moduloId, cmid, nombre) {
+        _calificarCtx = { tipo: 'tarea', moduloId: moduloId, cmid: cmid, nombre: nombre };
+        _abrirModalCalificar(nombre, 'tarea');
 
         fetch(getApiBase() + '/' + moduloId + '/actividades/' + cmid + '/entregas', {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
         })
-            .then(function (r) { if (!r.ok) return r.json().catch(function () { throw new Error('Error del servidor (' + r.status + ')'); }).then(function (d) { throw new Error(d.message || d.error || 'Error del servidor'); }); return r.json(); })
+            .then(function (r) { if (!r.ok) return r.json().catch(function () { throw new Error('Error ' + r.status); }).then(function (d) { throw new Error(d.message || d.error || 'Error del servidor'); }); return r.json(); })
             .then(function (data) {
                 document.getElementById('calificarLoading').classList.add('d-none');
                 if (!data.success) throw new Error(data.message);
-                var tbody = document.getElementById('calificarTableBody');
-                tbody.innerHTML = '';
+                var container = document.getElementById('calificarTableBody');
                 if (!data.students || data.students.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">No hay estudiantes matriculados.</td></tr>';
+                    container.innerHTML = _emptyCalificar('Sin estudiantes matriculados en este módulo.');
                     document.getElementById('calificarContent').classList.remove('d-none');
                     return;
                 }
-                data.students.forEach(function (s) {
-                    var statusHtml = '';
-                    if (s.has_submission) {
-                        var label = s.status === 'submitted' ? 'Entregado' : 'Borrador';
-                        var icon = s.status === 'submitted' ? 'ri-checkbox-circle-line' : 'ri-edit-line';
-                        var color = s.status === 'submitted' ? '#16a34a' : '#f59e0b';
-                        var lateTag = s.late ? ' <span style="color:#dc2626;font-size:.72rem;font-weight:600;"><i class="ri-time-warning-line"></i> Tardía</span>' : '';
-                        var timeStr = s.timemodified ? fmtTsAdmin(s.timemodified) : '';
-                        statusHtml = '<div style="display:flex;align-items:center;gap:.3rem;color:' + color + ';font-weight:600;font-size:.8rem;">' +
-                            '<i class="' + icon + '"></i> ' + label + lateTag + '</div>' +
-                            (timeStr ? '<div style="font-size:.7rem;color:#6c757d;margin-top:.15rem;">' + timeStr + '</div>' : '');
-                        // Archivos
-                        if (s.files && s.files.length > 0) {
-                            s.files.forEach(function (f) {
-                                var dlUrl = getApiBase() + '/' + moduloId + '/actividades/' + cmid + '/archivo/' + s.userid + '/' + encodeURIComponent(f.filename);
-                                statusHtml += '<div style="margin-top:.25rem;font-size:.75rem;">' +
-                                    '<a href="' + dlUrl + '" style="color:#3b82f6;text-decoration:none;display:inline-flex;align-items:center;gap:.25rem;" download><i class="ri-download-2-line"></i> ' + escHtml(f.filename) + '</a></div>';
-                            });
-                        }
-                    } else {
-                        statusHtml = '<span style="color:#94a3b8;">Sin entregar</span>';
-                    }
-
-                    var gradeVal = s.grade !== null && s.grade !== undefined ? s.grade : '';
-                    var feedbackVal = s.feedback || '';
-                    tbody.innerHTML +=
-                        '<tr>' +
-                            '<td><strong>' + escHtml(s.name) + '</strong><br><small style="color:#6c757d;">CI: ' + escHtml(s.carnet) + '</small></td>' +
-                            '<td>' + statusHtml + '</td>' +
-                            '<td><input type="number" class="form-control form-control-sm grade-input" data-user="' + s.userid + '" value="' + gradeVal + '" min="0" max="100" step="0.5"></td>' +
-                            '<td><textarea class="form-control form-control-sm feedback-input" data-user="' + s.userid + '" rows="2">' + escHtml(feedbackVal) + '</textarea></td>' +
-                            '<td><button class="btn btn-sm btn-primary" onclick="ActividadesEditor.guardarCalificacion(' + moduloId + ', ' + cmid + ', ' + s.userid + ')">Guardar</button></td>' +
-                        '</tr>';
-                });
+                var gMax = data.grade_max || 100;
+                container.innerHTML = data.students.map(function (s) { return _renderStudentCardTarea(s, moduloId, cmid, gMax); }).join('');
                 document.getElementById('calificarContent').classList.remove('d-none');
             })
             .catch(function (err) {
@@ -1522,9 +1603,29 @@ var ActividadesEditor = (function () {
             });
     }
 
+    function validarNota(input) {
+        var val = parseFloat(input.value);
+        var max = parseFloat(input.getAttribute('data-grade-max') || input.max || 100);
+        var userId = input.getAttribute('data-user');
+        var errEl = userId ? document.getElementById('err-' + userId) : null;
+        var esInvalido = false;
+        var msg = '';
+        if (input.value !== '' && !isNaN(val)) {
+            if (val < 0) { esInvalido = true; msg = 'La nota no puede ser negativa.'; }
+            else if (val > max) { esInvalido = true; msg = 'La nota no puede superar ' + max + '.'; }
+        }
+        input.style.borderColor = esInvalido ? '#dc2626' : '';
+        if (errEl) { errEl.textContent = msg; errEl.style.display = esInvalido ? 'block' : 'none'; }
+        return !esInvalido;
+    }
+
     function guardarCalificacion(moduloId, cmid, userId) {
         var gradeInput = document.querySelector('.grade-input[data-user="' + userId + '"]');
         var feedbackInput = document.querySelector('.feedback-input[data-user="' + userId + '"]');
+        if (gradeInput && !validarNota(gradeInput)) {
+            mostrarToast('error', 'Corrige la nota antes de guardar.');
+            return;
+        }
         var grade = gradeInput ? gradeInput.value : 0;
         var feedback = feedbackInput ? feedbackInput.value : '';
         var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -1548,6 +1649,16 @@ var ActividadesEditor = (function () {
     function cerrarModalCalificar() {
         var modal = document.getElementById('modalCalificarTarea');
         if (modal) modal.style.display = 'none';
+        _calificarCtx = null;
+    }
+
+    function reintentarCalificar() {
+        if (!_calificarCtx) return;
+        if (_calificarCtx.tipo === 'foro') {
+            calificarForo(_calificarCtx.moduloId, _calificarCtx.cmid, null, _calificarCtx.nombre);
+        } else {
+            calificarTarea(_calificarCtx.moduloId, _calificarCtx.cmid, _calificarCtx.nombre);
+        }
     }
 
     // ============================================================
@@ -1670,20 +1781,95 @@ var ActividadesEditor = (function () {
         var container = document.getElementById('preguntasList');
         container.innerHTML = '';
         if (!questions || questions.length === 0) {
-            container.innerHTML = '<p class="text-muted">No hay preguntas en este cuestionario.</p>';
+            container.innerHTML =
+                '<div style="text-align:center;padding:2rem 1rem;">' +
+                '<div style="width:52px;height:52px;border-radius:14px;background:rgba(217,119,6,.1);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">' +
+                '<i class="ri-question-line" style="font-size:1.5rem;color:#d97706;"></i></div>' +
+                '<p style="font-size:.87rem;font-weight:600;color:#475569;margin:0 0 .25rem;">Sin preguntas aún</p>' +
+                '<p style="font-size:.78rem;color:#94a3b8;margin:0;">Usa los botones de arriba para agregar el primer tipo de pregunta.</p>' +
+                '</div>';
             return;
         }
-        var typeLabels = { multichoice: 'Opción múltiple', truefalse: 'V/F', match: 'Coincidencia' };
-        questions.forEach(function (q) {
-            container.innerHTML +=
-                '<div class="disc-item" style="margin-bottom:6px;">' +
-                    '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-                        '<div><div class="disc-item-name">' + escHtml(q.name) + '</div>' +
-                        '<div class="disc-item-meta">' + (typeLabels[q.qtype] || q.qtype) + ' · ' + q.defaultmark + ' pts</div></div>' +
-                        '<button class="btn btn-sm btn-outline-danger" onclick="ActividadesEditor.eliminarPregunta(' + currentQuizId + ', ' + q.slot_id + ')"><i class="ri-delete-bin-line"></i></button>' +
-                    '</div>' +
+
+        var typeCfg = {
+            multichoice: { label: 'Opción múltiple', icon: 'ri-list-check',   bg: 'rgba(99,102,241,.1)',  color: '#4f46e5' },
+            truefalse:   { label: 'Verd. / Falso',   icon: 'ri-toggle-line',  bg: 'rgba(22,163,74,.1)',   color: '#15803d' },
+            match:       { label: 'Coincidencia',     icon: 'ri-links-line',   bg: 'rgba(2,132,199,.1)',   color: '#0369a1' },
+        };
+
+        // Contador total de puntos
+        var totalPts = questions.reduce(function(s, q) { return s + (parseFloat(q.defaultmark) || 0); }, 0);
+
+        var header =
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;padding:.4rem .6rem;background:#f1f5f9;border-radius:8px;">' +
+            '<span style="font-size:.78rem;font-weight:700;color:#475569;">' +
+            '<i class="ri-list-unordered" style="color:#fc7b04;margin-right:.25rem;"></i>' + questions.length + ' pregunta' + (questions.length !== 1 ? 's' : '') + '</span>' +
+            '<span style="font-size:.75rem;font-weight:600;color:#d97706;background:rgba(217,119,6,.1);padding:2px 9px;border-radius:10px;">' + totalPts.toFixed(2) + ' pts total</span>' +
+            '</div>';
+
+        var rows = questions.map(function(q, idx) {
+            var cfg = typeCfg[q.qtype] || { label: q.qtype, icon: 'ri-question-line', bg: 'rgba(156,163,175,.12)', color: '#64748b' };
+            return '<div style="display:flex;align-items:center;gap:.65rem;padding:.6rem .75rem;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;margin-bottom:.4rem;transition:box-shadow .15s;" ' +
+                'onmouseover="this.style.boxShadow=\'0 2px 10px rgba(0,0,0,.07)\'" onmouseout="this.style.boxShadow=\'none\'">' +
+                '<span style="width:26px;height:26px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#94a3b8;flex-shrink:0;">' + (idx + 1) + '</span>' +
+                '<span style="width:28px;height:28px;border-radius:7px;background:' + cfg.bg + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+                '<i class="' + cfg.icon + '" style="color:' + cfg.color + ';font-size:.85rem;"></i></span>' +
+                '<div style="flex:1;min-width:0;">' +
+                '<div style="font-size:.84rem;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escHtml(q.name) + '</div>' +
+                '<div style="display:flex;align-items:center;gap:.5rem;margin-top:2px;">' +
+                '<span style="font-size:.7rem;font-weight:600;padding:1px 7px;border-radius:10px;background:' + cfg.bg + ';color:' + cfg.color + ';">' + cfg.label + '</span>' +
+                '<span style="font-size:.7rem;color:#94a3b8;"><i class="ri-award-line" style="color:#d97706;"></i> ' + q.defaultmark + ' pts</span>' +
+                '</div></div>' +
+                '<div style="display:flex;gap:.35rem;flex-shrink:0;">' +
+                '<button onclick="ActividadesEditor.editarPregunta(' + q.question_id + ', \'' + q.qtype + '\', ' + getModuloId() + ')" ' +
+                'style="width:30px;height:30px;border-radius:7px;background:rgba(99,102,241,.08);border:none;color:#4f46e5;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .15s;" ' +
+                'title="Editar pregunta" onmouseover="this.style.background=\'rgba(99,102,241,.2)\'" onmouseout="this.style.background=\'rgba(99,102,241,.08)\'">' +
+                '<i class="ri-pencil-line"></i></button>' +
+                '<button onclick="ActividadesEditor.eliminarPregunta(' + currentQuizId + ', ' + q.slot_id + ')" ' +
+                'style="width:30px;height:30px;border-radius:7px;background:rgba(239,68,68,.08);border:none;color:#dc2626;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .15s;" ' +
+                'title="Eliminar pregunta" onmouseover="this.style.background=\'rgba(239,68,68,.2)\'" onmouseout="this.style.background=\'rgba(239,68,68,.08)\'">' +
+                '<i class="ri-delete-bin-line"></i></button>' +
+                '</div>' +
                 '</div>';
-        });
+        }).join('');
+
+        container.innerHTML = header + rows;
+    }
+
+    function editarPregunta(questionId, qtype, moduloId) {
+        // Mostrar spinner en la lista mientras carga
+        var listContainer = document.getElementById('preguntasList');
+        if (listContainer) {
+            listContainer.innerHTML =
+                '<div style="text-align:center;padding:2rem;">' +
+                '<i class="ri-loader-4-line" style="font-size:1.8rem;color:#d97706;animation:spin 1s linear infinite;display:block;margin-bottom:.5rem;"></i>' +
+                '<p style="font-size:.84rem;color:#64748b;margin:0;">Cargando datos de la pregunta...</p></div>';
+        }
+
+        fetch(getApiBase() + '/' + moduloId + '/actividades/quiz/' + currentQuizId + '/preguntas/' + questionId)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.success) throw new Error(data.message);
+                var q = data.question;
+                _editingQuestion = { questionId: questionId, qtype: qtype, moduloId: moduloId, quizId: currentQuizId };
+
+                if (qtype === 'multichoice') {
+                    mostrarFormMC(q);
+                } else if (qtype === 'truefalse') {
+                    mostrarFormTF(q);
+                } else if (qtype === 'match') {
+                    mostrarFormMatch(q);
+                } else {
+                    mostrarToast('error', 'Tipo de pregunta no soportado para edición.');
+                    _editingQuestion = null;
+                    verPreguntasQuiz(moduloId, currentQuizId, document.getElementById('preguntasQuizNombre').textContent);
+                }
+            })
+            .catch(function (err) {
+                mostrarToast('error', err.message || 'Error al cargar la pregunta.');
+                _editingQuestion = null;
+                verPreguntasQuiz(moduloId, currentQuizId, document.getElementById('preguntasQuizNombre').textContent);
+            });
     }
 
     function eliminarPregunta(quizId, slotId) {
@@ -1710,21 +1896,99 @@ var ActividadesEditor = (function () {
         if (modal) modal.classList.remove('open');
     }
 
+    // ── Estado edición de preguntas ──
+    var _editingQuestion = null; // { questionId, qtype, moduloId, quizId } | null
+
+    // ── Helpers de filas reutilizables ──
+
+    function _mcDelBtn() {
+        return '<button onclick="this.closest(\'.mc-option\').remove()" style="width:28px;height:28px;border-radius:6px;background:rgba(239,68,68,.1);border:none;color:#dc2626;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;"><i class="ri-delete-bin-line"></i></button></div>';
+    }
+    function _matchDelBtn() {
+        return '<button onclick="this.closest(\'.match-pair\').remove()" style="width:28px;height:28px;border-radius:6px;background:rgba(239,68,68,.1);border:none;color:#dc2626;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;"><i class="ri-delete-bin-line"></i></button></div>';
+    }
+
+    function makeMcOptionRow(fracVal) {
+        return '<div class="mc-option" style="display:grid;grid-template-columns:1fr 76px 32px;gap:.4rem;margin-bottom:.35rem;align-items:center;">' +
+            '<input class="form-control" placeholder="Texto" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .55rem;">' +
+            '<input class="form-control" type="number" step="0.01" value="' + (fracVal || '0') + '" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .4rem;text-align:center;">' +
+            _mcDelBtn();
+    }
+
+    function makeMcOptionRowWithText(text, fracVal) {
+        return '<div class="mc-option" style="display:grid;grid-template-columns:1fr 76px 32px;gap:.4rem;margin-bottom:.35rem;align-items:center;">' +
+            '<input class="form-control" placeholder="Texto" value="' + escHtml(text || '') + '" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .55rem;">' +
+            '<input class="form-control" type="number" step="0.01" value="' + (fracVal != null ? fracVal : '0') + '" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .4rem;text-align:center;">' +
+            _mcDelBtn();
+    }
+
+    function makeMatchPairRow() {
+        return '<div class="match-pair" style="display:grid;grid-template-columns:1fr 1fr 32px;gap:.4rem;margin-bottom:.35rem;align-items:center;">' +
+            '<input class="form-control" placeholder="Pregunta" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .55rem;">' +
+            '<input class="form-control" placeholder="Respuesta" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .55rem;">' +
+            _matchDelBtn();
+    }
+
+    function makeMatchPairRowWithValues(pregunta, respuesta) {
+        return '<div class="match-pair" style="display:grid;grid-template-columns:1fr 1fr 32px;gap:.4rem;margin-bottom:.35rem;align-items:center;">' +
+            '<input class="form-control" placeholder="Pregunta" value="' + escHtml(pregunta || '') + '" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .55rem;">' +
+            '<input class="form-control" placeholder="Respuesta" value="' + escHtml(respuesta || '') + '" style="font-size:.83rem;border-radius:7px;border:1.5px solid #e2e8f0;padding:.35rem .55rem;">' +
+            _matchDelBtn();
+    }
+
     // ── Crear pregunta opción múltiple ──
 
-    function mostrarFormMC() {
-        document.getElementById('mcName').value = '';
-        document.getElementById('mcQuestionText').value = '';
-        document.getElementById('mcDefaultMark').value = '1';
-        document.getElementById('mcSingle').value = 'true';
-        document.getElementById('mcOptionsContainer').innerHTML =
-            '<div class="mc-option" style="display:flex;gap:0.5rem;margin-bottom:4px;"><input style="width:60%;" class="form-control form-control-sm" placeholder="Texto" id="mcOpt0"><input style="width:60px;" class="form-control form-control-sm" type="number" step="0.01" value="0" id="mcFrac0"><button class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">X</button></div>' +
-            '<div class="mc-option" style="display:flex;gap:0.5rem;"><input style="width:60%;" class="form-control form-control-sm" placeholder="Texto" id="mcOpt1"><input style="width:60px;" class="form-control form-control-sm" type="number" step="0.01" value="0" id="mcFrac1"><button class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">X</button></div>';
+    // ── Helpers de modo edición ──
+    function setModalEditMode(modalId, saveBtnOnclick, isEditing) {
+        var badge = document.getElementById(modalId + '_modeBadge');
+        var saveBtn = document.querySelector('#' + modalId + ' .btn-guardar-modal');
+        if (badge) {
+            badge.style.display = isEditing ? 'inline-flex' : 'none';
+        }
+        if (saveBtn) {
+            saveBtn.innerHTML = isEditing
+                ? '<i class="ri-save-line"></i> Guardar cambios'
+                : '<i class="ri-check-line"></i> Crear pregunta';
+        }
+    }
+
+    // ── Opción múltiple ──
+
+    function mostrarFormMC(editData) {
+        var editing = !!editData;
+        document.getElementById('mcName').value        = editing ? editData.name : '';
+        document.getElementById('mcQuestionText').value = editing ? editData.questiontext : '';
+        document.getElementById('mcDefaultMark').value  = editing ? editData.defaultmark : '1';
+        document.getElementById('mcSingle').value        = editing ? (editData.single || 'true') : 'true';
+
+        var container = document.getElementById('mcOptionsContainer');
+        if (editing && editData.options && editData.options.length > 0) {
+            container.innerHTML = editData.options.map(function(opt) {
+                return makeMcOptionRowWithText(opt.text, opt.fraction);
+            }).join('');
+        } else {
+            container.innerHTML = makeMcOptionRow('1') + makeMcOptionRow('0') + makeMcOptionRow('0');
+        }
+
+        // Indicador modo edición en el header
+        var hdr = document.querySelector('#modalMC .disc-modal-hdr span');
+        if (hdr) hdr.innerHTML = editing
+            ? '<i class="ri-list-check" style="font-size:1.1rem;opacity:.85;"></i> Editar pregunta &mdash; Opción múltiple'
+            : '<i class="ri-list-check" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Opción múltiple';
+        var saveBtn = document.querySelector('#modalMC .disc-modal-footer button:last-child');
+        if (saveBtn) saveBtn.innerHTML = editing ? '<i class="ri-save-line"></i> Guardar cambios' : '<i class="ri-check-line"></i> Crear pregunta';
+
         document.getElementById('modalMC').classList.add('open');
     }
 
     function cerrarModalMC() {
+        _editingQuestion = null;
         document.getElementById('modalMC').classList.remove('open');
+        // Restaurar título
+        var hdr = document.querySelector('#modalMC .disc-modal-hdr span');
+        if (hdr) hdr.innerHTML = '<i class="ri-list-check" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Opción múltiple';
+        var saveBtn = document.querySelector('#modalMC .disc-modal-footer button:last-child');
+        if (saveBtn) saveBtn.innerHTML = '<i class="ri-check-line"></i> Crear pregunta';
     }
 
     function guardarMC() {
@@ -1733,8 +1997,7 @@ var ActividadesEditor = (function () {
         if (!name || !qtext) { mostrarToast('error', 'Nombre y texto de pregunta requeridos.'); return; }
 
         var options = [];
-        var optDivs = document.querySelectorAll('#mcOptionsContainer .mc-option');
-        optDivs.forEach(function (div, i) {
+        document.querySelectorAll('#mcOptionsContainer .mc-option').forEach(function (div) {
             var text = div.querySelector('input[placeholder="Texto"]')?.value || '';
             var frac = parseFloat(div.querySelector('input[type="number"]')?.value || '0');
             if (text) options.push({ text: text, fraction: frac, feedback: '' });
@@ -1744,9 +2007,14 @@ var ActividadesEditor = (function () {
         var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         var defaultMark = parseFloat(document.getElementById('mcDefaultMark').value) || 1;
         var single = document.getElementById('mcSingle').value;
+        var editing = !!_editingQuestion;
 
-        fetch(getApiBase() + '/' + getModuloId() + '/actividades/quiz/' + currentQuizId + '/preguntas/multichoice', {
-            method: 'POST',
+        var url = editing
+            ? getApiBase() + '/' + _editingQuestion.moduloId + '/actividades/quiz/' + _editingQuestion.quizId + '/preguntas/' + _editingQuestion.questionId + '/multichoice'
+            : getApiBase() + '/' + getModuloId() + '/actividades/quiz/' + currentQuizId + '/preguntas/multichoice';
+
+        fetch(url, {
+            method: editing ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
             body: JSON.stringify({ name: name, questiontext: qtext, defaultmark: defaultMark, single: single, options: options }),
         })
@@ -1754,27 +2022,41 @@ var ActividadesEditor = (function () {
         .then(function (data) {
             if (data.success) {
                 cerrarModalMC();
-                mostrarToast('success', 'Pregunta creada.');
+                mostrarToast('success', editing ? 'Pregunta actualizada.' : 'Pregunta creada.');
                 verPreguntasQuiz(getModuloId(), currentQuizId, document.getElementById('preguntasQuizNombre').textContent);
             } else {
-                mostrarToast('error', data.message || 'Error al crear.');
+                mostrarToast('error', data.message || (editing ? 'Error al actualizar.' : 'Error al crear.'));
             }
         })
         .catch(function () { mostrarToast('error', 'Error de conexión.'); });
     }
 
-    // ── Crear pregunta V/F ──
+    // ── V/F ──
 
-    function mostrarFormTF() {
-        document.getElementById('tfName').value = '';
-        document.getElementById('tfQuestionText').value = '';
-        document.getElementById('tfDefaultMark').value = '1';
-        document.getElementById('tfCorrect').value = 'true';
+    function mostrarFormTF(editData) {
+        var editing = !!editData;
+        document.getElementById('tfName').value         = editing ? editData.name : '';
+        document.getElementById('tfQuestionText').value  = editing ? editData.questiontext : '';
+        document.getElementById('tfDefaultMark').value   = editing ? editData.defaultmark : '1';
+        document.getElementById('tfCorrect').value        = editing ? (editData.correctanswer || 'true') : 'true';
+
+        var hdr = document.querySelector('#modalTF .disc-modal-hdr span');
+        if (hdr) hdr.innerHTML = editing
+            ? '<i class="ri-toggle-line" style="font-size:1.1rem;opacity:.85;"></i> Editar pregunta &mdash; Verdadero / Falso'
+            : '<i class="ri-toggle-line" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Verdadero / Falso';
+        var saveBtn = document.querySelector('#modalTF .disc-modal-footer button:last-child');
+        if (saveBtn) saveBtn.innerHTML = editing ? '<i class="ri-save-line"></i> Guardar cambios' : '<i class="ri-check-line"></i> Crear pregunta';
+
         document.getElementById('modalTF').classList.add('open');
     }
 
     function cerrarModalTF() {
+        _editingQuestion = null;
         document.getElementById('modalTF').classList.remove('open');
+        var hdr = document.querySelector('#modalTF .disc-modal-hdr span');
+        if (hdr) hdr.innerHTML = '<i class="ri-toggle-line" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Verdadero / Falso';
+        var saveBtn = document.querySelector('#modalTF .disc-modal-footer button:last-child');
+        if (saveBtn) saveBtn.innerHTML = '<i class="ri-check-line"></i> Crear pregunta';
     }
 
     function guardarTF() {
@@ -1785,9 +2067,14 @@ var ActividadesEditor = (function () {
         var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         var defaultMark = parseFloat(document.getElementById('tfDefaultMark').value) || 1;
         var correct = document.getElementById('tfCorrect').value;
+        var editing = !!_editingQuestion;
 
-        fetch(getApiBase() + '/' + getModuloId() + '/actividades/quiz/' + currentQuizId + '/preguntas/truefalse', {
-            method: 'POST',
+        var url = editing
+            ? getApiBase() + '/' + _editingQuestion.moduloId + '/actividades/quiz/' + _editingQuestion.quizId + '/preguntas/' + _editingQuestion.questionId + '/truefalse'
+            : getApiBase() + '/' + getModuloId() + '/actividades/quiz/' + currentQuizId + '/preguntas/truefalse';
+
+        fetch(url, {
+            method: editing ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
             body: JSON.stringify({ name: name, questiontext: qtext, defaultmark: defaultMark, correctanswer: correct }),
         })
@@ -1795,29 +2082,49 @@ var ActividadesEditor = (function () {
         .then(function (data) {
             if (data.success) {
                 cerrarModalTF();
-                mostrarToast('success', 'Pregunta creada.');
+                mostrarToast('success', editing ? 'Pregunta actualizada.' : 'Pregunta creada.');
                 verPreguntasQuiz(getModuloId(), currentQuizId, document.getElementById('preguntasQuizNombre').textContent);
             } else {
-                mostrarToast('error', data.message || 'Error al crear.');
+                mostrarToast('error', data.message || (editing ? 'Error al actualizar.' : 'Error al crear.'));
             }
         })
         .catch(function () { mostrarToast('error', 'Error de conexión.'); });
     }
 
-    // ── Crear pregunta coincidencia ──
+    // ── Coincidencia ──
 
-    function mostrarFormMatch() {
-        document.getElementById('matchName').value = '';
-        document.getElementById('matchQuestionText').value = '';
-        document.getElementById('matchDefaultMark').value = '1';
-        document.getElementById('matchPairsContainer').innerHTML =
-            '<div class="match-pair" style="display:flex;gap:0.5rem;margin-bottom:4px;"><input style="width:40%;" class="form-control form-control-sm" placeholder="Pregunta" id="mpQ0"><input style="width:40%;" class="form-control form-control-sm" placeholder="Respuesta" id="mpA0"><button class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">X</button></div>' +
-            '<div class="match-pair" style="display:flex;gap:0.5rem;"><input style="width:40%;" class="form-control form-control-sm" placeholder="Pregunta" id="mpQ1"><input style="width:40%;" class="form-control form-control-sm" placeholder="Respuesta" id="mpA1"><button class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">X</button></div>';
+    function mostrarFormMatch(editData) {
+        var editing = !!editData;
+        document.getElementById('matchName').value         = editing ? editData.name : '';
+        document.getElementById('matchQuestionText').value  = editing ? editData.questiontext : '';
+        document.getElementById('matchDefaultMark').value   = editing ? editData.defaultmark : '1';
+
+        var container = document.getElementById('matchPairsContainer');
+        if (editing && editData.pairs && editData.pairs.length > 0) {
+            container.innerHTML = editData.pairs.map(function(p) {
+                return makeMatchPairRowWithValues(p.question, p.answer);
+            }).join('');
+        } else {
+            container.innerHTML = makeMatchPairRow() + makeMatchPairRow();
+        }
+
+        var hdr = document.querySelector('#modalMatch .disc-modal-hdr span');
+        if (hdr) hdr.innerHTML = editing
+            ? '<i class="ri-links-line" style="font-size:1.1rem;opacity:.85;"></i> Editar pregunta &mdash; Coincidencia'
+            : '<i class="ri-links-line" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Coincidencia';
+        var saveBtn = document.querySelector('#modalMatch .disc-modal-footer button:last-child');
+        if (saveBtn) saveBtn.innerHTML = editing ? '<i class="ri-save-line"></i> Guardar cambios' : '<i class="ri-check-line"></i> Crear pregunta';
+
         document.getElementById('modalMatch').classList.add('open');
     }
 
     function cerrarModalMatch() {
+        _editingQuestion = null;
         document.getElementById('modalMatch').classList.remove('open');
+        var hdr = document.querySelector('#modalMatch .disc-modal-hdr span');
+        if (hdr) hdr.innerHTML = '<i class="ri-links-line" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Coincidencia';
+        var saveBtn = document.querySelector('#modalMatch .disc-modal-footer button:last-child');
+        if (saveBtn) saveBtn.innerHTML = '<i class="ri-check-line"></i> Crear pregunta';
     }
 
     function guardarMatch() {
@@ -1835,9 +2142,14 @@ var ActividadesEditor = (function () {
 
         var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         var defaultMark = parseFloat(document.getElementById('matchDefaultMark').value) || 1;
+        var editing = !!_editingQuestion;
 
-        fetch(getApiBase() + '/' + getModuloId() + '/actividades/quiz/' + currentQuizId + '/preguntas/matching', {
-            method: 'POST',
+        var url = editing
+            ? getApiBase() + '/' + _editingQuestion.moduloId + '/actividades/quiz/' + _editingQuestion.quizId + '/preguntas/' + _editingQuestion.questionId + '/matching'
+            : getApiBase() + '/' + getModuloId() + '/actividades/quiz/' + currentQuizId + '/preguntas/matching';
+
+        fetch(url, {
+            method: editing ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
             body: JSON.stringify({ name: name, questiontext: qtext, defaultmark: defaultMark, pairs: pairs }),
         })
@@ -1845,10 +2157,10 @@ var ActividadesEditor = (function () {
         .then(function (data) {
             if (data.success) {
                 cerrarModalMatch();
-                mostrarToast('success', 'Pregunta creada.');
+                mostrarToast('success', editing ? 'Pregunta actualizada.' : 'Pregunta creada.');
                 verPreguntasQuiz(getModuloId(), currentQuizId, document.getElementById('preguntasQuizNombre').textContent);
             } else {
-                mostrarToast('error', data.message || 'Error al crear.');
+                mostrarToast('error', data.message || (editing ? 'Error al actualizar.' : 'Error al crear.'));
             }
         })
         .catch(function () { mostrarToast('error', 'Error de conexión.'); });
@@ -1902,15 +2214,18 @@ var ActividadesEditor = (function () {
         cerrarModal: cerrarModal,
         guardarModal: guardarModal,
         iniciarSubidaArchivo: iniciarSubidaArchivo,
+        validarNota: validarNota,
         calificarTarea: calificarTarea,
         guardarCalificacion: guardarCalificacion,
         calificarForo: calificarForo,
         guardarCalificacionForo: guardarCalificacionForo,
-        cerrarModalCalificar: cerrarModalCalificar,
+        cerrarModalCalificar:  cerrarModalCalificar,
+        reintentarCalificar:   reintentarCalificar,
         verResultadosQuiz: verResultadosQuiz,
         verDetalleIntento: verDetalleIntento,
         cerrarModalQuiz: cerrarModalQuiz,
         verPreguntasQuiz: verPreguntasQuiz,
+        editarPregunta:   editarPregunta,
         eliminarPregunta: eliminarPregunta,
         cerrarModalPreguntas: cerrarModalPreguntas,
         mostrarFormMC: mostrarFormMC,

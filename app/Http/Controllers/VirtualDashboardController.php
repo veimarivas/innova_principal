@@ -276,6 +276,23 @@ class VirtualDashboardController extends Controller
             $entregas       = $this->moodle->getStudentAssignSubmissions($matricula->moodle_course_id, $matricula->moodle_user_id);
             $archivosSubidos = $this->moodle->getStudentAssignFiles($matricula->moodle_course_id, $matricula->moodle_user_id);
 
+            // Datos de fechas por tipo de actividad (igual que vista admin)
+            $tareas        = $this->moodle->getAssignments($matricula->moodle_course_id);
+            $cuestionarios = $this->moodle->getQuizzes($matricula->moodle_course_id);
+            $foros         = $this->moodle->getForums($matricula->moodle_course_id);
+            $tareasFechas  = $this->moodle->getAssignDatesByCourseDirect($matricula->moodle_course_id);
+
+            // Fallback si la BD directa no devuelve fechas
+            if (empty($tareasFechas)) {
+                foreach ($tareas as $t) {
+                    $open  = (int) ($t['allowsubmissionsfromdate'] ?? 0);
+                    $due   = (int) ($t['duedate']                  ?? 0);
+                    $entry = ['open' => $open ?: null, 'due' => $due ?: null];
+                    if (!empty($t['id']))           $tareasFechas[(int) $t['id']]                   = $entry;
+                    if (!empty($t['coursemodule'])) $tareasFechas['cm_' . (int) $t['coursemodule']] = $entry;
+                }
+            }
+
             // Recolectar foros para saber si el usuario participó
             $forumCms = [];
             foreach ($contenidos as $seccion) {
@@ -297,12 +314,15 @@ class VirtualDashboardController extends Controller
         }
 
         return response()->json([
-            'success'        => true,
-            'contenidos'     => $contenidos,
-            'calificaciones' => $calificaciones,
-            'entregas'       => $entregas,
-            'archivos_subidos' => $archivosSubidos,
+            'success'             => true,
+            'contenidos'          => $contenidos,
+            'calificaciones'      => $calificaciones,
+            'entregas'            => $entregas,
+            'archivos_subidos'    => $archivosSubidos,
             'foros_participacion' => $forosParticipacion,
+            'tareas_fechas'       => $tareasFechas,
+            'cuestionarios'       => $cuestionarios,
+            'foros'               => $foros,
         ]);
     }
 
