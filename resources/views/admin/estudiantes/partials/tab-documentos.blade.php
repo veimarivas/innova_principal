@@ -191,8 +191,8 @@
 
             {{-- PRINCIPAL BANNER --}}
             @if($estudioPrincipal)
-            <div class="" style="background: linear-gradient(135deg, #1a3a5c 0%, #1e5799 55%, #2e86de 100%); border-radius: 16px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.25rem; position: relative; overflow: hidden; flex-wrap: wrap;">
-                <div style="position: absolute; top: -40%; right: -4%; width: 220px; height: 220px; background: radial-gradient(circle, rgba(46,134,222,0.3) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+            <div class="" style="background: linear-gradient(135deg, #391b04 0%, #5c2d0a 50%, #c96004 100%); border-radius: 16px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.25rem; position: relative; overflow: hidden; flex-wrap: wrap;">
+                <div style="position: absolute; top: -40%; right: -4%; width: 220px; height: 220px; background: radial-gradient(circle, rgba(252,123,4,0.3) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
                 <div style="width: 56px; height: 56px; border-radius: 12px; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.22); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #fff; flex-shrink: 0; position: relative; z-index: 1;">
                     <i class="ri-graduation-cap-fill"></i>
                 </div>

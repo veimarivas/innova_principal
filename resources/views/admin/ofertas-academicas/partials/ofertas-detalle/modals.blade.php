@@ -855,25 +855,36 @@
                 </div>
 
                 {{-- ── Sección 4: Estudios Académicos ── --}}
-                <div style="padding:1.2rem 1.5rem;background:rgba(99,102,241,.02);">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;">
-                        <div style="display:flex;align-items:center;gap:.5rem;">
-                            <div style="width:26px;height:26px;border-radius:7px;background:rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="ri-book-open-line" style="color:#6366f1;font-size:.85rem;"></i>
+                <div style="padding:1.25rem 1.5rem 1.5rem;background:linear-gradient(180deg,rgba(99,102,241,.03) 0%,rgba(99,102,241,.01) 100%);">
+
+                    {{-- Cabecera sección --}}
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                        <div style="display:flex;align-items:center;gap:.6rem;">
+                            <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#6366f1,#818cf8);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 3px 8px rgba(99,102,241,.3);">
+                                <i class="ri-graduation-cap-line" style="color:#fff;font-size:.95rem;"></i>
                             </div>
-                            <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#6366f1;">Estudios Académicos</span>
-                            <span style="font-size:.68rem;color:#94a3b8;">(opcional)</span>
+                            <div>
+                                <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#6366f1;line-height:1;">Estudios Académicos</div>
+                                <div style="font-size:.65rem;color:#94a3b8;margin-top:.1rem;">Formación del docente <span style="color:#cbd5e1;">(opcional)</span></div>
+                            </div>
                         </div>
                         <button type="button" id="btnAddEstudioRow"
-                            style="padding:.35rem .85rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);border-radius:8px;color:#6366f1;font-size:.78rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;transition:all .15s;">
-                            <i class="ri-add-circle-line"></i> Agregar Estudio
+                            style="padding:.42rem 1rem;background:linear-gradient(135deg,#6366f1,#818cf8);border:none;border-radius:9px;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 3px 10px rgba(99,102,241,.35);transition:all .18s;">
+                            <i class="ri-add-line" style="font-size:.9rem;"></i> Agregar Estudio
                         </button>
                     </div>
-                    <div id="estudiosEmptyMsg" style="text-align:center;padding:.9rem;border:1.5px dashed rgba(99,102,241,.2);border-radius:10px;color:#94a3b8;font-size:.8rem;margin-bottom:.5rem;">
-                        <i class="ri-graduation-cap-line" style="font-size:1.3rem;display:block;margin-bottom:.3rem;opacity:.4;"></i>
-                        Sin estudios agregados — pulsa <strong style="color:#6366f1;">Agregar Estudio</strong> para incluir formación académica
+
+                    {{-- Estado vacío --}}
+                    <div id="estudiosEmptyMsg"
+                        style="text-align:center;padding:1.4rem 1rem;border:2px dashed rgba(99,102,241,.2);border-radius:14px;background:rgba(99,102,241,.02);margin-bottom:.5rem;">
+                        <div style="width:48px;height:48px;border-radius:14px;background:rgba(99,102,241,.08);display:flex;align-items:center;justify-content:center;margin:0 auto .65rem;">
+                            <i class="ri-graduation-cap-line" style="font-size:1.5rem;color:rgba(99,102,241,.4);"></i>
+                        </div>
+                        <div style="font-size:.82rem;font-weight:600;color:#64748b;margin-bottom:.25rem;">Sin estudios agregados</div>
+                        <div style="font-size:.73rem;color:#94a3b8;">Presiona <strong style="color:#6366f1;">Agregar Estudio</strong> para incluir la formación académica del docente</div>
                     </div>
-                    <div id="estudiosRowsContainer"></div>
+
+                    <div id="estudiosRowsContainer" style="display:flex;flex-direction:column;gap:.65rem;"></div>
                 </div>
 
             </div>

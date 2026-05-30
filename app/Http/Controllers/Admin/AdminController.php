@@ -392,8 +392,10 @@ class AdminController extends Controller
         $persona = Persona::with('trabajador.trabajadores_cargos')->findOrFail($personaId);
         $trabajadoresCargosIds = $persona->trabajador->trabajadores_cargos->pluck('id');
 
-        $gestion = $request->get('gestion');
-        $mes = $request->get('mes');
+        $gestion  = $request->get('gestion');
+        $mes      = $request->get('mes');
+        $ofertaId = $request->get('oferta_id');
+        $estado   = $request->get('estado');
 
         $queryInscripciones = Inscripcione::with([
             'ofertaAcademica.programa',
@@ -409,6 +411,12 @@ class AdminController extends Controller
         }
         if ($mes && $mes !== 'todos') {
             $queryInscripciones->whereMonth('fecha_registro', $mes);
+        }
+        if ($ofertaId) {
+            $queryInscripciones->where('ofertas_academica_id', $ofertaId);
+        }
+        if ($estado && in_array($estado, ['Inscrito', 'Pre-Inscrito'])) {
+            $queryInscripciones->where('estado', $estado);
         }
 
         $inscripciones = $queryInscripciones->orderBy('fecha_registro', 'desc')->get();
@@ -427,6 +435,8 @@ class AdminController extends Controller
 
         if ($gestion) $estadisticasPorMes->whereYear('fecha_registro', $gestion);
         if ($mes && $mes !== 'todos') $estadisticasPorMes->whereMonth('fecha_registro', $mes);
+        if ($ofertaId) $estadisticasPorMes->where('ofertas_academica_id', $ofertaId);
+        if ($estado && in_array($estado, ['Inscrito', 'Pre-Inscrito'])) $estadisticasPorMes->where('estado', $estado);
 
         $estadisticasPorMes = $estadisticasPorMes
             ->groupBy('year', 'month', 'mes_key', 'mes_label')
@@ -489,6 +499,8 @@ class AdminController extends Controller
 
         if ($gestion) $estadisticasPorTipo->whereYear('inscripciones.fecha_registro', $gestion);
         if ($mes && $mes !== 'todos') $estadisticasPorTipo->whereMonth('inscripciones.fecha_registro', $mes);
+        if ($ofertaId) $estadisticasPorTipo->where('inscripciones.ofertas_academica_id', $ofertaId);
+        if ($estado && in_array($estado, ['Inscrito', 'Pre-Inscrito'])) $estadisticasPorTipo->where('inscripciones.estado', $estado);
 
         $estadisticasPorTipo = $estadisticasPorTipo
             ->groupBy('tipos.nombre')

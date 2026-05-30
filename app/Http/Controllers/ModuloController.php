@@ -237,17 +237,40 @@ class ModuloController extends Controller
             }
             
             $nombreCompleto = trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''));
-            
+
+            $persona->load(['ciudad.departamento', 'estudios.grado_academico', 'estudios.profesion', 'estudios.universidad']);
+
+            $estudios = $persona->estudios->map(function ($est) {
+                return [
+                    'grado_academico_id'   => $est->grados_academico_id,
+                    'grado_academico_nombre' => $est->grado_academico?->nombre,
+                    'profesion_id'         => $est->profesione_id,
+                    'profesion_nombre'     => $est->profesion?->nombre,
+                    'universidad_id'       => $est->universidade_id,
+                    'universidad_nombre'   => $est->universidad?->nombre,
+                    'estado'               => $est->estado,
+                    'principal'            => (bool) $est->principal,
+                ];
+            });
+
             return response()->json([
                 'persona_encontrada' => true,
                 'persona' => [
-                    'id' => $persona->id,
-                    'nombre' => $nombreCompleto,
-                    'nombres' => $persona->nombres,
+                    'id'               => $persona->id,
+                    'nombre'           => $nombreCompleto,
+                    'nombres'          => $persona->nombres,
                     'apellido_paterno' => $persona->apellido_paterno,
                     'apellido_materno' => $persona->apellido_materno,
-                    'carnet' => $persona->carnet,
-                    'correo' => $persona->correo,
+                    'carnet'           => $persona->carnet,
+                    'correo'           => $persona->correo,
+                    'celular'          => $persona->celular,
+                    'telefono'         => $persona->telefono,
+                    'fecha_nacimiento' => $persona->fecha_nacimiento,
+                    'sexo'             => $persona->sexo,
+                    'estado_civil'     => $persona->estado_civil,
+                    'ciudad_id'        => $persona->ciudade_id,
+                    'departamento_id'  => $persona->ciudad?->departamento?->id,
+                    'estudios'         => $estudios,
                 ],
                 'message' => 'La persona existe pero no está registrada como docente.'
             ]);

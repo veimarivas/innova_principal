@@ -1303,6 +1303,14 @@
                             apellido_materno: r.persona.apellido_materno || '',
                             nombre_completo: r.persona.nombre,
                             correo: r.persona.correo || '',
+                            celular: r.persona.celular || '',
+                            telefono: r.persona.telefono || '',
+                            fecha_nacimiento: r.persona.fecha_nacimiento || '',
+                            sexo: r.persona.sexo || '',
+                            estado_civil: r.persona.estado_civil || '',
+                            ciudad_id: r.persona.ciudad_id || '',
+                            departamento_id: r.persona.departamento_id || '',
+                            estudios: r.persona.estudios || [],
                         };
                         $('#confirmarRegistroDocenteMsg').text('Se encontró a "' + r.persona.nombre +
                             '" pero no está registrado como docente.');
@@ -1348,6 +1356,11 @@
                     $('#registroDocenteApellidoPaterno').val(docenteTempData.apellido_paterno || '');
                     $('#registroDocenteApellidoMaterno').val(docenteTempData.apellido_materno || '');
                     $('#registroDocenteCorreo').val(docenteTempData.correo || '');
+                    $('#registroDocenteCelular').val(docenteTempData.celular || '');
+                    $('#registroDocenteTelefono').val(docenteTempData.telefono || '');
+                    $('#registroDocenteFechaNacimiento').val(docenteTempData.fecha_nacimiento || '');
+                    $('#registroDocenteSexo').val(docenteTempData.sexo || '');
+                    $('#registroDocenteEstadoCivil').val(docenteTempData.estado_civil || '');
                 }
                 const mod = allModulos.find(m => m.id === $('#editModuloId').val());
                 const color = mod ? (mod.color || '#6366f1') : '#6366f1';
@@ -1355,12 +1368,15 @@
                 $('#estudiosRowsContainer').empty();
                 $('#estudiosEmptyMsg').show();
                 estudioRowCount = 0;
-                cargarDepartamentosDocente();
+                cargarDepartamentosDocente(
+                    docenteTempData.tipo === 'persona_encontrada' ? docenteTempData.departamento_id : null,
+                    docenteTempData.tipo === 'persona_encontrada' ? docenteTempData.ciudad_id : null
+                );
                 openModal('modalRegistroDocente');
             }, 300);
         });
 
-        function cargarDepartamentosDocente() {
+        function cargarDepartamentosDocente(preselectedDepId, preselectedCiudadId) {
             const $select = $('#registroDocenteDepartamento');
             $select.html('<option value="">Cargando...</option>');
             $.get('/admin/personas/listar-departamentos')
@@ -1368,6 +1384,27 @@
                     const lista = Array.isArray(r) ? r : (r.data || []);
                     const opts = lista.map(d => '<option value="' + d.id + '">' + d.nombre + '</option>').join('');
                     $select.html('<option value="">— Seleccionar —</option>' + opts);
+                    if (preselectedDepId) {
+                        $select.val(preselectedDepId);
+                        if (preselectedCiudadId) {
+                            const $ciudadSelect = $('#registroDocenteCiudad');
+                            $ciudadSelect.html('<option value="">Cargando ciudades...</option>').prop('disabled', true);
+                            $.get('/admin/departamentos/' + preselectedDepId + '/ciudades/listar')
+                                .done(function(rc) {
+                                    const ciudades = Array.isArray(rc) ? rc : (rc.data || []);
+                                    if (ciudades.length) {
+                                        const copts = ciudades.map(c => '<option value="' + c.id + '">' + c.nombre + '</option>').join('');
+                                        $ciudadSelect
+                                            .html('<option value="">— Seleccionar ciudad —</option>' + copts)
+                                            .prop('disabled', false)
+                                            .val(preselectedCiudadId);
+                                    }
+                                })
+                                .fail(function() {
+                                    $ciudadSelect.html('<option value="">Error al cargar ciudades</option>').prop('disabled', true);
+                                });
+                        }
+                    }
                 })
                 .fail(function() {
                     $select.html('<option value="">Error al cargar</option>');
@@ -1516,53 +1553,136 @@
         function addEstudioRow() {
             estudioRowCount++;
             const idx = estudioRowCount;
+            const colors = ['#6366f1','#8b5cf6','#ec4899','#0ea5e9','#10b981'];
+            const color  = colors[(idx - 1) % colors.length];
             const html =
                 '<div class="estudio-row" data-idx="' + idx + '" style="' +
-                    'border:1px solid rgba(99,102,241,.18);border-left:3px solid #6366f1;border-radius:10px;' +
-                    'background:#fafbff;margin-bottom:.75rem;overflow:hidden;' +
+                    'border:1px solid #e2e8f0;border-radius:14px;background:#fff;' +
+                    'box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden;' +
+                    'transition:box-shadow .2s;' +
                 '">' +
-                    // Header
-                    '<div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem .85rem;background:rgba(99,102,241,.06);border-bottom:1px solid rgba(99,102,241,.12);">' +
-                        '<div style="display:flex;align-items:center;gap:.5rem;">' +
-                            '<span class="estudio-num" style="background:linear-gradient(135deg,#6366f1,#818cf8);color:#fff;padding:.15rem .6rem;border-radius:20px;font-size:.7rem;font-weight:700;">Estudio #' + idx + '</span>' +
-                            '<span style="font-size:.72rem;color:#94a3b8;">Formación académica</span>' +
-                        '</div>' +
-                        '<button type="button" class="btn-remove-estudio" title="Quitar estudio" style="background:rgba(239,68,68,.1);border:none;border-radius:6px;padding:.2rem .5rem;color:#ef4444;cursor:pointer;font-size:.78rem;display:inline-flex;align-items:center;gap:.25rem;transition:all .15s;">' +
-                            '<i class="ri-delete-bin-line"></i> Quitar' +
-                        '</button>' +
-                    '</div>' +
-                    // Fields
-                    '<div style="padding:.75rem .85rem;">' +
-                        '<div class="row g-2 mb-2">' +
-                            '<div class="col-md-4">' +
-                                '<label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#64748b;display:block;margin-bottom:.3rem;">Grado Académico <span style="color:#ef4444;">*</span></label>' +
-                                '<select class="form-select form-select-sm estudio-grado" style="border-radius:7px;font-size:.83rem;">' + renderGradosOptions() + '</select>' +
+
+                    /* ── Franja de color lateral + header ── */
+                    '<div style="display:flex;align-items:stretch;">' +
+
+                        /* Franja color */
+                        '<div style="width:4px;background:' + color + ';flex-shrink:0;"></div>' +
+
+                        '<div style="flex:1;min-width:0;">' +
+
+                            /* Header */
+                            '<div style="display:flex;align-items:center;justify-content:space-between;' +
+                                'padding:.6rem 1rem;background:#f8fafc;border-bottom:1px solid #f1f5f9;">' +
+                                '<div style="display:flex;align-items:center;gap:.55rem;">' +
+                                    '<div style="width:26px;height:26px;border-radius:7px;background:' + color + ';' +
+                                        'display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+                                        '<i class="ri-graduation-cap-fill" style="color:#fff;font-size:.82rem;"></i>' +
+                                    '</div>' +
+                                    '<div>' +
+                                        '<div class="estudio-num" style="font-size:.72rem;font-weight:800;color:#1e293b;letter-spacing:.01em;">Estudio #' + idx + '</div>' +
+                                        '<div style="font-size:.62rem;color:#94a3b8;margin-top:.05rem;">Formación académica</div>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<button type="button" class="btn-remove-estudio" title="Eliminar estudio" ' +
+                                    'style="width:28px;height:28px;border-radius:7px;background:rgba(239,68,68,.08);' +
+                                    'border:1px solid rgba(239,68,68,.18);color:#ef4444;cursor:pointer;' +
+                                    'display:flex;align-items:center;justify-content:center;font-size:.85rem;' +
+                                    'transition:all .15s;flex-shrink:0;">' +
+                                    '<i class="ri-close-line"></i>' +
+                                '</button>' +
                             '</div>' +
-                            '<div class="col-md-4">' +
-                                '<label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#64748b;display:block;margin-bottom:.3rem;">Profesión / Título</label>' +
-                                '<select class="form-select form-select-sm estudio-profesion" style="border-radius:7px;font-size:.83rem;">' + renderProfesionesOptions() + '</select>' +
-                            '</div>' +
-                            '<div class="col-md-4">' +
-                                '<label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#64748b;display:block;margin-bottom:.3rem;">Institución / Universidad</label>' +
-                                '<select class="form-select form-select-sm estudio-universidad" style="border-radius:7px;font-size:.83rem;">' + renderUniversidadesOptions() + '</select>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="row g-2 align-items-center">' +
-                            '<div class="col-md-4">' +
-                                '<label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#64748b;display:block;margin-bottom:.3rem;">Estado <span style="color:#ef4444;">*</span></label>' +
-                                '<select class="form-select form-select-sm estudio-estado" style="border-radius:7px;font-size:.83rem;">' +
-                                    '<option value="En Desarrollo">En Desarrollo</option>' +
-                                    '<option value="Concluido">Concluido</option>' +
-                                '</select>' +
-                            '</div>' +
-                            '<div class="col-md-8 d-flex align-items-end" style="padding-bottom:.1rem;">' +
-                                '<div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);border-radius:8px;padding:.42rem .85rem;cursor:pointer;" onclick="document.getElementById(\'estudioPrincipal' + idx + '\').click()">' +
-                                    '<input class="form-check-input estudio-principal" type="checkbox" id="estudioPrincipal' + idx + '" style="width:16px;height:16px;cursor:pointer;margin:0;" onclick="event.stopPropagation()">' +
-                                    '<label for="estudioPrincipal' + idx + '" style="font-size:.78rem;font-weight:600;color:#6366f1;cursor:pointer;margin:0;user-select:none;">' +
-                                        '<i class="ri-star-line" style="font-size:.8rem;margin-right:.2rem;"></i>Marcar como principal' +
-                                    '</label>' +
+
+                            /* Body fields */
+                            '<div style="padding:.9rem 1rem 1rem;">' +
+
+                                /* Fila 1: tres selects */
+                                '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem;margin-bottom:.65rem;">' +
+
+                                    /* Grado */
+                                    '<div>' +
+                                        '<label style="display:flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;' +
+                                            'text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin-bottom:.3rem;">' +
+                                            '<i class="ri-award-line" style="color:' + color + ';font-size:.8rem;"></i>' +
+                                            'Grado <span style="color:#ef4444;">*</span>' +
+                                        '</label>' +
+                                        '<select class="form-select form-select-sm estudio-grado" ' +
+                                            'style="border-radius:8px;font-size:.82rem;border-color:#e2e8f0;' +
+                                            'background:#fff;color:#1e293b;">' +
+                                            renderGradosOptions() +
+                                        '</select>' +
+                                    '</div>' +
+
+                                    /* Profesión */
+                                    '<div>' +
+                                        '<label style="display:flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;' +
+                                            'text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin-bottom:.3rem;">' +
+                                            '<i class="ri-briefcase-line" style="color:' + color + ';font-size:.8rem;"></i>' +
+                                            'Profesión' +
+                                        '</label>' +
+                                        '<select class="form-select form-select-sm estudio-profesion" ' +
+                                            'style="border-radius:8px;font-size:.82rem;border-color:#e2e8f0;' +
+                                            'background:#fff;color:#1e293b;">' +
+                                            renderProfesionesOptions() +
+                                        '</select>' +
+                                    '</div>' +
+
+                                    /* Universidad */
+                                    '<div>' +
+                                        '<label style="display:flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;' +
+                                            'text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin-bottom:.3rem;">' +
+                                            '<i class="ri-building-4-line" style="color:' + color + ';font-size:.8rem;"></i>' +
+                                            'Universidad' +
+                                        '</label>' +
+                                        '<select class="form-select form-select-sm estudio-universidad" ' +
+                                            'style="border-radius:8px;font-size:.82rem;border-color:#e2e8f0;' +
+                                            'background:#fff;color:#1e293b;">' +
+                                            renderUniversidadesOptions() +
+                                        '</select>' +
+                                    '</div>' +
+
+                                '</div>' +
+
+                                /* Fila 2: estado + principal */
+                                '<div style="display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;">' +
+
+                                    /* Estado */
+                                    '<div style="min-width:140px;">' +
+                                        '<label style="display:flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;' +
+                                            'text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin-bottom:.3rem;">' +
+                                            '<i class="ri-checkbox-circle-line" style="color:' + color + ';font-size:.8rem;"></i>' +
+                                            'Estado <span style="color:#ef4444;">*</span>' +
+                                        '</label>' +
+                                        '<select class="form-select form-select-sm estudio-estado" ' +
+                                            'style="border-radius:8px;font-size:.82rem;border-color:#e2e8f0;">' +
+                                            '<option value="En Desarrollo">En Desarrollo</option>' +
+                                            '<option value="Concluido">Concluido</option>' +
+                                        '</select>' +
+                                    '</div>' +
+
+                                    /* Toggle principal */
+                                    '<div style="flex:1;display:flex;align-items:flex-end;padding-bottom:.05rem;">' +
+                                        '<label for="estudioPrincipal' + idx + '" ' +
+                                            'style="display:inline-flex;align-items:center;gap:.5rem;' +
+                                            'background:rgba(99,102,241,.05);border:1.5px solid rgba(99,102,241,.15);' +
+                                            'border-radius:9px;padding:.45rem .9rem;cursor:pointer;' +
+                                            'transition:all .18s;user-select:none;width:100%;">' +
+                                            '<input class="form-check-input estudio-principal m-0" type="checkbox" ' +
+                                                'id="estudioPrincipal' + idx + '" ' +
+                                                'style="width:17px;height:17px;cursor:pointer;flex-shrink:0;' +
+                                                'accent-color:' + color + ';">' +
+                                            '<div>' +
+                                                '<div style="font-size:.77rem;font-weight:700;color:#4f46e5;line-height:1.1;">' +
+                                                    '<i class="ri-star-fill" style="color:#f59e0b;margin-right:.25rem;font-size:.75rem;"></i>' +
+                                                    'Formación principal' +
+                                                '</div>' +
+                                                '<div style="font-size:.63rem;color:#94a3b8;margin-top:.1rem;">Será la titulación destacada del docente</div>' +
+                                            '</div>' +
+                                        '</label>' +
+                                    '</div>' +
+
                                 '</div>' +
                             '</div>' +
+
                         '</div>' +
                     '</div>' +
                 '</div>';
@@ -1578,14 +1698,33 @@
             syncEstudiosEmptyMsg();
         });
         $(document).on('click', '.btn-remove-estudio', function() {
-            $(this).closest('.estudio-row').remove();
-            renumberEstudios();
-            syncEstudiosEmptyMsg();
+            const $row = $(this).closest('.estudio-row');
+            $row.css({opacity:0, transform:'scale(.97)'});
+            setTimeout(function() {
+                $row.remove();
+                renumberEstudios();
+                syncEstudiosEmptyMsg();
+            }, 180);
+        });
+        $(document).on('mouseenter', '#estudiosRowsContainer .estudio-row', function() {
+            $(this).css('box-shadow', '0 4px 16px rgba(0,0,0,.09)');
+        }).on('mouseleave', '#estudiosRowsContainer .estudio-row', function() {
+            $(this).css('box-shadow', '0 2px 8px rgba(0,0,0,.05)');
+        });
+        $(document).on('mouseenter', '.btn-remove-estudio', function() {
+            $(this).css({background:'rgba(239,68,68,.15)', borderColor:'rgba(239,68,68,.35)'});
+        }).on('mouseleave', '.btn-remove-estudio', function() {
+            $(this).css({background:'rgba(239,68,68,.08)', borderColor:'rgba(239,68,68,.18)'});
         });
 
         function renumberEstudios() {
+            const colors = ['#6366f1','#8b5cf6','#ec4899','#0ea5e9','#10b981'];
             $('#estudiosRowsContainer .estudio-row').each(function(i) {
-                $(this).find('.estudio-num').text('Estudio #' + (i + 1));
+                const num = i + 1;
+                const color = colors[i % colors.length];
+                $(this).find('.estudio-num').text('Estudio #' + num);
+                $(this).find('[style*="width:4px"]').css('background', color);
+                $(this).find('[style*="ri-graduation-cap-fill"]').closest('div[style*="width:26px"]').css('background', color);
             });
         }
         $('#btnRegistrarYAsignarDocente').on('click', function() {
@@ -1708,9 +1847,32 @@
             if (!catalogosLoaded) {
                 cargarCatalogosEstudios().done(function() {
                     catalogosLoaded = true;
+                    prePopularEstudiosDocente();
                 });
+            } else {
+                prePopularEstudiosDocente();
             }
         });
+
+        function prePopularEstudiosDocente() {
+            if (!docenteTempData || docenteTempData.tipo !== 'persona_encontrada') return;
+            const estudios = docenteTempData.estudios || [];
+            if (!estudios.length) return;
+            $('#estudiosRowsContainer').empty();
+            estudioRowCount = 0;
+            estudios.forEach(function(est) {
+                addEstudioRow();
+                const $row = $('#estudiosRowsContainer .estudio-row').last();
+                $row.find('.estudio-grado').val(est.grado_academico_id || '');
+                $row.find('.estudio-profesion').val(est.profesion_id || '');
+                $row.find('.estudio-universidad').val(est.universidad_id || '');
+                $row.find('.estudio-estado').val(est.estado || 'En Desarrollo');
+                if (est.principal) {
+                    $row.find('.estudio-principal').prop('checked', true);
+                }
+            });
+            syncEstudiosEmptyMsg();
+        }
         $('#btnGuardarEditarModulo').on('click', function() {
             const id = $('#editModuloId').val(),
                 nombre = $('#editModuloNombre').val().trim();

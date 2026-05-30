@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo Académico — Innova Ciencia Virtual</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <meta name="description" content="Explora toda la oferta académica de posgrado de Innova Ciencia Virtual. Filtra por tipo, área, convenio y sede.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -543,7 +544,7 @@
 <header class="hdr" id="hdr">
     <div class="hdr-inner">
         <a href="{{ route('welcome') }}" class="hdr-logo">
-            <img src="{{ asset('build/images/logo_chico.png') }}" alt="Innova Ciencia"
+            <img src="{{ asset('images/logo-secundario.png') }}" alt="Innova Ciencia"
                 style="width:44px;height:44px;border-radius:8px;object-fit:contain;">
             <span>Innova<span class="logo-dot">·</span>Ciencia <small>Virtual — Posgrados</small></span>
         </a>
