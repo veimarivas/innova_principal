@@ -6,6 +6,7 @@ use App\Models\Cuota;
 use App\Models\OfertasAcademica;
 use App\Models\Pago;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class ContabilidadController extends Controller
@@ -563,5 +564,28 @@ class ContabilidadController extends Controller
             'qr'           => $qr,
             'transferencia' => $transferencia,
         ];
+    }
+
+    public function subirFactura(Request $request, $pagoId)
+    {
+        $pago = Pago::findOrFail($pagoId);
+
+        $request->validate([
+            'documento_factura' => 'required|file|mimes:jpeg,png,jpg,gif,pdf|max:5120',
+        ]);
+
+        if ($pago->documento_factura) {
+            Storage::disk('public')->delete($pago->documento_factura);
+        }
+
+        $path = $request->file('documento_factura')->store('facturas', 'public');
+
+        $pago->update(['documento_factura' => $path]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Factura subida correctamente.',
+            'path'    => Storage::url($path),
+        ]);
     }
 }

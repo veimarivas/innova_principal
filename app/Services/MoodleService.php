@@ -717,17 +717,22 @@ return $result !== null ? [] : false;
      */
     public function getUrls(int $moodleCourseId): array
     {
-        $response = $this->call('mod_url_get_urls_by_courses', [
-            'courseids[0]' => $moodleCourseId,
-        ]);
-        $urls = $response['urls'] ?? [];
-        
-        return array_map(function($url) {
-            if (!empty($url['intro'])) {
-                $url['description'] = $url['intro'];
-            }
-            return $url;
-        }, $urls);
+        $db = DB::connection('moodle');
+
+        // Obtener el ID del módulo 'url' en mdl_modules
+        $moduleId = $db->table('modules')->where('name', 'url')->value('id');
+        if (!$moduleId) return [];
+
+        $rows = $db->table('url as u')
+            ->join('course_modules as cm', function ($j) use ($moduleId) {
+                $j->on('cm.instance', '=', 'u.id')
+                  ->where('cm.module', '=', $moduleId);
+            })
+            ->where('u.course', $moodleCourseId)
+            ->select('u.id', 'u.name', 'u.intro as description', 'u.externalurl', 'u.display', 'cm.id as cmid')
+            ->get();
+
+        return $rows->map(fn($r) => (array)$r)->toArray();
     }
 
     /**
@@ -781,10 +786,17 @@ return $result !== null ? [] : false;
         ], $resources), null, 'instance');
 
         $urlsMap = array_column(array_map(fn($u) => [
-            'instance' => $u['id'],
+            'instance'    => $u['id'],
             'description' => $u['description'] ?? '',
-            'cmid' => $u['cmid'] ?? null,
+            'cmid'        => $u['cmid'] ?? null,
+            'externalurl' => $u['externalurl'] ?? '',
         ], $urls), null, 'instance');
+
+        $urlsByCmid = array_column(array_map(fn($u) => [
+            'cmid'        => $u['cmid'],
+            'description' => $u['description'] ?? '',
+            'externalurl' => $u['externalurl'] ?? '',
+        ], $urls), null, 'cmid');
 
         $assignsMap = array_column(array_map(fn($a) => [
             'instance'    => $a['id'],
@@ -901,6 +913,17 @@ return $result !== null ? [] : false;
 
                 if ($desc) {
                     $mod['description'] = $this->rewritePluginfileUrlsInText($desc);
+                }
+
+                // Pasar externalurl para módulos URL (busca por instance y por cmid como fallback)
+                if ($modname === 'url') {
+                    $cmid = $mod['id'] ?? null;
+                    $externalurl = $urlsMap[$instance]['externalurl']
+                        ?? $urlsByCmid[$cmid]['externalurl']
+                        ?? '';
+                    if ($externalurl !== '') {
+                        $mod['externalurl'] = $externalurl;
+                    }
                 }
 
                 $actDates = match ($modname) {
@@ -2107,6 +2130,12 @@ return $result !== null ? [] : false;
                     'duedate'        => $data['duedate'] ?? 0,
                     'cutoffdate'     => $data['cutoffdate'] ?? 0,
                 ]) && $this->syncForumAvailability($db, $cmid, $data),
+                'url' => $db->table('url')->where('id', $cm->instance)->update($common + [
+                    'externalurl' => $data['externalurl'] ?? '',
+                    'display'     => $data['display'] ?? 5,
+                    'timemodified' => $now,
+                ]),
+                'resource' => $db->table('resource')->where('id', $cm->instance)->update($common),
                 default => $db->table($moduleType)->where('id', $cm->instance)->update($common),
             };
 
@@ -2350,12 +2379,127 @@ return $result !== null ? [] : false;
      * Crea un recurso tipo Archivo desde un draft area.
      * Primero intenta REST API; si falla, crea recurso básico sin archivo vía DB.
      */
-    public function createResourceFromDraft(int $courseId, int $sectionNumber, string $name, int $draftId): ?int
+    public function createResourceFromDraft(int $courseId, int $sectionNumber, string $name, int $draftId, string $description = ''): ?int
     {
         return $this->createModuleViaDB($courseId, $sectionNumber, 'resource', [
             'name' => $name,
-            'description' => '',
+            'description' => $description,
         ]);
+    }
+
+    /**
+     * Crea un recurso (resource) con su archivo adjunto escribiendo directamente
+     * en el filesystem de Moodle y en mdl_files — mismo mecanismo que attachFileToAssignIntro.
+     */
+    public function createResourceWithFile(int $courseId, int $sectionNumber, string $name, string $description, \Illuminate\Http\UploadedFile $uploadedFile): ?int
+    {
+        try {
+            $db         = DB::connection('moodle');
+            $moodleData = config('moodle.dataroot');
+            $now        = time();
+
+            // 1. Crear el módulo resource en la BD
+            $cmId = $this->createModuleViaDB($courseId, $sectionNumber, 'resource', [
+                'name'        => $name,
+                'description' => $description,
+            ]);
+            if (!$cmId) return null;
+
+            // 2. Obtener el context del course_module recién creado
+            $context = $db->table('context')
+                ->where('contextlevel', 70)
+                ->where('instanceid', $cmId)
+                ->first();
+            if (!$context) {
+                Log::error("createResourceWithFile: context no encontrado para cmId=$cmId");
+                return $cmId; // Devuelve el cmid aunque no se pudo adjuntar el archivo
+            }
+
+            // 3. Almacenar el archivo físicamente en filedir de Moodle
+            $content  = file_get_contents($uploadedFile->getRealPath());
+            $hash     = sha1($content);
+            $filename = $uploadedFile->getClientOriginalName();
+            $mimetype = $uploadedFile->getMimeType() ?: 'application/octet-stream';
+            $filesize = $uploadedFile->getSize();
+
+            $dirPath = rtrim($moodleData, DIRECTORY_SEPARATOR)
+                . DIRECTORY_SEPARATOR . 'filedir'
+                . DIRECTORY_SEPARATOR . substr($hash, 0, 2)
+                . DIRECTORY_SEPARATOR . substr($hash, 2, 2);
+            if (!is_dir($dirPath)) mkdir($dirPath, 0755, true);
+            $physicalPath = $dirPath . DIRECTORY_SEPARATOR . $hash;
+            if (!file_exists($physicalPath)) file_put_contents($physicalPath, $content);
+
+            // 4. Registrar directorio raíz en mdl_files si no existe
+            $dirPhash = sha1("/{$context->id}/mod_resource/content/0/.");
+            if (!$db->table('files')->where('pathnamehash', $dirPhash)->exists()) {
+                $db->table('files')->insert([
+                    'contenthash'     => 'da39a3ee5e6b4b0d3255bfef95601890afd80709',
+                    'pathnamehash'    => $dirPhash,
+                    'contextid'       => $context->id,
+                    'component'       => 'mod_resource',
+                    'filearea'        => 'content',
+                    'itemid'          => 0,
+                    'filepath'        => '/',
+                    'filename'        => '.',
+                    'userid'          => null,
+                    'filesize'        => 0,
+                    'mimetype'        => null,
+                    'status'          => 0,
+                    'source'          => null,
+                    'author'          => null,
+                    'license'         => null,
+                    'timecreated'     => $now,
+                    'timemodified'    => $now,
+                    'sortorder'       => 0,
+                    'referencefileid' => null,
+                ]);
+            }
+
+            // 5. Registrar el archivo en mdl_files
+            $pathnamehash = sha1("/{$context->id}/mod_resource/content/0/{$filename}");
+            $fileRow = [
+                'contenthash'     => $hash,
+                'pathnamehash'    => $pathnamehash,
+                'contextid'       => $context->id,
+                'component'       => 'mod_resource',
+                'filearea'        => 'content',
+                'itemid'          => 0,
+                'filepath'        => '/',
+                'filename'        => $filename,
+                'userid'          => null,
+                'filesize'        => $filesize,
+                'mimetype'        => $mimetype,
+                'status'          => 0,
+                'source'          => $filename,
+                'author'          => null,
+                'license'         => null,
+                'timecreated'     => $now,
+                'timemodified'    => $now,
+                'sortorder'       => 1,
+                'referencefileid' => null,
+            ];
+
+            if ($db->table('files')->where('pathnamehash', $pathnamehash)->exists()) {
+                $db->table('files')->where('pathnamehash', $pathnamehash)->update([
+                    'contenthash'  => $hash,
+                    'filesize'     => $filesize,
+                    'mimetype'     => $mimetype,
+                    'timemodified' => $now,
+                ]);
+            } else {
+                $db->table('files')->insert($fileRow);
+            }
+
+            $db->table('course')->where('id', $courseId)->increment('cacherev');
+
+            Log::info("createResourceWithFile: resource cmId=$cmId archivo=$filename course=$courseId");
+            return $cmId;
+
+        } catch (\Exception $e) {
+            Log::error("createResourceWithFile: " . $e->getMessage());
+            return null;
+        }
     }
 
     // ============================================================
@@ -2484,7 +2628,9 @@ return $result !== null ? [] : false;
                     'parameters'     => '',
                 ]),
                 'resource' => $db->table('resource')->insertGetId($common + [
-                    'type'            => '',
+                    'tobemigrated'    => 0,
+                    'legacyfiles'     => 0,
+                    'legacyfileslast' => null,
                     'display'         => 0,
                     'displayoptions'  => '',
                     'filterfiles'     => 0,

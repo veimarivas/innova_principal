@@ -42,9 +42,7 @@ class VirtualDashboardController extends Controller
 
             $doc = $persona->docente;
             if ($doc) {
-                $esDocente = Modulo::where('docente_id', $doc->id)
-                    ->whereNotNull('id')
-                    ->exists();
+                $esDocente = true;
             }
         }
 
@@ -168,6 +166,19 @@ class VirtualDashboardController extends Controller
                 $moodleDocenteId = MoodleMatricula::where('docente_id', $docente->id)
                     ->whereNotNull('moodle_user_id')
                     ->value('moodle_user_id');
+
+                // Si no está en moodle_matriculas, buscar por username en Moodle
+                if (!$moodleDocenteId && $user->username) {
+                    try {
+                        $found = $this->moodle->getUserByField('username', $user->username);
+                        if ($found && isset($found['id'])) {
+                            $moodleDocenteId = (int) $found['id'];
+                        }
+                    } catch (\Exception $e) {
+                        Log::warning('Error buscando Moodle user por username: ' . $e->getMessage());
+                    }
+                }
+
                 if (!$moodleUserId) {
                     $moodleUserId = $moodleDocenteId;
                 }

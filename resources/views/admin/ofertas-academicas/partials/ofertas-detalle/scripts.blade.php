@@ -182,6 +182,7 @@
                 $list.html('<div class="msi-loading"><i class="ri-inbox-line"></i> Sin módulos registrados</div>');
                 return;
             }
+            allModulos.sort(function(a, b) { return a.id - b.id; });
             let html = '';
             allModulos.forEach(function(mod, idx) {
                 const color = mod.color || '#6366f1';
@@ -1341,6 +1342,7 @@
                             tipo: 'persona_encontrada',
                             persona_id: r.persona.id,
                             carnet: r.persona.carnet,
+                            expedido: r.persona.expedido || '',
                             nombres: r.persona.nombres || r.persona.nombre.split(' ')[0] || '',
                             apellido_paterno: r.persona.apellido_paterno || '',
                             apellido_materno: r.persona.apellido_materno || '',
@@ -1348,6 +1350,7 @@
                             correo: r.persona.correo || '',
                             celular: r.persona.celular || '',
                             telefono: r.persona.telefono || '',
+                            direccion: r.persona.direccion || '',
                             fecha_nacimiento: r.persona.fecha_nacimiento || '',
                             sexo: r.persona.sexo || '',
                             estado_civil: r.persona.estado_civil || '',
@@ -1381,12 +1384,14 @@
                 clearValidationErrors();
                 $('#registroDocentePersonaId').val('');
                 $('#registroDocenteCarnet').val(docenteTempData.carnet || '');
+                $('#registroDocenteExpedido').val('');
                 $('#registroDocenteNombres').val('');
                 $('#registroDocenteApellidoPaterno').val('');
                 $('#registroDocenteApellidoMaterno').val('');
                 $('#registroDocenteCorreo').val('');
                 $('#registroDocenteCelular').val('');
                 $('#registroDocenteTelefono').val('');
+                $('#registroDocenteDireccion').val('');
                 $('#registroDocenteFechaNacimiento').val('');
                 $('#registroDocenteSexo').val('');
                 $('#registroDocenteEstadoCivil').val('');
@@ -1395,12 +1400,14 @@
                 $('#registroDocenteCarnet').prop('readonly', true);
                 if (docenteTempData.tipo === 'persona_encontrada') {
                     $('#registroDocentePersonaId').val(docenteTempData.persona_id);
+                    $('#registroDocenteExpedido').val(docenteTempData.expedido || '');
                     $('#registroDocenteNombres').val(docenteTempData.nombres || '');
                     $('#registroDocenteApellidoPaterno').val(docenteTempData.apellido_paterno || '');
                     $('#registroDocenteApellidoMaterno').val(docenteTempData.apellido_materno || '');
                     $('#registroDocenteCorreo').val(docenteTempData.correo || '');
                     $('#registroDocenteCelular').val(docenteTempData.celular || '');
                     $('#registroDocenteTelefono').val(docenteTempData.telefono || '');
+                    $('#registroDocenteDireccion').val(docenteTempData.direccion || '');
                     $('#registroDocenteFechaNacimiento').val(docenteTempData.fecha_nacimiento || '');
                     $('#registroDocenteSexo').val(docenteTempData.sexo || '');
                     $('#registroDocenteEstadoCivil').val(docenteTempData.estado_civil || '');
@@ -1773,12 +1780,14 @@
         $('#btnRegistrarYAsignarDocente').on('click', function() {
             clearValidationErrors();
             const carnet          = $('#registroDocenteCarnet').val().trim(),
+                expedido           = $('#registroDocenteExpedido').val().trim(),
                 nombres            = $('#registroDocenteNombres').val().trim(),
                 apellidoPaterno    = $('#registroDocenteApellidoPaterno').val().trim(),
                 apellidoMaterno    = $('#registroDocenteApellidoMaterno').val().trim(),
                 correo             = $('#registroDocenteCorreo').val().trim(),
                 celular            = $('#registroDocenteCelular').val().trim(),
                 telefono           = $('#registroDocenteTelefono').val().trim(),
+                direccion          = $('#registroDocenteDireccion').val().trim(),
                 fechaNacimiento    = $('#registroDocenteFechaNacimiento').val(),
                 sexo               = $('#registroDocenteSexo').val(),
                 estadoCivil        = $('#registroDocenteEstadoCivil').val(),
@@ -1834,12 +1843,14 @@
                         persona_id:       $('#registroDocentePersonaId').val() || null,
                         modulo_id:        $('#editModuloId').val() || null,
                         carnet:           carnet,
+                        expedido:         expedido || null,
                         nombres:          nombres,
                         apellido_paterno: apellidoPaterno,
                         apellido_materno: apellidoMaterno,
                         correo:           correo,
                         celular:          celular,
                         telefono:         telefono || null,
+                        direccion:        direccion || null,
                         fecha_nacimiento: fechaNacimiento || null,
                         sexo:             sexo || null,
                         estado_civil:     estadoCivil || null,
@@ -3376,6 +3387,11 @@
 
             $('#cambiarConceptosList').html(html);
 
+            // ── Helper: ajusta el día al máximo válido del mes ───────
+            function clampDay(year, month, day) {
+                return Math.min(day, new Date(year, month, 0).getDate());
+            }
+
             // ── Aplicar día a todas las fechas del concepto ──────────
             $('.btn-aplicar-dia-cambio').on('click', function() {
                 const conceptoIdx = $(this).data('concepto-idx');
@@ -3390,7 +3406,10 @@
                     if (val) {
                         const parts = val.split('-');
                         if (parts.length === 3) {
-                            parts[2] = String(dia).padStart(2, '0');
+                            const year  = parseInt(parts[0]);
+                            const month = parseInt(parts[1]);
+                            const diaReal = clampDay(year, month, dia);
+                            parts[2] = String(diaReal).padStart(2, '0');
                             $(this).val(parts.join('-'));
                             aplicados++;
                         }
@@ -3439,7 +3458,8 @@
                     let mes  = mesInicio + cuotaIdx;
                     let anio = anioBase + Math.floor((mes - 1) / 12);
                     mes = ((mes - 1) % 12) + 1;
-                    $(this).val(anio + '-' + String(mes).padStart(2, '0') + '-' + String(dia).padStart(2, '0'));
+                    const diaReal = clampDay(anio, mes, dia);
+                    $(this).val(anio + '-' + String(mes).padStart(2, '0') + '-' + String(diaReal).padStart(2, '0'));
                 });
 
                 const nombresMeses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
@@ -4323,7 +4343,7 @@
         }
 
         function _renderCA() {
-            const modulos = _caData.modulos;
+            const modulos = (_caData.modulos || []).slice().sort(function(a, b) { return a.id - b.id; });
             const estudiantes = _caData.estudiantes;
 
             // Header

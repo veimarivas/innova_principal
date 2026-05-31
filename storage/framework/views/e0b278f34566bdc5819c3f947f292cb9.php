@@ -1,6 +1,5 @@
-@extends('layouts.master')
-@section('title') Docentes @endsection
-@section('css')
+<?php $__env->startSection('title'); ?> Docentes <?php $__env->stopSection(); ?>
+<?php $__env->startSection('css'); ?>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -353,9 +352,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
     .doc-btn-action i { font-size: 0.82rem; }
 }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="doc-page">
 <div class="doc-header">
     <div class="container-fluid">
@@ -381,7 +380,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
 </div>
 
 <div class="container-fluid py-4">
-    {{-- ═══ SEARCH + REGISTER ═══ --}}
+    
     <div class="doc-search-card doc-animate doc-animate-3">
         <div class="doc-search-row">
             <div class="doc-search-field">
@@ -400,7 +399,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
         </div>
     </div>
 
-    {{-- ═══ PERSONA FOUND ═══ --}}
+    
     <div class="doc-persona-found" id="personaFound">
         <div class="doc-pf-header">
             <h5><i class="ri-user-line"></i> Persona Encontrada</h5>
@@ -424,7 +423,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
         </div>
     </div>
 
-    {{-- ═══ TABLE ═══ --}}
+    
     <div class="row">
         <div class="col-12">
             <div class="doc-card">
@@ -458,7 +457,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
     </div>
 </div>
 
-{{-- ════════════════ MODAL REGISTRAR DOCENTE ════════════════ --}}
+
 <div class="modal fade doc-modal-form" id="modalRegistro" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
@@ -473,12 +472,12 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                         <span>Esta persona ya está registrada como docente.</span>
                     </div>
 
-                    {{-- Photo --}}
+                    
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="doc-photo-wrap">
                                 <div class="doc-photo-circle" onclick="document.getElementById('fotografiaRegistro').click()">
-                                    <img id="previewFotografiaRegistro" src="{{ URL::asset('build/images/users/avatar-1.jpg') }}" alt="Foto">
+                                    <img id="previewFotografiaRegistro" src="<?php echo e(URL::asset('build/images/users/avatar-1.jpg')); ?>" alt="Foto">
                                     <div class="doc-photo-overlay"><i class="ri-camera-line"></i></div>
                                     <input type="file" id="fotografiaRegistro" name="fotografia" accept="image/*" style="display:none;" onchange="previewImage(this, 'previewFotografiaRegistro')">
                                 </div>
@@ -487,7 +486,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                         </div>
                     </div>
 
-                    {{-- Identity Section --}}
+                    
                     <div class="doc-modal-section-header"><i class="ri-id-card-line"></i><span>Datos de Identidad</span></div>
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -563,7 +562,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                         </div>
                     </div>
 
-                    {{-- Contact Section --}}
+                    
                     <div class="doc-modal-section-header mt-4"><i class="ri-phone-line"></i><span>Datos de Contacto</span></div>
                     <div class="row g-3">
                         <div class="col-md-5">
@@ -588,7 +587,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                         </div>
                     </div>
 
-                    {{-- Studies Section --}}
+                    
                     <div class="doc-modal-section-header mt-4"><i class="ri-graduation-cap-line"></i><span>Estudios Académicos</span></div>
                     <div id="registroEstudiosContainer">
                         <div id="registroEstudiosEmpty" style="text-align:center;padding:1.2rem 1rem;border:2px dashed rgba(252,123,4,.2);border-radius:12px;background:rgba(252,123,4,.02);margin-bottom:.5rem;">
@@ -614,7 +613,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
     </div>
 </div>
 
-{{-- ════════════════ MODAL EDITAR ════════════════ --}}
+
 <div class="modal fade doc-modal-form" id="modalEditar" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
@@ -625,12 +624,12 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
             <form id="formEditar" novalidate autocomplete="off" enctype="multipart/form-data">
                 <input type="hidden" id="editId">
                 <div class="modal-body">
-                    {{-- Photo --}}
+                    
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="doc-photo-wrap">
                                 <div class="doc-photo-circle" onclick="document.getElementById('fotografiaEditar').click()">
-                                    <img id="previewFotografiaEditar" src="{{ URL::asset('build/images/users/avatar-1.jpg') }}" alt="Foto">
+                                    <img id="previewFotografiaEditar" src="<?php echo e(URL::asset('build/images/users/avatar-1.jpg')); ?>" alt="Foto">
                                     <div class="doc-photo-overlay"><i class="ri-camera-line"></i></div>
                                     <input type="file" id="fotografiaEditar" name="fotografia" accept="image/*" style="display:none;" onchange="previewImage(this, 'previewFotografiaEditar')">
                                 </div>
@@ -639,7 +638,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                         </div>
                     </div>
 
-                    {{-- Identity Section --}}
+                    
                     <div class="doc-modal-section-header"><i class="ri-id-card-line"></i><span>Datos de Identidad</span></div>
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -678,7 +677,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             <div class="doc-feedback" id="fbEApellidos"></div>
                         </div>
                         <div class="col-md-4">
-                            <label class="doc-label">Sexo <span class="doc-req">*</span></label>
+                            <label class="doc-label">Sexo</label>
                             <select class="form-select" id="editSexo">
                                 <option value="">— Seleccione —</option>
                                 <option value="M">Masculino</option>
@@ -686,7 +685,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="doc-label">Estado Civil <span class="doc-req">*</span></label>
+                            <label class="doc-label">Estado Civil</label>
                             <select class="form-select" id="editEstadoCivil">
                                 <option value="">— Seleccione —</option>
                                 <option value="Soltero/a">Soltero/a</option>
@@ -704,18 +703,18 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             </select>
                         </div>
                         <div class="col-md-5">
-                            <label class="doc-label">Ciudad <span class="doc-req">*</span></label>
+                            <label class="doc-label">Ciudad</label>
                             <select class="form-select" id="editCiudad" disabled>
                                 <option value="">— Seleccione depto. —</option>
                             </select>
                         </div>
                     </div>
 
-                    {{-- Contact Section --}}
+                    
                     <div class="doc-modal-section-header mt-4"><i class="ri-phone-line"></i><span>Datos de Contacto</span></div>
                     <div class="row g-3">
                         <div class="col-md-5">
-                            <label class="doc-label">Correo Electrónico <span class="doc-req">*</span></label>
+                            <label class="doc-label">Correo Electrónico</label>
                             <div class="doc-field" style="position:relative;">
                                 <input type="email" class="form-control" id="editCorreo" maxlength="150" autocomplete="off">
                                 <span class="doc-validation-icon" id="iconECorreo"></span>
@@ -723,7 +722,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             <div class="doc-feedback" id="fbECorreo"></div>
                         </div>
                         <div class="col-md-3">
-                            <label class="doc-label">Celular <span class="doc-req">*</span></label>
+                            <label class="doc-label">Celular</label>
                             <input type="text" class="form-control" id="editCelular" maxlength="20" autocomplete="off">
                         </div>
                         <div class="col-md-4">
@@ -736,7 +735,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                         </div>
                     </div>
 
-                    {{-- Studies Section --}}
+                    
                     <div class="doc-modal-section-header mt-4"><i class="ri-graduation-cap-line"></i><span>Estudios Académicos</span></div>
                     <div id="editEstudiosContainer">
                         <div id="editEstudiosLoading" class="text-center py-2" style="display:none;">
@@ -789,7 +788,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
     </div>
 </div>
 
-{{-- ════════════════ MODAL ELIMINAR ════════════════ --}}
+
 <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:400px;">
         <div class="modal-content">
@@ -813,7 +812,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
     </div>
 </div>
 
-{{-- ════════════════ MODAL CREDENCIALES ════════════════ --}}
+
 <div class="modal fade" id="modalCredenciales" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
         <div class="modal-content">
@@ -835,12 +834,12 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
     </div>
 </div>
 
-{{-- ════════════════ MODAL CREAR CUENTAS ════════════════ --}}
+
 <div class="modal fade" id="modalCrearCuentasSistema" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.18);">
 
-            {{-- Header --}}
+            
             <div class="modal-header" style="background:linear-gradient(135deg,#3b1900 0%,#7a3b03 50%,#c96004 100%);color:white;padding:1.25rem 1.5rem;border:none;">
                 <div class="d-flex align-items-center gap-3">
                     <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);flex-shrink:0;">
@@ -854,16 +853,16 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
-            {{-- Body --}}
+            
             <div class="modal-body" style="padding:0;">
 
-                {{-- Cargando --}}
+                
                 <div id="sistemaCuentasLoading" class="text-center" style="padding:3rem 1.5rem;">
                     <div class="spinner-border" style="color:#fc7b04;width:2.25rem;height:2.25rem;" role="status"></div>
                     <p class="mt-3 mb-0" style="font-size:.85rem;color:#64748b;font-weight:500;">Verificando cuentas del docente…</p>
                 </div>
 
-                {{-- Ya tiene cuenta --}}
+                
                 <div id="sistemaCuentasEmpty" style="display:none;padding:3rem 1.5rem;text-align:center;">
                     <div style="width:68px;height:68px;background:linear-gradient(135deg,rgba(252,123,4,.12),rgba(154,73,4,.05));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;border:2px solid rgba(252,123,4,.2);">
                         <i class="ri-shield-check-line" style="font-size:1.9rem;color:#fc7b04;"></i>
@@ -872,7 +871,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                     <p style="font-size:.83rem;color:#64748b;margin:0;max-width:300px;margin-inline:auto;line-height:1.6;">Este docente ya tiene cuentas activas en el sistema y en Moodle.</p>
                 </div>
 
-                {{-- Lista de docentes sin cuenta --}}
+                
                 <div id="sistemaCuentasList" style="display:none;">
                     <div style="padding:1rem 1.5rem;background:linear-gradient(135deg,rgba(252,123,4,.05),rgba(154,73,4,.03));border-bottom:1px solid rgba(252,123,4,.1);">
                         <div class="d-flex align-items-center gap-3 flex-wrap">
@@ -899,7 +898,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                 </div>
             </div>
 
-            {{-- Footer --}}
+            
             <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;gap:.5rem;">
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="border-radius:8px;font-size:.82rem;padding:.4rem 1rem;">
                     <i class="ri-close-line me-1"></i>Cancelar
@@ -914,12 +913,12 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
     </div>
 </div>
 
-{{-- ════════════════ MODAL WHATSAPP ACCESOS ════════════════ --}}
+
 <div class="modal fade" id="modalWhatsappAccesos" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:500px;">
         <div class="modal-content wa-modal-content">
 
-            {{-- Header --}}
+            
             <div class="wa-modal-header">
                 <div class="wa-modal-header-deco"></div>
                 <div class="wa-modal-header-body">
@@ -936,7 +935,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                 </button>
             </div>
 
-            {{-- Perfil del docente --}}
+            
             <div class="wa-persona-bar">
                 <div class="wa-persona-avatar wa-persona-avatar-doc">
                     <i class="ri-user-star-line"></i>
@@ -949,10 +948,10 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                 </div>
             </div>
 
-            {{-- Body --}}
+            
             <div class="wa-modal-body">
 
-                {{-- Preview del mensaje --}}
+                
                 <div class="wa-preview-label">
                     <i class="ri-message-3-line"></i> Vista previa del mensaje
                 </div>
@@ -976,7 +975,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                     </div>
                 </div>
 
-                {{-- Nota --}}
+                
                 <div class="wa-note">
                     <div class="wa-note-icon"><i class="ri-information-line"></i></div>
                     <p class="mb-0">Si el docente cambió su contraseña en Moodle, usa <strong>Restablecer</strong> para sincronizarla al valor original antes de enviar.</p>
@@ -986,7 +985,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                 <input type="hidden" id="waModalDocenteId">
             </div>
 
-            {{-- Footer --}}
+            
             <div class="wa-modal-footer">
                 <button type="button" id="waModalBtnReset" class="wa-btn-reset">
                     <i class="ri-refresh-line"></i> Restablecer contraseña
@@ -1002,9 +1001,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
 
 <div id="toastContainer" class="toast-container"></div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('script')
+<?php $__env->startSection('script'); ?>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
@@ -1029,7 +1028,7 @@ function previewImage(input, previewId) {
     let todasCiudades = [];
     let carnetTimer = null, correoTimer = null;
     let registroEstudioCount = 0;
-    const CSRF = '{{ csrf_token() }}';
+    const CSRF = '<?php echo e(csrf_token()); ?>';
 
     function init() {
         cargarSelectores();
@@ -1078,7 +1077,7 @@ function previewImage(input, previewId) {
 
     function initDataTable() {
         tabla = $('#tabla-docentes').DataTable({
-            ajax: { url: '{{ route("admin.docentes.listar") }}', dataSrc: 'data' },
+            ajax: { url: '<?php echo e(route("admin.docentes.listar")); ?>', dataSrc: 'data' },
             ordering: true,
             responsive: true,
             autoWidth: false,
@@ -1322,7 +1321,7 @@ function previewImage(input, previewId) {
             var personaId = $('#formEditar').data('persona-id');
             var $btn = $(this);
             $btn.prop('disabled', true);
-            $.get('{{ route("admin.docentes.obtener", ["id" => "__ID__"]) }}'.replace('__ID__', docenteId))
+            $.get('<?php echo e(route("admin.docentes.obtener", ["id" => "__ID__"])); ?>'.replace('__ID__', docenteId))
                 .done(function(r) {
                     var estudios = (r.data.persona && r.data.persona.estudios) ? r.data.persona.estudios : [];
                     var est = estudios.find(function(e) { return e.id == estudioId; });
@@ -1355,7 +1354,7 @@ function previewImage(input, previewId) {
         }
 
         setBtnLoading('#btnBuscar', true, 'Buscando…');
-        $.post('{{ route("admin.docentes.buscarCarnet") }}', { _token: CSRF, carnet: carnet })
+        $.post('<?php echo e(route("admin.docentes.buscarCarnet")); ?>', { _token: CSRF, carnet: carnet })
             .done(function (r) {
                 if (r.encontrado) {
                     personaEncontrada = r.persona;
@@ -1429,7 +1428,7 @@ function previewImage(input, previewId) {
                 prePopularRegistroEstudios(p.estudios);
             }
 
-            $.post('{{ route("admin.docentes.buscarCarnet") }}', { _token: CSRF, carnet: p.carnet })
+            $.post('<?php echo e(route("admin.docentes.buscarCarnet")); ?>', { _token: CSRF, carnet: p.carnet })
                 .done(function (r) {
                     if (r.ya_docente) {
                         $('#registroYaDocente').show();
@@ -1494,7 +1493,7 @@ function previewImage(input, previewId) {
         }
 
         $.ajax({
-            url: '{{ route("admin.docentes.guardarPersona") }}',
+            url: '<?php echo e(route("admin.docentes.guardarPersona")); ?>',
             type: 'POST',
             data: formData,
             processData: false,
@@ -1520,7 +1519,7 @@ function previewImage(input, previewId) {
     }
 
     function registrarComoDocente(personaId) {
-        $.post('{{ route("admin.docentes.registrar") }}', {
+        $.post('<?php echo e(route("admin.docentes.registrar")); ?>', {
             _token: CSRF,
             persona_id: personaId
         })
@@ -1560,7 +1559,7 @@ function previewImage(input, previewId) {
     }
 
     function editarDocente(id) {
-        $.get('{{ route("admin.docentes.obtener", ["id" => "__ID__"]) }}'.replace('__ID__', id))
+        $.get('<?php echo e(route("admin.docentes.obtener", ["id" => "__ID__"])); ?>'.replace('__ID__', id))
             .done(function (r) {
                 const e = r.data;
                 const p = e.persona;
@@ -1578,10 +1577,10 @@ function previewImage(input, previewId) {
                 $('#editDireccion').val(p && p.direccion ? p.direccion : '');
 
                 if (p && p.fotografia) {
-                    var fotoUrl = '{{ url("images/personas") }}/' + p.fotografia;
+                    var fotoUrl = '<?php echo e(url("images/personas")); ?>/' + p.fotografia;
                     $('#previewFotografiaEditar').attr('src', fotoUrl);
                 } else {
-                    $('#previewFotografiaEditar').attr('src', '{{ URL::asset("build/images/users/avatar-1.jpg") }}');
+                    $('#previewFotografiaEditar').attr('src', '<?php echo e(URL::asset("build/images/users/avatar-1.jpg")); ?>');
                 }
 
                 if (p && p.ciudad) {
@@ -1697,7 +1696,7 @@ function previewImage(input, previewId) {
         $('#rDepto').val('');
         $('#rCiudad').find('option:not(:first)').remove().end().prop('disabled', true).find('option:first').text('— Seleccione depto. —');
 
-        $('#previewFotografiaRegistro').attr('src', '{{ URL::asset("build/images/users/avatar-1.jpg") }}');
+        $('#previewFotografiaRegistro').attr('src', '<?php echo e(URL::asset("build/images/users/avatar-1.jpg")); ?>');
 
         ['rCarnet','rNombres','rApPaterno','rApMaterno','rCorreo','rCelular','rTelefono','rDireccion','rExpedido','rFechaNacimiento'].forEach(function (id) {
             $('#' + id).prop('readonly', false);
@@ -1734,7 +1733,7 @@ function previewImage(input, previewId) {
         $('#btnConfirmarCrearCuentasSistema').prop('disabled', true);
         openModal('modalCrearCuentasSistema');
 
-        $.get('{{ route("admin.docentes.obtener", ["id" => "__ID__"]) }}'.replace('__ID__', id))
+        $.get('<?php echo e(route("admin.docentes.obtener", ["id" => "__ID__"])); ?>'.replace('__ID__', id))
             .done(function (r) {
                 const e = r.data;
                 const p = e.persona;
@@ -2121,7 +2120,7 @@ function previewImage(input, previewId) {
     }
 
     function recargarEstudios(docenteId) {
-        $.get('{{ route("admin.docentes.obtener", ["id" => "__ID__"]) }}'.replace('__ID__', docenteId))
+        $.get('<?php echo e(route("admin.docentes.obtener", ["id" => "__ID__"])); ?>'.replace('__ID__', docenteId))
             .done(function(r) {
                 var estudios = (r.data.persona && r.data.persona.estudios) ? r.data.persona.estudios : [];
                 renderEstudios(estudios, r.data.persona ? r.data.persona.id : null, docenteId);
@@ -2178,4 +2177,6 @@ function previewImage(input, previewId) {
     $(document).ready(init);
 })();
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp_82_12\htdocs\innova-ciencia-virtual\resources\views/admin/docentes/index.blade.php ENDPATH**/ ?>

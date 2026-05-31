@@ -9,10 +9,13 @@ use App\Models\OfertasAcademica;
 use App\Models\Fase;
 use App\Models\Estudiante;
 use App\Models\EnlacePreinscripcion;
+use App\Models\Matriculacione;
+use App\Models\Modulo;
 use App\Models\PagoRespaldo;
 use App\Models\PlanesConcepto;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -784,5 +787,160 @@ class ProfileController extends Controller
             'success' => true,
             'message' => "Documento {$texto} correctamente.",
         ]);
+    }
+
+    public function getDetallePlanParaMarketing(Request $request, int $ofertaId, int $planId)
+    {
+        try {
+            $persona = auth()->user()->persona;
+            if (!$persona || !$persona->trabajador) {
+                return response()->json(['success' => false, 'message' => 'Sin acceso'], 403);
+            }
+
+            $oferta = OfertasAcademica::findOrFail($ofertaId);
+
+            $configs = PlanesConcepto::with(['concepto'])
+                ->where('ofertas_academica_id', $ofertaId)
+                ->where('planes_pago_id', $planId)
+                ->get();
+
+            $resultado = $configs->map(function ($c) use ($oferta) {
+                $totalPago = floatval($c->pago_bs);
+                $numCuotas = intval($c->n_cuotas);
+                $montoCuota = $numCuotas > 0 ? floor($totalPago / $numCuotas) : 0;
+                $resto = $totalPago - ($montoCuota * $numCuotas);
+
+                $cuotas = [];
+                for ($i = 1; $i <= $numCuotas; $i++) {
+                    $monto     = ($i === $numCuotas) ? ($montoCuota + $resto) : $montoCuota;
+                    $fechaVenc = $oferta->fecha_inicio_programa
+                        ? Carbon::parse($oferta->fecha_inicio_programa)->addMonths($i - 1)->format('Y-m-d')
+                        : null;
+                    $cuotas[] = [
+                        'n_cuota'           => $i,
+                        'monto_bs'          => $monto,
+                        'fecha_vencimiento' => $fechaVenc,
+                    ];
+                }
+
+                return [
+                    'concepto'  => $c->concepto?->nombre ?? 'Concepto',
+                    'n_cuotas'  => $numCuotas,
+                    'pago_bs'   => $totalPago,
+                    'cuotas'    => $cuotas,
+                ];
+            })->values();
+
+            return response()->json(['success' => true, 'data' => $resultado]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al cargar detalle del plan.'], 500);
+        }
+    }
+
+    public function cambiarPreInscritoAInscrito(Request $request, int $inscripcionId)
+    {
+        try {
+            $request->validate([
+                'planes_pago_id' => 'required|exists:planes_pagos,id',
+            ]);
+
+            $persona = auth()->user()->persona;
+            if (!$persona || !$persona->trabajador) {
+                return response()->json(['success' => false, 'message' => 'Sin acceso'], 403);
+            }
+
+            $cargosIds = $persona->trabajador->trabajadores_cargos()
+                ->whereIn('cargo_id', [2, 3, 6])
+                ->where('estado', 'Vigente')
+                ->pluck('id');
+
+            $inscripcion = Inscripcione::whereIn('trabajadores_cargo_id', $cargosIds)
+                ->where('id', $inscripcionId)
+                ->firstOrFail();
+
+            if ($inscripcion->estado !== 'Pre-Inscrito') {
+                return response()->json(['success' => false, 'message' => 'Solo se puede cambiar desde estado Pre-Inscrito.'], 400);
+            }
+
+            $ofertaId = $inscripcion->ofertas_academica_id;
+
+            DB::transaction(function () use ($inscripcion, $request, $ofertaId) {
+                $inscripcion->update([
+                    'estado'         => 'Inscrito',
+                    'planes_pago_id' => $request->planes_pago_id,
+                ]);
+
+                // Indexar cuotas personalizadas enviadas desde el frontend
+                $cuotasPersonalizadas = [];
+                if ($request->filled('cuotas_personalizadas')) {
+                    $decoded = json_decode($request->cuotas_personalizadas, true);
+                    if (is_array($decoded)) {
+                        foreach ($decoded as $c) {
+                            $key = intval($c['concepto_idx']) . '_' . intval($c['cuota_idx']);
+                            $cuotasPersonalizadas[$key] = $c;
+                        }
+                    }
+                }
+
+                $planesConceptos = PlanesConcepto::where('ofertas_academica_id', $ofertaId)
+                    ->where('planes_pago_id', $request->planes_pago_id)
+                    ->with('concepto')
+                    ->get();
+
+                $nCuota = 1;
+                foreach ($planesConceptos as $conceptoIdx => $pc) {
+                    $conceptoNombre = $pc->concepto->nombre ?? 'Concepto';
+                    $nCuotas        = $pc->n_cuotas ?? 1;
+                    $montoPorCuota  = $nCuotas > 0 ? round(floatval($pc->pago_bs) / $nCuotas, 2) : floatval($pc->pago_bs);
+
+                    for ($i = 0; $i < $nCuotas; $i++) {
+                        $key    = $conceptoIdx . '_' . $i;
+                        $custom = $cuotasPersonalizadas[$key] ?? null;
+
+                        $monto = ($custom && isset($custom['monto']) && floatval($custom['monto']) > 0)
+                            ? round(floatval($custom['monto']), 2)
+                            : $montoPorCuota;
+
+                        $fechaVencimiento = ($custom && !empty($custom['fecha']))
+                            ? Carbon::parse($custom['fecha'])
+                            : now()->addMonths($i + 1);
+
+                        Cuota::create([
+                            'inscripcione_id'    => $inscripcion->id,
+                            'nombre'             => "{$conceptoNombre} - Cuota " . ($i + 1),
+                            'n_cuota'            => $nCuota,
+                            'monto_bs'           => $monto,
+                            'pago_pendiente_bs'  => $monto,
+                            'descuento_bs'       => 0,
+                            'fecha_vencimiento'  => $fechaVencimiento,
+                            'estado'             => 'pendiente',
+                        ]);
+                        $nCuota++;
+                    }
+                }
+
+                $modulos = Modulo::where('ofertas_academica_id', $ofertaId)->get();
+                foreach ($modulos as $modulo) {
+                    Matriculacione::firstOrCreate([
+                        'inscripcione_id' => $inscripcion->id,
+                        'modulo_id'       => $modulo->id,
+                    ]);
+                }
+            });
+
+            $inscripcion->load('ofertaAcademica.programa');
+            $programaNombre = $inscripcion->ofertaAcademica?->programa?->nombre ?? '';
+
+            return response()->json([
+                'success'         => true,
+                'message'         => 'Inscripción completada correctamente.',
+                'programa_nombre' => $programaNombre,
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Debe seleccionar un plan de pago.'], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error en cambiarPreInscritoAInscrito: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error al procesar la solicitud.'], 500);
+        }
     }
 }

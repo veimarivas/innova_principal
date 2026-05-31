@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pre-inscripción — {{ optional($oferta->programa)->nombre ?? 'Programa' }} — Innova Ciencia Virtual</title>
+    <title>Pre-inscripción — {{ optional($oferta->programa)->nombre ?? 'Programa' }} — InnovaCiencia Virtual</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -691,10 +691,10 @@
         <div class="container">
             <nav class="nav">
                 <a href="{{ route('welcome') }}" class="brand">
-                    <img src="{{ asset('images/logo-secundario.png') }}" alt="Innova Ciencia"
+                    <img src="{{ asset('images/logo-secundario.png') }}" alt="InnovaCiencia"
                         style="width:44px;height:44px;border-radius:8px;object-fit:contain;">
                     <div class="brand-name">
-                        Innova Ciencia
+                        InnovaCiencia
                         <small>Virtual — Posgrados</small>
                     </div>
                 </a>
@@ -945,7 +945,7 @@
 
     <footer>
         <div class="container">
-            <p>© {{ date('Y') }} <span>Innova Ciencia Virtual</span> — Todos los derechos reservados</p>
+            <p>© {{ date('Y') }} <span>InnovaCiencia Virtual</span> — Todos los derechos reservados</p>
         </div>
     </footer>
 

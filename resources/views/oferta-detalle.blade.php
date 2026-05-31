@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ optional($oferta->posgrado)->nombre ?? 'Detalle del Programa' }} — Innova Ciencia Virtual</title>
+    <title>{{ optional($oferta->posgrado)->nombre ?? 'Detalle del Programa' }} — InnovaCiencia Virtual</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1086,10 +1086,10 @@
         <div class="container">
             <nav class="nav">
                 <a href="{{ route('welcome') }}" class="brand">
-                    <img src="{{ asset('images/logo-secundario.png') }}" alt="Innova Ciencia"
+                    <img src="{{ asset('images/logo-secundario.png') }}" alt="InnovaCiencia"
                         style="width:44px;height:44px;border-radius:8px;object-fit:contain;">
                     <div class="brand-name">
-                        Innova Ciencia
+                        InnovaCiencia
                         <small>Virtual — Posgrados</small>
                     </div>
                 </a>
@@ -1554,7 +1554,7 @@
     <footer class="mini-footer">
         <div class="container">
             <div class="mini-footer-inner">
-                <p>&copy; {{ date('Y') }} Innova Ciencia Virtual. Todos los derechos reservados.</p>
+                <p>&copy; {{ date('Y') }} InnovaCiencia Virtual. Todos los derechos reservados.</p>
                 <div style="display:flex;gap:1.2rem;align-items:center">
                     <a href="{{ route('welcome') }}">Inicio</a>
                     <a href="{{ route('catalogo') }}">Catálogo</a>

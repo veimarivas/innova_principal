@@ -4,333 +4,308 @@
 @section('css')
 @include('admin.ofertas-academicas.partials.modulo-detalle-styles')
 <style>
-/* ── Hero Header ─────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════
+   HERO HEADER — diseño mejorado con identidad Innova Ciencia
+══════════════════════════════════════════════════════════ */
 .dm-hero {
     position: relative;
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    margin: -2rem -1.25rem 1.75rem;
+    background: linear-gradient(135deg, #1a2642 0%, #0f172a 55%, #1c1a0f 100%);
+    margin: -2rem -1.25rem 2rem;
     overflow: hidden;
 }
+/* Textura sutil en el fondo */
 .dm-hero::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 80% -20%, rgba(252,123,4,.18) 0%, transparent 60%);
+    background:
+        radial-gradient(ellipse at 85% -10%, rgba(252,123,4,.22) 0%, transparent 55%),
+        radial-gradient(ellipse at -10% 100%, rgba(154,73,4,.14) 0%, transparent 50%);
+    pointer-events: none;
+}
+/* Patrón de puntos decorativo */
+.dm-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 24px 24px;
     pointer-events: none;
 }
 .dm-hero-topbar {
-    height: 4px;
+    height: 5px;
     width: 100%;
+    position: relative;
+    z-index: 2;
 }
 .dm-hero-content {
     position: relative;
-    z-index: 1;
-    padding: 1.75rem 2rem 1.85rem;
-    background: linear-gradient(180deg, rgba(255,255,255,.04) 0%, transparent 100%);
-    border-bottom: 1px solid rgba(255,255,255,.06);
+    z-index: 2;
+    padding: 1.85rem 2rem 2rem;
 }
 .dm-hero-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 .dm-hero-breadcrumb {
     display: flex;
     align-items: center;
-    gap: .5rem;
-    font-size: .75rem;
+    gap: .45rem;
+    font-size: .74rem;
     flex-wrap: wrap;
     letter-spacing: .01em;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    padding: .3rem .75rem;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
 }
-.dm-hero-breadcrumb i { color: rgba(255,255,255,.35); font-size: .82rem; }
-.dm-hero-program { font-weight: 600; color: rgba(255,255,255,.8); }
+.dm-hero-breadcrumb i { color: rgba(252,123,4,.6); font-size: .8rem; }
+.dm-hero-program { font-weight: 600; color: rgba(255,255,255,.85); }
 .dm-hero-sep  { color: rgba(255,255,255,.2); }
-.dm-hero-codigo { color: rgba(255,255,255,.4); font-size: .7rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+.dm-hero-codigo {
+    color: rgba(252,123,4,.7); font-size: .68rem; font-weight: 700;
+    letter-spacing: .05em; text-transform: uppercase;
+    background: rgba(252,123,4,.1); border-radius: 4px;
+    padding: .1rem .4rem;
+}
 .dm-btn-back {
     display: inline-flex; align-items: center; gap: .4rem;
-    padding: .4rem .9rem; border-radius: 8px;
-    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14);
-    color: rgba(255,255,255,.75); font-size: .78rem; font-weight: 600;
-    text-decoration: none; transition: all .25s; white-space: nowrap; flex-shrink: 0;
-    backdrop-filter: blur(4px);
+    padding: .42rem 1rem; border-radius: 9px;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+    color: rgba(255,255,255,.8); font-size: .79rem; font-weight: 600;
+    text-decoration: none; transition: all .2s; white-space: nowrap; flex-shrink: 0;
+    backdrop-filter: blur(8px);
 }
-.dm-btn-back:hover { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.25); }
+.dm-btn-back:hover {
+    background: rgba(252,123,4,.15);
+    border-color: rgba(252,123,4,.35);
+    color: #fc7b04;
+    transform: translateX(-2px);
+}
+/* Línea divisora sutil */
+.dm-hero-divider {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,.0), rgba(255,255,255,.08) 30%, rgba(252,123,4,.2) 60%, rgba(255,255,255,.0));
+    margin-bottom: 1.35rem;
+}
 .dm-hero-main {
     display: flex;
     align-items: center;
-    gap: .9rem;
-    margin-bottom: 1.25rem;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
     flex-wrap: wrap;
 }
 .dm-hero-num-badge {
-    font-size: .68rem; font-weight: 700;
-    padding: .28rem .8rem; border-radius: 20px;
+    font-size: .69rem; font-weight: 800;
+    padding: .3rem .9rem; border-radius: 20px;
     white-space: nowrap; flex-shrink: 0;
-    letter-spacing: .03em; text-transform: uppercase;
-    backdrop-filter: blur(2px);
+    letter-spacing: .04em; text-transform: uppercase;
+    backdrop-filter: blur(4px);
 }
 .dm-hero-dot {
-    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
-    box-shadow: 0 0 8px currentColor;
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    box-shadow: 0 0 10px 2px currentColor;
 }
 .dm-hero-modname {
-    font-size: 1.4rem; font-weight: 800;
-    color: #fff; margin: 0; line-height: 1.3;
-    letter-spacing: -.01em;
-    text-shadow: 0 1px 6px rgba(0,0,0,.15);
+    font-size: 1.5rem; font-weight: 800;
+    color: #fff; margin: 0; line-height: 1.25;
+    letter-spacing: -.02em;
+    text-shadow: 0 2px 12px rgba(0,0,0,.25);
 }
+/* Meta fila: pills de info */
 .dm-hero-meta {
     display: flex; align-items: center;
-    gap: 1.5rem; flex-wrap: wrap;
-    padding-top: .35rem;
+    gap: .65rem; flex-wrap: wrap;
 }
 .dm-hero-meta-item {
-    display: flex; align-items: center; gap: .42rem;
-    font-size: .78rem; color: rgba(255,255,255,.55);
-    letter-spacing: .01em;
+    display: inline-flex; align-items: center; gap: .38rem;
+    font-size: .76rem; color: rgba(255,255,255,.55);
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 20px; padding: .28rem .7rem;
+    transition: all .2s;
 }
-.dm-hero-meta-item i { font-size: .85rem; opacity: .8; }
-.dm-hero-meta-item span { color: rgba(255,255,255,.78); font-weight: 500; }
+.dm-hero-meta-item i { font-size: .82rem; color: rgba(252,123,4,.7); }
+.dm-hero-meta-item span { color: rgba(255,255,255,.82); font-weight: 500; }
 .dm-hero-moodle-link {
-    color: rgba(147,197,253,.9) !important;
-    border: 1px solid rgba(147,197,253,.2);
-    border-radius: 6px; padding: .2rem .6rem;
-    text-decoration: none; transition: all .25s;
-    font-weight: 500;
+    color: rgba(252,123,4,.9) !important;
+    border-color: rgba(252,123,4,.2) !important;
+    background: rgba(252,123,4,.08) !important;
+    text-decoration: none;
+    font-weight: 600;
 }
 .dm-hero-moodle-link:hover {
-    color: #93c5fd !important; background: rgba(147,197,253,.1);
-    border-color: rgba(147,197,253,.35);
+    background: rgba(252,123,4,.18) !important;
+    border-color: rgba(252,123,4,.4) !important;
+    color: #fc7b04 !important;
+    transform: translateY(-1px);
 }
-/* ── Matriculaciones stats ──────────────────────────────── */
+/* ══════════════════════════════════════════════════════════
+   STATS DE MATRICULACIONES
+══════════════════════════════════════════════════════════ */
 .mat-stats-row {
-    display: flex; gap: .85rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+    display: flex; gap: .75rem; margin-bottom: 1.35rem; flex-wrap: wrap;
 }
 .mat-stat-item {
-    display: flex; align-items: center; gap: .7rem;
-    background: #f8fafc; border: 1px solid #e9ecef;
-    border-radius: 12px; padding: .8rem 1rem;
-    flex: 1; min-width: 120px; transition: box-shadow .2s;
+    display: flex; align-items: center; gap: .75rem;
+    background: #fff; border: 1px solid #e9ecef;
+    border-radius: 14px; padding: .9rem 1.1rem;
+    flex: 1; min-width: 130px;
+    transition: all .2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
 }
-.mat-stat-item:hover { box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+.mat-stat-item:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,.08);
+    transform: translateY(-2px);
+    border-color: rgba(252,123,4,.2);
+}
 .mat-stat-icon {
-    width: 38px; height: 38px; border-radius: 9px;
+    width: 42px; height: 42px; border-radius: 11px;
     display: flex; align-items: center; justify-content: center;
-    font-size: .95rem; flex-shrink: 0;
+    font-size: 1.05rem; flex-shrink: 0;
 }
-.mat-stat-icon.s-total      { background:rgba(99,102,241,.12); color:#6366f1; }
-.mat-stat-icon.s-matriculado{ background:rgba(34,197,94,.12);  color:#16a34a; }
-.mat-stat-icon.s-activo     { background:rgba(59,130,246,.12); color:#2563eb; }
-.mat-stat-icon.s-suspendido { background:rgba(239,68,68,.1);   color:#dc2626; }
-.mat-stat-val { font-size:1.25rem; font-weight:700; color:#1e293b; line-height:1; }
-.mat-stat-lbl { font-size:.67rem; color:#64748b; margin-top:2px; font-weight:500; }
-/* ── Search ─────────────────────────────────────────────── */
+.mat-stat-icon.s-total      { background: linear-gradient(135deg,rgba(154,73,4,.15),rgba(252,123,4,.08)); color:#9a4904; }
+.mat-stat-icon.s-matriculado{ background: linear-gradient(135deg,rgba(34,197,94,.15),rgba(22,163,74,.08)); color:#16a34a; }
+.mat-stat-icon.s-activo     { background: linear-gradient(135deg,rgba(59,130,246,.15),rgba(37,99,235,.08)); color:#2563eb; }
+.mat-stat-icon.s-suspendido { background: linear-gradient(135deg,rgba(239,68,68,.15),rgba(220,38,38,.08)); color:#dc2626; }
+.mat-stat-val { font-size:1.35rem; font-weight:800; color:#1e293b; line-height:1; }
+.mat-stat-lbl { font-size:.67rem; color:#64748b; margin-top:3px; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
+/* ══════════════════════════════════════════════════════════
+   BÚSQUEDA
+══════════════════════════════════════════════════════════ */
 .mat-search-wrap {
-    position: relative; margin-bottom: 1rem;
+    position: relative; margin-bottom: 1.1rem;
 }
 .mat-search-wrap > i {
-    position: absolute; left: .85rem; top: 50%;
-    transform: translateY(-50%); color: #94a3b8; font-size: .88rem;
+    position: absolute; left: .9rem; top: 50%;
+    transform: translateY(-50%); color: #94a3b8; font-size: .9rem;
     pointer-events: none;
 }
 .mat-search-input {
-    width: 100%; padding: .52rem .9rem .52rem 2.4rem;
-    border: 1.5px solid #e2e8f0; border-radius: 10px;
+    width: 100%; padding: .58rem 1rem .58rem 2.5rem;
+    border: 1.5px solid #e2e8f0; border-radius: 11px;
     font-size: .84rem; background: #f8fafc; color: #1e293b;
     transition: all .2s; outline: none;
 }
 .mat-search-input:focus {
     border-color: #fc7b04; background: #fff;
-    box-shadow: 0 0 0 3px rgba(252,123,4,.1);
+    box-shadow: 0 0 0 3.5px rgba(252,123,4,.12);
 }
-/* ── Enhanced table ─────────────────────────────────────── */
-.mat-table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #f1f5f9; }
+/* ══════════════════════════════════════════════════════════
+   TABLA DE MATRICULACIONES MEJORADA
+══════════════════════════════════════════════════════════ */
+.mat-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #edf0f4;
+    box-shadow: 0 1px 6px rgba(0,0,0,.04);
+}
 .mat-table { width: 100%; border-collapse: collapse; min-width: 680px; }
 .mat-table thead th {
     font-size: .67rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .5px; color: #64748b; text-align: left;
-    padding: .62rem .8rem; border-bottom: 2px solid #f1f5f9;
-    background: #f8fafc; white-space: nowrap;
+    letter-spacing: .5px; color: #7a8494; text-align: left;
+    padding: .75rem .9rem; border-bottom: 2px solid #f0f3f7;
+    background: linear-gradient(to bottom, #f9fafb, #f3f5f8);
+    white-space: nowrap;
 }
+.mat-table thead th:first-child { border-radius: 12px 0 0 0; }
+.mat-table thead th:last-child  { border-radius: 0 12px 0 0; }
 .mat-table tbody td {
     font-size: .83rem; color: #334155;
-    padding: .68rem .8rem; border-bottom: 1px solid #f8fafc;
+    padding: .75rem .9rem; border-bottom: 1px solid #f4f6f9;
     vertical-align: middle;
 }
 .mat-table tr:last-child td { border-bottom: none; }
-.mat-table tr:hover td { background: rgba(252,123,4,.025); }
-.mat-row-hidden { display: none !important; }
-.mat-num { font-size:.72rem; color:#94a3b8; font-weight:600; text-align:center; width:36px; }
-.mat-student-cell { display:flex; align-items:center; gap:.6rem; }
-.mat-avatar {
-    width: 33px; height: 33px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .7rem; font-weight: 700; flex-shrink: 0;
+.mat-table tbody tr:hover td {
+    background: rgba(252,123,4,.03);
 }
-.mat-nombre { font-size:.84rem; font-weight:600; color:#1e293b; }
-.mat-ci, .mat-cel { white-space:nowrap; font-size:.82rem; color:#475569; }
-.mat-correo { font-size:.76rem; color:#64748b; max-width:190px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mat-table tbody tr:hover .mat-nombre { color: #9a4904; }
+.mat-row-hidden { display: none !important; }
+.mat-num { font-size:.71rem; color:#b0bac8; font-weight:700; text-align:center; width:38px; }
+.mat-student-cell { display:flex; align-items:center; gap:.65rem; }
+.mat-avatar {
+    width: 35px; height: 35px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem; font-weight: 800; flex-shrink: 0;
+    letter-spacing: .02em;
+}
+.mat-nombre { font-size:.85rem; font-weight:700; color:#1e293b; transition: color .15s; }
+.mat-ci, .mat-cel { white-space:nowrap; font-size:.82rem; color:#475569; font-weight:500; }
+.mat-correo {
+    font-size:.76rem; color:#64748b;
+    max-width:190px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
 .mat-badge {
     display:inline-flex; align-items:center; gap:.3rem;
-    padding:.22rem .58rem; border-radius:6px;
-    font-size:.72rem; font-weight:600; white-space:nowrap;
+    padding:.24rem .65rem; border-radius:7px;
+    font-size:.72rem; font-weight:700; white-space:nowrap;
+    letter-spacing:.01em;
 }
-.mat-badge-ok      { background:rgba(34,197,94,.1);   color:#16a34a; }
-.mat-badge-no      { background:rgba(239,68,68,.1);   color:#dc2626; }
-.mat-badge-warn    { background:rgba(245,158,11,.1);  color:#b45309; }
-.mat-badge-pending { background:rgba(234,179,8,.12);  color:#92400e; }
-.mat-empty-state { text-align:center; padding:2.5rem 1rem; color:#94a3b8; }
-.mat-empty-state i { font-size:2.5rem; display:block; margin-bottom:.65rem; opacity:.35; }
-.mat-empty-state p { font-size:.85rem; margin:0; }
+.mat-badge-ok      { background:rgba(34,197,94,.1);   color:#15803d; border:1px solid rgba(34,197,94,.2); }
+.mat-badge-no      { background:rgba(239,68,68,.08);  color:#dc2626; border:1px solid rgba(239,68,68,.2); }
+.mat-badge-warn    { background:rgba(245,158,11,.1);  color:#b45309; border:1px solid rgba(245,158,11,.2); }
+.mat-badge-pending { background:rgba(234,179,8,.1);   color:#92400e; border:1px solid rgba(234,179,8,.2); }
+.mat-empty-state { text-align:center; padding:3rem 1rem; color:#94a3b8; }
+.mat-empty-state i { font-size:2.8rem; display:block; margin-bottom:.75rem; opacity:.25; }
+.mat-empty-state p { font-size:.86rem; margin:0; font-weight:500; }
+/* Encabezado de sección */
 .mat-section-header {
     display:flex; align-items:center; justify-content:space-between;
-    margin-bottom:1rem; padding-bottom:.85rem;
-    border-bottom:1px solid #f1f5f9;
+    margin-bottom:1.1rem; padding-bottom:.9rem;
+    border-bottom: 2px solid #f1f5f9;
 }
-.mat-section-title {
-    display:flex; align-items:center; gap:.5rem;
+.mat-section-title { display:flex; align-items:center; gap:.5rem; }
+.mat-section-title i {
+    color:#fc7b04; font-size:1.1rem;
+    background: rgba(252,123,4,.1); padding:.25rem;
+    border-radius: 6px;
 }
-.mat-section-title i { color:#fc7b04; font-size:1.05rem; }
-.mat-section-title span { font-size:.9rem; font-weight:700; color:#1e293b; }
+.mat-section-title span { font-size:.92rem; font-weight:800; color:#1e293b; }
 .mat-readonly-badge {
     display:inline-flex; align-items:center; gap:.3rem;
-    padding:.22rem .65rem; border-radius:20px; font-size:.7rem; font-weight:600;
-    background:rgba(100,116,139,.08); color:#475569;
-    border:1px solid rgba(100,116,139,.2);
+    padding:.24rem .7rem; border-radius:20px; font-size:.7rem; font-weight:700;
+    background:rgba(100,116,139,.07); color:#64748b;
+    border:1px solid rgba(100,116,139,.15);
+    letter-spacing:.02em;
 }
-/* ── Design improvements ──────────────────────────────────── */
-.dm-page-tabs-container {
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 1px 6px rgba(0,0,0,.04);
-}
-.dm-page-tabs-header {
-    display: flex;
-    border-bottom: 1px solid #f1f5f9;
-    background: #fafbfc;
-    padding: 0 .25rem;
-    gap: .15rem;
-}
-.dm-page-tab-btn {
-    padding: .82rem 1.25rem;
-    font-size: .82rem;
-    font-weight: 600;
-    color: #64748b;
-    background: none;
-    border: none;
-    cursor: pointer;
-    position: relative;
-    transition: all .2s;
-    display: flex;
-    align-items: center;
-    gap: .45rem;
-    border-radius: 10px 10px 0 0;
-    margin-top: 4px;
-}
-.dm-page-tab-btn:hover {
-    color: #334155;
-    background: rgba(252,123,4,.05);
-}
-.dm-page-tab-btn.active {
-    color: #fc7b04;
-    background: #fff;
-    box-shadow: 0 -2px 4px rgba(0,0,0,.04);
-}
-.dm-page-tab-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: .5rem;
-    right: .5rem;
-    height: 3px;
-    background: #fc7b04;
-    border-radius: 3px 3px 0 0;
-}
-.dm-page-tab-content {
-    padding: 1.5rem;
-}
-.dm-section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    padding-bottom: .85rem;
-    border-bottom: 1px solid #f1f5f9;
-}
-.dm-section-title {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    font-size: .9rem;
-    font-weight: 700;
-    color: #1e293b;
-}
-.dm-section-title i { color: #fc7b04; font-size: 1.05rem; }
-.dm-card {
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 12px;
-    padding: 1.25rem;
-    transition: box-shadow .2s;
-}
-.dm-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+/* ══════════════════════════════════════════════════════════
+   BOTONES Y UTILIDADES
+══════════════════════════════════════════════════════════ */
 .dm-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: .4rem;
-    padding: .45rem 1rem;
-    border-radius: 8px;
-    font-size: .82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .15s;
-    border: none;
-    text-decoration: none;
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .45rem 1rem; border-radius: 9px;
+    font-size: .82rem; font-weight: 700;
+    cursor: pointer; transition: all .18s;
+    border: none; text-decoration: none; letter-spacing: .01em;
 }
 .dm-btn-primary {
-    background: linear-gradient(135deg, #fc7b04 0%, #e06900 100%);
+    background: linear-gradient(135deg, #fc7b04 0%, #d96200 100%);
+    color: #fff; box-shadow: 0 2px 8px rgba(252,123,4,.25);
+}
+.dm-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(252,123,4,.35);
     color: #fff;
 }
-.dm-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(252,123,4,.3); }
 .dm-btn-outline {
-    background: rgba(99,102,241,.1);
-    color: #4f46e5;
-    border: 1px solid rgba(99,102,241,.3);
+    background: rgba(154,73,4,.08);
+    color: #9a4904;
+    border: 1.5px solid rgba(154,73,4,.25);
 }
-.dm-btn-outline:hover { background: #4f46e5; color: #fff; }
+.dm-btn-outline:hover { background: #9a4904; color: #fff; }
 .dm-btn-success {
     background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: #fff; box-shadow: 0 2px 8px rgba(34,197,94,.2);
+}
+.dm-btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(34,197,94,.3);
     color: #fff;
 }
-.dm-btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(34,197,94,.3); }
-.dm-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: .83rem;
-}
-.dm-table thead th {
-    font-size: .67rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    color: #64748b;
-    text-align: left;
-    padding: .62rem .8rem;
-    border-bottom: 2px solid #f1f5f9;
-    background: #f8fafc;
-}
-.dm-table tbody td {
-    padding: .68rem .8rem;
-    border-bottom: 1px solid #f8fafc;
-    color: #334155;
-    vertical-align: middle;
-}
-.dm-table tr:last-child td { border-bottom: none; }
-.dm-table tr:hover td { background: rgba(252,123,4,.025); }
 </style>
 @endsection
 
@@ -353,33 +328,36 @@
 
 {{-- ── Hero Header ── --}}
 <div class="dm-hero">
-    <div class="dm-hero-topbar" style="background:{{ $modColor }};"></div>
+    <div class="dm-hero-topbar" style="background: linear-gradient(90deg, {{ $modColor }}, #fc7b04, {{ $modColor }});"></div>
     <div class="dm-hero-content">
 
-        {{-- Fila superior: breadcrumb + botón volver --}}
+        {{-- Fila superior: breadcrumb pill + botón volver --}}
         <div class="dm-hero-head">
             <div class="dm-hero-breadcrumb">
                 <i class="ri-graduation-cap-line"></i>
                 <span class="dm-hero-program">{{ $nombrePrograma }}</span>
-                <span class="dm-hero-sep">·</span>
+                <span class="dm-hero-sep">/</span>
                 <span class="dm-hero-codigo">{{ $codigoOferta }}</span>
             </div>
             <a href="{{ route('virtual.dashboard') }}" class="dm-btn-back">
-                <i class="ri-arrow-left-line"></i> Volver al Portal
+                <i class="ri-arrow-left-s-line"></i> Volver al Portal
             </a>
         </div>
+
+        <div class="dm-hero-divider"></div>
 
         {{-- Nombre del módulo --}}
         <div class="dm-hero-main">
             <span class="dm-hero-num-badge"
-                style="background:{{ $modColor }}22;color:{{ $modColor }};border:1.5px solid {{ $modColor }}45;">
+                style="background:{{ $modColor }}20;color:{{ $modColor }};border:1.5px solid {{ $modColor }}50;">
+                <i class="ri-bookmark-3-line" style="font-size:.75rem;"></i>
                 Módulo {{ $modulo->n_modulo ?? '—' }}
             </span>
-            <span class="dm-hero-dot" style="background:{{ $modColor }};"></span>
+            <span class="dm-hero-dot" style="color:{{ $modColor }};background:{{ $modColor }};"></span>
             <h1 class="dm-hero-modname">{{ $modulo->nombre ?? 'Sin nombre' }}</h1>
         </div>
 
-        {{-- Metadatos: docente, fechas, sesiones, estudiantes, moodle --}}
+        {{-- Metadatos: pills de info --}}
         <div class="dm-hero-meta">
             <div class="dm-hero-meta-item">
                 <i class="ri-user-star-line"></i>
@@ -387,7 +365,7 @@
             </div>
             @if($modulo->fecha_inicio)
             <div class="dm-hero-meta-item">
-                <i class="ri-calendar-line"></i>
+                <i class="ri-calendar-event-line"></i>
                 <span>
                     {{ \Carbon\Carbon::parse($modulo->fecha_inicio)->format('d/m/Y') }}
                     @if($modulo->fecha_fin)
@@ -397,7 +375,7 @@
             </div>
             @endif
             <div class="dm-hero-meta-item">
-                <i class="ri-time-line"></i>
+                <i class="ri-vidicon-line"></i>
                 <span>{{ $nSesiones }} sesión(es)</span>
             </div>
             <div class="dm-hero-meta-item">
@@ -408,7 +386,7 @@
             <a href="{{ rtrim(config('moodle.url'),'/') }}/course/view.php?id={{ $modulo->moodle_course_id }}"
                target="_blank" class="dm-hero-meta-item dm-hero-moodle-link">
                 <i class="ri-external-link-line"></i>
-                <span>Curso en Moodle</span>
+                <span>Ver en Moodle</span>
             </a>
             @endif
         </div>
@@ -955,46 +933,58 @@
 
 {{-- Modal: Editor de Actividades --}}
 <div class="disc-modal-overlay" id="modalForm">
-    <div class="disc-modal" style="max-width:640px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title"><i class="ri-pencil-line"></i> <span id="modalTitleText">Nueva Actividad</span></span>
-            <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModal()">&times;</button>
+    <div class="disc-modal" style="max-width:680px;border-radius:16px;border:none;box-shadow:0 12px 48px rgba(0,0,0,.2);overflow:hidden;">
+        <div class="disc-modal-hdr" style="background:#1e293b;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span class="disc-modal-title" style="font-size:.95rem;font-weight:700;color:#f1f5f9;display:flex;align-items:center;gap:.5rem;"><i class="ri-pencil-line" style="color:#fc7b04;"></i> <span id="modalTitleText">Nueva Actividad</span></span>
+            <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModal()" style="background:none;border:none;color:#94a3b8;font-size:1.3rem;cursor:pointer;padding:0;line-height:1;">&times;</button>
         </div>
-        <div class="disc-modal-body" id="modalBody"></div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModal()">Cancelar</button>
-            <button class="btn-guardar-disc btn-save"><i class="ri-check-line"></i> Guardar en Moodle</button>
+        <div class="disc-modal-body" id="modalBody" style="padding:1.2rem 1.25rem;max-height:70vh;overflow-y:auto;">
+            {{-- Dynamic content --}}
+        </div>
+        <div class="disc-modal-footer" style="border-top:1px solid #e9ecef;padding:.85rem 1.25rem;display:flex;gap:.5rem;justify-content:flex-end;background:#fafbfc;">
+            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModal()" style="padding:.45rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;">Cancelar</button>
+            <button class="btn-guardar-disc btn-save" style="padding:.45rem 1rem;border-radius:8px;font-size:.82rem;font-weight:700;background:linear-gradient(135deg,#fc7b04,#c96004);color:#fff;border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem;"><i class="ri-check-line"></i> Guardar en Moodle</button>
         </div>
     </div>
 </div>
 
-{{-- Modal: Calificar Tarea --}}
+{{-- Modal: Calificar Tarea / Foro --}}
 <div class="disc-modal-overlay" id="modalCalificarTarea">
-    <div class="disc-modal" style="max-width:720px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title"><i class="ri-bar-chart-line"></i> Calificar: <span id="calificarTareaNombre"></span></span>
-            <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModalCalificar()">&times;</button>
+    <div class="disc-modal" style="max-width:760px;border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+        {{-- Header --}}
+        <div class="disc-modal-hdr" style="background:linear-gradient(135deg,#1e293b,#334155);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:.6rem;">
+                <span id="calificarTipoIcono" style="width:34px;height:34px;border-radius:9px;background:rgba(252,123,4,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="ri-bar-chart-line" style="color:#fc7b04;font-size:1.05rem;"></i>
+                </span>
+                <span style="line-height:1.25;">
+                    <span style="display:block;font-size:.72rem;font-weight:600;color:#94a3b8;" id="calificarTipoLabel">Calificar</span>
+                    <span style="font-size:.93rem;font-weight:700;color:#f1f5f9;" id="calificarTareaNombre"></span>
+                </span>
+            </span>
+            <button onclick="ActividadesEditor.cerrarModalCalificar()" style="background:none;border:none;color:#94a3b8;font-size:1.4rem;cursor:pointer;line-height:1;padding:0;transition:color .15s;" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'">&times;</button>
         </div>
-        <div class="disc-modal-body">
+
+        {{-- Body --}}
+        <div class="disc-modal-body" style="padding:1rem 1.25rem;max-height:62vh;overflow-y:auto;">
             <div id="calificarLoading" class="text-center py-4">
-                <div class="spinner-border"></div><p class="mt-2">Cargando entregas...</p>
+                <i class="ri-loader-4-line" style="font-size:1.8rem;color:#fc7b04;animation:spin 1s linear infinite;display:block;margin-bottom:.5rem;"></i>
+                <p style="font-size:.85rem;color:#64748b;margin:0;">Cargando datos...</p>
             </div>
-            <div id="calificarError" class="alert alert-danger d-none">
-                <span id="calificarErrorMsg"></span>
+            <div id="calificarError" class="d-none" style="display:flex;align-items:center;gap:.75rem;padding:.9rem 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;margin-bottom:.75rem;">
+                <i class="ri-error-warning-line" style="color:#dc2626;font-size:1.2rem;flex-shrink:0;"></i>
+                <div style="flex:1;">
+                    <span id="calificarErrorMsg" style="font-size:.85rem;color:#991b1b;"></span>
+                </div>
+                <button onclick="ActividadesEditor.reintentarCalificar()" style="padding:.3rem .75rem;border-radius:7px;font-size:.78rem;font-weight:600;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#dc2626;cursor:pointer;white-space:nowrap;">Reintentar</button>
             </div>
             <div id="calificarContent" class="d-none">
-                <div class="table-responsive">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr><th>Estudiante</th><th>Estado</th><th>Nota</th><th>Feedback</th><th>Acción</th></tr>
-                        </thead>
-                        <tbody id="calificarTableBody"></tbody>
-                    </table>
-                </div>
+                <div id="calificarTableBody"></div>
             </div>
         </div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModalCalificar()">Cerrar</button>
+
+        <div class="disc-modal-footer" style="border-top:1.5px solid #e2e8f0;padding:.8rem 1.25rem;background:#fafbfc;">
+            <button onclick="ActividadesEditor.cerrarModalCalificar()" style="padding:.42rem 1.1rem;border-radius:8px;font-size:.83rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">Cerrar</button>
         </div>
     </div>
 </div>
@@ -1052,92 +1042,251 @@
 
 {{-- Modal: Preguntas del Quiz --}}
 <div class="disc-modal-overlay" id="modalPreguntasQuiz">
-    <div class="disc-modal" style="max-width:640px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title"><i class="ri-question-line"></i> Preguntas: <span id="preguntasQuizNombre"></span></span>
-            <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModalPreguntas()">&times;</button>
+    <div class="disc-modal" style="max-width:680px;border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+        {{-- Header --}}
+        <div class="disc-modal-hdr" style="background:linear-gradient(135deg,#1e293b,#334155);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:.6rem;">
+                <span style="width:34px;height:34px;border-radius:9px;background:rgba(217,119,6,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="ri-question-line" style="color:#f59e0b;font-size:1.05rem;"></i>
+                </span>
+                <span style="font-size:.93rem;font-weight:700;color:#f1f5f9;line-height:1.25;">
+                    Banco de preguntas
+                    <span style="display:block;font-size:.72rem;font-weight:400;color:#94a3b8;" id="preguntasQuizNombre"></span>
+                </span>
+            </span>
+            <button onclick="ActividadesEditor.cerrarModalPreguntas()" style="background:none;border:none;color:#94a3b8;font-size:1.4rem;cursor:pointer;line-height:1;padding:0;transition:color .15s;" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'">&times;</button>
         </div>
-        <div class="disc-modal-body">
-            <div id="preguntasLoading" class="text-center py-4"><div class="spinner-border"></div><p class="mt-2">Cargando preguntas...</p></div>
-            <div id="preguntasError" class="alert alert-danger d-none"><span id="preguntasErrorTxt"></span></div>
+
+        {{-- Barra "Agregar pregunta" --}}
+        <div style="padding:.75rem 1.25rem;background:#f8fafc;border-bottom:1.5px solid #e2e8f0;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <span style="font-size:.73rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-right:.1rem;white-space:nowrap;">
+                <i class="ri-add-circle-line" style="color:#fc7b04;"></i> Nueva pregunta
+            </span>
+            <button onclick="ActividadesEditor.mostrarFormMC()"
+                style="display:inline-flex;align-items:center;gap:.35rem;padding:.33rem .85rem;border-radius:20px;font-size:.79rem;font-weight:600;border:1.5px solid #6366f1;background:rgba(99,102,241,.07);color:#4f46e5;cursor:pointer;transition:all .18s;"
+                onmouseover="this.style.background='#6366f1';this.style.color='#fff'" onmouseout="this.style.background='rgba(99,102,241,.07)';this.style.color='#4f46e5'">
+                <i class="ri-list-check"></i> Opción múltiple
+            </button>
+            <button onclick="ActividadesEditor.mostrarFormTF()"
+                style="display:inline-flex;align-items:center;gap:.35rem;padding:.33rem .85rem;border-radius:20px;font-size:.79rem;font-weight:600;border:1.5px solid #16a34a;background:rgba(22,163,74,.07);color:#15803d;cursor:pointer;transition:all .18s;"
+                onmouseover="this.style.background='#16a34a';this.style.color='#fff'" onmouseout="this.style.background='rgba(22,163,74,.07)';this.style.color='#15803d'">
+                <i class="ri-toggle-line"></i> Verdadero / Falso
+            </button>
+            <button onclick="ActividadesEditor.mostrarFormMatch()"
+                style="display:inline-flex;align-items:center;gap:.35rem;padding:.33rem .85rem;border-radius:20px;font-size:.79rem;font-weight:600;border:1.5px solid #0284c7;background:rgba(2,132,199,.07);color:#0369a1;cursor:pointer;transition:all .18s;"
+                onmouseover="this.style.background='#0284c7';this.style.color='#fff'" onmouseout="this.style.background='rgba(2,132,199,.07)';this.style.color='#0369a1'">
+                <i class="ri-links-line"></i> Coincidencia
+            </button>
+        </div>
+
+        {{-- Cuerpo --}}
+        <div class="disc-modal-body" style="padding:1rem 1.25rem;max-height:52vh;overflow-y:auto;">
+            <div id="preguntasLoading" class="text-center py-4">
+                <i class="ri-loader-4-line" style="font-size:1.8rem;color:#d97706;animation:spin 1s linear infinite;display:block;margin-bottom:.5rem;"></i>
+                <p style="font-size:.85rem;color:#64748b;margin:0;">Cargando preguntas...</p>
+            </div>
+            <div id="preguntasError" class="alert alert-danger d-none" style="border-radius:8px;font-size:.85rem;">
+                <i class="ri-error-warning-line"></i> <span id="preguntasErrorTxt"></span>
+            </div>
             <div id="preguntasContent" class="d-none">
-                <div style="margin-bottom:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
-                    <button class="btn btn-sm btn-primary" onclick="ActividadesEditor.mostrarFormMC()">+ Opción múltiple</button>
-                    <button class="btn btn-sm btn-primary" onclick="ActividadesEditor.mostrarFormTF()">+ V/F</button>
-                    <button class="btn btn-sm btn-primary" onclick="ActividadesEditor.mostrarFormMatch()">+ Coincidencia</button>
-                </div>
                 <div id="preguntasList"></div>
             </div>
         </div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModalPreguntas()">Cerrar</button>
+
+        <div class="disc-modal-footer" style="border-top:1.5px solid #e2e8f0;padding:.8rem 1.25rem;background:#fafbfc;">
+            <button onclick="ActividadesEditor.cerrarModalPreguntas()"
+                style="padding:.42rem 1.1rem;border-radius:8px;font-size:.83rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;"
+                onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
+                Cerrar
+            </button>
         </div>
     </div>
 </div>
 
 {{-- Modal: Crear opción múltiple --}}
 <div class="disc-modal-overlay" id="modalMC">
-    <div class="disc-modal" style="max-width:560px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title">Nueva pregunta: Opción múltiple</span>
-            <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModalMC()">&times;</button>
+    <div class="disc-modal" style="max-width:580px;border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+        <div class="disc-modal-hdr" style="background:linear-gradient(135deg,#4338ca,#6366f1);padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:.5rem;color:#fff;font-size:.92rem;font-weight:700;">
+                <i class="ri-list-check" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Opción múltiple
+            </span>
+            <button onclick="ActividadesEditor.cerrarModalMC()" style="background:none;border:none;color:rgba(255,255,255,.65);font-size:1.4rem;cursor:pointer;line-height:1;padding:0;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">&times;</button>
         </div>
-        <div class="disc-modal-body">
-            <div class="form-group"><label>Nombre</label><input class="form-control" id="mcName" placeholder="Ej: Pregunta 1"></div>
-            <div class="form-group"><label>Texto de la pregunta</label><textarea class="form-control" id="mcQuestionText" rows="3"></textarea></div>
-            <div class="form-row">
-                <div class="form-group"><label>Puntaje</label><input class="form-control" id="mcDefaultMark" type="number" value="1" step="0.5"></div>
-                <div class="form-group"><label>Tipo</label><select class="form-control" id="mcSingle"><option value="true">Única respuesta</option><option value="false">Múltiple respuesta</option></select></div>
+        <div class="disc-modal-body" style="padding:1.1rem 1.25rem;max-height:62vh;overflow-y:auto;">
+
+            {{-- Sección General --}}
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;margin-bottom:.8rem;">
+                <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem;display:flex;align-items:center;gap:.35rem;">
+                    <i class="ri-pencil-line" style="color:#6366f1;"></i> General
+                </div>
+                <div style="margin-bottom:.65rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Nombre interno <span style="color:#dc2626;">*</span></label>
+                    <input class="form-control" id="mcName" placeholder="Ej: Pregunta 1" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;">
+                </div>
+                <div style="margin-bottom:.65rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Texto de la pregunta <span style="color:#dc2626;">*</span></label>
+                    <textarea class="form-control" id="mcQuestionText" rows="3" placeholder="¿Cuál es...?" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;resize:vertical;"></textarea>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+                    <div>
+                        <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Puntaje</label>
+                        <div style="display:flex;align-items:center;gap:.4rem;">
+                            <input class="form-control" id="mcDefaultMark" type="number" value="1" step="0.5" min="0" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;width:80px;">
+                            <span style="font-size:.78rem;color:#94a3b8;">pts</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Tipo de respuesta</label>
+                        <select class="form-control" id="mcSingle" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.38rem .5rem;">
+                            <option value="true">Única respuesta</option>
+                            <option value="false">Múltiple respuesta</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <div class="form-group"><label>Opciones</label><div id="mcOptionsContainer"></div>
-            <button class="btn btn-sm btn-outline-secondary mt-1" onclick="var c=document.querySelectorAll('#mcOptionsContainer .mc-option').length;document.getElementById('mcOptionsContainer').innerHTML+='<div class=\'mc-option\' style=\'display:flex;gap:0.5rem;margin-top:4px;\'><input style=\'width:60%;\' class=\'form-control form-control-sm\' placeholder=\'Texto\' id=\'mcOpt'+c+'\'><input style=\'width:60px;\' class=\'form-control form-control-sm\' type=\'number\' step=\'0.01\' value=\'0\' id=\'mcFrac'+c+'\'><button class=\'btn btn-sm btn-outline-danger\' onclick=\'this.parentElement.remove()\'>X</button></div>'">+ Agregar opción</button></div>
+
+            {{-- Sección Opciones --}}
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem;">
+                    <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:.35rem;">
+                        <i class="ri-checkbox-multiple-line" style="color:#6366f1;"></i> Opciones de respuesta
+                    </div>
+                    <span style="font-size:.7rem;color:#4f46e5;background:rgba(99,102,241,.1);padding:2px 8px;border-radius:10px;font-weight:600;">fracción 1 = correcta</span>
+                </div>
+                {{-- Cabecera de columnas --}}
+                <div style="display:grid;grid-template-columns:1fr 76px 32px;gap:.4rem;margin-bottom:.3rem;padding:0 .1rem;">
+                    <span style="font-size:.7rem;font-weight:600;color:#94a3b8;text-transform:uppercase;">Texto de la opción</span>
+                    <span style="font-size:.7rem;font-weight:600;color:#94a3b8;text-transform:uppercase;text-align:center;">Fracción</span>
+                    <span></span>
+                </div>
+                <div id="mcOptionsContainer"></div>
+                <button onclick="addMcOption()"
+                    style="margin-top:.6rem;display:inline-flex;align-items:center;gap:.35rem;padding:.32rem .85rem;border-radius:20px;font-size:.78rem;font-weight:600;border:1.5px solid #6366f1;background:rgba(99,102,241,.07);color:#4f46e5;cursor:pointer;transition:all .15s;"
+                    onmouseover="this.style.background='rgba(99,102,241,.15)'" onmouseout="this.style.background='rgba(99,102,241,.07)'">
+                    <i class="ri-add-line"></i> Agregar opción
+                </button>
+            </div>
         </div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModalMC()">Cancelar</button>
-            <button class="btn-guardar-disc" onclick="ActividadesEditor.guardarMC()"><i class="ri-check-line"></i> Crear pregunta</button>
+        <div class="disc-modal-footer" style="border-top:1.5px solid #e2e8f0;padding:.85rem 1.25rem;display:flex;gap:.5rem;justify-content:flex-end;background:#fafbfc;">
+            <button onclick="ActividadesEditor.cerrarModalMC()" style="padding:.42rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">Cancelar</button>
+            <button onclick="ActividadesEditor.guardarMC()" style="padding:.42rem 1.1rem;border-radius:8px;font-size:.82rem;font-weight:700;background:linear-gradient(135deg,#4338ca,#6366f1);color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+                <i class="ri-check-line"></i> Crear pregunta
+            </button>
         </div>
     </div>
 </div>
 
 {{-- Modal: Crear V/F --}}
 <div class="disc-modal-overlay" id="modalTF">
-    <div class="disc-modal" style="max-width:480px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title">Nueva pregunta: Verdadero / Falso</span>
-            <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModalTF()">&times;</button>
+    <div class="disc-modal" style="max-width:500px;border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+        <div class="disc-modal-hdr" style="background:linear-gradient(135deg,#15803d,#16a34a);padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:.5rem;color:#fff;font-size:.92rem;font-weight:700;">
+                <i class="ri-toggle-line" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Verdadero / Falso
+            </span>
+            <button onclick="ActividadesEditor.cerrarModalTF()" style="background:none;border:none;color:rgba(255,255,255,.65);font-size:1.4rem;cursor:pointer;line-height:1;padding:0;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">&times;</button>
         </div>
-        <div class="disc-modal-body">
-            <div class="form-group"><label>Nombre</label><input class="form-control" id="tfName" placeholder="Ej: Pregunta 2"></div>
-            <div class="form-group"><label>Texto de la pregunta</label><textarea class="form-control" id="tfQuestionText" rows="3"></textarea></div>
-            <div class="form-row">
-                <div class="form-group"><label>Puntaje</label><input class="form-control" id="tfDefaultMark" type="number" value="1" step="0.5"></div>
-                <div class="form-group"><label>Respuesta correcta</label><select class="form-control" id="tfCorrect"><option value="true">Verdadero</option><option value="false">Falso</option></select></div>
+        <div class="disc-modal-body" style="padding:1.1rem 1.25rem;">
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;margin-bottom:.8rem;">
+                <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem;display:flex;align-items:center;gap:.35rem;">
+                    <i class="ri-pencil-line" style="color:#16a34a;"></i> General
+                </div>
+                <div style="margin-bottom:.65rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Nombre interno <span style="color:#dc2626;">*</span></label>
+                    <input class="form-control" id="tfName" placeholder="Ej: Pregunta 2" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;">
+                </div>
+                <div>
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Texto de la pregunta <span style="color:#dc2626;">*</span></label>
+                    <textarea class="form-control" id="tfQuestionText" rows="3" placeholder="La capital de Bolivia es Sucre." style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;resize:vertical;"></textarea>
+                </div>
+            </div>
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;">
+                <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem;display:flex;align-items:center;gap:.35rem;">
+                    <i class="ri-bar-chart-line" style="color:#16a34a;"></i> Calificación y respuesta
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+                    <div>
+                        <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Puntaje</label>
+                        <div style="display:flex;align-items:center;gap:.4rem;">
+                            <input class="form-control" id="tfDefaultMark" type="number" value="1" step="0.5" min="0" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;width:80px;">
+                            <span style="font-size:.78rem;color:#94a3b8;">pts</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Respuesta correcta</label>
+                        <select class="form-control" id="tfCorrect" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.38rem .5rem;">
+                            <option value="true">✓ Verdadero</option>
+                            <option value="false">✗ Falso</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModalTF()">Cancelar</button>
-            <button class="btn-guardar-disc" onclick="ActividadesEditor.guardarTF()"><i class="ri-check-line"></i> Crear pregunta</button>
+        <div class="disc-modal-footer" style="border-top:1.5px solid #e2e8f0;padding:.85rem 1.25rem;display:flex;gap:.5rem;justify-content:flex-end;background:#fafbfc;">
+            <button onclick="ActividadesEditor.cerrarModalTF()" style="padding:.42rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">Cancelar</button>
+            <button onclick="ActividadesEditor.guardarTF()" style="padding:.42rem 1.1rem;border-radius:8px;font-size:.82rem;font-weight:700;background:linear-gradient(135deg,#15803d,#16a34a);color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+                <i class="ri-check-line"></i> Crear pregunta
+            </button>
         </div>
     </div>
 </div>
 
 {{-- Modal: Crear Coincidencia --}}
 <div class="disc-modal-overlay" id="modalMatch">
-    <div class="disc-modal" style="max-width:560px;">
-        <div class="disc-modal-hdr">
-            <span class="disc-modal-title">Nueva pregunta: Coincidencia</span>
-            <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModalMatch()">&times;</button>
+    <div class="disc-modal" style="max-width:580px;border-radius:16px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+        <div class="disc-modal-hdr" style="background:linear-gradient(135deg,#0369a1,#0284c7);padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;">
+            <span style="display:flex;align-items:center;gap:.5rem;color:#fff;font-size:.92rem;font-weight:700;">
+                <i class="ri-links-line" style="font-size:1.1rem;opacity:.85;"></i> Nueva pregunta &mdash; Coincidencia
+            </span>
+            <button onclick="ActividadesEditor.cerrarModalMatch()" style="background:none;border:none;color:rgba(255,255,255,.65);font-size:1.4rem;cursor:pointer;line-height:1;padding:0;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">&times;</button>
         </div>
-        <div class="disc-modal-body">
-            <div class="form-group"><label>Nombre</label><input class="form-control" id="matchName"></div>
-            <div class="form-group"><label>Texto</label><textarea class="form-control" id="matchQuestionText" rows="2"></textarea></div>
-            <div class="form-group"><label>Puntaje</label><input class="form-control" id="matchDefaultMark" type="number" value="1" step="0.5"></div>
-            <div class="form-group"><label>Pares</label><div id="matchPairsContainer"></div>
-            <button class="btn btn-sm btn-outline-secondary mt-1" onclick="var c=document.querySelectorAll('#matchPairsContainer .match-pair').length;document.getElementById('matchPairsContainer').innerHTML+='<div class=\'match-pair\' style=\'display:flex;gap:0.5rem;margin-top:4px;\'><input style=\'width:40%;\' class=\'form-control form-control-sm\' placeholder=\'Pregunta\' id=\'mpQ'+c+'\'><input style=\'width:40%;\' class=\'form-control form-control-sm\' placeholder=\'Respuesta\' id=\'mpA'+c+'\'><button class=\'btn btn-sm btn-outline-danger\' onclick=\'this.parentElement.remove()\'>X</button></div>'">+ Agregar par</button></div>
+        <div class="disc-modal-body" style="padding:1.1rem 1.25rem;max-height:62vh;overflow-y:auto;">
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;margin-bottom:.8rem;">
+                <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem;display:flex;align-items:center;gap:.35rem;">
+                    <i class="ri-pencil-line" style="color:#0284c7;"></i> General
+                </div>
+                <div style="margin-bottom:.65rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Nombre interno <span style="color:#dc2626;">*</span></label>
+                    <input class="form-control" id="matchName" placeholder="Ej: Pregunta 3" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;">
+                </div>
+                <div style="margin-bottom:.65rem;">
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Texto de la pregunta <span style="color:#dc2626;">*</span></label>
+                    <textarea class="form-control" id="matchQuestionText" rows="2" placeholder="Empareja cada capital con su país." style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;resize:vertical;"></textarea>
+                </div>
+                <div>
+                    <label style="font-size:.8rem;font-weight:600;color:#374151;display:block;margin-bottom:.22rem;">Puntaje</label>
+                    <div style="display:flex;align-items:center;gap:.4rem;">
+                        <input class="form-control" id="matchDefaultMark" type="number" value="1" step="0.5" min="0" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .65rem;width:80px;">
+                        <span style="font-size:.78rem;color:#94a3b8;">pts</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Pares --}}
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:.85rem 1rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem;">
+                    <div style="font-size:.73rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:.35rem;">
+                        <i class="ri-links-line" style="color:#0284c7;"></i> Pares pregunta → respuesta
+                    </div>
+                </div>
+                {{-- Cabecera de columnas --}}
+                <div style="display:grid;grid-template-columns:1fr 1fr 32px;gap:.4rem;margin-bottom:.3rem;padding:0 .1rem;">
+                    <span style="font-size:.7rem;font-weight:600;color:#94a3b8;text-transform:uppercase;display:flex;align-items:center;gap:.25rem;"><i class="ri-question-mark" style="color:#0284c7;font-size:.75rem;"></i> Pregunta</span>
+                    <span style="font-size:.7rem;font-weight:600;color:#94a3b8;text-transform:uppercase;display:flex;align-items:center;gap:.25rem;"><i class="ri-check-line" style="color:#16a34a;font-size:.75rem;"></i> Respuesta</span>
+                    <span></span>
+                </div>
+                <div id="matchPairsContainer"></div>
+                <button onclick="addMatchPair()"
+                    style="margin-top:.6rem;display:inline-flex;align-items:center;gap:.35rem;padding:.32rem .85rem;border-radius:20px;font-size:.78rem;font-weight:600;border:1.5px solid #0284c7;background:rgba(2,132,199,.07);color:#0369a1;cursor:pointer;transition:all .15s;"
+                    onmouseover="this.style.background='rgba(2,132,199,.15)'" onmouseout="this.style.background='rgba(2,132,199,.07)'">
+                    <i class="ri-add-line"></i> Agregar par
+                </button>
+            </div>
         </div>
-        <div class="disc-modal-footer">
-            <button class="btn-cancel-disc" onclick="ActividadesEditor.cerrarModalMatch()">Cancelar</button>
-            <button class="btn-guardar-disc" onclick="ActividadesEditor.guardarMatch()"><i class="ri-check-line"></i> Crear pregunta</button>
+        <div class="disc-modal-footer" style="border-top:1.5px solid #e2e8f0;padding:.85rem 1.25rem;display:flex;gap:.5rem;justify-content:flex-end;background:#fafbfc;">
+            <button onclick="ActividadesEditor.cerrarModalMatch()" style="padding:.42rem 1rem;border-radius:8px;font-size:.82rem;font-weight:600;background:#f1f5f9;color:#64748b;border:none;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">Cancelar</button>
+            <button onclick="ActividadesEditor.guardarMatch()" style="padding:.42rem 1.1rem;border-radius:8px;font-size:.82rem;font-weight:700;background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:opacity .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+                <i class="ri-check-line"></i> Crear pregunta
+            </button>
         </div>
     </div>
 </div>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Innova Ciencia Virtual — Posgrados de Excelencia</title>
+    <title>InnovaCiencia Virtual — Posgrados de Excelencia</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2410,10 +2410,10 @@
         <div class="container">
             <nav class="nav">
                 <a href="#inicio" class="brand">
-                    <img src="{{ asset('images/logo-secundario.png') }}" alt="Innova Ciencia"
+                    <img src="{{ asset('images/logo-secundario.png') }}" alt="InnovaCiencia"
                         style="width:44px;height:44px;border-radius:8px;object-fit:contain;">
                     <div class="brand-name">
-                        Innova Ciencia
+                        InnovaCiencia
                         <small>Virtual — Posgrados</small>
                     </div>
                 </a>
@@ -3049,7 +3049,7 @@
         <div class="container">
             <div class="cta-inner">
                 <span class="eyebrow" style="justify-content:center;color:var(--gold-lt)">Da el siguiente paso</span>
-                <h2>Transforma tu futuro con <span>Innova Ciencia Virtual</span></h2>
+                <h2>Transforma tu futuro con <span>InnovaCiencia Virtual</span></h2>
                 <p>
                     Inscríbete hoy o solicita asesoría personalizada. Nuestro equipo está listo para
                     orientarte en la elección del programa que mejor se adapte a tus objetivos.
@@ -3074,7 +3074,7 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <div class="footer-brand-name">Innova <span>Ciencia</span> Virtual</div>
+                    <div class="footer-brand-name">InnovaCiencia Virtual</div>
                     <p class="footer-desc">
                         Institución de posgrado comprometida con la formación de profesionales de alto nivel,
                         con metodología innovadora, docentes especializados y respaldo de convenios
@@ -3131,7 +3131,7 @@
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; {{ date('Y') }} Innova Ciencia Virtual. Todos los derechos reservados.</p>
+                <p>&copy; {{ date('Y') }} InnovaCiencia Virtual. Todos los derechos reservados.</p>
                 <p>
                     <a href="#">Términos y Condiciones</a>
                     &nbsp;·&nbsp;

@@ -4,7 +4,7 @@
             <div class="footer-left">
                 <div class="footer-copy">
                     <script>document.write(new Date().getFullYear())</script> 
-                    &copy; <span>Innova Ciencia Virtual</span>. Todos los derechos reservados.
+                    &copy; <span>InnovaCiencia Virtual</span>. Todos los derechos reservados.
                 </div>
             </div>
             <div class="footer-right">

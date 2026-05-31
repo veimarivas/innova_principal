@@ -1740,7 +1740,7 @@ html[data-bs-theme="dark"] .est-ci-dato {
 /* ── Pagos — grid de dos columnas (cuotas + comprobantes) ──── */
 .pagos-grid-2 {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: 16px;
     padding: 18px;
 }
@@ -1812,22 +1812,24 @@ html[data-bs-theme="dark"] .est-ci-dato {
 
 .pagos-mini-table thead th {
     background: #f8fafc;
-    padding: 9px 14px;
-    font-size: .65rem;
+    padding: 8px 10px;
+    font-size: .62rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: .05em;
+    letter-spacing: .04em;
     color: #94a3b8;
     border-bottom: 1.5px solid #e2e8f0;
     text-align: left;
+    white-space: nowrap;
 }
 
 .pagos-mini-table tbody td {
-    padding: 10px 14px;
-    font-size: .82rem;
+    padding: 8px 10px;
+    font-size: .78rem;
     color: #475569;
     border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
+    white-space: nowrap;
 }
 
 .pagos-mini-table tbody tr:last-child td { border-bottom: none; }

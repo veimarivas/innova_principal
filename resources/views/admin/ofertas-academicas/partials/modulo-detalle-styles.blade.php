@@ -1863,6 +1863,14 @@
     .btn-act-edit:hover { background: #fc7b04; color: #fff; }
     .btn-act-delete { background: rgba(220,38,38,0.1); color: #dc2626; }
     .btn-act-delete:hover { background: #dc2626; color: #fff; }
+    .btn-act-grade { background: rgba(217,119,6,.1); color: #b45309; }
+    .btn-act-grade:hover { background: #d97706; color: #fff; }
+    .btn-act-quiz { background: rgba(124,58,237,.1); color: #6d28d9; }
+    .btn-act-quiz:hover { background: #7c3aed; color: #fff; }
+    .btn-act-resource { background: rgba(14,165,233,.1); color: #0284c7; text-decoration: none; }
+    .btn-act-resource:hover { background: #0284c7; color: #fff; }
+    .btn-act-url { background: rgba(194,65,12,.1); color: #c2410c; text-decoration: none; }
+    .btn-act-url:hover { background: #c2410c; color: #fff; }
 
     .wysiwyg-toolbar {
         display: flex;

@@ -135,6 +135,261 @@ h1,h2,h3,h4,h5,h6,.modal-title,.est-card-title,.est-stat-num,.est-section-title 
 .est-btn-whatsapp { background: rgba(37,211,102,0.08); color: #25D366; border: 1px solid rgba(37,211,102,0.2); }
 .est-btn-whatsapp:hover { background: rgba(37,211,102,0.15); color: #128C7E; }
 
+/* ── Modal WhatsApp Accesos ── */
+.wa-modal-content {
+    background: white;
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,.18);
+}
+.wa-modal-header {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 1.1rem 1.25rem;
+    background: linear-gradient(135deg, #075e54 0%, #128c7e 50%, #25d366 100%);
+    overflow: hidden;
+}
+.wa-modal-header-deco {
+    position: absolute;
+    top: -50px; right: -30px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(255,255,255,.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.wa-modal-header-body {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+}
+.wa-modal-icon {
+    width: 42px; height: 42px;
+    flex-shrink: 0;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+}
+.wa-modal-header-text { flex: 1; min-width: 0; }
+.wa-modal-title {
+    font-size: .95rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 2px;
+}
+.wa-modal-subtitle {
+    font-size: .73rem;
+    color: rgba(255,255,255,.82);
+    margin: 0;
+}
+.wa-modal-close {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 8px;
+    color: white;
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background .2s;
+}
+.wa-modal-close:hover { background: rgba(255,255,255,.28); }
+
+/* Persona bar */
+.wa-persona-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 1rem 1.25rem;
+    background: #f0fdf4;
+    border-bottom: 1px solid #d1fae5;
+}
+.wa-persona-avatar {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(37,211,102,.3);
+}
+.wa-persona-avatar-doc {
+    background: linear-gradient(135deg, #9a4904, #df6a04);
+    box-shadow: 0 3px 10px rgba(154,73,4,.3);
+}
+.wa-persona-rol {
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: #059669;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+.wa-persona-nombre {
+    font-size: .95rem;
+    font-weight: 700;
+    color: #065f46;
+}
+
+/* Body */
+.wa-modal-body { padding: 1.1rem 1.25rem; }
+
+.wa-preview-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: #64748b;
+    margin-bottom: .6rem;
+}
+.wa-preview-label i { color: #25d366; }
+
+/* WhatsApp bubble */
+.wa-bubble-wrap {
+    background: #e9f5fb;
+    border-radius: 12px;
+    padding: .85rem 1rem .6rem;
+    position: relative;
+    margin-bottom: .9rem;
+}
+.wa-bubble {
+    background: white;
+    border-radius: 0 10px 10px 10px;
+    padding: .75rem 1rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+    position: relative;
+}
+.wa-bubble::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -8px;
+    width: 0; height: 0;
+    border-top: 8px solid white;
+    border-left: 8px solid transparent;
+}
+.wa-bubble-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: .85rem;
+    line-height: 1.4;
+}
+.wa-bubble-key {
+    font-weight: 700;
+    color: #1e293b;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.wa-bubble-val { color: #334155; }
+.wa-mono { font-family: 'Courier New', monospace; font-size: .82rem; }
+.wa-pass {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 5px;
+    padding: 1px 8px;
+    font-weight: 600;
+    color: #15803d;
+}
+.wa-bubble-tick {
+    text-align: right;
+    margin-top: .3rem;
+    font-size: .82rem;
+    color: #34b7f1;
+}
+
+/* Note */
+.wa-note {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .65rem .9rem;
+    background: #fffbeb;
+    border: 1px solid rgba(245,158,11,.25);
+    border-radius: 8px;
+    font-size: .78rem;
+    color: #92400e;
+    line-height: 1.55;
+}
+.wa-note-icon {
+    width: 22px; height: 22px;
+    background: rgba(245,158,11,.15);
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .85rem;
+    color: #d97706;
+    flex-shrink: 0;
+}
+
+/* Footer */
+.wa-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    padding: .85rem 1.25rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+}
+.wa-btn-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .45rem 1rem;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+}
+.wa-btn-reset:hover { border-color: #94a3b8; color: #334155; }
+.wa-btn-send {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .45rem 1.2rem;
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: .82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(37,211,102,.3);
+    transition: all .2s;
+    font-family: inherit;
+}
+.wa-btn-send:hover {
+    background: linear-gradient(135deg, #1da851, #0d6e60);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37,211,102,.35);
+}
+
 .est-btn-edit:hover { background: rgba(252,123,4,0.1); color: var(--est-primary); }
 .est-btn-delete:hover { background: rgba(224,80,80,0.08); color: var(--est-danger); }
 
@@ -500,7 +755,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             <div class="est-feedback" id="fbRApellidos"></div>
                         </div>
                         <div class="col-md-4">
-                            <label class="est-label">Sexo</label>
+                            <label class="est-label">Sexo <span class="req">*</span></label>
                             <select class="form-select" id="rSexo">
                                 <option value="">— Seleccione —</option>
                                 <option value="M">Masculino</option>
@@ -508,7 +763,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="est-label">Estado Civil</label>
+                            <label class="est-label">Estado Civil <span class="req">*</span></label>
                             <select class="form-select" id="rEstadoCivil">
                                 <option value="">— Seleccione —</option>
                                 <option value="Soltero/a">Soltero/a</option>
@@ -526,7 +781,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             </select>
                         </div>
                         <div class="col-md-5">
-                            <label class="est-label">Ciudad</label>
+                            <label class="est-label">Ciudad <span class="req">*</span></label>
                             <select class="form-select" id="rCiudad" disabled>
                                 <option value="">— Seleccione depto. —</option>
                             </select>
@@ -537,7 +792,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                     <div class="est-modal-section-header mt-4"><i class="ri-phone-line"></i><span>Datos de Contacto</span></div>
                     <div class="row g-3">
                         <div class="col-md-5">
-                            <label class="est-label">Correo Electrónico</label>
+                            <label class="est-label">Correo Electrónico <span class="req">*</span></label>
                             <div class="est-field">
                                 <input type="email" class="form-control" id="rCorreo" placeholder="correo@dominio.com" maxlength="150" autocomplete="off">
                                 <span class="est-validation-icon" id="iconRCorreo"></span>
@@ -545,7 +800,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             <div class="est-feedback" id="fbRCorreo"></div>
                         </div>
                         <div class="col-md-3">
-                            <label class="est-label">Celular</label>
+                            <label class="est-label">Celular <span class="req">*</span></label>
                             <input type="text" class="form-control" id="rCelular" placeholder="70000000" maxlength="20" autocomplete="off">
                         </div>
                         <div class="col-md-4">
@@ -556,6 +811,23 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             <label class="est-label">Dirección</label>
                             <input type="text" class="form-control" id="rDireccion" placeholder="Av. 6 de Agosto N° 123" maxlength="200" autocomplete="off">
                         </div>
+                    </div>
+
+                    {{-- Studies Section --}}
+                    <div class="est-modal-section-header mt-4"><i class="ri-graduation-cap-line"></i><span>Estudios Académicos</span></div>
+                    <div id="registroEstudiosContainer">
+                        <div id="registroEstudiosEmpty" style="text-align:center;padding:1.2rem 1rem;border:2px dashed rgba(252,123,4,.2);border-radius:12px;background:rgba(252,123,4,.02);margin-bottom:.5rem;">
+                            <div style="width:40px;height:40px;border-radius:12px;background:rgba(252,123,4,.08);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+                                <i class="ri-graduation-cap-line" style="font-size:1.2rem;color:rgba(252,123,4,.5);"></i>
+                            </div>
+                            <div style="font-size:.8rem;font-weight:600;color:#64748b;margin-bottom:.2rem;">Sin estudios agregados</div>
+                            <div style="font-size:.72rem;color:#94a3b8;">Presiona <strong style="color:var(--est-primary);">Agregar Estudio</strong> para incluir formación académica</div>
+                        </div>
+                        <div id="registroEstudiosList" style="display:flex;flex-direction:column;gap:.5rem;"></div>
+                        <button type="button" id="btnAddRegistroEstudio"
+                            style="margin-top:.65rem;display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:600;color:var(--est-primary);background:rgba(252,123,4,.06);border:1px dashed rgba(252,123,4,.3);border-radius:8px;padding:.4rem .85rem;cursor:pointer;transition:all .2s;">
+                            <i class="ri-add-line"></i> Agregar Estudio
+                        </button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -631,7 +903,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             <div class="est-feedback" id="fbEApellidos"></div>
                         </div>
                         <div class="col-md-4">
-                            <label class="est-label">Sexo</label>
+                            <label class="est-label">Sexo <span class="req">*</span></label>
                             <select class="form-select" id="editSexo">
                                 <option value="">— Seleccione —</option>
                                 <option value="M">Masculino</option>
@@ -639,7 +911,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="est-label">Estado Civil</label>
+                            <label class="est-label">Estado Civil <span class="req">*</span></label>
                             <select class="form-select" id="editEstadoCivil">
                                 <option value="">— Seleccione —</option>
                                 <option value="Soltero/a">Soltero/a</option>
@@ -657,7 +929,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             </select>
                         </div>
                         <div class="col-md-5">
-                            <label class="est-label">Ciudad</label>
+                            <label class="est-label">Ciudad <span class="req">*</span></label>
                             <select class="form-select" id="editCiudad" disabled>
                                 <option value="">— Seleccione depto. —</option>
                             </select>
@@ -668,7 +940,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                     <div class="est-modal-section-header mt-4"><i class="ri-phone-line"></i><span>Datos de Contacto</span></div>
                     <div class="row g-3">
                         <div class="col-md-5">
-                            <label class="est-label">Correo Electrónico</label>
+                            <label class="est-label">Correo Electrónico <span class="req">*</span></label>
                             <div class="est-field">
                                 <input type="email" class="form-control" id="editCorreo" maxlength="150" autocomplete="off">
                                 <span class="est-validation-icon" id="iconECorreo"></span>
@@ -676,7 +948,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                             <div class="est-feedback" id="fbECorreo"></div>
                         </div>
                         <div class="col-md-3">
-                            <label class="est-label">Celular</label>
+                            <label class="est-label">Celular <span class="req">*</span></label>
                             <input type="text" class="form-control" id="editCelular" maxlength="20" autocomplete="off">
                         </div>
                         <div class="col-md-4">
@@ -790,39 +1062,168 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
 </div>
 
 <div class="modal fade" id="modalWhatsappAccesos" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
-        <div class="modal-content">
-            <div class="modal-header" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border-radius:12px 12px 0 0;">
-                <h5 class="modal-title"><i class="ri-whatsapp-line me-2"></i>Enviar accesos por WhatsApp</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body px-4 py-3">
-                <p class="mb-3" style="font-size:0.9rem;color:var(--est-text);">
-                    Se enviará el siguiente mensaje con los accesos a la plataforma Moodle.
-                </p>
-                <div style="background:#f4f8f4;border:1px solid #d0e8d0;border-radius:10px;padding:1rem 1.2rem;font-size:0.87rem;line-height:1.7;">
-                    <div><strong>Estudiante:</strong> <span id="waModalNombre"></span></div>
-                    <div><strong>Usuario:</strong> <span id="waModalUsuario" style="font-family:monospace;"></span></div>
-                    <div class="d-flex align-items-center gap-2 mt-1">
-                        <strong>Contraseña:</strong>
-                        <span id="waModalPassword" style="font-family:monospace;background:#fff;border:1px solid #c8e6c8;border-radius:6px;padding:2px 8px;"></span>
+    <div class="modal-dialog modal-dialog-centered" style="max-width:500px;">
+        <div class="modal-content wa-modal-content">
+
+            {{-- Header --}}
+            <div class="wa-modal-header">
+                <div class="wa-modal-header-deco"></div>
+                <div class="wa-modal-header-body">
+                    <div class="wa-modal-icon">
+                        <i class="ri-whatsapp-line"></i>
+                    </div>
+                    <div class="wa-modal-header-text">
+                        <h5 class="wa-modal-title">Enviar Accesos por WhatsApp</h5>
+                        <p class="wa-modal-subtitle">Credenciales de acceso — Estudiante</p>
                     </div>
                 </div>
-                <div style="background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.3);border-radius:8px;padding:0.7rem 1rem;font-size:0.81rem;margin-top:0.9rem;color:#7a6000;">
-                    <i class="ri-information-line me-1"></i>
-                    Si el estudiante cambió su contraseña en Moodle, usa <strong>Restablecer</strong> para sincronizarla al valor original antes de enviar.
+                <button type="button" class="wa-modal-close" data-bs-dismiss="modal" aria-label="Cerrar">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            {{-- Perfil del estudiante --}}
+            <div class="wa-persona-bar">
+                <div class="wa-persona-avatar">
+                    <i class="ri-user-3-line"></i>
                 </div>
+                <div class="wa-persona-info">
+                    <div class="wa-persona-rol">
+                        <i class="ri-graduation-cap-line"></i> Estudiante
+                    </div>
+                    <div class="wa-persona-nombre" id="waModalNombre">—</div>
+                </div>
+            </div>
+
+            {{-- Body --}}
+            <div class="wa-modal-body">
+
+                {{-- Preview del mensaje --}}
+                <div class="wa-preview-label">
+                    <i class="ri-message-3-line"></i> Vista previa del mensaje
+                </div>
+                <div class="wa-bubble-wrap">
+                    <div class="wa-bubble">
+                        <div class="wa-bubble-row">
+                            <span class="wa-bubble-key">Estudiante:</span>
+                            <span id="waModalNombrePreview" class="wa-bubble-val"></span>
+                        </div>
+                        <div class="wa-bubble-row">
+                            <span class="wa-bubble-key">Usuario:</span>
+                            <span id="waModalUsuario" class="wa-bubble-val wa-mono"></span>
+                        </div>
+                        <div class="wa-bubble-row">
+                            <span class="wa-bubble-key">Contraseña:</span>
+                            <span id="waModalPassword" class="wa-bubble-val wa-mono wa-pass"></span>
+                        </div>
+                    </div>
+                    <div class="wa-bubble-tick">
+                        <i class="ri-check-double-line"></i>
+                    </div>
+                </div>
+
+                {{-- Nota --}}
+                <div class="wa-note">
+                    <div class="wa-note-icon"><i class="ri-information-line"></i></div>
+                    <p class="mb-0">Si el estudiante cambió su contraseña en Moodle, usa <strong>Restablecer</strong> para sincronizarla al valor original antes de enviar.</p>
+                </div>
+
                 <input type="hidden" id="waModalCelular">
                 <input type="hidden" id="waModalEstudianteId">
             </div>
-            <div class="modal-footer justify-content-between">
-                <button type="button" id="waModalBtnReset" class="btn btn-outline-secondary btn-sm">
-                    <i class="ri-refresh-line me-1"></i>Restablecer contraseña en Moodle
+
+            {{-- Footer --}}
+            <div class="wa-modal-footer">
+                <button type="button" id="waModalBtnReset" class="wa-btn-reset">
+                    <i class="ri-refresh-line"></i> Restablecer contraseña
                 </button>
-                <button type="button" id="waModalBtnEnviar" class="btn btn-success btn-sm px-4">
-                    <i class="ri-whatsapp-line me-1"></i>Enviar por WhatsApp
+                <button type="button" id="waModalBtnEnviar" class="wa-btn-send">
+                    <i class="ri-whatsapp-line"></i> Enviar por WhatsApp
                 </button>
             </div>
+
+        </div>
+    </div>
+</div>
+
+{{-- ════════════════ MODAL CREAR CUENTAS (BATCH) ════════════════ --}}
+<div class="modal fade" id="modalCrearCuentasMoodle" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.18);">
+
+            {{-- Header --}}
+            <div class="modal-header" style="background:linear-gradient(135deg,#3b1900 0%,#7a3b03 50%,#c96004 100%);color:white;padding:1.25rem 1.5rem;border:none;">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);flex-shrink:0;">
+                        <i class="ri-cloud-line" style="font-size:1.4rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;letter-spacing:-.01em;color:#fff;">Crear Cuentas de Usuario</h5>
+                        <div style="font-size:.73rem;opacity:.75;margin-top:.15rem;letter-spacing:.01em;color:rgba(255,255,255,.85);">Portal del estudiante + plataforma Moodle</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            {{-- Body --}}
+            <div class="modal-body" style="padding:0;">
+
+                {{-- Cargando --}}
+                <div id="moodleCuentasLoading" class="text-center" style="padding:3rem 1.5rem;">
+                    <div class="spinner-border" style="color:#fc7b04;width:2.25rem;height:2.25rem;" role="status"></div>
+                    <p class="mt-3 mb-0" style="font-size:.85rem;color:#64748b;font-weight:500;">Verificando cuentas de estudiantes…</p>
+                </div>
+
+                {{-- Todos ya tienen cuenta --}}
+                <div id="moodleCuentasEmpty" style="display:none;padding:3rem 1.5rem;text-align:center;">
+                    <div style="width:68px;height:68px;background:linear-gradient(135deg,rgba(252,123,4,.12),rgba(154,73,4,.05));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;border:2px solid rgba(252,123,4,.2);">
+                        <i class="ri-shield-check-line" style="font-size:1.9rem;color:#fc7b04;"></i>
+                    </div>
+                    <h6 style="font-weight:700;color:#1e293b;margin-bottom:.4rem;font-size:.95rem;">¡Todo está al día!</h6>
+                    <p style="font-size:.83rem;color:#64748b;margin:0;max-width:300px;margin-inline:auto;line-height:1.6;">Este estudiante ya tiene cuentas activas en el sistema y en Moodle.</p>
+                </div>
+
+                {{-- Lista de estudiantes sin cuenta --}}
+                <div id="moodleCuentasList" style="display:none;">
+                    <div style="padding:1rem 1.5rem;background:linear-gradient(135deg,rgba(252,123,4,.05),rgba(154,73,4,.03));border-bottom:1px solid rgba(252,123,4,.1);">
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <div id="moodleCuentasCountBadge" style="display:inline-flex;align-items:center;gap:.45rem;background:rgba(252,123,4,.1);border:1px solid rgba(252,123,4,.2);color:#9a4904;font-size:.8rem;font-weight:700;padding:.3rem .8rem;border-radius:20px;white-space:nowrap;">
+                                <i class="ri-user-line"></i>
+                                <span id="moodleCuentasCount">0</span> sin cuenta
+                            </div>
+                            <p class="mb-0" style="font-size:.78rem;color:#64748b;flex:1;line-height:1.55;">Se creará la cuenta del <strong style="color:#475569;">portal</strong> y de <strong style="color:#475569;">Moodle</strong> con las mismas credenciales para los estudiantes seleccionados.</p>
+                        </div>
+                    </div>
+                    <div style="padding:.75rem 1.25rem 1.25rem;max-height:360px;overflow-y:auto;">
+                        <table style="width:100%;border-collapse:collapse;font-size:.8rem;" id="tablaCuentasMoodle">
+                            <thead>
+                                <tr style="border-bottom:2px solid #e2e8f0;">
+                                    <th style="padding:.65rem .5rem;width:40px;text-align:center;">
+                                        <input type="checkbox" id="selectAllMoodleAccounts" style="width:16px;height:16px;accent-color:#fc7b04;cursor:pointer;border-radius:4px;">
+                                    </th>
+                                    <th style="padding:.65rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;text-align:left;">Estudiante</th>
+                                    <th style="padding:.65rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;text-align:left;">CI</th>
+                                    <th style="padding:.65rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;text-align:left;">Usuario sugerido</th>
+                                    <th style="padding:.65rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;text-align:left;">Contraseña</th>
+                                </tr>
+                            </thead>
+                            <tbody id="moodleCuentasTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Footer --}}
+            <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;gap:.5rem;">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="border-radius:8px;font-size:.82rem;padding:.4rem 1rem;">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" id="btnConfirmarCrearCuentas" disabled
+                    style="background:linear-gradient(135deg,#fc7b04,#d46604);border:none;border-radius:8px;font-size:.82rem;padding:.4rem 1.15rem;font-weight:600;box-shadow:0 4px 12px rgba(252,123,4,.3);transition:all .2s;">
+                    <i class="ri-user-add-line me-1"></i>Crear Cuentas Seleccionadas
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
@@ -855,6 +1256,7 @@ function previewImage(input, previewId) {
     let personaEncontrada = null;
     let todasCiudades = [];
     let carnetTimer = null, correoTimer = null;
+    let registroEstudioCount = 0;
     const CSRF = '{{ csrf_token() }}';
 
     function init() {
@@ -1072,6 +1474,16 @@ function previewImage(input, previewId) {
             crearCuentas($(this).data('id'));
         });
 
+        $('#btnAddRegistroEstudio').on('click', function() {
+            addRegistroEstudioRow();
+            syncRegistroEstudiosEmpty();
+        });
+
+        $(document).on('click', '.btn-remove-registro-estudio', function() {
+            $(this).closest('.registro-estudio-row').remove();
+            syncRegistroEstudiosEmpty();
+        });
+
         document.getElementById('modalRegistro').addEventListener('hidden.bs.modal', resetFormRegistro);
 
         document.getElementById('modalEditar').addEventListener('hidden.bs.modal', function() {
@@ -1242,6 +1654,11 @@ function previewImage(input, previewId) {
                 if (input) { input.classList.remove('is-invalid'); input.classList.add('is-valid'); }
             }
 
+            /* Pre-poblar estudios de la persona */
+            if (p.estudios && p.estudios.length) {
+                prePopularRegistroEstudios(p.estudios);
+            }
+
             /* Verificar si ya es estudiante */
             $.post('{{ route("admin.estudiantes.buscarCarnet") }}', { _token: CSRF, carnet: p.carnet })
                 .done(function (r) {
@@ -1264,15 +1681,31 @@ function previewImage(input, previewId) {
 
     /* ── GUARDAR ESTUDIANTE ── */
     function guardarEstudiante() {
+        setBtnLoading('#btnGuardarEstudiante', true, 'Guardando…');
+
+        /* Si la persona ya existe, registrarla directamente como estudiante sin re-crear */
+        if (personaEncontrada && personaEncontrada.id) {
+            registrarComoEstudiante(personaEncontrada.id);
+            return;
+        }
+
+        /* Nueva persona: validar antes de crear */
         const okC = validarCarnetSync('rCarnet','iconRCarnet','fbRCarnet');
         const okN = validarNombres('rNombres','iconRNombres','fbRNombres');
         const okAp = validarApellidos();
-        if (!okC || !okN || !okAp) return;
-        if (document.getElementById('rCarnet').classList.contains('is-invalid')) return;
-        if (document.getElementById('rCorreo').classList.contains('is-invalid')) return;
+        if (!okC || !okN || !okAp) {
+            setBtnLoading('#btnGuardarEstudiante', false, '<i class="ri-save-line"></i> Registrar Estudiante');
+            return;
+        }
+        if (document.getElementById('rCarnet').classList.contains('is-invalid')) {
+            setBtnLoading('#btnGuardarEstudiante', false, '<i class="ri-save-line"></i> Registrar Estudiante');
+            return;
+        }
+        if (document.getElementById('rCorreo').classList.contains('is-invalid')) {
+            setBtnLoading('#btnGuardarEstudiante', false, '<i class="ri-save-line"></i> Registrar Estudiante');
+            return;
+        }
 
-        setBtnLoading('#btnGuardarEstudiante', true, 'Guardando…');
-        
         var formData = new FormData();
         formData.append('_token', CSRF);
         formData.append('carnet', $('#rCarnet').val().trim());
@@ -1302,34 +1735,58 @@ function previewImage(input, previewId) {
             contentType: false
         })
         .done(function (r) {
-            /* Persona creada, ahora registrar como estudiante */
-            $.post('{{ route("admin.estudiantes.registrar") }}', {
-                _token: CSRF,
-                persona_id: r.data.id
-            })
-            .done(function (r2) {
-                toast('success', r2.message);
-                closeModal('modalRegistro');
-                tabla.ajax.reload(null, false);
-                limpiarBusqueda();
-            })
-            .fail(function (xhr) {
-                const msg = xhr.responseJSON?.message || 'Error al registrar como estudiante.';
-                toast('error', msg);
-            });
+            registrarComoEstudiante(r.data.id);
         })
         .fail(function (xhr) {
             if (xhr.status === 422) {
                 const errs = xhr.responseJSON.errors || {};
-                if (errs.carnet) setError('rCarnet','iconRCarnet','fbRCarnet', errs.carnet[0]);
+                if (errs.carnet)  setError('rCarnet','iconRCarnet','fbRCarnet', errs.carnet[0]);
                 if (errs.nombres) setError('rNombres','iconRNombres','fbRNombres', errs.nombres[0]);
-                if (errs.correo) setError('rCorreo','iconRCorreo','fbRCorreo', errs.correo[0]);
+                if (errs.correo)  setError('rCorreo','iconRCorreo','fbRCorreo', errs.correo[0]);
                 if (errs.apellidos) {
                     $('#fbRApellidos').addClass('error').html('<i class="ri-error-warning-line"></i>' + errs.apellidos[0]);
                 }
             } else {
                 toast('error', 'Error al registrar. Intente nuevamente.');
             }
+            setBtnLoading('#btnGuardarEstudiante', false, '<i class="ri-save-line"></i> Registrar Estudiante');
+        });
+    }
+
+    function registrarComoEstudiante(personaId) {
+        $.post('{{ route("admin.estudiantes.registrar") }}', {
+            _token: CSRF,
+            persona_id: personaId
+        })
+        .done(function (r2) {
+            /* Guardar estudios nuevos (solo los que el usuario agregó manualmente en el formulario) */
+            var $rows = $('#registroEstudiosList .registro-estudio-row');
+            /* Filtrar solo filas que NO correspondan a estudios pre-existentes (sin data-existente) */
+            var estudiosPromesas = [];
+            $rows.each(function() {
+                if ($(this).data('existente')) return; /* skip estudios ya guardados en BD */
+                const gradoId = $(this).find('.reg-est-grado').val();
+                if (!gradoId) return;
+                estudiosPromesas.push($.post('/admin/personas/' + personaId + '/estudios', {
+                    _token: CSRF,
+                    grados_academico_id: gradoId,
+                    profesione_id: $(this).find('.reg-est-profesion').val() || '',
+                    universidade_id: $(this).find('.reg-est-universidad').val() || '',
+                    estado: $(this).find('.reg-est-estado').val(),
+                    principal: $(this).find('.reg-est-principal').is(':checked') ? 1 : 0
+                }));
+            });
+            $.when.apply($, estudiosPromesas.length ? estudiosPromesas : [$.when()])
+                .always(function() {
+                    toast('success', r2.message);
+                    closeModal('modalRegistro');
+                    tabla.ajax.reload(null, false);
+                    limpiarBusqueda();
+                });
+        })
+        .fail(function (xhr) {
+            const msg = xhr.responseJSON?.message || 'Error al registrar como estudiante.';
+            toast('error', msg);
         })
         .always(function () {
             setBtnLoading('#btnGuardarEstudiante', false, '<i class="ri-save-line"></i> Registrar Estudiante');
@@ -1510,6 +1967,60 @@ function previewImage(input, previewId) {
             });
     }
 
+    /* ── ESTUDIOS REGISTRO ── */
+    function addRegistroEstudioRow(data) {
+        registroEstudioCount++;
+        const idx = registroEstudioCount;
+        const gradosOpts = window._gradosOpts || '<option value="">— Grado —</option>';
+        const profOpts   = window._profesionesOpts || '<option value="">— Profesión —</option>';
+        const univOpts   = window._universidadesOpts || '<option value="">— Universidad —</option>';
+        const esExistente = !!(data && data.grado_academico_id);
+        const badgeExistente = esExistente
+            ? '<span style="font-size:.65rem;font-weight:600;background:rgba(46,154,110,.1);color:var(--est-success);border:1px solid rgba(46,154,110,.2);border-radius:20px;padding:.1rem .5rem;margin-left:.4rem;">Registrado</span>'
+            : '';
+        const btnEliminar = esExistente
+            ? ''
+            : '<button type="button" class="btn-remove-registro-estudio" style="background:rgba(224,80,80,.08);border:none;border-radius:6px;padding:.2rem .5rem;color:var(--est-danger);cursor:pointer;font-size:.8rem;"><i class="ri-close-line"></i></button>';
+        const html = '<div class="registro-estudio-row"' + (esExistente ? ' data-existente="1"' : '') + ' style="display:flex;flex-direction:column;gap:.5rem;padding:.85rem 1rem;background:' + (esExistente ? 'rgba(46,154,110,.03)' : '#fff') + ';border:1px solid ' + (esExistente ? 'rgba(46,154,110,.2)' : 'var(--est-border)') + ';border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.05);">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">'
+            + '<span style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--est-primary);">Estudio #' + idx + badgeExistente + '</span>'
+            + btnEliminar
+            + '</div>'
+            + '<div class="row g-2">'
+            + '<div class="col-md-4"><label style="font-size:.7rem;font-weight:700;color:var(--est-text-muted);display:block;margin-bottom:.3rem;">Grado Académico <span class="req">*</span></label><select class="form-select form-select-sm reg-est-grado">' + gradosOpts + '</select></div>'
+            + '<div class="col-md-4"><label style="font-size:.7rem;font-weight:700;color:var(--est-text-muted);display:block;margin-bottom:.3rem;">Profesión</label><select class="form-select form-select-sm reg-est-profesion">' + profOpts + '</select></div>'
+            + '<div class="col-md-4"><label style="font-size:.7rem;font-weight:700;color:var(--est-text-muted);display:block;margin-bottom:.3rem;">Universidad</label><select class="form-select form-select-sm reg-est-universidad">' + univOpts + '</select></div>'
+            + '<div class="col-md-4"><label style="font-size:.7rem;font-weight:700;color:var(--est-text-muted);display:block;margin-bottom:.3rem;">Estado</label><select class="form-select form-select-sm reg-est-estado"><option value="Concluido">Concluido</option><option value="En Desarrollo">En Desarrollo</option></select></div>'
+            + '<div class="col-md-4 d-flex align-items-end"><div class="form-check mb-1"><input class="form-check-input reg-est-principal" type="checkbox" id="regEstPrincipal' + idx + '"' + (idx === 1 ? ' checked' : '') + '><label class="form-check-label" for="regEstPrincipal' + idx + '" style="font-size:.78rem;font-weight:600;">Principal</label></div></div>'
+            + '</div></div>';
+        $('#registroEstudiosList').append(html);
+        if (data) {
+            const $row = $('#registroEstudiosList .registro-estudio-row').last();
+            if (data.grado_academico_id) $row.find('.reg-est-grado').val(data.grado_academico_id);
+            if (data.profesion_id)       $row.find('.reg-est-profesion').val(data.profesion_id);
+            if (data.universidad_id)     $row.find('.reg-est-universidad').val(data.universidad_id);
+            if (data.estado)             $row.find('.reg-est-estado').val(data.estado);
+            if (data.principal)          $row.find('.reg-est-principal').prop('checked', true);
+            if (esExistente) {
+                $row.find('select, input').prop('disabled', true);
+            }
+        }
+    }
+
+    function syncRegistroEstudiosEmpty() {
+        const count = $('#registroEstudiosList .registro-estudio-row').length;
+        $('#registroEstudiosEmpty').toggle(count === 0);
+    }
+
+    function prePopularRegistroEstudios(estudios) {
+        $('#registroEstudiosList').empty();
+        registroEstudioCount = 0;
+        (estudios || []).forEach(function(est) {
+            addRegistroEstudioRow(est);
+        });
+        syncRegistroEstudiosEmpty();
+    }
+
     /* ── LIMPIAR BÚSQUEDA ── */
     function limpiarBusqueda() {
         $('#searchCarnet').val('');
@@ -1542,6 +2053,11 @@ function previewImage(input, previewId) {
         $('#registroYaEstudiante').hide();
         $('#btnGuardarEstudiante').prop('disabled', false).html('<i class="ri-save-line"></i> Registrar Estudiante');
         $('#modalRegistroTitle').html('<i class="ri-graduation-cap-line"></i> Registrar Estudiante');
+
+        /* Reset estudios */
+        $('#registroEstudiosList').empty();
+        registroEstudioCount = 0;
+        syncRegistroEstudiosEmpty();
     }
 
     /* ════════════════════ VALIDACIÓN ════════════════════ */
@@ -1628,59 +2144,146 @@ function previewImage(input, previewId) {
         return true;
     }
 
-    /* ════════════════════ CUENTAS ════════════════════ */
+    /* ════════════════════ CUENTAS (BATCH) ════════════════════ */
+
+    let estudiantesSinCuenta = [];
+
+    function generarUsernameMoodle(nombres, apellidoPaterno, apellidoMaterno) {
+        const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+        const nombre = norm(nombres);
+        const ap = norm(apellidoPaterno);
+        const am = norm(apellidoMaterno);
+        const parts = nombre.split(' ');
+        const pn = parts[0] || '';
+        const si = parts.length > 1 ? parts[1].charAt(0) : '';
+        return {
+            op1: (pn.charAt(0) + ap + am).replace(/\s/g, '').substring(0, 20),
+            op2: (si + ap + am).replace(/\s/g, '').substring(0, 20),
+            op3: (pn + ap + am).replace(/\s/g, '').substring(0, 20)
+        };
+    }
 
     function crearCuentas(id) {
-        if (!confirm('¿Crear cuentas de acceso (sistema + Moodle) para este estudiante?\n\nAmbas usarán las mismas credenciales.')) return;
-        $.post('/admin/estudiantes/' + id + '/crear-cuentas', { _token: CSRF })
+        $('#moodleCuentasLoading').show();
+        $('#moodleCuentasEmpty').hide();
+        $('#moodleCuentasList').hide();
+        $('#btnConfirmarCrearCuentas').prop('disabled', true);
+        openModal('modalCrearCuentasMoodle');
+
+        $.get('{{ route("admin.estudiantes.obtener", ["id" => "__ID__"]) }}'.replace('__ID__', id))
             .done(function (r) {
-                toast('success', r.message);
-                mostrarCredenciales(r.data);
-                tabla.ajax.reload(null, false);
+                const e = r.data;
+                const p = e.persona;
+                estudiantesSinCuenta = [];
+
+                if (!e.tiene_cuenta_sistema || !e.tiene_cuenta_moodle) {
+                    const nombres = p ? (p.nombres || '') : '';
+                    const ap = p ? (p.apellido_paterno || '') : '';
+                    const am = p ? (p.apellido_materno || '') : '';
+                    const carnet = p ? (p.carnet || '') : '';
+                    const fullName = [nombres, ap, am].filter(Boolean).join(' ');
+                    const usernames = generarUsernameMoodle(nombres, ap, am);
+                    const password = generarPassword(carnet);
+
+                    estudiantesSinCuenta.push({
+                        id: e.id,
+                        nombre: fullName,
+                        ci: carnet,
+                        correo: p ? (p.correo || '') : '',
+                        usernames: usernames,
+                        password: password
+                    });
+                }
+
+                $('#moodleCuentasLoading').hide();
+
+                if (estudiantesSinCuenta.length === 0) {
+                    $('#moodleCuentasEmpty').show();
+                } else {
+                    $('#moodleCuentasCount').text(estudiantesSinCuenta.length);
+                    renderEstudiantesSinCuenta();
+                    $('#moodleCuentasList').show();
+                }
             })
-            .fail(function (xhr) {
-                toast('error', xhr.responseJSON?.message || 'Error al crear las cuentas.');
+            .fail(function () {
+                closeModal('modalCrearCuentasMoodle');
+                toast('error', 'Error al cargar los datos del estudiante.');
             });
     }
 
-    function mostrarCredenciales(data) {
-        const titulo = document.getElementById('modalCredencialesTitle');
-        titulo.innerHTML = '<i class="ri-key-2-line"></i> Credenciales Generadas';
+    function renderEstudiantesSinCuenta() {
         let html = '';
-
-        if (data.sistema) {
-            html += '<p style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--est-text-muted);margin-bottom:0.5rem;">Acceso al Sistema</p>';
-            if (data.sistema.username) html += credRow('Usuario', data.sistema.username);
-            html += credRow('Correo', data.sistema.email);
-            html += credRow('Contraseña', data.sistema.password);
-        }
-        if (data.moodle) {
-            if (html) html += '<hr style="border-color:var(--est-border);margin:1rem 0;">';
-            html += '<p style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--est-text-muted);margin-bottom:0.5rem;">Acceso a Moodle</p>';
-            html += credRow('Usuario Moodle', data.moodle.username);
-            html += credRow('Correo', data.moodle.email);
-            if (!data.moodle.nota) html += credRow('Contraseña', data.moodle.password);
-            else html += '<p style="font-size:0.82rem;color:var(--est-text-muted);margin-top:0.5rem;"><i class="ri-information-line"></i> ' + esc(data.moodle.nota) + '</p>';
-        }
-
-        document.getElementById('credencialesContent').innerHTML = html;
-        openModal('modalCredenciales');
-    }
-
-    function credRow(label, valor) {
-        const v = esc(valor);
-        return '<div class="est-cred-item mt-2">'
-            + '<label>' + label + '</label>'
-            + '<div class="est-cred-value"><span>' + v + '</span>'
-            + '<button class="est-cred-copy" onclick="copiarCredencial(\'' + v + '\')" title="Copiar"><i class="ri-file-copy-line"></i></button>'
-            + '</div></div>';
-    }
-
-    window.copiarCredencial = function (texto) {
-        navigator.clipboard.writeText(texto).then(function () {
-            toast('success', 'Copiado al portapapeles.');
+        estudiantesSinCuenta.forEach(function (est) {
+            html += '<tr style="border-bottom:1px solid #f1f5f9;">'
+                + '<td style="padding:.6rem .5rem;text-align:center;"><input type="checkbox" class="checkbox-moodle-account" data-id="' + est.id + '" checked style="width:16px;height:16px;accent-color:#fc7b04;cursor:pointer;"></td>'
+                + '<td style="padding:.6rem .75rem;font-weight:600;color:#1e293b;font-size:.82rem;">' + escHtml(est.nombre) + '</td>'
+                + '<td style="padding:.6rem .75rem;color:#64748b;font-size:.8rem;">' + escHtml(est.ci) + '</td>'
+                + '<td style="padding:.6rem .75rem;"><code style="font-size:.75rem;background:rgba(252,123,4,.07);color:#9a4904;padding:.15rem .4rem;border-radius:5px;border:1px solid rgba(252,123,4,.12);">' + escHtml(est.usernames.op1) + '</code></td>'
+                + '<td style="padding:.6rem .75rem;"><code style="font-size:.75rem;background:rgba(16,185,129,.07);color:#047857;padding:.15rem .4rem;border-radius:5px;border:1px solid rgba(16,185,129,.12);">' + escHtml(est.password) + '</code></td>'
+                + '</tr>';
         });
-    };
+        $('#moodleCuentasTableBody').html(html);
+        $('#btnConfirmarCrearCuentas').prop('disabled', false);
+    }
+
+    function escHtml(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    $(document).on('change', '.checkbox-moodle-account', function () {
+        const checked = $('.checkbox-moodle-account:checked').length;
+        $('#btnConfirmarCrearCuentas').prop('disabled', checked === 0);
+    });
+
+    $('#selectAllMoodleAccounts').on('change', function () {
+        const isChecked = $(this).is(':checked');
+        $('.checkbox-moodle-account').prop('checked', isChecked);
+        $('#btnConfirmarCrearCuentas').prop('disabled', !isChecked);
+    });
+
+    $('#btnConfirmarCrearCuentas').on('click', function () {
+        const seleccionados = [];
+        $('.checkbox-moodle-account:checked').each(function () {
+            const id = $(this).data('id');
+            const est = estudiantesSinCuenta.find(e => e.id === id);
+            if (est) seleccionados.push(est);
+        });
+
+        if (seleccionados.length === 0) {
+            toast('warning', 'Seleccione al menos un estudiante.');
+            return;
+        }
+
+        const btn = $(this);
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>Creando...');
+
+        $.ajax({
+            url: '{{ route("admin.estudiantes.crearCuentasBatch") }}',
+            type: 'POST',
+            data: {
+                _token: CSRF,
+                estudiantes: JSON.stringify(seleccionados.map(e => ({
+                    id: e.id,
+                    nombre: e.nombre,
+                    ci: e.ci,
+                    correo: e.correo,
+                    username: e.usernames.op1,
+                    password: e.password
+                })))
+            }
+        })
+        .done(function (r) {
+            closeModal('modalCrearCuentasMoodle');
+            toast('success', r.message || 'Cuentas creadas correctamente.');
+            tabla.ajax.reload(null, false);
+        })
+        .fail(function (xhr) {
+            toast('error', xhr.responseJSON?.message || 'Error al crear las cuentas.');
+        })
+        .always(function () {
+            btn.prop('disabled', false).html('<i class="ri-user-add-line me-1"></i>Crear Cuentas Seleccionadas');
+        });
+    });
 
     function generarPassword(carnet) {
         const digits = carnet.replace(/\D/g, '');
@@ -1697,6 +2300,7 @@ function previewImage(input, previewId) {
         let   password     = btn.data('password');
 
         $('#waModalNombre').text(nombre);
+        $('#waModalNombrePreview').text(nombre);
         $('#waModalUsuario').text(username);
         $('#waModalPassword').text(password);
         $('#waModalCelular').val(celular);
@@ -1712,13 +2316,30 @@ function previewImage(input, previewId) {
         const username = $('#waModalUsuario').text();
         const password = $('#waModalPassword').text();
 
-        const mensaje = '*¡Bienvenido/a!*\n\n' +
-            'Estimado/a ' + nombre + ',\n\n' +
-            'Le proporcionamos sus datos de acceso a la plataforma:\n\n' +
-            '*Plataforma:* http://moodle52.localhost/\n' +
-            '*Usuario:* ' + username + '\n' +
-            '*Contraseña:* ' + password + '\n\n' +
-            '*Área Académica Innova-Ciencia-Virtual*';
+        const mensaje = '*¡Bienvenido/a a tu plataforma académica!*\n\n' +
+            '  Estimado/a ' + nombre + ',\n' +
+            'A continuación encontrarás tus credenciales de acceso a la plataforma virtual.\n\n' +
+            '  *ACCESO A LA PLATAFORMA*\n' +
+            '\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\n' +
+            '   Sitio web:  https://posgradosinnovaciencia.com\n' +
+            '   Usuario:      ' + username + '\n' +
+            '   Contrase\u00f1a:  ' + password + '\n' +
+            '\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\u25AC\n\n' +
+            '  *PASOS PARA INGRESAR*\n' +
+            '  Abre tu navegador (Chrome, Edge o Firefox)\n' +
+            '  Visita \u2192 https://posgradosinnovaciencia.com\n' +
+            '  Ingresa tu usuario y contrase\u00f1a\n' +
+            '  Completa tu perfil en el primer acceso\n\n' +
+            '  *IMPORTANTE*\n' +
+            '* Guarda tus credenciales en un lugar seguro.\n' +
+            '* No compartas tu contrase\u00f1a con nadie.\n' +
+            '* Si olvidas tu acceso, cont\u00e1ctanos de inmediato.\n\n' +
+            '  \u00a1\u00c9xitos en tu proceso de formaci\u00f3n!\n\n' +
+            '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n' +
+            '  \u00c1rea Acad\u00e9mica\n' +
+            '  Innova Ciencia Virtual\n' +
+            '  soporte@posgradosinnovaciencia.com\n' +
+            '  +591 XXX XXX XXX';
 
         window.open('https://wa.me/' + celular + '?text=' + encodeURIComponent(mensaje), '_blank');
         bootstrap.Modal.getInstance(document.getElementById('modalWhatsappAccesos')).hide();

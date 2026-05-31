@@ -711,6 +711,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     : `<span class="mkt-status-preinscrito"><i class="ri-time-line"></i>${ins.estado}</span>`;
 
                 const estudianteNombre = nombre;
+                const ofertaId = ins.ofertas_academica_id ?? 0;
+                const planPagoId = ins.planes_pago_id ?? 0;
+                const btnCambiar = ins.estado === 'Pre-Inscrito'
+                    ? `<button type="button" class="btn btn-sm mkt-btn-cambiar-inscrito"
+                            data-inscripcion-id="${ins.id}"
+                            data-oferta-id="${ofertaId}"
+                            data-estudiante="${nombre.replace(/"/g,'&quot;')}"
+                            data-ci="${carnet}"
+                            data-plan-pago-id="${planPagoId}"
+                            title="Cambiar a Inscrito"
+                            style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#f59e0b,#fbbf24);border:none;color:#78350f;border-radius:6px;padding:.3rem .55rem;font-size:.85rem;line-height:1;">
+                            <i class="ri-user-check-line"></i><i class="ri-arrow-right-s-line"></i>
+                        </button>`
+                    : '';
+
                 html += `<tr>
                     <td class="text-muted">${i + 1}</td>
                     <td>
@@ -723,9 +738,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td>${estadoBadge}</td>
                     <td>${fechaBadge}</td>
                     <td>
-                        <a href="/admin/estudiantes/${estudianteId}/detalle" class="btn btn-sm btn-outline-secondary" title="Ver detalle">
-                            <i class="ri-user-line"></i>
-                        </a>
+                        <div class="d-flex gap-1">
+                            <a href="/admin/estudiantes/${estudianteId}/detalle" class="btn btn-sm btn-outline-secondary" title="Ver detalle">
+                                <i class="ri-user-line"></i>
+                            </a>
+                            ${btnCambiar}
+                        </div>
                     </td>
                 </tr>`;
             });
@@ -1405,6 +1423,373 @@ document.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('marketing')?.classList.contains('active')) {
         loadInscritos();
     }
+
+    /* ══════════════════════════════════════════════════
+       CAMBIAR PRE-INSCRITO A INSCRITO
+    ══════════════════════════════════════════════════ */
+    let mktCambiarInscripcionId = null;
+    let mktCambiarOfertaId      = null;
+
+    const mktRoutePlanes  = '{{ url("admin/profile/marketing/oferta") }}';
+    const mktRouteCambiar = '{{ url("admin/profile/marketing/inscripcion") }}';
+    const mktCsrf         = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
+
+    const MESES_MKT = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                       'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+    /* Devuelve el día ajustado al último día válido del mes dado */
+    function mktClampDay(year, month, day) {
+        const maxDay = new Date(year, month, 0).getDate(); // día 0 del mes siguiente = último día del mes actual
+        return Math.min(day, maxDay);
+    }
+
+    /* ── Abrir modal al hacer clic en el botón ── */
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.mkt-btn-cambiar-inscrito');
+        if (!btn) return;
+
+        mktCambiarInscripcionId = btn.dataset.inscripcionId;
+        mktCambiarOfertaId      = btn.dataset.ofertaId;
+
+        document.getElementById('mktCambiarEstNombre').textContent = btn.dataset.estudiante || '—';
+        document.getElementById('mktCambiarEstCi').textContent     = btn.dataset.ci || '—';
+
+        const sel = document.getElementById('mktCambiarPlanSelect');
+        sel.innerHTML = '<option value="">Cargando planes...</option>';
+        mktOcultarDetalle();
+        mktActualizarBotonConfirmar();
+
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalCambiarAInscritoMkt')).show();
+
+        fetch(`${mktRoutePlanes}/${mktCambiarOfertaId}/planes`, { headers: { Accept: 'application/json' } })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success || !data.planes.length) {
+                    sel.innerHTML = '<option value="">— Sin planes configurados —</option>';
+                    return;
+                }
+                let opts = '<option value="">— Seleccionar plan de pago —</option>';
+                data.planes.forEach(p => {
+                    const seleccionado = String(p.id) === String(btn.dataset.planPagoId) ? 'selected' : '';
+                    opts += `<option value="${p.id}" ${seleccionado}>${escHtml(p.nombre)}</option>`;
+                });
+                sel.innerHTML = opts;
+                if (sel.value) mktCargarDetallePlan(sel.value);
+            })
+            .catch(() => { sel.innerHTML = '<option value="">— Error al cargar —</option>'; });
+    });
+
+    /* ── Cambio de plan → recargar detalle ── */
+    document.getElementById('mktCambiarPlanSelect')?.addEventListener('change', function () {
+        mktOcultarDetalle();
+        mktActualizarBotonConfirmar();
+        if (this.value) mktCargarDetallePlan(this.value);
+    });
+
+    /* ── Cargar detalle del plan desde la API ── */
+    function mktCargarDetallePlan(planId) {
+        const cuerpo = document.getElementById('mktCambiarPlanDetalleBody');
+        const detalle = document.getElementById('mktCambiarPlanDetalle');
+        detalle.style.display = 'block';
+        cuerpo.innerHTML = '<div class="text-center py-3"><span class="spinner-border spinner-border-sm" style="color:#f59e0b;"></span> Cargando detalle...</div>';
+
+        fetch(`${mktRoutePlanes}/${mktCambiarOfertaId}/plan/${planId}/detalle`, { headers: { Accept: 'application/json' } })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success || !data.data.length) {
+                    cuerpo.innerHTML = '<p class="text-muted p-2" style="font-size:.82rem;">No hay conceptos configurados para este plan.</p>';
+                    return;
+                }
+                mktRenderConceptos(data.data);
+            })
+            .catch(() => {
+                cuerpo.innerHTML = '<p class="text-danger p-2" style="font-size:.82rem;">Error al cargar el detalle del plan.</p>';
+            });
+    }
+
+    /* ── Renderizar tabla editable de conceptos/cuotas ── */
+    function mktRenderConceptos(data) {
+        const cuerpo = document.getElementById('mktCambiarPlanDetalleBody');
+        const mesesOpts = MESES_MKT.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
+        let html = '';
+
+        data.forEach(function (item, idx) {
+            const pagoBsOriginal = parseFloat(item.pago_bs);
+            const esUnaCuota    = item.n_cuotas === 1;
+            const disabledDiv   = esUnaCuota ? 'disabled' : '';
+
+            html += `<div class="mb-3 p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">`;
+
+            /* Cabecera del concepto */
+            html += `<div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-semibold" style="color:#334155;">${escHtml(item.concepto)}</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge mkt-badge-total-concepto" style="background:rgba(16,185,129,.15);color:#059669;font-size:.8rem;" data-original="${pagoBsOriginal}">Total: Bs. ${pagoBsOriginal.toFixed(2)}</span>
+                    <span class="badge mkt-badge-diferencia" style="font-size:.7rem;"></span>
+                </div>
+            </div>`;
+
+            /* Herramienta dividir cuotas */
+            html += `<div class="mb-2 p-2 rounded d-flex align-items-center gap-2 flex-wrap" style="background:#f0f9ff;border:1px solid #bae6fd;">
+                <input type="number" class="form-control form-control-sm" id="mkt-monto-pagar-${idx}" placeholder="Monto por cuota" min="0" step="1" style="width:130px;" ${disabledDiv}>
+                <button type="button" class="btn btn-sm btn-info text-white mkt-btn-dividir" data-idx="${idx}" data-n="${item.n_cuotas}" ${disabledDiv}>
+                    <i class="ri-divide-line"></i> Aplicar a ${item.n_cuotas} cuotas
+                </button>`;
+            if (!esUnaCuota) {
+                html += `<button type="button" class="btn btn-sm btn-secondary mkt-btn-invertir" data-idx="${idx}" title="Invertir orden de cuotas">
+                    <i class="ri-swap-line"></i> Invertir
+                </button>`;
+            } else {
+                html += `<small class="text-muted ms-2"><i class="ri-information-line"></i> Cuota única</small>`;
+            }
+            html += `</div>`;
+
+            /* Herramienta fechas */
+            html += `<div class="mb-2 p-2 rounded d-flex align-items-center gap-3 flex-wrap" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+                <div class="d-flex align-items-center gap-2">
+                    <label style="font-size:.74rem;font-weight:600;color:#15803d;white-space:nowrap;margin:0;">Día de pago:</label>
+                    <input type="number" class="form-control form-control-sm" id="mkt-dia-venc-${idx}" min="1" max="31" placeholder="1–31" style="width:72px;font-size:.8rem;">
+                    <button type="button" class="btn btn-sm mkt-btn-aplicar-dia" data-idx="${idx}" style="background:#15803d;color:#fff;font-size:.73rem;padding:.22rem .65rem;">
+                        <i class="ri-calendar-check-line"></i> Aplicar
+                    </button>
+                </div>
+                <div style="width:1px;height:26px;background:#86efac;"></div>
+                <div class="d-flex align-items-center gap-2">
+                    <label style="font-size:.74rem;font-weight:600;color:#15803d;white-space:nowrap;margin:0;">Mes inicio:</label>
+                    <select class="form-select form-select-sm" id="mkt-mes-inicio-${idx}" style="width:135px;font-size:.78rem;">
+                        <option value="">— Mes —</option>${mesesOpts}
+                    </select>
+                    <button type="button" class="btn btn-sm mkt-btn-aplicar-mes" data-idx="${idx}" data-n="${item.n_cuotas}" style="background:#15803d;color:#fff;font-size:.73rem;padding:.22rem .65rem;">
+                        <i class="ri-calendar-line"></i> Aplicar
+                    </button>
+                </div>
+            </div>`;
+
+            /* Tabla de cuotas */
+            html += `<table class="table table-sm mb-2" style="font-size:.8rem;">
+                <thead style="background:#f1f5f9;"><tr><th>#</th><th>Monto (Bs)</th><th>Fecha Vencimiento</th></tr></thead>
+                <tbody>`;
+            item.cuotas.forEach(function (cuota, ci) {
+                const fechaVal  = cuota.fecha_vencimiento || '';
+                const disabled  = esUnaCuota ? 'disabled' : '';
+                html += `<tr>
+                    <td>Cuota ${cuota.n_cuota}</td>
+                    <td><input type="number" class="form-control form-control-sm mkt-cuota-monto" data-idx="${idx}" data-ci="${ci}" value="${cuota.monto_bs}" min="0" step="1" style="width:100px;" ${disabled}></td>
+                    <td><input type="date" class="form-control form-control-sm mkt-cuota-fecha" data-idx="${idx}" data-ci="${ci}" value="${fechaVal}" style="width:150px;"></td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+
+            if (esUnaCuota) {
+                html += `<small class="text-muted"><i class="ri-information-line"></i> Cuota única — monto no modificable</small>`;
+            }
+            html += `</div>`;
+        });
+
+        html += `<div class="text-end mt-2"><div id="mktMensajeValidacion" style="display:inline-block;"></div></div>`;
+
+        cuerpo.innerHTML = html;
+
+        /* ── Eventos: cambio de monto → recalcular ── */
+        cuerpo.querySelectorAll('.mkt-cuota-monto').forEach(inp => {
+            inp.addEventListener('change', () => mktRecalcularConcepto(inp.dataset.idx));
+        });
+
+        /* ── Dividir cuotas ── */
+        cuerpo.querySelectorAll('.mkt-btn-dividir').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const idx      = this.dataset.idx;
+                const nCuotas  = parseInt(this.dataset.n);
+                const monto    = parseFloat(document.getElementById(`mkt-monto-pagar-${idx}`).value) || 0;
+                const totalOrig= parseFloat(cuerpo.querySelector(`.mkt-badge-total-concepto[data-idx-group="${idx}"]`)?.dataset.original
+                                 ?? cuerpo.querySelectorAll('.mkt-badge-total-concepto')[idx]?.dataset.original) || 0;
+                if (monto <= 0) { mostrarToast('warning', 'Ingrese un monto mayor a 0.'); return; }
+                const ultima = totalOrig - (monto * (nCuotas - 1));
+                if (ultima <= 0) { mostrarToast('warning', `El monto genera una última cuota ≤ 0. Total: Bs. ${totalOrig.toFixed(2)}`); return; }
+                cuerpo.querySelectorAll(`.mkt-cuota-monto[data-idx="${idx}"]`).forEach((inp, i) => {
+                    inp.value = (i === nCuotas - 1) ? ultima : monto;
+                });
+                document.getElementById(`mkt-monto-pagar-${idx}`).value = '';
+                mktRecalcularConcepto(idx);
+                mostrarToast('success', `Monto distribuido en ${nCuotas} cuota${nCuotas !== 1 ? 's' : ''}.`);
+            });
+        });
+
+        /* ── Invertir cuotas ── */
+        cuerpo.querySelectorAll('.mkt-btn-invertir').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const idx    = this.dataset.idx;
+                const inputs = [...cuerpo.querySelectorAll(`.mkt-cuota-monto[data-idx="${idx}"]`)];
+                const vals   = inputs.map(i => i.value).reverse();
+                inputs.forEach((i, j) => i.value = vals[j]);
+                mktRecalcularConcepto(idx);
+                mostrarToast('success', 'Orden de cuotas invertido.');
+            });
+        });
+
+        /* ── Aplicar día de pago ── */
+        cuerpo.querySelectorAll('.mkt-btn-aplicar-dia').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const idx = this.dataset.idx;
+                const dia = parseInt(document.getElementById(`mkt-dia-venc-${idx}`).value);
+                if (!dia || dia < 1 || dia > 31) { mostrarToast('warning', 'Ingrese un día válido entre 1 y 31.'); return; }
+                let aplicados = 0;
+                cuerpo.querySelectorAll(`.mkt-cuota-fecha[data-idx="${idx}"]`).forEach(inp => {
+                    if (inp.value) {
+                        const parts = inp.value.split('-');
+                        if (parts.length === 3) {
+                            const year  = parseInt(parts[0]);
+                            const month = parseInt(parts[1]);
+                            const diaReal = mktClampDay(year, month, dia);
+                            parts[2] = String(diaReal).padStart(2, '0');
+                            inp.value = parts.join('-');
+                            aplicados++;
+                        }
+                    }
+                });
+                mostrarToast(aplicados ? 'success' : 'warning',
+                    aplicados ? `Día ${dia} aplicado a ${aplicados} fecha${aplicados !== 1 ? 's' : ''}.` : 'No hay fechas con valores para modificar.');
+            });
+        });
+
+        /* ── Aplicar mes de inicio ── */
+        cuerpo.querySelectorAll('.mkt-btn-aplicar-mes').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const idx      = this.dataset.idx;
+                const nCuotas  = parseInt(this.dataset.n) || 1;
+                const mesInicio= parseInt(document.getElementById(`mkt-mes-inicio-${idx}`).value);
+                if (!mesInicio) { mostrarToast('warning', 'Seleccione un mes de inicio.'); return; }
+                const fechas  = [...cuerpo.querySelectorAll(`.mkt-cuota-fecha[data-idx="${idx}"]`)];
+                let dia = 1;
+                const diaInput = parseInt(document.getElementById(`mkt-dia-venc-${idx}`).value);
+                if (diaInput >= 1 && diaInput <= 31) { dia = diaInput; }
+                else if (fechas[0]?.value) { const p = fechas[0].value.split('-'); dia = parseInt(p[2]) || 1; }
+                let anioBase = new Date().getFullYear();
+                for (const f of fechas) { if (f.value) { anioBase = parseInt(f.value.split('-')[0]); break; } }
+                fechas.forEach((inp, ci) => {
+                    let mes  = mesInicio + ci;
+                    let anio = anioBase + Math.floor((mes - 1) / 12);
+                    mes = ((mes - 1) % 12) + 1;
+                    const diaReal = mktClampDay(anio, mes, dia);
+                    inp.value = `${anio}-${String(mes).padStart(2,'0')}-${String(diaReal).padStart(2,'0')}`;
+                });
+                mostrarToast('success', `Fechas redistribuidas desde ${MESES_MKT[mesInicio-1]} (${nCuotas} cuota${nCuotas!==1?'s':''}).`);
+            });
+        });
+
+        /* Recalcular todos los totales al iniciar */
+        data.forEach((_, idx) => mktRecalcularConcepto(idx));
+    }
+
+    /* ── Recalcular total de un concepto ── */
+    function mktRecalcularConcepto(idx) {
+        const cuerpo = document.getElementById('mktCambiarPlanDetalleBody');
+        let total = 0;
+        cuerpo.querySelectorAll(`.mkt-cuota-monto[data-idx="${idx}"]`).forEach(inp => {
+            total += parseFloat(inp.value) || 0;
+        });
+        const badges = cuerpo.querySelectorAll('.mkt-badge-total-concepto');
+        const badge  = badges[parseInt(idx)];
+        if (!badge) return;
+        const original   = parseFloat(badge.dataset.original) || 0;
+        const diferencia = total - original;
+        badge.textContent = `Total: Bs. ${total.toFixed(2)}`;
+        const diffBadge = cuerpo.querySelectorAll('.mkt-badge-diferencia')[parseInt(idx)];
+        if (diffBadge) {
+            if (diferencia === 0) {
+                diffBadge.innerHTML = '<span style="background:rgba(34,197,94,.15);color:#16a34a;padding:.15rem .4rem;border-radius:4px;"><i class="ri-check-line"></i> Correcto</span>';
+            } else if (diferencia > 0) {
+                diffBadge.innerHTML = `<span style="background:rgba(239,68,68,.15);color:#dc2626;padding:.15rem .4rem;border-radius:4px;"><i class="ri-error-warning-line"></i> Exceso: Bs. ${diferencia.toFixed(2)}</span>`;
+            } else {
+                diffBadge.innerHTML = `<span style="background:rgba(245,158,11,.15);color:#d97706;padding:.15rem .4rem;border-radius:4px;"><i class="ri-alert-line"></i> Falta: Bs. ${Math.abs(diferencia).toFixed(2)}</span>`;
+            }
+        }
+        mktActualizarBotonConfirmar();
+    }
+
+    /* ── Habilitar/deshabilitar botón confirmar según validación ── */
+    function mktActualizarBotonConfirmar() {
+        const btnEl  = document.getElementById('mktBtnConfirmarCambiar');
+        const msgEl  = document.getElementById('mktMensajeValidacion');
+        const cuerpo = document.getElementById('mktCambiarPlanDetalleBody');
+        if (!btnEl) return;
+
+        const badges = cuerpo ? [...cuerpo.querySelectorAll('.mkt-badge-total-concepto')] : [];
+        let hayErrores = false;
+        badges.forEach(b => {
+            const original = parseFloat(b.dataset.original) || 0;
+            const actual   = parseFloat(b.textContent.replace('Total: Bs. ', '')) || 0;
+            if (Math.abs(actual - original) > 0.01) hayErrores = true;
+        });
+
+        if (hayErrores) {
+            btnEl.disabled = true;
+            if (msgEl) msgEl.innerHTML = '<span style="color:#dc2626;font-size:.78rem;"><i class="ri-alert-line"></i> Corrige los montos antes de guardar</span>';
+        } else {
+            btnEl.disabled = badges.length === 0;
+            if (msgEl && badges.length > 0) msgEl.innerHTML = '<span style="color:#16a34a;font-size:.78rem;"><i class="ri-check-line"></i> Los montos coinciden</span>';
+            else if (msgEl) msgEl.innerHTML = '';
+        }
+    }
+
+    function mktOcultarDetalle() {
+        const detalle = document.getElementById('mktCambiarPlanDetalle');
+        const cuerpo  = document.getElementById('mktCambiarPlanDetalleBody');
+        if (detalle) detalle.style.display = 'none';
+        if (cuerpo)  cuerpo.innerHTML = '';
+    }
+
+    /* ── Confirmar inscripción ── */
+    document.getElementById('mktBtnConfirmarCambiar')?.addEventListener('click', function () {
+        const planId = document.getElementById('mktCambiarPlanSelect').value;
+        if (!planId) { mostrarToast('warning', 'Debe seleccionar un plan de pago.'); return; }
+
+        const planNombre   = document.getElementById('mktCambiarPlanSelect').options[document.getElementById('mktCambiarPlanSelect').selectedIndex].text;
+        const estNombre    = document.getElementById('mktCambiarEstNombre').textContent;
+        const cuerpo = document.getElementById('mktCambiarPlanDetalleBody');
+        const cuotasPersonalizadas = [];
+        cuerpo.querySelectorAll('.mkt-cuota-monto').forEach(inp => {
+            const fecha = cuerpo.querySelector(`.mkt-cuota-fecha[data-idx="${inp.dataset.idx}"][data-ci="${inp.dataset.ci}"]`);
+            cuotasPersonalizadas.push({
+                concepto_idx: parseInt(inp.dataset.idx),
+                cuota_idx:    parseInt(inp.dataset.ci),
+                monto:        parseFloat(inp.value) || 0,
+                fecha:        fecha?.value || null,
+            });
+        });
+
+        const btnEl = this;
+        btnEl.disabled = true;
+        btnEl.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Procesando...';
+
+        fetch(`${mktRouteCambiar}/${mktCambiarInscripcionId}/cambiar-a-inscrito`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': mktCsrf },
+            body: JSON.stringify({
+                planes_pago_id:        planId,
+                cuotas_personalizadas: cuotasPersonalizadas.length ? JSON.stringify(cuotasPersonalizadas) : null,
+            }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('modalCambiarAInscritoMkt'))?.hide();
+                mostrarToast('success', data.message || 'Inscripción completada correctamente.');
+                loadMarketingData();
+                goToMktPage(mktCurrentPage);
+                // Abrir modal de comprobante de pago
+                const programa = data.programa_nombre || '';
+                abrirModalComprobante(mktCambiarInscripcionId, estNombre, programa, planNombre);
+            } else {
+                mostrarToast('error', data.message || 'Error al procesar.');
+            }
+        })
+        .catch(() => { mostrarToast('error', 'Error de conexión.'); })
+        .finally(() => {
+            btnEl.disabled = false;
+            btnEl.innerHTML = '<i class="ri-user-check-line me-1"></i>Confirmar Inscripción';
+        });
+    });
 
     @endif
 

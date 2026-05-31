@@ -7,7 +7,6 @@ use App\Services\MoodleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class ActividadesEditorController extends Controller
 {
@@ -157,6 +156,15 @@ class ActividadesEditorController extends Controller
                         }
                         return $row;
                     }),
+                    'url' => (array) $db->table('url')->where('id', $cm->instance)->first([
+                        'name', 'intro', 'externalurl', 'display',
+                    ]),
+                    'resource' => (array) $db->table('resource')->where('id', $cm->instance)->first([
+                        'name', 'intro',
+                    ]),
+                    'page' => (array) $db->table('page')->where('id', $cm->instance)->first([
+                        'name', 'intro', 'content',
+                    ]),
                     default => [],
                 };
             }
@@ -179,7 +187,7 @@ class ActividadesEditorController extends Controller
     {
         $rules = [
             'cmid'        => 'nullable|integer',
-            'modname'     => 'required|string|in:assign,quiz,forum,page,url',
+            'modname'     => 'required|string|in:assign,quiz,forum,page,url,resource',
             'name'        => 'required|string|max:255',
             'description' => 'nullable|string',
             'section'     => 'required|integer',
@@ -226,8 +234,8 @@ class ActividadesEditorController extends Controller
             $rules['content'] = 'nullable|string';
         }
         if ($request->input('modname') === 'url') {
-            $rules['externalurl'] = 'nullable|url';
-            $rules['display']     = 'nullable|integer|in:0,1,2';
+            $rules['externalurl'] = 'nullable|string|max:1000';
+            $rules['display']     = 'nullable|integer|in:1,3,5';
         }
 
         $data = $request->validate($rules);
@@ -329,10 +337,11 @@ class ActividadesEditorController extends Controller
     public function subirArchivo(Request $request, int $moduloId)
     {
         $data = $request->validate([
-            'file'    => 'required|file|max:51200|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,mp4,jpg,png',
-            'section' => 'required|integer',
-            'name'    => 'required|string|max:255',
-            'course_id' => 'required|integer',
+            'file'        => 'required|file|max:51200',
+            'section'     => 'required|integer',
+            'name'        => 'required|string|max:255',
+            'course_id'   => 'required|integer',
+            'description' => 'nullable|string',
         ]);
 
         $modulo = Modulo::findOrFail($moduloId);
@@ -344,25 +353,21 @@ class ActividadesEditorController extends Controller
         $file = $request->file('file');
 
         try {
-            $tempPath = $file->storeAs('temp', uniqid() . '_' . $file->getClientOriginalName());
-            $fullPath = Storage::path($tempPath);
-
-            $draftId = $this->moodle->uploadFileToDraftArea($fullPath, $file->getClientOriginalName());
-            if (!$draftId) {
-                Storage::delete($tempPath);
-                return response()->json(['success' => false, 'message' => 'Error al subir el archivo a Moodle.'], 500);
-            }
-
-            $cmid = $this->moodle->createResourceFromDraft($courseId, (int)$data['section'], $data['name'], $draftId);
-            Storage::delete($tempPath);
+            $cmid = $this->moodle->createResourceWithFile(
+                $courseId,
+                (int)$data['section'],
+                $data['name'],
+                $data['description'] ?? '',
+                $file
+            );
 
             if ($cmid) {
                 $moodleUrl = rtrim(config('moodle.url'), '/');
                 return response()->json([
                     'success' => true,
                     'data' => [
-                        'cmid' => $cmid,
-                        'name' => $data['name'],
+                        'cmid'       => $cmid,
+                        'name'       => $data['name'],
                         'moodle_url' => $moodleUrl . '/mod/resource/view.php?id=' . $cmid,
                     ],
                     'message' => 'Recurso creado correctamente.',
@@ -371,9 +376,66 @@ class ActividadesEditorController extends Controller
 
             return response()->json(['success' => false, 'message' => 'Error al crear el recurso en Moodle.'], 500);
         } catch (\Exception $e) {
-            if (isset($tempPath)) Storage::delete($tempPath);
             Log::error("Error subirArchivo (moduloId=$moduloId): " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Error del servidor al subir el archivo.'], 500);
+        }
+    }
+
+    /**
+     * Sirve el archivo de un recurso (resource) directamente desde el filedir de Moodle.
+     */
+    public function verArchivoRecurso(int $moduloId, int $cmid)
+    {
+        try {
+            $db         = DB::connection('moodle');
+            $moodleData = rtrim(config('moodle.dataroot'), DIRECTORY_SEPARATOR);
+
+            // Obtener el context del course_module
+            $context = $db->table('context')
+                ->where('contextlevel', 70)
+                ->where('instanceid', $cmid)
+                ->first();
+
+            if (!$context) {
+                abort(404, 'Contexto no encontrado.');
+            }
+
+            // Obtener el archivo del recurso (excluir la entrada de directorio '.')
+            $file = $db->table('files')
+                ->where('contextid', $context->id)
+                ->where('component', 'mod_resource')
+                ->where('filearea', 'content')
+                ->where('itemid', 0)
+                ->where('filename', '<>', '.')
+                ->orderByDesc('timemodified')
+                ->first();
+
+            if (!$file) {
+                abort(404, 'Archivo no encontrado.');
+            }
+
+            $hash     = $file->contenthash;
+            $filePath = $moodleData . DIRECTORY_SEPARATOR . 'filedir'
+                . DIRECTORY_SEPARATOR . substr($hash, 0, 2)
+                . DIRECTORY_SEPARATOR . substr($hash, 2, 2)
+                . DIRECTORY_SEPARATOR . $hash;
+
+            if (!file_exists($filePath)) {
+                abort(404, 'Archivo físico no encontrado.');
+            }
+
+            $mime     = $file->mimetype ?: 'application/octet-stream';
+            $filename = $file->filename;
+
+            return response()->file($filePath, [
+                'Content-Type'        => $mime,
+                'Content-Disposition' => 'inline; filename="' . addslashes($filename) . '"',
+                'Cache-Control'       => 'private, max-age=3600',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("verArchivoRecurso cmid=$cmid: " . $e->getMessage());
+            abort(500, 'Error al servir el archivo.');
         }
     }
 

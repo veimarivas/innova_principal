@@ -8,6 +8,7 @@ var ActividadesEditor = (function () {
 
     var moduloId = null;
     var moodleUrl = '';
+    var urlsByCmid = {};
     var sortableInstances = [];
 
     var ICONS = {
@@ -127,6 +128,7 @@ var ActividadesEditor = (function () {
             }
 
             moodleUrl = data.moodle_url || '';
+            urlsByCmid = data.urls_by_cmid || {};
 
             var secciones = data.secciones || [];
             var foros = data.foros || [];
@@ -263,6 +265,16 @@ var ActividadesEditor = (function () {
                     } else if (mod.modname === 'quiz') {
                         extraBtns = '<button class="btn-act-link btn-act-quiz" onclick="ActividadesEditor.verPreguntasQuiz(' + getModuloId() + ', ' + (mod.instance || 0) + ', \'' + escHtml(mod.name) + '\')"><i class="ri-question-line"></i> Preguntas</button>' +
                             '<button class="btn-act-link btn-act-quiz" onclick="ActividadesEditor.verResultadosQuiz(' + getModuloId() + ', ' + (mod.instance || 0) + ', \'' + escHtml(mod.name) + '\')"><i class="ri-bar-chart-grouped-line"></i> Resultados</button>';
+                    } else if (mod.modname === 'resource') {
+                        var recursoUrl = getApiBase() + '/' + getModuloId() + '/actividades/' + mod.id + '/recurso';
+                        extraBtns = '<a href="' + recursoUrl + '" target="_blank" class="btn-act-link btn-act-resource"><i class="ri-download-line"></i> Abrir archivo</a>';
+                    } else if (mod.modname === 'url') {
+                        var rawUrl = urlsByCmid[mod.id] || mod.externalurl || '';
+                        if (rawUrl && !/^https?:\/\//i.test(rawUrl)) {
+                            rawUrl = 'https://' + rawUrl;
+                        }
+                        var destUrl = rawUrl || cmUrl;
+                        extraBtns = '<a href="' + escHtml(destUrl) + '" target="_blank" rel="noopener noreferrer" class="btn-act-link btn-act-url"><i class="ri-external-link-line"></i> Abrir enlace</a>';
                     }
 
                     var tieneCont = mod.description && mod.description.trim().length > 0;
@@ -602,6 +614,15 @@ var ActividadesEditor = (function () {
                         extra.duedate      = d.duedate || d.timeopen || 0;
                         extra.cutoffdate   = d.cutoffdate || d.timeclose || 0;
                         extra.grade        = d.grade || 0;
+                    } else if (modname === 'url') {
+                        extra.intro       = d.intro || '';
+                        extra.externalurl = d.externalurl || '';
+                        extra.display     = d.display != null ? parseInt(d.display) : 2;
+                    } else if (modname === 'resource') {
+                        extra.intro = d.intro || '';
+                    } else if (modname === 'page') {
+                        extra.intro   = d.intro || '';
+                        extra.content = d.content || '';
                     }
 
                     abrirModal(modname, extra);
@@ -889,7 +910,27 @@ var ActividadesEditor = (function () {
             quiz: quizHTML,
             forum: forumHTML,
             page: '<div class="form-group"><label>Nombre de la página <span class="required">*</span></label><input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Introducción"></div><div class="form-group"><label>Contenido</label><div class="wysiwyg-toolbar"><button onclick="document.execCommand(\'bold\')"><strong>B</strong></button><button onclick="document.execCommand(\'italic\')"><em>I</em></button><button onclick="document.execCommand(\'insertOrderedList\')"><i class="ri-list-ordered"></i></button><button onclick="document.execCommand(\'insertUnorderedList\')"><i class="ri-list-unordered"></i></button></div><div class="wysiwyg-editor" contenteditable="true" id="fldContent" style="min-height:150px;"></div></div>',
-            url: '<div class="form-group"><label>Nombre <span class="required">*</span></label><input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Video complementario"></div><div class="form-group"><label>URL <span class="required">*</span></label><input class="form-control" id="fldExternalUrl" type="url" placeholder="https://ejemplo.com/video"></div><div class="form-group"><label>Descripción</label><textarea class="form-control" id="fldDescription" rows="3"></textarea></div><div class="form-group"><label>Abrir en</label><select class="form-control" id="fldDisplay"><option value="2">Nueva ventana</option><option value="1">Misma ventana</option><option value="0">Incrustado</option></select></div>',
+            url: (function() {
+                var externalUrlVal = editando ? escHtml(data.externalurl || '') : '';
+                // Moodle display constants: 5=OPEN(misma ventana), 3=NEW(nueva ventana), 1=EMBED(incrustado)
+                var display = editando ? parseInt(data.display || 5) : 5;
+                var dispOpts = [[5,'Misma ventana (recomendado)'],[3,'Nueva ventana'],[1,'Incrustado']].map(function(o) {
+                    return '<option value="' + o[0] + '"' + (display === o[0] ? ' selected' : '') + '>' + o[1] + '</option>';
+                }).join('');
+                return '<div class="form-group"><label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;"><i class="ri-link" style="color:#c2410c;"></i> Nombre <span class="required">*</span></label><input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Video complementario" style="font-size:.87rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;"></div>'
+                    + '<div class="form-group"><label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;"><i class="ri-links-line" style="color:#c2410c;"></i> URL externa <span class="required">*</span></label><input class="form-control" id="fldExternalUrl" type="url" value="' + externalUrlVal + '" placeholder="https://ejemplo.com/video" style="font-size:.87rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;"></div>'
+                    + '<div class="form-group"><label style="font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;">Descripción</label><textarea class="form-control" id="fldDescription" rows="3" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;">' + introVal + '</textarea></div>'
+                    + '<div class="form-group"><label style="font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;">Abrir en</label><select class="form-control" id="fldDisplay" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .6rem;">' + dispOpts + '</select></div>';
+            })(),
+            resource: (function() {
+                return '<div class="form-group"><label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;"><i class="ri-file-line" style="color:#0284c7;"></i> Nombre del recurso <span class="required">*</span></label><input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Material de lectura" style="font-size:.87rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;"></div>'
+                    + '<div class="form-group"><label style="font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;">Descripción</label><textarea class="form-control" id="fldDescription" rows="3" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;">' + introVal + '</textarea></div>'
+                    + (!editando
+                        ? '<div class="form-group"><label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;"><i class="ri-upload-cloud-line" style="color:#0284c7;"></i> Archivo <span class="required">*</span></label>'
+                          + '<input type="file" class="form-control" id="fldArchivoRecurso" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.mp4,.jpg,.jpeg,.png" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .5rem;">'
+                          + '<div style="font-size:.72rem;color:#94a3b8;margin-top:.25rem;"><i class="ri-information-line"></i> Formatos: PDF, Word, Excel, PPT, ZIP, imágenes, vídeo. Máx. 50 MB.</div></div>'
+                        : '<div style="padding:.65rem .9rem;background:rgba(14,165,233,.07);border:1px solid rgba(14,165,233,.25);border-radius:8px;font-size:.82rem;color:#0369a1;"><i class="ri-information-line"></i> Al editar un recurso solo se puede cambiar el nombre y la descripción. Para reemplazar el archivo, elimine este recurso y cree uno nuevo.</div>');
+            })(),
         };
 
         return templates[tipo] || null;
@@ -980,6 +1021,45 @@ var ActividadesEditor = (function () {
         }
 
         var adjuntoFile = (tipo === 'assign') ? (document.getElementById('fldAdjunto')?.files[0] || null) : null;
+        var recursoFile = (tipo === 'resource') ? (document.getElementById('fldArchivoRecurso')?.files[0] || null) : null;
+
+        // Recurso nuevo: requiere archivo — usar endpoint dedicado de subida
+        if (tipo === 'resource' && !cmid) {
+            if (!recursoFile) {
+                _guardando = false;
+                mostrarToast('error', 'Debe seleccionar un archivo para el recurso.');
+                return;
+            }
+            var saveBtn = overlay.querySelector('.btn-save');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="ri-loader-4-line" style="animation:spin 1s linear infinite;"></i> Subiendo...';
+            var fd = new FormData();
+            fd.append('file', recursoFile);
+            fd.append('section', payload.section);
+            fd.append('name', payload.name);
+            fd.append('course_id', payload.course_id);
+            fd.append('description', payload.description || '');
+            fetch(getApiBase() + '/' + getModuloId() + '/subir-archivo', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken() },
+                body: fd,
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                _guardando = false;
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="ri-check-line"></i> Guardar en Moodle';
+                if (res.success) { cerrarModal(); mostrarToast('success', 'Recurso creado correctamente.'); cargarYRenderizar(); }
+                else mostrarToast('error', res.message || 'Error al subir el recurso.');
+            })
+            .catch(function() {
+                _guardando = false;
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="ri-check-line"></i> Guardar en Moodle';
+                mostrarToast('error', 'Error de conexión al subir el recurso.');
+            });
+            return;
+        }
 
         var saveBtn = overlay.querySelector('.btn-save');
         saveBtn.disabled = true;

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Académico — Innova Ciencia Virtual</title>
+    <title>Catálogo Académico — InnovaCiencia Virtual</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <meta name="description" content="Explora toda la oferta académica de posgrado de Innova Ciencia Virtual. Filtra por tipo, área, convenio y sede.">
+    <meta name="description" content="Explora toda la oferta académica de posgrado de InnovaCiencia Virtual. Filtra por tipo, área, convenio y sede.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -536,7 +536,7 @@
 
 {{-- ── LOADING SCREEN ── --}}
 <div id="loading">
-    <div class="ld-logo">Innova Ciencia Virtual</div>
+    <div class="ld-logo">InnovaCiencia Virtual</div>
     <div class="ld-bar"><div class="ld-fill"></div></div>
 </div>
 
@@ -544,9 +544,9 @@
 <header class="hdr" id="hdr">
     <div class="hdr-inner">
         <a href="{{ route('welcome') }}" class="hdr-logo">
-            <img src="{{ asset('images/logo-secundario.png') }}" alt="Innova Ciencia"
+            <img src="{{ asset('images/logo-secundario.png') }}" alt="InnovaCiencia"
                 style="width:44px;height:44px;border-radius:8px;object-fit:contain;">
-            <span>Innova<span class="logo-dot">·</span>Ciencia <small>Virtual — Posgrados</small></span>
+            <span>InnovaCiencia <small>Virtual — Posgrados</small></span>
         </a>
         <ul class="nav-links">
             <li><a href="{{ route('welcome') }}#inicio">Inicio</a></li>
@@ -813,7 +813,7 @@
 {{-- ── FOOTER ── --}}
 <footer class="cat-footer">
     <div class="cat-footer-inner">
-        <div class="logo-text">Innova<span>·</span>Ciencia Virtual</div>
+        <div class="logo-text">InnovaCiencia Virtual</div>
         <nav>
             <a href="{{ route('welcome') }}">Inicio</a>
             <a href="{{ route('catalogo') }}">Catálogo</a>
@@ -822,7 +822,7 @@
             <a href="{{ route('welcome') }}#contacto">Contacto</a>
         </nav>
     </div>
-    <p class="copy">&copy; {{ date('Y') }} Innova Ciencia Virtual. Todos los derechos reservados.</p>
+    <p class="copy">&copy; {{ date('Y') }} InnovaCiencia Virtual. Todos los derechos reservados.</p>
 </footer>
 
 <script>

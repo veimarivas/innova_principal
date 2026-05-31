@@ -317,13 +317,37 @@ public function verificarDocumento(Request $request, $id)
 
         $estudianteIds = $estudiantes->pluck('id')->all();
 
-        $conMoodle = DB::table('moodle_matriculas')
+        // Estudiantes con moodle_user_id en inscripciones (creado por crearCuentas / crearCuentasBatch)
+        $conMoodleInscripcion = DB::table('inscripciones')
+            ->whereIn('estudiante_id', $estudianteIds)
+            ->whereNotNull('moodle_user_id')
+            ->distinct()
+            ->pluck('estudiante_id')
+            ->toArray();
+
+        // Estudiantes con moodle_user_id en moodle_matriculas (flujo antiguo)
+        $conMoodleMatricula = DB::table('moodle_matriculas')
             ->join('inscripciones', 'moodle_matriculas.inscripcion_id', '=', 'inscripciones.id')
             ->whereIn('inscripciones.estudiante_id', $estudianteIds)
             ->whereNotNull('moodle_matriculas.moodle_user_id')
             ->distinct()
             ->pluck('inscripciones.estudiante_id')
             ->toArray();
+
+        // Estudiantes cuya persona tiene usuario con username (creado junto a cuenta Moodle)
+        $personaIds = $estudiantes->pluck('persona_id')->filter()->all();
+        $conMoodleUsuario = DB::table('users')
+            ->whereIn('persona_id', $personaIds)
+            ->whereNotNull('username')
+            ->where('username', '!=', '')
+            ->pluck('persona_id')
+            ->toArray();
+
+        // Mapear persona_id → estudiante_id para los que tienen usuario con username
+        $personaToEstudiante = $estudiantes->whereIn('persona_id', $conMoodleUsuario)
+            ->pluck('id')->toArray();
+
+        $conMoodle = array_unique(array_merge($conMoodleInscripcion, $conMoodleMatricula, $personaToEstudiante));
 
         $data = $estudiantes->map(function ($e) use ($conMoodle) {
             $arr = $e->toArray();
@@ -366,11 +390,13 @@ public function verificarDocumento(Request $request, $id)
         }
 
         $password  = $this->generarPasswordSistema($persona->carnet);
-        $moodleUsername = $this->generarUsernameMoodle(
-            $persona->nombres ?? '',
-            $persona->apellido_paterno ?? '',
-            $persona->apellido_materno ?? ''
-        );
+        $moodleUsername = $request->filled('username')
+            ? preg_replace('/\s+/', '', strtolower($request->input('username')))
+            : $this->generarUsernameMoodle(
+                $persona->nombres ?? '',
+                $persona->apellido_paterno ?? '',
+                $persona->apellido_materno ?? ''
+              );
         $resultado = [];
 
         // ── Cuenta del sistema ──────────────────────────────────────────────
@@ -402,11 +428,7 @@ public function verificarDocumento(Request $request, $id)
             );
 
             if (!$existingUser) {
-                $username  = $this->generarUsernameMoodle(
-                    $persona->nombres ?? '',
-                    $persona->apellido_paterno ?? '',
-                    $persona->apellido_materno ?? ''
-                );
+                $username  = $moodleUsername;
                 $firstname = trim($persona->nombres ?? '') ?: 'Sin Nombre';
                 $lastname  = trim(($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '')) ?: 'Sin Apellido';
                 $email     = $persona->correo ?: "{$username}@innova.edu.bo";
@@ -441,6 +463,91 @@ public function verificarDocumento(Request $request, $id)
             : (isset($resultado['sistema']) ? 'Cuenta del sistema creada.' : 'Cuenta de Moodle creada.');
 
         return response()->json(['success' => true, 'message' => $msg, 'data' => $resultado]);
+    }
+
+    public function crearCuentasBatch(Request $request)
+    {
+        $estudiantes = json_decode($request->estudiantes, true);
+
+        if (!$estudiantes || count($estudiantes) === 0) {
+            return response()->json(['success' => false, 'message' => 'No hay estudiantes seleccionados.'], 400);
+        }
+
+        $creados = 0;
+        $errores = [];
+
+        foreach ($estudiantes as $est) {
+            try {
+                $estudiante = Estudiante::with('persona.usuario')->find($est['id']);
+                if (!$estudiante || !$estudiante->persona) {
+                    $errores[] = "Estudiante no encontrado: {$est['nombre']}";
+                    continue;
+                }
+
+                $persona   = $estudiante->persona;
+                $username  = $est['username'];
+                $password  = $est['password'];
+                $email     = $persona->correo ?: "{$username}@innova.edu.bo";
+                $firstname = trim($persona->nombres ?? '') ?: 'Estudiante';
+                $lastname  = trim(($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '')) ?: 'Sin Apellido';
+
+                $moodleService = app(\App\Services\MoodleService::class);
+
+                // Cuenta Moodle
+                $moodleUserId = null;
+                $existing = $moodleService->getUserByField('username', $username);
+                if ($existing && isset($existing['id'])) {
+                    $moodleUserId = (int) $existing['id'];
+                } else {
+                    $moodleUserId = $moodleService->createUser($username, $password, $firstname, $lastname, $email);
+                }
+
+                if ($moodleUserId) {
+                    Inscripcione::where('estudiante_id', $estudiante->id)
+                        ->whereNull('moodle_user_id')
+                        ->update([
+                            'moodle_user_id'        => $moodleUserId,
+                            'en_moodle'             => true,
+                            'matriculado_moodle_at' => now(),
+                        ]);
+                    $creados++;
+                } else {
+                    $errores[] = "No se pudo crear usuario en Moodle: {$est['nombre']}";
+                }
+
+                // Cuenta sistema Laravel
+                $userRecord = User::where('persona_id', $persona->id)->first()
+                    ?? ($persona->correo ? User::where('email', $persona->correo)->first() : null);
+
+                if (!$userRecord && $persona->correo) {
+                    $nombre = trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''));
+                    User::create([
+                        'name'            => $nombre,
+                        'username'        => $username,
+                        'email'           => $persona->correo,
+                        'password'        => $password,
+                        'moodle_password' => $password,
+                        'role'            => 'moodle',
+                        'estado'          => 'Activo',
+                        'persona_id'      => $persona->id,
+                    ]);
+                } elseif ($userRecord) {
+                    $userRecord->update(['moodle_password' => $password]);
+                }
+            } catch (\Exception $e) {
+                $errores[] = "Error con {$est['nombre']}: " . $e->getMessage();
+            }
+        }
+
+        $msg = $creados > 0
+            ? "Se crearon cuentas para {$creados} estudiante(s)."
+            : 'No se pudieron crear las cuentas.';
+
+        if ($errores) {
+            $msg .= ' Errores: ' . implode('; ', $errores);
+        }
+
+        return response()->json(['success' => $creados > 0, 'message' => $msg]);
     }
 
     public function resetPasswordMoodle(Request $request, $id)
@@ -579,7 +686,8 @@ public function verificarDocumento(Request $request, $id)
     public function buscarCarnet(Request $request)
     {
         $carnet = strtoupper(trim($request->carnet));
-        $persona = Persona::with('ciudad')->where('carnet', $carnet)->first();
+        $persona = Persona::with(['ciudad.departamento', 'estudios.grado_academico', 'estudios.profesion', 'estudios.universidad'])
+            ->where('carnet', $carnet)->first();
 
         if (!$persona) {
             return response()->json(['encontrado' => false]);
@@ -587,11 +695,28 @@ public function verificarDocumento(Request $request, $id)
 
         $estudiante = Estudiante::where('persona_id', $persona->id)->first();
 
+        $estudiosData = $persona->estudios->map(function ($est) {
+            return [
+                'grado_academico_id'     => $est->grados_academico_id,
+                'grado_academico_nombre' => $est->grado_academico?->nombre,
+                'profesion_id'           => $est->profesione_id,
+                'profesion_nombre'       => $est->profesion?->nombre,
+                'universidad_id'         => $est->universidade_id,
+                'universidad_nombre'     => $est->universidad?->nombre,
+                'estado'                 => $est->estado,
+                'principal'              => (bool) $est->principal,
+            ];
+        });
+
+        $personaData = array_merge($persona->toArray(), [
+            'estudios' => $estudiosData->toArray(),
+        ]);
+
         return response()->json([
             'encontrado'    => true,
             'ya_estudiante' => $estudiante ? true : false,
             'estudiante_id' => $estudiante ? $estudiante->id : null,
-            'persona'       => $persona,
+            'persona'       => $personaData,
         ]);
     }
 
@@ -602,19 +727,32 @@ public function verificarDocumento(Request $request, $id)
             'nombres'          => 'required|string|max:100',
             'apellido_paterno' => 'nullable|string|max:80',
             'apellido_materno' => 'nullable|string|max:80',
-            'correo'           => 'nullable|email|max:150|unique:personas,correo',
-            'celular'          => 'nullable|string|max:20',
+            'correo'           => 'required|email|max:150|unique:personas,correo',
+            'celular'          => 'required|string|max:20',
             'telefono'         => 'nullable|string|max:20',
             'direccion'        => 'nullable|string|max:200',
-            'ciudade_id'       => 'nullable|exists:ciudades,id',
-            'sexo'             => 'nullable|in:M,F',
-            'estado_civil'     => 'nullable|in:Soltero/a,Casado/a,Divorciado/a,Viudo/a,Unión Libre',
+            'ciudade_id'       => 'required|exists:ciudades,id',
+            'sexo'             => 'required|in:M,F',
+            'estado_civil'     => 'required|in:Soltero/a,Casado/a,Divorciado/a,Viudo/a,Unión Libre',
             'fecha_nacimiento' => 'nullable|date',
             'expedido'         => 'nullable|string|max:10',
             'fotografia'       => 'nullable|image|max:2048',
         ], [
-            'fotografia.image'  => 'El archivo debe ser una imagen.',
-            'fotografia.max'   => 'La imagen no debe exceder 2MB.',
+            'carnet.required'      => 'El carnet es obligatorio.',
+            'carnet.unique'        => 'El carnet ya está registrado.',
+            'nombres.required'     => 'Los nombres son obligatorios.',
+            'correo.required'      => 'El correo electrónico es obligatorio.',
+            'correo.email'         => 'El correo no tiene un formato válido.',
+            'correo.unique'        => 'El correo ya está registrado.',
+            'celular.required'     => 'El celular es obligatorio.',
+            'ciudade_id.required'  => 'La ciudad es obligatoria.',
+            'ciudade_id.exists'    => 'La ciudad seleccionada no es válida.',
+            'sexo.required'        => 'El sexo es obligatorio.',
+            'sexo.in'              => 'El sexo debe ser M o F.',
+            'estado_civil.required'=> 'El estado civil es obligatorio.',
+            'estado_civil.in'      => 'El estado civil seleccionado no es válido.',
+            'fotografia.image'     => 'El archivo debe ser una imagen.',
+            'fotografia.max'       => 'La imagen no debe exceder 2MB.',
         ]);
 
         if ($validator->fails()) {

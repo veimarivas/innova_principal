@@ -39,11 +39,15 @@
                 box-sizing: border-box;
             }
 
-            body {
+            html, body {
                 font-family: 'DM Sans', sans-serif;
-                background: var(--midnight);
+                background: var(--midnight) !important;
                 overflow-x: hidden;
+                overflow-y: auto;
                 min-height: 100vh;
+                height: 100%;
+                padding: 0 !important;
+                margin: 0 !important;
                 -webkit-font-smoothing: antialiased;
                 -moz-osx-font-smoothing: grayscale;
             }
@@ -162,7 +166,7 @@
                 display: inline-flex;
                 align-items: center;
                 gap: 0.85rem;
-                margin-bottom: 2.8rem;
+                margin-bottom: 2rem;
                 animation: fadeSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
             }
 
@@ -218,9 +222,9 @@
 
             .brand-stats {
                 display: flex;
-                gap: 3rem;
-                margin-top: 3rem;
-                padding-top: 2rem;
+                gap: 2.5rem;
+                margin-top: 2rem;
+                padding-top: 1.5rem;
                 border-top: 1px solid var(--border-subtle);
                 animation: fadeSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
             }
@@ -251,8 +255,8 @@
                 display: flex;
                 align-items: center;
                 gap: 0.6rem;
-                margin-top: 2rem;
-                padding: 0.85rem 1.25rem;
+                margin-top: 1.5rem;
+                padding: 0.75rem 1.1rem;
                 background: var(--surface-subtle);
                 border: 1px solid var(--border-subtle);
                 border-radius: 50px;
@@ -279,7 +283,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                padding: clamp(2rem, 4vw, 4rem);
+                padding: clamp(1.5rem, 3vw, 3rem);
                 position: relative;
                 background: linear-gradient(180deg, var(--midnight) 0%, var(--deep-warmth) 100%);
                 z-index: 1;
@@ -314,7 +318,7 @@
             }
 
             .login-header {
-                margin-bottom: 2.5rem;
+                margin-bottom: 2rem;
             }
 
             .login-greeting {
@@ -357,7 +361,7 @@
             .auth-form {
                 display: flex;
                 flex-direction: column;
-                gap: 1.5rem;
+                gap: 1.25rem;
             }
 
             .form-field {
@@ -474,7 +478,7 @@
                 color: var(--error);
                 margin-top: 0.25rem;
                 padding-left: 0.2rem;
-                display: flex;
+                display: flex !important;
                 align-items: center;
                 gap: 0.35rem;
             }
@@ -719,8 +723,8 @@
             /* Register link */
             .register-link {
                 text-align: center;
-                margin-top: 2rem;
-                padding-top: 1.5rem;
+                margin-top: 1.5rem;
+                padding-top: 1.25rem;
                 border-top: 1px solid var(--border-subtle);
                 font-size: 0.9rem;
                 color: var(--text-muted);
@@ -953,12 +957,7 @@
             <div class="brand-panel">
                 <div class="brand-content">
                     <div class="brand-logo">
-                        <div class="logo-mark">
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                            </svg>
-                        </div>
-                        <span class="brand-logo-text">Innova Ciencia</span>
+                        <img src="{{ asset('build/images/logo-principal.png') }}" alt="Innova Ciencia" style="max-height: 80px; width: auto;">
                     </div>
 
                     <h1 class="brand-headline">

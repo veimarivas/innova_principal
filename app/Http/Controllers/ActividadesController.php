@@ -30,6 +30,7 @@ class ActividadesController extends Controller
         $tareas        = $this->moodle->getAssignments($courseId);
         $cuestionarios = $this->moodle->getQuizzes($courseId);
         $foros         = $this->moodle->getForums($courseId);
+        $urls          = $this->moodle->getUrls($courseId);
 
         // Fechas desde BD directa (no depende del WS mod_assign_get_assignments)
         $tareasFechas = $this->moodle->getAssignDatesByCourseDirect($courseId);
@@ -45,15 +46,24 @@ class ActividadesController extends Controller
             }
         }
 
+        // Indexar URLs por cmid para que el JS pueda hacer lookup confiable
+        $urlsByCmid = [];
+        foreach ($urls as $u) {
+            if (!empty($u['cmid'])) {
+                $urlsByCmid[(int)$u['cmid']] = $u['externalurl'] ?? '';
+            }
+        }
+
         return response()->json([
-            'success'        => true,
-            'secciones'      => $secciones,
-            'tareas'         => $tareas,
-            'tareas_fechas'  => $tareasFechas,
-            'cuestionarios'  => $cuestionarios,
-            'foros'          => $foros,
+            'success'          => true,
+            'secciones'        => $secciones,
+            'tareas'           => $tareas,
+            'tareas_fechas'    => $tareasFechas,
+            'cuestionarios'    => $cuestionarios,
+            'foros'            => $foros,
+            'urls_by_cmid'     => $urlsByCmid,
             'moodle_course_id' => $courseId,
-            'moodle_url'     => rtrim(config('moodle.url'), '/'),
+            'moodle_url'       => rtrim(config('moodle.url'), '/'),
         ]);
     }
 

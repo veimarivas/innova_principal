@@ -70,6 +70,7 @@ Route::prefix('virtual')->name('virtual.')->middleware(['auth', 'isMoodle'])->gr
         Route::post('/secciones/guardar',                            [ActividadesEditorController::class, 'guardarSeccion']);
         Route::delete('/secciones/{sectionNumber}',                  [ActividadesEditorController::class, 'eliminarSeccion']);
         Route::get('/actividades/{cmid}/datos',                      [ActividadesEditorController::class, 'datosActividad']);
+        Route::get('/actividades/{cmid}/recurso',                    [ActividadesEditorController::class, 'verArchivoRecurso']);
         Route::post('/actividades/{cmid}/adjunto',                   [ActividadesEditorController::class, 'subirAdjuntoTarea']);
         Route::post('/actividades/guardar',                          [ActividadesEditorController::class, 'guardarActividad']);
         Route::delete('/actividades/{cmid}',                         [ActividadesEditorController::class, 'eliminarActividad']);
@@ -293,6 +294,7 @@ Route::prefix('admin/posgrads')->name('admin.posgrads.')->middleware(['auth', 'i
         Route::post('secciones/guardar',     [ActividadesEditorController::class, 'guardarSeccion'])->name('secciones.guardar');
         Route::delete('secciones/{sectionNumber}', [ActividadesEditorController::class, 'eliminarSeccion'])->name('secciones.eliminar');
         Route::get('actividades/{cmid}/datos',    [ActividadesEditorController::class, 'datosActividad'])->name('actividades.datos');
+        Route::get('actividades/{cmid}/recurso',  [ActividadesEditorController::class, 'verArchivoRecurso'])->name('actividades.recurso');
         Route::post('actividades/{cmid}/adjunto', [ActividadesEditorController::class, 'subirAdjuntoTarea'])->name('actividades.adjunto');
         Route::post('actividades/guardar',        [ActividadesEditorController::class, 'guardarActividad'])->name('actividades.guardar');
         Route::delete('actividades/{cmid}',  [ActividadesEditorController::class, 'eliminarActividad'])->name('actividades.eliminar');
@@ -532,6 +534,7 @@ Route::prefix('admin/estudiantes')->middleware(['auth', 'isAdmin'])->name('admin
     Route::post('/cuota/{cuota}/pagar', [EstudianteController::class, 'registrarPago'])->name('registrarPago');
     Route::post('/{id}/pago-masivo', [EstudianteController::class, 'pagoMasivo'])->name('registrarPagoMasivo');
     Route::get('/recibo/{pagoId}/pdf', [EstudianteController::class, 'generarReciboPdf'])->name('generarReciboPdf');
+    Route::post('/crear-cuentas-batch', [EstudianteController::class, 'crearCuentasBatch'])->name('crearCuentasBatch');
     Route::post('/{id}/crear-cuentas', [EstudianteController::class, 'crearCuentas'])->name('crearCuentas');
     Route::post('/{id}/reset-password-moodle', [EstudianteController::class, 'resetPasswordMoodle'])->name('resetPasswordMoodle');
     Route::get('/{id}', [EstudianteController::class, 'obtenerEstudiante'])->name('obtener');
@@ -562,6 +565,8 @@ Route::prefix('admin/docentes')->middleware(['auth', 'isAdmin'])->name('admin.do
     Route::post('/{id}/estudios/{estudioId}/documentos/verificar', [DocenteController::class, 'verificarDocumentoEstudio'])->name('estudios.documentos.verificar');
     Route::get('/{id}/estudios/{estudioId}/documentos/visualizar', [DocenteController::class, 'visualizarDocumentoEstudio'])->name('estudios.documentos.visualizar');
     Route::delete('/{id}/estudios/{estudioId}', [DocenteController::class, 'eliminarEstudio'])->name('estudios.eliminar');
+    Route::get('/{id}', [DocenteController::class, 'obtenerDocente'])->name('obtener');
+    Route::post('/{id}/reset-password-moodle', [DocenteController::class, 'resetPasswordMoodle'])->name('resetPasswordMoodle');
     Route::delete('/{id}', [DocenteController::class, 'eliminar'])->name('eliminar');
 });
 
@@ -621,6 +626,7 @@ Route::prefix('admin/contabilidad')->middleware(['auth', 'isAdmin'])->name('admi
     Route::get('/deudas-retrasadas', [ContabilidadController::class, 'deudasRetrasadas'])->name('deudas-retrasadas');
     Route::get('/cuotas-proximas', [ContabilidadController::class, 'cuotasProximas'])->name('cuotas-proximas');
     Route::get('/recibos', [ContabilidadController::class, 'recibos'])->name('recibos');
+    Route::post('/recibos/{pagoId}/subir-factura', [ContabilidadController::class, 'subirFactura'])->name('recibos.subir-factura');
 });
 
 // Perfil del usuario autenticado
@@ -634,6 +640,8 @@ Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth')->grou
     Route::get('/marketing/ofertas-activas',     [ProfileController::class, 'getOfertasActivas'])->name('marketing.ofertas-activas');
     Route::post('/marketing/generar-enlace',     [ProfileController::class, 'generarEnlacePreinscripcion'])->name('marketing.generar-enlace');
     Route::get('/marketing/oferta/{id}/planes',  [ProfileController::class, 'getPlanesPagoParaOferta'])->name('marketing.oferta.planes');
+    Route::get('/marketing/oferta/{ofertaId}/plan/{planId}/detalle', [ProfileController::class, 'getDetallePlanParaMarketing'])->name('marketing.oferta.plan.detalle');
+    Route::post('/marketing/inscripcion/{id}/cambiar-a-inscrito', [ProfileController::class, 'cambiarPreInscritoAInscrito'])->name('marketing.inscripcion.cambiar-inscrito');
     // Comprobantes de pago
     Route::get('/marketing/inscritos-comprobante',       [ProfileController::class, 'getInscritosParaComprobante'])->name('marketing.inscritos-comprobante');
     Route::get('/marketing/inscripcion/{id}/cuotas',     [ProfileController::class, 'getCuotasPorInscripcion'])->name('marketing.inscripcion.cuotas');

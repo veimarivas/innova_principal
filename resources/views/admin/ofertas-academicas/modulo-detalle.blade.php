@@ -388,7 +388,7 @@
                         <button class="tool-btn" onclick="ActividadesEditor.abrirModal('assign')" title="Tarea"><i class="ri-task-line"></i> Tarea</button>
                         <button class="tool-btn" onclick="ActividadesEditor.abrirModal('quiz')" title="Cuestionario"><i class="ri-questionnaire-line"></i> Cuestionario</button>
                         <button class="tool-btn" onclick="ActividadesEditor.abrirModal('forum')" title="Foro"><i class="ri-discuss-line"></i> Foro</button>
-                        <button class="tool-btn" onclick="abrirModalSubirArchivo()" title="Recurso"><i class="ri-file-line"></i> Recurso</button>
+                        <button class="tool-btn" onclick="ActividadesEditor.abrirModal('resource')" title="Recurso"><i class="ri-file-line"></i> Recurso</button>
                         <button class="tool-btn" onclick="ActividadesEditor.abrirModal('url')" title="URL"><i class="ri-link"></i> URL</button>
                         <button class="tool-btn" onclick="ActividadesEditor.abrirModal('page')" title="Página"><i class="ri-file-text-line"></i> Página</button>
                     </div>
@@ -2195,31 +2195,6 @@ function addMatchPair() {
     d.appendChild(row);
 }
 
-// Editor — subida de archivos
-function abrirModalSubirArchivo() {
-    var sectionId = prompt('Número de sección donde agregar el recurso:');
-    if (sectionId === null) return;
-    sectionId = parseInt(sectionId);
-    if (isNaN(sectionId) || sectionId < 0) { alert('Número de sección inválido.'); return; }
-
-    var name = prompt('Nombre del recurso:');
-    if (!name || name.trim() === '') { alert('Nombre requerido.'); return; }
-
-    var fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.mp4,.jpg,.png';
-    fileInput.onchange = function () {
-        if (fileInput.files.length > 0) {
-            var courseId = document.querySelector('.btn-rename-sec')?.getAttribute('data-course-id');
-            if (courseId) {
-                ActividadesEditor.iniciarSubidaArchivo(fileInput.files[0], sectionId, name.trim(), parseInt(courseId));
-            } else {
-                alert('No se pudo determinar el curso. Recarga la página.');
-            }
-        }
-    };
-    fileInput.click();
-}
 </script>
 
 {{-- Editor de Actividades Moodle --}}

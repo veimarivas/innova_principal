@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\MoodleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class DocenteController extends Controller
@@ -38,6 +39,26 @@ class DocenteController extends Controller
         $universidades    = Universidade::orderBy('nombre')->get();
 
         return view('admin.docentes.detalle', compact('docente', 'gradosAcademicos', 'profesiones', 'universidades'));
+    }
+
+    public function obtenerDocente($id)
+    {
+        $docente = Docente::with([
+            'persona.ciudad.departamento',
+            'persona.usuario',
+            'persona.estudios.grado_academico',
+            'persona.estudios.profesion',
+            'persona.estudios.universidad',
+        ])->findOrFail($id);
+
+        $arr = $docente->toArray();
+        $arr['tiene_cuenta_sistema'] = $docente->persona && $docente->persona->usuario !== null;
+        $arr['tiene_cuenta_moodle'] = $arr['tiene_cuenta_sistema'];
+        $arr['usuario_username'] = $docente->persona && $docente->persona->usuario
+            ? $docente->persona->usuario->username
+            : null;
+
+        return response()->json(['success' => true, 'data' => $arr]);
     }
 
     public function listar()
@@ -81,16 +102,51 @@ class DocenteController extends Controller
 
     public function guardarPersona(Request $request)
     {
-        $request->validate([
+        $validator = validator($request->all(), [
             'carnet'           => 'required|string|max:20|unique:personas,carnet',
             'nombres'          => 'required|string|max:100',
             'apellido_paterno' => 'nullable|string|max:80',
             'apellido_materno' => 'nullable|string|max:80',
-            'correo'           => 'nullable|email|max:150|unique:personas,correo',
-            'celular'          => 'nullable|string|max:20',
+            'correo'           => 'required|email|max:150|unique:personas,correo',
+            'celular'          => 'required|string|max:20',
+            'telefono'         => 'nullable|string|max:20',
+            'direccion'        => 'nullable|string|max:200',
+            'ciudade_id'       => 'required|exists:ciudades,id',
+            'sexo'             => 'required|in:M,F',
+            'estado_civil'     => 'required|in:Soltero/a,Casado/a,Divorciado/a,Viudo/a,Unión Libre',
+            'fecha_nacimiento' => 'nullable|date',
+            'expedido'         => 'nullable|string|max:10',
+            'fotografia'       => 'nullable|image|max:2048',
+        ], [
+            'carnet.required'      => 'El carnet es obligatorio.',
+            'carnet.unique'        => 'El carnet ya está registrado.',
+            'nombres.required'     => 'Los nombres son obligatorios.',
+            'correo.required'      => 'El correo electrónico es obligatorio.',
+            'correo.email'         => 'El correo no tiene un formato válido.',
+            'correo.unique'        => 'El correo ya está registrado.',
+            'celular.required'     => 'El celular es obligatorio.',
+            'ciudade_id.required'  => 'La ciudad es obligatoria.',
+            'ciudade_id.exists'    => 'La ciudad seleccionada no es válida.',
+            'sexo.required'        => 'El sexo es obligatorio.',
+            'sexo.in'              => 'El sexo debe ser M o F.',
+            'estado_civil.required'=> 'El estado civil es obligatorio.',
+            'estado_civil.in'      => 'El estado civil seleccionado no es válido.',
+            'fotografia.image'     => 'El archivo debe ser una imagen.',
+            'fotografia.max'       => 'La imagen no debe exceder 2MB.',
         ]);
 
-        $persona = Persona::create($request->all());
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $persona = Persona::create($validator->validated());
+
+        if ($request->hasFile('fotografia')) {
+            $imagen = $request->file('fotografia');
+            $nombreArchivo = 'persona_' . $persona->id . '_' . time() . '.' . $imagen->getClientOriginalExtension();
+            $imagen->move(public_path('images/personas'), $nombreArchivo);
+            $persona->update(['fotografia' => $nombreArchivo]);
+        }
 
         return response()->json([
             'success' => true,
@@ -130,37 +186,80 @@ class DocenteController extends Controller
             return response()->json(['success' => false, 'message' => 'Persona no encontrada.'], 404);
         }
 
-        $tieneSistema = $persona->usuario !== null;
-
-        if ($tieneSistema) {
-            return response()->json(['success' => false, 'message' => 'Este docente ya tiene cuenta activa.'], 422);
-        }
-
         if (!$persona->correo) {
             return response()->json(['success' => false, 'message' => 'El docente no tiene correo electrónico registrado. Agréguelo primero.'], 422);
         }
 
         $password  = $this->generarPasswordSistema($persona->carnet);
-        $username = $this->generarUsername($persona->nombres ?? '', $persona->apellido_paterno ?? '', $persona->apellido_materno ?? '');
+        $username  = $this->generarUsername($persona->nombres ?? '', $persona->apellido_paterno ?? '', $persona->apellido_materno ?? '');
+        $nombre    = trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''));
 
-        if (User::where('email', $persona->correo)->exists()) {
-            return response()->json(['success' => false, 'message' => 'El correo ya está en uso por otro usuario del sistema.'], 422);
+        if ($persona->usuario) {
+            $persona->usuario->update([
+                'password'        => $password,
+                'moodle_password' => $password,
+                'estado'          => 'Activo',
+            ]);
+            $resultado = ['sistema' => ['email' => $persona->correo, 'username' => $persona->usuario->username, 'password' => $password, 'nota' => 'Cuenta ya existía, se restableció la contraseña.']];
+        } else {
+            $emailUsuario = User::where('email', $persona->correo)->where('persona_id', '!=', $persona->id)->first();
+            if ($emailUsuario) {
+                return response()->json(['success' => false, 'message' => 'El correo ya está en uso por otro usuario del sistema.'], 422);
+            }
+
+            User::create([
+                'name'            => $nombre,
+                'username'        => $username,
+                'email'           => $persona->correo,
+                'password'        => $password,
+                'moodle_password' => $password,
+                'role'            => 'moodle',
+                'estado'          => 'Activo',
+                'persona_id'      => $persona->id,
+            ]);
+
+            $resultado = ['sistema' => ['email' => $persona->correo, 'username' => $username, 'password' => $password]];
         }
 
-        $nombre = trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''));
-        User::create([
-            'name'       => $nombre,
-            'username'   => $username,
-            'email'      => $persona->correo,
-            'password'   => $password,
-            'role'       => 'moodle',
-            'estado'     => 'Activo',
-            'persona_id' => $persona->id,
-        ]);
+        // ── Cuenta Moodle ───────────────────────────────────────────────────
+        try {
+            $moodle = app(MoodleService::class);
 
-        $resultado = ['email' => $persona->correo, 'username' => $username, 'password' => $password];
+            $existingMoodleUser = $moodle->getUserByField('username', $username);
+            $moodleUserId       = $existingMoodleUser ? (int) $existingMoodleUser['id'] : null;
 
-        return response()->json(['success' => true, 'message' => 'Cuenta del sistema creada.', 'data' => ['sistema' => $resultado]]);
+            if (!$moodleUserId && $persona->correo) {
+                $byEmail      = $moodle->getUserByField('email', $persona->correo);
+                $moodleUserId = $byEmail ? (int) $byEmail['id'] : null;
+            }
+
+            if ($moodleUserId) {
+                $moodle->updateUserPassword($moodleUserId, $password);
+                $resultado['moodle'] = [
+                    'username' => $username,
+                    'email'    => $persona->correo,
+                    'nota'     => 'Usuario ya existía en Moodle, se actualizó la contraseña.',
+                ];
+            } else {
+                $firstname    = trim($persona->nombres ?? '') ?: 'Docente';
+                $lastname     = trim(($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '')) ?: 'Sin Apellido';
+                $email        = $persona->correo ?: "{$username}@innova.edu.bo";
+                $moodleUserId = $moodle->createUser($username, $password, $firstname, $lastname, $email);
+
+                if ($moodleUserId) {
+                    $resultado['moodle'] = ['username' => $username, 'password' => $password, 'email' => $email];
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('Error creating Moodle user for docente: ' . $e->getMessage());
+        }
+
+        $partes = array_keys($resultado);
+        $msg = in_array('moodle', $partes)
+            ? 'Cuentas del sistema y Moodle creadas con las mismas credenciales.'
+            : 'Cuenta del sistema creada (Moodle no disponible).';
+
+        return response()->json(['success' => true, 'message' => $msg, 'data' => $resultado]);
     }
 
     private function generarPasswordSistema(?string $carnet): string
@@ -474,5 +573,34 @@ class DocenteController extends Controller
         $docente->delete();
 
         return response()->json(['success' => true, 'message' => 'Docente eliminado correctamente.']);
+    }
+
+    public function resetPasswordMoodle(Request $request, $id)
+    {
+        $docente = Docente::with(['persona.usuario'])->findOrFail($id);
+        $persona = $docente->persona;
+
+        if (!$persona || !$persona->usuario) {
+            return response()->json(['success' => false, 'message' => 'El docente no tiene cuenta de usuario.'], 404);
+        }
+
+        $username = $persona->usuario->username;
+        $password = $this->generarPasswordSistema($persona->carnet);
+        $moodle   = app(MoodleService::class);
+
+        $existingMoodleUser = $moodle->getUserByField('username', $username);
+        $moodleUserId       = $existingMoodleUser ? (int) $existingMoodleUser['id'] : null;
+
+        if (!$moodleUserId) {
+            return response()->json(['success' => false, 'message' => 'No se encontró cuenta de Moodle para este docente.'], 404);
+        }
+
+        if (!$moodle->updateUserPassword($moodleUserId, $password)) {
+            return response()->json(['success' => false, 'message' => 'Error al actualizar la contraseña en Moodle.'], 500);
+        }
+
+        $persona->usuario->update(['moodle_password' => $password]);
+
+        return response()->json(['success' => true, 'password' => $password]);
     }
 }

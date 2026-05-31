@@ -751,17 +751,21 @@
                             </div>
                             <div class="invalid-feedback" id="registroDocenteCarnetError"></div>
                         </div>
+                        <div class="col-md-2">
+                            <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Expedido</label>
+                            <input type="text" class="form-control" id="registroDocenteExpedido" maxlength="10" placeholder="LP" style="border-radius:9px;">
+                        </div>
                         <div class="col-md-3">
                             <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Nombres <span style="color:#ef4444;">*</span></label>
                             <input type="text" class="form-control" id="registroDocenteNombres" maxlength="100" placeholder="Nombres completos" style="border-radius:9px;">
                             <div class="invalid-feedback" id="registroDocenteNombresError"></div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Ap. Paterno <span style="color:#ef4444;">*</span></label>
                             <input type="text" class="form-control" id="registroDocenteApellidoPaterno" maxlength="100" placeholder="Apellido paterno" style="border-radius:9px;">
                             <div class="invalid-feedback" id="registroDocenteApellidoPaternoError"></div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Ap. Materno</label>
                             <input type="text" class="form-control" id="registroDocenteApellidoMaterno" maxlength="100" placeholder="Apellido materno" style="border-radius:9px;">
                         </div>
@@ -849,6 +853,13 @@
                             <div style="position:relative;">
                                 <i class="ri-phone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
                                 <input type="text" class="form-control" id="registroDocenteTelefono" maxlength="20" placeholder="2000000" style="border-radius:9px;padding-left:2.1rem;">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Dirección</label>
+                            <div style="position:relative;">
+                                <i class="ri-map-pin-2-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                <input type="text" class="form-control" id="registroDocenteDireccion" maxlength="200" placeholder="Av. 6 de Agosto N° 123" style="border-radius:9px;padding-left:2.1rem;">
                             </div>
                         </div>
                     </div>
@@ -1025,8 +1036,8 @@
                         <i class="ri-user-star-line" style="font-size:1.4rem;"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;letter-spacing:-.01em;">Cambiar a Inscrito</h5>
-                        <div style="font-size:.73rem;opacity:.8;margin-top:.15rem;">Asignar plan de pago y completar la inscripción</div>
+                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;letter-spacing:-.01em;color:#fff;">Cambiar a Inscrito</h5>
+                        <div style="font-size:.73rem;color:rgba(255,255,255,.8);margin-top:.15rem;">Asignar plan de pago y completar la inscripción</div>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -1111,8 +1122,8 @@
                         <i class="ri-file-list-3-line" style="font-size:1.4rem;"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;">Subir Comprobante de Pago</h5>
-                        <div style="font-size:.73rem;opacity:.8;margin-top:.15rem;">Inscripción completada — adjunta el comprobante</div>
+                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;color:#fff;">Subir Comprobante de Pago</h5>
+                        <div style="font-size:.73rem;color:rgba(255,255,255,.8);margin-top:.15rem;">Inscripción completada — adjunta el comprobante</div>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -1185,170 +1196,168 @@
 <!-- Modal: Enviar Credenciales Moodle -->
 <div class="modal fade" id="modalMatricularMoodle" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-        <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.18);">
+        <div class="modal-content mdl-moodle-content">
 
             {{-- Header --}}
-            <div class="modal-header" style="background:linear-gradient(135deg,#391b04,#7c3c00,#c96004);color:#fff;padding:1.25rem 1.5rem;border:none;">
-                <div class="d-flex align-items-center gap-3 flex-grow-1 min-width-0">
-                    <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="ri-send-plane-2-line" style="font-size:1.35rem;"></i>
+            <div class="mdl-moodle-header">
+                <div class="mdl-moodle-header-deco"></div>
+                <div class="mdl-moodle-header-body">
+                    <div class="mdl-moodle-icon">
+                        <i class="ri-send-plane-2-line"></i>
                     </div>
-                    <div style="min-width:0;">
-                        <h5 class="modal-title mb-0" style="font-size:.98rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                            Enviar Credenciales —
-                            <span id="moodleModuloNombre" style="font-weight:400;color:#fff;"></span>
-                        </h5>
-                        <div style="font-size:.72rem;color:rgba(255,255,255,.75);margin-top:.15rem;">Envía los accesos Moodle a los estudiantes por WhatsApp</div>
+                    <div class="mdl-moodle-header-text">
+                        <h5 class="mdl-moodle-title">Enviar Credenciales Moodle</h5>
+                        <div class="mdl-moodle-modulo-nombre">
+                            <i class="ri-book-2-line"></i>
+                            <span id="moodleModuloNombre">—</span>
+                        </div>
                     </div>
-                    <span id="moodleCursoNombre" class="ms-auto" style="display:none;background:rgba(255,255,255,.2);font-size:.72rem;font-weight:500;padding:.25rem .75rem;border-radius:20px;white-space:nowrap;flex-shrink:0;"></span>
+                    <span id="moodleCursoNombre"
+                        style="display:none;background:rgba(255,255,255,.2);font-size:.7rem;font-weight:600;padding:.25rem .8rem;border-radius:20px;border:1px solid rgba(255,255,255,.3);white-space:nowrap;flex-shrink:0;color:white;align-self:flex-start;margin-left:auto;">
+                    </span>
                 </div>
-                <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="modal"></button>
+                <button type="button" class="mdl-moodle-close" data-bs-dismiss="modal" aria-label="Cerrar">
+                    <i class="ri-close-line"></i>
+                </button>
             </div>
 
             {{-- Body --}}
-            <div class="modal-body" style="min-height:220px;padding:0;">
+            <div class="modal-body mdl-moodle-body">
 
                 {{-- Estado: cargando --}}
-                <div id="moodleLoadingState" class="text-center" style="padding:3rem 1.5rem;">
-                    <div style="width:56px;height:56px;margin:0 auto 1rem;background:rgba(154,73,4,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                        <div class="spinner-border" style="color:#9a4904;width:1.7rem;height:1.7rem;" role="status"></div>
+                <div id="moodleLoadingState" class="mdl-state-center">
+                    <div class="mdl-spinner-wrap">
+                        <div class="spinner-border mdl-spinner" role="status"></div>
                     </div>
-                    <div style="color:#64748b;font-size:.88rem;font-weight:500;">Consultando estado en Moodle...</div>
+                    <p class="mdl-state-text">Consultando estado en Moodle...</p>
                 </div>
 
-                {{-- Estado: módulo sin curso en Moodle --}}
-                <div id="moodleSinCursoState" style="display:none;padding:1.5rem;">
-                    <div style="padding:1rem 1.25rem;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);border-radius:12px;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:.75rem;">
-                        <div style="width:38px;height:38px;background:rgba(245,158,11,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;">
-                            <i class="ri-alert-line" style="color:#d97706;font-size:1.1rem;"></i>
+                {{-- Estado: sin curso en Moodle --}}
+                <div id="moodleSinCursoState" style="display:none;" class="mdl-state-pad">
+                    <div class="mdl-alert mdl-alert-warning">
+                        <div class="mdl-alert-icon mdl-alert-icon-warning">
+                            <i class="ri-alert-line"></i>
                         </div>
                         <div>
-                            <div style="font-weight:700;font-size:.9rem;color:#92400e;">Este módulo no tiene un curso en Moodle</div>
-                            <div style="font-size:.8rem;color:#b45309;margin-top:.3rem;line-height:1.5;">Puedes crearlo directamente desde aquí para empezar a gestionar los accesos de los estudiantes.</div>
+                            <div class="mdl-alert-title">Este módulo no tiene un curso en Moodle</div>
+                            <div class="mdl-alert-desc">Puedes crearlo directamente desde aquí para empezar a gestionar los accesos de los estudiantes.</div>
                         </div>
                     </div>
-                    <div class="text-center py-2">
-                        <button type="button" id="btnCrearCursoMoodle"
-                            style="padding:.65rem 1.75rem;background:linear-gradient(135deg,#9a4904,#c96004);border:none;border-radius:10px;color:#fff;font-weight:600;font-size:.88rem;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 4px 12px rgba(154,73,4,.25);transition:all .2s;">
+                    <div class="text-center mt-3">
+                        <button type="button" id="btnCrearCursoMoodle" class="mdl-btn-primary">
                             <i class="ri-graduation-cap-line"></i> Crear curso en Moodle
                         </button>
-                        <div id="crearCursoMoodleMsg" class="mt-2" style="display:none;font-size:0.85rem;"></div>
+                        <div id="crearCursoMoodleMsg" class="mt-2" style="display:none;font-size:.85rem;"></div>
                     </div>
                 </div>
 
-                {{-- Estado: error genérico --}}
-                <div id="moodleErrorState" style="display:none;padding:1.5rem;">
-                    <div style="padding:1rem 1.25rem;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:12px;display:flex;align-items:center;gap:.75rem;">
-                        <div style="width:38px;height:38px;background:rgba(239,68,68,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="ri-close-circle-line" style="color:#ef4444;font-size:1.1rem;"></i>
+                {{-- Estado: error --}}
+                <div id="moodleErrorState" style="display:none;" class="mdl-state-pad">
+                    <div class="mdl-alert mdl-alert-danger">
+                        <div class="mdl-alert-icon mdl-alert-icon-danger">
+                            <i class="ri-close-circle-line"></i>
                         </div>
-                        <span id="moodleErrorMsg" style="font-size:.88rem;font-weight:500;color:#dc2626;">Error al conectar con Moodle.</span>
+                        <span id="moodleErrorMsg" class="mdl-alert-title">Error al conectar con Moodle.</span>
                     </div>
                 </div>
 
-                {{-- Estado: lista de estudiantes --}}
+                {{-- Estado: lista --}}
                 <div id="moodleListaState" style="display:none;">
 
                     {{-- Banner curso vinculado --}}
-                    <div id="moodleCursoInfo" style="display:none;margin:1.25rem 1.5rem 0;padding:.65rem 1rem;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:10px;">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="ri-graduation-cap-line" style="color:#10b981;font-size:.95rem;"></i>
-                            <span id="moodleCursoNombreBody" style="font-size:.82rem;font-weight:600;color:#065f46;"></span>
-                        </div>
+                    <div id="moodleCursoInfo" style="display:none;" class="mdl-curso-banner">
+                        <i class="ri-graduation-cap-line"></i>
+                        <span id="moodleCursoNombreBody"></span>
                     </div>
 
-                    {{-- Navegación de pestañas --}}
-                    <div style="padding:.85rem 1.5rem .0rem;margin-top:.85rem;">
-                        <div style="display:flex;gap:0;border-bottom:2px solid #e2e8f0;">
-                            <button type="button" id="tabBtnCredenciales"
-                                style="padding:.5rem 1.1rem;border:none;border-bottom:2.5px solid #9a4904;background:none;font-size:.8rem;font-weight:700;color:#9a4904;cursor:pointer;margin-bottom:-2px;display:inline-flex;align-items:center;gap:.35rem;transition:all .15s;">
+                    {{-- Pestañas --}}
+                    <div class="mdl-tabs-wrap">
+                        <div class="mdl-tabs">
+                            <button type="button" id="tabBtnCredenciales" class="mdl-tab mdl-tab-active">
                                 <i class="ri-key-2-line"></i> Credenciales Moodle
                             </button>
-                            <button type="button" id="tabBtnInfoModulo"
-                                style="padding:.5rem 1.1rem;border:none;border-bottom:2.5px solid transparent;background:none;font-size:.8rem;font-weight:600;color:#94a3b8;cursor:pointer;margin-bottom:-2px;display:inline-flex;align-items:center;gap:.35rem;transition:all .15s;">
+                            <button type="button" id="tabBtnInfoModulo" class="mdl-tab">
                                 <i class="ri-calendar-schedule-line"></i> Info del Módulo
                             </button>
                         </div>
                     </div>
 
-                    {{-- Tab: Credenciales Moodle --}}
+                    {{-- Tab: Credenciales --}}
                     <div id="moodleTabCredenciales">
+
                         {{-- Toolbar --}}
-                        <div style="padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;border-bottom:1px solid #f1f5f9;">
+                        <div class="mdl-toolbar">
                             <div class="d-flex gap-2">
-                                <button type="button" id="btnSeleccionarTodosMoodle"
-                                    style="border:1px solid #e2e8f0;background:#f8fafc;color:#475569;border-radius:8px;font-size:.77rem;padding:.3rem .75rem;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;transition:background .15s;">
-                                    <i class="ri-checkbox-multiple-line"></i>Todos
+                                <button type="button" id="btnSeleccionarTodosMoodle" class="mdl-toolbar-btn">
+                                    <i class="ri-checkbox-multiple-line"></i> Todos
                                 </button>
-                                <button type="button" id="btnDeseleccionarTodosMoodle"
-                                    style="border:1px solid #e2e8f0;background:#f8fafc;color:#475569;border-radius:8px;font-size:.77rem;padding:.3rem .75rem;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;transition:background .15s;">
-                                    <i class="ri-checkbox-blank-line"></i>Ninguno
+                                <button type="button" id="btnDeseleccionarTodosMoodle" class="mdl-toolbar-btn">
+                                    <i class="ri-checkbox-blank-line"></i> Ninguno
                                 </button>
                             </div>
-                            <span id="moodleContadorSeleccion" style="font-size:.77rem;color:#64748b;font-weight:500;"></span>
+                            <span id="moodleContadorSeleccion" class="mdl-counter"></span>
                         </div>
-                        {{-- Tabla de estudiantes --}}
-                        <div class="table-responsive" style="max-height:300px;overflow-y:auto;">
-                            <table style="width:100%;border-collapse:collapse;">
+
+                        {{-- Tabla --}}
+                        <div class="table-responsive mdl-table-wrap">
+                            <table class="mdl-table">
                                 <thead>
-                                    <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">
-                                        <th style="width:36px;padding:.7rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;"></th>
-                                        <th style="padding:.7rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;">Estudiante</th>
-                                        <th style="padding:.7rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;">Usuario Moodle</th>
-                                        <th style="padding:.7rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;">Contraseña Inicial</th>
-                                        <th style="padding:.7rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;text-align:center;width:60px;">WA</th>
+                                    <tr>
+                                        <th style="width:40px;"></th>
+                                        <th>Estudiante</th>
+                                        <th>Usuario Moodle</th>
+                                        <th>Contraseña Inicial</th>
+                                        <th style="width:56px;text-align:center;">WA</th>
                                     </tr>
                                 </thead>
                                 <tbody id="moodleEstudiantesBody"></tbody>
                             </table>
                         </div>
-                        {{-- Nota informativa --}}
-                        <div style="margin:.75rem 1.5rem 1rem;padding:.6rem .9rem;background:rgba(154,73,4,.05);border:1px dashed rgba(154,73,4,.2);border-radius:8px;display:flex;align-items:flex-start;gap:.5rem;">
-                            <i class="ri-information-line" style="color:#9a4904;font-size:.9rem;flex-shrink:0;margin-top:.1rem;"></i>
-                            <p class="mb-0" style="font-size:.74rem;color:#64748b;line-height:1.55;">
+
+                        {{-- Nota --}}
+                        <div class="mdl-note">
+                            <i class="ri-information-line"></i>
+                            <p class="mb-0">
                                 La <strong>contraseña mostrada es la inicial</strong>. Si el estudiante la cambió, use <em>"¿Olvidé mi contraseña?"</em> en Moodle.
                                 Estudiantes <strong>sin cuenta</strong> deben matricularse primero desde la pestaña <em>Plataforma</em>.
                             </p>
                         </div>
+
                     </div>
 
                     {{-- Tab: Info del Módulo --}}
                     <div id="moodleTabInfoModulo" style="display:none;">
 
-                        {{-- Vista previa del mensaje --}}
-                        <div style="padding:.85rem 1.5rem .5rem;">
-                            <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin-bottom:.5rem;display:flex;align-items:center;gap:.35rem;">
-                                <i class="ri-eye-line" style="color:#6366f1;"></i> Vista previa del mensaje
+                        {{-- Vista previa --}}
+                        <div class="mdl-preview-wrap">
+                            <div class="mdl-preview-label">
+                                <i class="ri-eye-line"></i> Vista previa del mensaje
                             </div>
-                            <div id="moodleInfoMsgPreview"
-                                style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:.85rem 1rem;font-size:.78rem;line-height:1.65;color:#166534;white-space:pre-wrap;max-height:200px;overflow-y:auto;font-family:monospace;">
-                            </div>
+                            <div id="moodleInfoMsgPreview" class="mdl-preview-box"></div>
                         </div>
 
                         {{-- Toolbar info --}}
-                        <div style="padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;border-bottom:1px solid #f1f5f9;border-top:1px solid #f1f5f9;">
+                        <div class="mdl-toolbar mdl-toolbar-bordered">
                             <div class="d-flex gap-2">
-                                <button type="button" id="btnSeleccionarTodosInfo"
-                                    style="border:1px solid #e2e8f0;background:#f8fafc;color:#475569;border-radius:8px;font-size:.77rem;padding:.3rem .75rem;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;">
-                                    <i class="ri-checkbox-multiple-line"></i>Todos
+                                <button type="button" id="btnSeleccionarTodosInfo" class="mdl-toolbar-btn">
+                                    <i class="ri-checkbox-multiple-line"></i> Todos
                                 </button>
-                                <button type="button" id="btnDeseleccionarTodosInfo"
-                                    style="border:1px solid #e2e8f0;background:#f8fafc;color:#475569;border-radius:8px;font-size:.77rem;padding:.3rem .75rem;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;">
-                                    <i class="ri-checkbox-blank-line"></i>Ninguno
+                                <button type="button" id="btnDeseleccionarTodosInfo" class="mdl-toolbar-btn">
+                                    <i class="ri-checkbox-blank-line"></i> Ninguno
                                 </button>
                             </div>
-                            <span id="moodleInfoContador" style="font-size:.77rem;color:#64748b;font-weight:500;"></span>
+                            <span id="moodleInfoContador" class="mdl-counter"></span>
                         </div>
 
-                        {{-- Tabla de destinatarios --}}
-                        <div class="table-responsive" style="max-height:220px;overflow-y:auto;">
-                            <table style="width:100%;border-collapse:collapse;">
+                        {{-- Tabla destinatarios --}}
+                        <div class="table-responsive mdl-table-wrap mdl-table-wrap-sm">
+                            <table class="mdl-table">
                                 <thead>
-                                    <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">
-                                        <th style="width:36px;padding:.6rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;"></th>
-                                        <th style="padding:.6rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;">Estudiante</th>
-                                        <th style="padding:.6rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;">Celular</th>
-                                        <th style="padding:.6rem .75rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;text-align:center;width:60px;">WA</th>
+                                    <tr>
+                                        <th style="width:40px;"></th>
+                                        <th>Estudiante</th>
+                                        <th>Celular</th>
+                                        <th style="width:56px;text-align:center;">WA</th>
                                     </tr>
                                 </thead>
                                 <tbody id="moodleInfoEstudiantesBody"></tbody>
@@ -1359,27 +1368,433 @@
 
                 </div>
 
-            </div>
+            </div>{{-- /.modal-body --}}
 
             {{-- Footer --}}
-            <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;gap:.5rem;">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"
-                    style="border-radius:8px;font-size:.82rem;padding:.4rem 1rem;">
-                    <i class="ri-close-line me-1"></i>Cerrar
+            <div class="mdl-moodle-footer">
+                <button type="button" class="mdl-btn-secondary" data-bs-dismiss="modal">
+                    <i class="ri-close-line"></i> Cerrar
                 </button>
-                <button type="button" id="btnEnviarInfoModulo" disabled
-                    style="display:none;align-items:center;gap:.4rem;padding:.4rem 1.15rem;background:linear-gradient(135deg,#25d366,#128c7e);border:none;border-radius:8px;color:white;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);transition:all .2s;opacity:.6;">
-                    <i class="ri-whatsapp-line"></i>Enviar Info a Seleccionados
-                </button>
-                <button type="button" id="btnEnviarCredencialesMoodle" disabled
-                    style="display:inline-flex;align-items:center;gap:.4rem;padding:.4rem 1.15rem;background:linear-gradient(135deg,#25d366,#128c7e);border:none;border-radius:8px;color:white;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);transition:all .2s;opacity:.6;">
-                    <i class="ri-whatsapp-line"></i>Enviar Credenciales
-                </button>
+                <div class="d-flex gap-2 ms-auto">
+                    <button type="button" id="btnEnviarInfoModulo" disabled
+                        style="display:none;align-items:center;gap:.4rem;padding:.45rem 1.1rem;background:linear-gradient(135deg,#25d366,#128c7e);border:none;border-radius:8px;color:white;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.25);transition:all .2s;opacity:.6;">
+                        <i class="ri-whatsapp-line"></i> Enviar Info
+                    </button>
+                    <button type="button" id="btnEnviarCredencialesMoodle" disabled
+                        style="display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1.1rem;background:linear-gradient(135deg,#25d366,#128c7e);border:none;border-radius:8px;color:white;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.25);transition:all .2s;opacity:.6;">
+                        <i class="ri-whatsapp-line"></i> Enviar Credenciales
+                    </button>
+                </div>
             </div>
 
         </div>
     </div>
 </div>
+
+<style>
+/* ── Modal Moodle ── */
+.mdl-moodle-content {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,.18);
+}
+
+/* Header */
+.mdl-moodle-header {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 1.1rem 1.25rem;
+    background: linear-gradient(135deg, #391b04 0%, #7c3c00 50%, #c96004 100%);
+    overflow: hidden;
+}
+
+.mdl-moodle-header-deco {
+    position: absolute;
+    top: -50px; right: -30px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(255,255,255,.1) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.mdl-moodle-header-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.mdl-moodle-icon {
+    width: 42px; height: 42px;
+    flex-shrink: 0;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem;
+    color: white;
+}
+
+.mdl-moodle-header-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.mdl-moodle-title {
+    font-size: .95rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 4px;
+    line-height: 1.2;
+}
+
+.mdl-moodle-modulo-nombre {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    font-size: .78rem;
+    color: rgba(255,255,255,.88);
+    font-weight: 500;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.mdl-moodle-modulo-nombre i {
+    font-size: .8rem;
+    opacity: .75;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.mdl-moodle-close {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 8px;
+    color: white;
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background .2s;
+    margin-top: 2px;
+}
+.mdl-moodle-close:hover { background: rgba(255,255,255,.28); }
+
+/* Body */
+.mdl-moodle-body {
+    padding: 0;
+    min-height: 200px;
+}
+
+/* States */
+.mdl-state-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+}
+
+.mdl-state-pad { padding: 1.25rem 1.5rem; }
+
+.mdl-spinner-wrap {
+    width: 52px; height: 52px;
+    background: rgba(154,73,4,.08);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.mdl-spinner {
+    color: #9a4904;
+    width: 1.6rem; height: 1.6rem;
+    border-width: 3px;
+}
+
+.mdl-state-text {
+    font-size: .85rem;
+    color: #64748b;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Alerts */
+.mdl-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    padding: .9rem 1rem;
+    border-radius: 10px;
+}
+
+.mdl-alert-warning {
+    background: rgba(245,158,11,.07);
+    border: 1px solid rgba(245,158,11,.25);
+}
+
+.mdl-alert-danger {
+    background: rgba(239,68,68,.07);
+    border: 1px solid rgba(239,68,68,.2);
+    align-items: center;
+}
+
+.mdl-alert-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.mdl-alert-icon-warning { background: rgba(245,158,11,.15); color: #d97706; }
+.mdl-alert-icon-danger  { background: rgba(239,68,68,.12);  color: #ef4444; }
+
+.mdl-alert-title { font-size: .88rem; font-weight: 700; color: #92400e; }
+.mdl-alert-danger .mdl-alert-title { color: #dc2626; }
+.mdl-alert-desc  { font-size: .78rem; color: #b45309; margin-top: .25rem; line-height: 1.5; }
+
+/* Curso banner */
+.mdl-curso-banner {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 1rem 1.25rem 0;
+    padding: .55rem .9rem;
+    background: rgba(16,185,129,.07);
+    border: 1px solid rgba(16,185,129,.2);
+    border-radius: 8px;
+    font-size: .82rem;
+    font-weight: 600;
+    color: #065f46;
+}
+
+.mdl-curso-banner i { color: #10b981; }
+
+/* Tabs */
+.mdl-tabs-wrap {
+    padding: .75rem 1.25rem 0;
+    margin-top: .75rem;
+}
+
+.mdl-tabs {
+    display: flex;
+    border-bottom: 2px solid #e2e8f0;
+    gap: 2px;
+}
+
+.mdl-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .5rem 1rem;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    background: none;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: pointer;
+    margin-bottom: -2px;
+    transition: all .15s;
+    font-family: inherit;
+    border-radius: 6px 6px 0 0;
+}
+
+.mdl-tab:hover:not(.mdl-tab-active) { color: #64748b; background: #f8fafc; }
+
+.mdl-tab-active {
+    color: #9a4904;
+    border-bottom-color: #9a4904;
+}
+
+/* Toolbar */
+.mdl-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .5rem;
+    padding: .6rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.mdl-toolbar-bordered {
+    border-top: 1px solid #f1f5f9;
+}
+
+.mdl-toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    padding: .28rem .7rem;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #475569;
+    border-radius: 7px;
+    font-size: .76rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+}
+
+.mdl-toolbar-btn:hover {
+    border-color: #9a4904;
+    color: #9a4904;
+    background: #fef3e2;
+}
+
+.mdl-counter {
+    font-size: .76rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* Table */
+.mdl-table-wrap     { max-height: 280px; overflow-y: auto; }
+.mdl-table-wrap-sm  { max-height: 220px; }
+
+.mdl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .81rem;
+}
+
+.mdl-table thead tr {
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.mdl-table thead th {
+    padding: .6rem .75rem;
+    font-size: .67rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.mdl-table tbody td {
+    padding: .6rem .75rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #1e293b;
+}
+
+.mdl-table tbody tr:last-child td { border-bottom: none; }
+.mdl-table tbody tr:hover { background: #fafafa; }
+
+/* Note */
+.mdl-note {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    margin: .75rem 1.25rem .9rem;
+    padding: .6rem .9rem;
+    background: rgba(154,73,4,.05);
+    border: 1px dashed rgba(154,73,4,.2);
+    border-radius: 8px;
+    font-size: .74rem;
+    color: #64748b;
+    line-height: 1.55;
+}
+
+.mdl-note > i { color: #9a4904; font-size: .9rem; flex-shrink: 0; margin-top: .1rem; }
+
+/* Preview */
+.mdl-preview-wrap { padding: .85rem 1.25rem .5rem; }
+
+.mdl-preview-label {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #64748b;
+    margin-bottom: .5rem;
+}
+
+.mdl-preview-label i { color: #6366f1; }
+
+.mdl-preview-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: .8rem 1rem;
+    font-size: .77rem;
+    line-height: 1.65;
+    color: #166534;
+    white-space: pre-wrap;
+    max-height: 180px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+}
+
+/* Buttons */
+.mdl-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .6rem 1.5rem;
+    background: linear-gradient(135deg, #9a4904, #c96004);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: .86rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(154,73,4,.25);
+    transition: all .2s;
+    font-family: inherit;
+}
+
+.mdl-btn-primary:hover {
+    background: linear-gradient(135deg, #7c3c00, #9a4904);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(154,73,4,.35);
+}
+
+.mdl-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .45rem 1rem;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    color: #475569;
+    font-size: .82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+}
+
+.mdl-btn-secondary:hover { border-color: #9a4904; color: #9a4904; }
+
+/* Footer */
+.mdl-moodle-footer {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .85rem 1.25rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+}
+</style>
 
 {{-- ═══════════════════════════════════════════════════════
      Modal: Enlace de Videollamada (Módulos)

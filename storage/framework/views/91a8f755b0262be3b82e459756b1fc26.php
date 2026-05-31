@@ -1,10 +1,8 @@
-@extends('layouts.master')
-
-@section('title')
+<?php $__env->startSection('title'); ?>
     Recibos
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <style>
         :root {
             --rc-primary: #fc7b04;
@@ -340,7 +338,8 @@
             </div>
             <div class="rc-header-meta">
                 <i class="ri-calendar-check-line"></i>
-                {{ $meses[$mes] }} {{ $gestion }}
+                <?php echo e($meses[$mes]); ?> <?php echo e($gestion); ?>
+
             </div>
         </div>
 
@@ -348,22 +347,22 @@
             <div class="stat-card matricula">
                 <div class="stat-icon"><i class="ri-file-paper-line"></i></div>
                 <div class="stat-label">Matrícula</div>
-                <div class="stat-value">Bs. {{ number_format($stats['matricula'], 2) }}</div>
+                <div class="stat-value">Bs. <?php echo e(number_format($stats['matricula'], 2)); ?></div>
             </div>
             <div class="stat-card colegiatura">
                 <div class="stat-icon"><i class="ri-school-line"></i></div>
                 <div class="stat-label">Colegiatura</div>
-                <div class="stat-value">Bs. {{ number_format($stats['colegiatura'], 2) }}</div>
+                <div class="stat-value">Bs. <?php echo e(number_format($stats['colegiatura'], 2)); ?></div>
             </div>
             <div class="stat-card certificacion">
                 <div class="stat-icon"><i class="ri-award-line"></i></div>
                 <div class="stat-label">Certificación</div>
-                <div class="stat-value">Bs. {{ number_format($stats['certificacion'], 2) }}</div>
+                <div class="stat-value">Bs. <?php echo e(number_format($stats['certificacion'], 2)); ?></div>
             </div>
             <div class="stat-card total">
                 <div class="stat-icon"><i class="ri-money-dollar-circle-line"></i></div>
                 <div class="stat-label">Total Ingresos</div>
-                <div class="stat-value">Bs. {{ number_format($stats['total'], 2) }}</div>
+                <div class="stat-value">Bs. <?php echo e(number_format($stats['total'], 2)); ?></div>
             </div>
         </div>
         
@@ -371,37 +370,37 @@
             <div class="stat-card efectivo">
                 <div class="stat-icon"><i class="ri-cash-line"></i></div>
                 <div class="stat-label">Efectivo</div>
-                <div class="stat-value">Bs. {{ number_format($stats['efectivo'], 2) }}</div>
+                <div class="stat-value">Bs. <?php echo e(number_format($stats['efectivo'], 2)); ?></div>
             </div>
             <div class="stat-card qr">
                 <div class="stat-icon"><i class="ri-qr-code-line"></i></div>
                 <div class="stat-label">QR</div>
-                <div class="stat-value">Bs. {{ number_format($stats['qr'], 2) }}</div>
+                <div class="stat-value">Bs. <?php echo e(number_format($stats['qr'], 2)); ?></div>
             </div>
             <div class="stat-card transferencia">
                 <div class="stat-icon"><i class="ri-bank-line"></i></div>
                 <div class="stat-label">Transferencia</div>
-                <div class="stat-value">Bs. {{ number_format($stats['transferencia'] ?? 0, 2) }}</div>
+                <div class="stat-value">Bs. <?php echo e(number_format($stats['transferencia'] ?? 0, 2)); ?></div>
             </div>
             <div class="stat-card total">
                 <div class="stat-icon"><i class="ri-check-double-line"></i></div>
                 <div class="stat-label">Total Medios</div>
-                <div class="stat-value">Bs. {{ number_format(($stats['efectivo'] + $stats['qr'] + ($stats['transferencia'] ?? 0)), 2) }}</div>
+                <div class="stat-value">Bs. <?php echo e(number_format(($stats['efectivo'] + $stats['qr'] + ($stats['transferencia'] ?? 0)), 2)); ?></div>
             </div>
         </div>
 
-        <form method="GET" action="{{ route('admin.contabilidad.recibos') }}" class="rc-filter-bar">
+        <form method="GET" action="<?php echo e(route('admin.contabilidad.recibos')); ?>" class="rc-filter-bar">
             <label>Gestión:</label>
             <select name="gestion" onchange="this.form.submit()">
-                @foreach ($gestiones as $g)
-                    <option value="{{ $g }}" {{ $g == $gestion ? 'selected' : '' }}>{{ $g }}</option>
-                @endforeach
+                <?php $__currentLoopData = $gestiones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $g): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($g); ?>" <?php echo e($g == $gestion ? 'selected' : ''); ?>><?php echo e($g); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
             <label>Mes:</label>
             <select name="mes" onchange="this.form.submit()">
-                @for ($i = 1; $i <= 12; $i++)
-                    <option value="{{ $i }}" {{ $i == $mes ? 'selected' : '' }}>{{ $meses[$i] }}</option>
-                @endfor
+                <?php for($i = 1; $i <= 12; $i++): ?>
+                    <option value="<?php echo e($i); ?>" <?php echo e($i == $mes ? 'selected' : ''); ?>><?php echo e($meses[$i]); ?></option>
+                <?php endfor; ?>
             </select>
         </form>
 
@@ -411,15 +410,15 @@
                     <i class="ri-file-list-3-line"></i>
                     Recibos del período
                 </h5>
-                <span class="rc-panel-badge">{{ $pagos->total() }} registros</span>
+                <span class="rc-panel-badge"><?php echo e($pagos->total()); ?> registros</span>
             </div>
 
-            @if ($pagos->isEmpty())
+            <?php if($pagos->isEmpty()): ?>
                 <div class="empty-state">
                     <i class="ri-inbox-line"></i>
                     <p>No hay recibos en el período seleccionado</p>
                 </div>
-            @else
+            <?php else: ?>
                 <div class="recibos-card">
                     <table class="recibos-table">
                         <thead>
@@ -436,11 +435,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @php
+                            <?php
                                 $contador = ($pagos->currentPage() - 1) * $pagos->perPage() + 1;
-                            @endphp
-                            @foreach ($pagos as $pago)
-                                @php
+                            ?>
+                            <?php $__currentLoopData = $pagos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pago): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php
                                     // Cobrador: trabajadores_cargos -> trabajadores -> personas
                                     $cobradorNombre = '-';
                                     $cobradorCargo = '';
@@ -503,78 +502,80 @@
                                     $fechaFormateada .=
                                         ' de ' . $meses[\Carbon\Carbon::parse($pago->fecha_pago)->format('n')];
                                     $fechaFormateada .= ' del ' . \Carbon\Carbon::parse($pago->fecha_pago)->format('Y');
-                                @endphp
+                                ?>
                                 <tr>
                                     <td>
-                                        <div class="recibo-num-badge">{{ $contador++ }}</div>
+                                        <div class="recibo-num-badge"><?php echo e($contador++); ?></div>
                                     </td>
                                     <td>
                                         <div class="recibo-cell">
                                             <div class="recibo-cell-icon"><i class="ri-receipt-line"></i></div>
                                             <div class="recibo-cell-info">
-                                                <span class="recibo-cell-code">{{ $pago->recibo }}</span>
-                                                <span class="recibo-cell-sub">{{ $cobradorNombre }}</span>
+                                                <span class="recibo-cell-code"><?php echo e($pago->recibo); ?></span>
+                                                <span class="recibo-cell-sub"><?php echo e($cobradorNombre); ?></span>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="recibo-fecha">
-                                            <span class="dia">{{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d') }}</span>
-                                            <span class="mes">{{ $meses[\Carbon\Carbon::parse($pago->fecha_pago)->format('n')] }}</span>
+                                            <span class="dia"><?php echo e(\Carbon\Carbon::parse($pago->fecha_pago)->format('d')); ?></span>
+                                            <span class="mes"><?php echo e($meses[\Carbon\Carbon::parse($pago->fecha_pago)->format('n')]); ?></span>
                                         </div>
                                     </td>
                                     <td>
-                                        @if($estudianteId)
-                                            <a href="{{ route('admin.estudiantes.verDetalle', $estudianteId) }}" class="est-link" title="Ver detalle del estudiante">
-                                                {{ $estudianteNombre }}
+                                        <?php if($estudianteId): ?>
+                                            <a href="<?php echo e(route('admin.estudiantes.verDetalle', $estudianteId)); ?>" class="est-link" title="Ver detalle del estudiante">
+                                                <?php echo e($estudianteNombre); ?>
+
                                             </a>
-                                        @else
-                                            <span class="recibo-estudiante">{{ $estudianteNombre }}</span>
-                                        @endif
+                                        <?php else: ?>
+                                            <span class="recibo-estudiante"><?php echo e($estudianteNombre); ?></span>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
-                                        <span class="recibo-oferta">{{ $ofertaNombre }}</span>
+                                        <span class="recibo-oferta"><?php echo e($ofertaNombre); ?></span>
                                     </td>
                                     <td class="text-end">
-                                        <span class="recibo-monto">Bs. {{ number_format($pago->monto_total, 2) }}</span>
+                                        <span class="recibo-monto">Bs. <?php echo e(number_format($pago->monto_total, 2)); ?></span>
                                     </td>
                                     <td class="text-end">
-                                        <span class="recibo-descuento">Bs. {{ number_format($pago->descuento_bs ?? 0, 2) }}</span>
+                                        <span class="recibo-descuento">Bs. <?php echo e(number_format($pago->descuento_bs ?? 0, 2)); ?></span>
                                     </td>
                                     <td class="text-center">
-                                        @if ($pago->documento_factura)
-                                            <span class="factura-badge factura-si" title="Haz clic para ver factura" style="cursor:pointer;" onclick="verFactura('{{ Storage::url($pago->documento_factura) }}', '{{ $pago->recibo }}', '{{ $estudianteNombre }}', '{{ number_format($pago->monto_total, 2) }}', '{{ $ofertaNombre }}')">
+                                        <?php if($pago->documento_factura): ?>
+                                            <span class="factura-badge factura-si" title="Haz clic para ver factura" style="cursor:pointer;" onclick="verFactura('<?php echo e(Storage::url($pago->documento_factura)); ?>', '<?php echo e($pago->recibo); ?>', '<?php echo e($estudianteNombre); ?>', '<?php echo e(number_format($pago->monto_total, 2)); ?>', '<?php echo e($ofertaNombre); ?>')">
                                                 <i class="ri-checkbox-circle-fill"></i> Sí
                                             </span>
-                                        @else
+                                        <?php else: ?>
                                             <span class="factura-badge factura-no">
                                                 <i class="ri-close-circle-line"></i> No
                                             </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="ver-btn" data-bs-toggle="modal"
-                                            data-bs-target="#modalDetalle{{ $pago->id }}">
+                                            data-bs-target="#modalDetalle<?php echo e($pago->id); ?>">
                                             <i class="ri-eye-line"></i> Ver
                                         </button>
                                     </td>
                                 </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="pagination-wrapper">
-                    <span class="pagination-info">Mostrando {{ $pagos->firstItem() }}-{{ $pagos->lastItem() }} de
-                        {{ $pagos->total() }}</span>
-                    {{ $pagos->links('pagination::bootstrap-4') }}
+                    <span class="pagination-info">Mostrando <?php echo e($pagos->firstItem()); ?>-<?php echo e($pagos->lastItem()); ?> de
+                        <?php echo e($pagos->total()); ?></span>
+                    <?php echo e($pagos->links('pagination::bootstrap-4')); ?>
+
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
     </div>
 
-    @foreach ($pagos as $pago)
-        @php
+    <?php $__currentLoopData = $pagos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pago): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php
             $cobradorNombre = '-';
             $tc = $pago->trabajadorCargo;
             if ($tc && $tc->trabajador && $tc->trabajador->persona) {
@@ -625,13 +626,13 @@
             $totalDeposito = $detallesColeccion->where('tipo_pago', 'Depósito')->sum('monto_bs');
             $totalCheque   = $detallesColeccion->where('tipo_pago', 'Cheque')->sum('monto_bs');
             $tipoPago      = $pago->tipo_pago;
-        @endphp
-        <div class="modal fade" id="modalDetalle{{ $pago->id }}" tabindex="-1">
+        ?>
+        <div class="modal fade" id="modalDetalle<?php echo e($pago->id); ?>" tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
                     <div class="modal-header" style="background:linear-gradient(135deg,#fc7b04,#c96004);color:white;padding:1.25rem 1.5rem;border:none;">
                         <h5 class="modal-title" style="font-weight:600;font-size:1.1rem;color:white;">
-                            <i class="ri-receipt-line me-2"></i>Detalle del Recibo <span style="opacity:0.9;">{{ $pago->recibo }}</span>
+                            <i class="ri-receipt-line me-2"></i>Detalle del Recibo <span style="opacity:0.9;"><?php echo e($pago->recibo); ?></span>
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
@@ -639,15 +640,15 @@
                         <div class="row mb-4" style="background:white;padding:1rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
                             <div class="col-md-6">
                                 <p class="mb-2" style="color:#64748b;font-size:.85rem;"><i class="ri-calendar-line me-1"></i><strong>Fecha:</strong></p>
-                                <p class="mb-2" style="font-weight:600;color:#1e293b;">{{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d/m/Y') }}</p>
+                                <p class="mb-2" style="font-weight:600;color:#1e293b;"><?php echo e(\Carbon\Carbon::parse($pago->fecha_pago)->format('d/m/Y')); ?></p>
                                 <p class="mb-0" style="color:#64748b;font-size:.85rem;"><i class="ri-user-line me-1"></i><strong>Cobrador:</strong></p>
-                                <p class="mb-0" style="font-weight:600;color:#1e293b;">{{ $cobradorNombre }}</p>
+                                <p class="mb-0" style="font-weight:600;color:#1e293b;"><?php echo e($cobradorNombre); ?></p>
                             </div>
                             <div class="col-md-6">
                                 <p class="mb-2" style="color:#64748b;font-size:.85rem;"><i class="ri-user-smile-line me-1"></i><strong>Estudiante:</strong></p>
-                                <p class="mb-2" style="font-weight:600;color:#1e293b;">{{ $estudianteNombre }}</p>
+                                <p class="mb-2" style="font-weight:600;color:#1e293b;"><?php echo e($estudianteNombre); ?></p>
                                 <p class="mb-0" style="color:#64748b;font-size:.85rem;"><i class="ri-graduation-cap-line me-1"></i><strong>Oferta:</strong></p>
-                                <p class="mb-0" style="font-weight:600;color:#1e293b;font-size:.9rem;">{{ $ofertaNombre }}</p>
+                                <p class="mb-0" style="font-weight:600;color:#1e293b;font-size:.9rem;"><?php echo e($ofertaNombre); ?></p>
                             </div>
                         </div>
 
@@ -656,43 +657,43 @@
                         </h6>
 
                         <div class="row justify-content-center g-3 mb-4">
-                            @if ($tipoPago === 'Efectivo')
+                            <?php if($tipoPago === 'Efectivo'): ?>
                                 <div class="col-md-5">
                                     <div class="card" style="border:none;border-radius:12px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);box-shadow:0 4px 12px rgba(37,99,235,0.15);">
                                         <div class="card-body text-center py-3">
                                             <i class="ri-cash-line fs-2" style="color:#2563eb;"></i>
                                             <p class="mb-1 mt-2" style="color:#1e40af;font-weight:600;">Efectivo</p>
-                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($totalEfectivo, 2) }}</h4>
+                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. <?php echo e(number_format($totalEfectivo, 2)); ?></h4>
                                         </div>
                                     </div>
                                 </div>
-                            @elseif ($tipoPago === 'Qr')
+                            <?php elseif($tipoPago === 'Qr'): ?>
                                 <div class="col-md-5">
                                     <div class="card" style="border:none;border-radius:12px;background:linear-gradient(135deg,#d1fae5,#a7f3d0);box-shadow:0 4px 12px rgba(16,185,129,0.15);">
                                         <div class="card-body text-center py-3">
                                             <i class="ri-qr-code-line fs-2" style="color:#059669;"></i>
                                             <p class="mb-1 mt-2" style="color:#065f46;font-weight:600;">QR</p>
-                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($totalQr, 2) }}</h4>
+                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. <?php echo e(number_format($totalQr, 2)); ?></h4>
                                         </div>
                                     </div>
                                 </div>
-                            @elseif ($tipoPago === 'Transferencia')
+                            <?php elseif($tipoPago === 'Transferencia'): ?>
                                 <div class="col-md-5">
                                     <div class="card" style="border:none;border-radius:12px;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);box-shadow:0 4px 12px rgba(99,102,241,0.15);">
                                         <div class="card-body text-center py-3">
                                             <i class="ri-bank-line fs-2" style="color:#4f46e5;"></i>
                                             <p class="mb-1 mt-2" style="color:#4338ca;font-weight:600;">Transferencia</p>
-                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($totalTransferencia, 2) }}</h4>
+                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. <?php echo e(number_format($totalTransferencia, 2)); ?></h4>
                                         </div>
                                     </div>
                                 </div>
-                            @elseif ($tipoPago === 'Parcial')
+                            <?php elseif($tipoPago === 'Parcial'): ?>
                                 <div class="col-md-5">
                                     <div class="card" style="border:none;border-radius:12px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);box-shadow:0 4px 12px rgba(37,99,235,0.15);">
                                         <div class="card-body text-center py-3">
                                             <i class="ri-cash-line fs-2" style="color:#2563eb;"></i>
                                             <p class="mb-1 mt-2" style="color:#1e40af;font-weight:600;">Efectivo</p>
-                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($totalEfectivo, 2) }}</h4>
+                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. <?php echo e(number_format($totalEfectivo, 2)); ?></h4>
                                         </div>
                                     </div>
                                 </div>
@@ -701,25 +702,25 @@
                                         <div class="card-body text-center py-3">
                                             <i class="ri-qr-code-line fs-2" style="color:#059669;"></i>
                                             <p class="mb-1 mt-2" style="color:#065f46;font-weight:600;">QR</p>
-                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($totalQr, 2) }}</h4>
+                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. <?php echo e(number_format($totalQr, 2)); ?></h4>
                                         </div>
                                     </div>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
 
                         <div style="background:white;padding:1.25rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span style="color:#64748b;font-size:.9rem;"><strong>Monto Total:</strong></span>
-                                <span style="color:#1e293b;font-weight:700;font-size:1.1rem;">Bs. {{ number_format($pago->monto_total, 2) }}</span>
+                                <span style="color:#1e293b;font-weight:700;font-size:1.1rem;">Bs. <?php echo e(number_format($pago->monto_total, 2)); ?></span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-0">
                                 <span style="color:#64748b;font-size:.9rem;"><strong>Descuento:</strong></span>
-                                <span style="color:#dc2626;font-weight:600;">- Bs. {{ number_format($pago->descuento_bs ?? 0, 2) }}</span>
+                                <span style="color:#dc2626;font-weight:600;">- Bs. <?php echo e(number_format($pago->descuento_bs ?? 0, 2)); ?></span>
                             </div>
                         </div>
 
-                        @if (count($cuotasPagadas) > 0)
+                        <?php if(count($cuotasPagadas) > 0): ?>
                             <div class="mt-3">
                                 <h6 class="border-bottom pb-2 mb-3">Cuotas Pagadas</h6>
                                 <div class="table-responsive">
@@ -731,41 +732,42 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($cuotasPagadas as $cuota)
+                                            <?php $__currentLoopData = $cuotasPagadas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cuota): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <tr>
                                                     <td><i
-                                                            class="ri-check-line text-success me-2"></i>{{ $cuota['nombre'] }}
+                                                            class="ri-check-line text-success me-2"></i><?php echo e($cuota['nombre']); ?>
+
                                                     </td>
-                                                    <td class="text-end">Bs. {{ number_format($cuota['monto'], 2) }}</td>
+                                                    <td class="text-end">Bs. <?php echo e(number_format($cuota['monto'], 2)); ?></td>
                                                 </tr>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             <tr class="table-success">
                                                 <td><strong>Total</strong></td>
                                                 <td class="text-end"><strong>Bs.
-                                                        {{ number_format($totalMontoCuotas, 2) }}</strong></td>
+                                                        <?php echo e(number_format($totalMontoCuotas, 2)); ?></strong></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?>
 
                         <div class="mt-3" style="background:white;padding:1.25rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
                             <h6 style="color:#475569;font-weight:600;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:2px solid #e2e8f0;">
                                 <i class="ri-file-list-3-line me-2"></i>Factura
                             </h6>
-                            @if ($pago->documento_factura)
+                            <?php if($pago->documento_factura): ?>
                                 <div class="d-flex align-items-center gap-3">
                                     <span class="factura-badge factura-si">
                                         <i class="ri-checkbox-circle-fill"></i> Factura registrada
                                     </span>
-                                    <button type="button" class="btn btn-sm" style="background:#059669;color:white;border:none;border-radius:8px;padding:0.35rem 0.85rem;font-size:.8rem;cursor:pointer;" onclick="verFactura('{{ Storage::url($pago->documento_factura) }}', '{{ $pago->recibo }}', '{{ $estudianteNombre }}', '{{ number_format($pago->monto_total, 2) }}', '{{ $ofertaNombre }}')">
+                                    <button type="button" class="btn btn-sm" style="background:#059669;color:white;border:none;border-radius:8px;padding:0.35rem 0.85rem;font-size:.8rem;cursor:pointer;" onclick="verFactura('<?php echo e(Storage::url($pago->documento_factura)); ?>', '<?php echo e($pago->recibo); ?>', '<?php echo e($estudianteNombre); ?>', '<?php echo e(number_format($pago->monto_total, 2)); ?>', '<?php echo e($ofertaNombre); ?>')">
                                         <i class="ri-eye-line me-1"></i> Ver factura
                                     </button>
                                 </div>
-                            @else
-                                <form class="factura-upload-form" data-pago-id="{{ $pago->id }}" enctype="multipart/form-data">
-                                    @csrf
+                            <?php else: ?>
+                                <form class="factura-upload-form" data-pago-id="<?php echo e($pago->id); ?>" enctype="multipart/form-data">
+                                    <?php echo csrf_field(); ?>
                                     <div class="d-flex align-items-center gap-3">
                                         <span class="factura-badge factura-no">
                                             <i class="ri-close-circle-line"></i> Sin factura
@@ -776,11 +778,11 @@
                                         </button>
                                     </div>
                                 </form>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="modal-footer" style="background:#f8fafc;border:none;padding:1rem 1.5rem;">
-                        <a href="{{ route('admin.estudiantes.generarReciboPdf', ['pagoId' => $pago->id]) }}"
+                        <a href="<?php echo e(route('admin.estudiantes.generarReciboPdf', ['pagoId' => $pago->id])); ?>"
                             target="_blank" class="btn" style="background:linear-gradient(135deg,#059669,#10b981);color:white;border:none;padding:0.6rem 1.25rem;border-radius:8px;font-weight:500;">
                             <i class="ri-download-line me-1"></i> Descargar Recibo
                         </a>
@@ -789,9 +791,9 @@
                 </div>
             </div>
         </div>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-{{-- Modal para ver factura --}}
+
 <div class="modal fade" id="modalVerFactura" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
@@ -836,9 +838,9 @@
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 function verFactura(url, recibo, estudiante, monto, oferta) {
     document.getElementById('facturaReciboNum').textContent = recibo;
@@ -868,7 +870,7 @@ $(document).on('submit', '.factura-upload-form', function (e) {
     btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
 
     $.ajax({
-        url: '{{ route("admin.contabilidad.recibos.subir-factura", ["pagoId" => "__ID__"]) }}'.replace('__ID__', pagoId),
+        url: '<?php echo e(route("admin.contabilidad.recibos.subir-factura", ["pagoId" => "__ID__"])); ?>'.replace('__ID__', pagoId),
         type: 'POST',
         data: formData,
         processData: false,
@@ -885,4 +887,6 @@ $(document).on('submit', '.factura-upload-form', function (e) {
     });
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp_82_12\htdocs\innova-ciencia-virtual\resources\views/admin/contabilidad/recibos.blade.php ENDPATH**/ ?>

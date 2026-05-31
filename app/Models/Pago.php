@@ -16,6 +16,7 @@ class Pago extends Model
         'trabajadore_cargo_id',
         'monto_total',
         'descuento_bs',
+        'documento_factura',
         'tipo_pago',
         'fecha_pago',
         'estado',

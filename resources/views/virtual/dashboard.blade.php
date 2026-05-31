@@ -69,6 +69,12 @@
         display: flex; align-items: center; justify-content: center;
         font-size: .8rem; flex-shrink: 0;
     }
+    .pers-info-separator {
+        display:flex; align-items:center; gap:.5rem; margin:.25rem 0 .15rem;
+        font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#94a3b8;
+    }
+    .pers-info-separator::before,
+    .pers-info-separator::after { content:''; flex:1; height:1px; background:#e2e8f0; }
     </style>
 @endsection
 
@@ -425,6 +431,36 @@
                                     <div class="pers-info-val">{{ $modulosDocente->sum(fn($m) => $m->horarios->count()) }} sesión(es)</div>
                                 </div>
                             </div>
+                            <div class="pers-info-separator">
+                                <span>Accesos del Sistema</span>
+                            </div>
+                            <div class="pers-info-item">
+                                <div class="pers-info-ico"><i class="ri-user-settings-line"></i></div>
+                                <div>
+                                    <div class="pers-info-lbl">Usuario del sistema</div>
+                                    <div class="pers-info-val" style="font-family:monospace;font-size:.82rem;">{{ $user->username ?? '—' }}</div>
+                                </div>
+                            </div>
+                            <div class="pers-info-item">
+                                <div class="pers-info-ico"><i class="ri-mail-send-line"></i></div>
+                                <div>
+                                    <div class="pers-info-lbl">Correo del sistema</div>
+                                    <div class="pers-info-val" style="font-size:.82rem;">{{ $user->email ?? '—' }}</div>
+                                </div>
+                            </div>
+                            <div class="pers-info-item">
+                                <div class="pers-info-ico"><i class="ri-links-line"></i></div>
+                                <div>
+                                    <div class="pers-info-lbl">Cuenta Moodle</div>
+                                    <div class="pers-info-val">
+                                        @if ($moodleDocenteId)
+                                            <span style="color:var(--doc-success);font-weight:600;"><i class="ri-checkbox-circle-fill"></i> Activa</span>
+                                        @else
+                                            <span style="color:var(--doc-text-muted);">Sin cuenta Moodle</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -652,6 +688,11 @@
                     <i class="ri-book-open-line"></i>
                     <h5>Sin módulos asignados</h5>
                     <p>Aún no tienes módulos asignados como docente. Contacta con administración para más información.</p>
+                    @if ($moodleDocenteId)
+                        <p style="margin-top:.3rem;font-size:.8rem;color:var(--doc-success);"><i class="ri-checkbox-circle-fill"></i> Tu cuenta de Moodle está activa. Cuando te asignen un módulo podrás acceder a los cursos.</p>
+                    @else
+                        <p style="margin-top:.3rem;font-size:.8rem;color:var(--doc-text-muted);"><i class="ri-information-line"></i> Aún no tienes cuenta en Moodle. Puedes crearla desde el panel de administración.</p>
+                    @endif
                 </div>
             @else
                 @php
@@ -781,6 +822,11 @@
                     <i class="ri-calendar-close-line"></i>
                     <h5>Sin módulos asignados</h5>
                     <p>No tienes módulos asignados como docente para mostrar horario.</p>
+                    @if ($moodleDocenteId)
+                        <p style="margin-top:.3rem;font-size:.8rem;color:var(--doc-success);"><i class="ri-checkbox-circle-fill"></i> Tu cuenta de Moodle está activa. Cuando te asignen un módulo podrás ver el horario.</p>
+                    @else
+                        <p style="margin-top:.3rem;font-size:.8rem;color:var(--doc-text-muted);"><i class="ri-information-line"></i> Aún no tienes cuenta en Moodle. Puedes crearla desde el panel de administración.</p>
+                    @endif
                 </div>
             @else
                 <div class="cronograma-container d-flex" style="min-height:600px;">
@@ -1798,6 +1844,7 @@
                                                                     'programa' => $ins->ofertaAcademica?->posgrado?->nombre ?? ($ins->ofertaAcademica?->programa?->nombre ?? ''),
                                                                     'plan' => $ins->planesPago?->nombre ?? '',
                                                                     'comprobante' => $comprobante,
+                                                                    'documento_factura' => $pago->documento_factura ? \Storage::url($pago->documento_factura) : null,
                                                                     'detalles' => ($pago->detalles ?? collect())->map(fn($d) => ['tipo' => $d->tipo_pago, 'monto' => $d->monto_bs])->toArray(),
                                                                     'cuotas' => ($pago->pagosCuotas ?? collect())->map(fn($pc2) => [
                                                                         'nombre' => $pc2->cuota?->nombre ?? 'Cuota #' . $pc2->cuota_id,
@@ -2042,12 +2089,12 @@
                                             <table class="pagos-mini-table">
                                                 <thead>
                                                     <tr>
-                                                        <th style="width:40px;">#</th>
+                                                        <th style="width:28px;">#</th>
                                                         <th>Cuota</th>
-                                                        <th>Monto</th>
-                                                        <th>Vencimiento</th>
-                                                        <th style="width:100px;">Avance</th>
-                                                        <th style="width:90px;">Estado</th>
+                                                        <th style="width:80px;">Monto</th>
+                                                        <th style="width:85px;">Vence</th>
+                                                        <th style="width:80px;">Avance</th>
+                                                        <th style="width:75px;">Estado</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -2060,18 +2107,18 @@
                                                         @endphp
                                                         <tr>
                                                             <td data-label="#"><span class="num-cuota">{{ $cuota->n_cuota }}</span></td>
-                                                            <td data-label="Cuota" style="font-weight:600;color:#1e293b;">{{ $cuota->nombre }}</td>
-                                                            <td data-label="Monto" style="font-weight:600;color:#1e293b;font-family:'Outfit',sans-serif;">Bs. {{ number_format($cuota->monto_bs, 2) }}</td>
-                                                            <td data-label="Vencimiento" class="fecha-cell">{{ $cuota->fecha_vencimiento ? \Carbon\Carbon::parse($cuota->fecha_vencimiento)->format('d/m/Y') : '—' }}</td>
-                                                            <td data-label="Avance">
-                                                                <div class="cuota-pay-micro">
-                                                                    <div class="track">
+                                                            <td data-label="Cuota" style="font-weight:600;color:#1e293b;font-size:.76rem;">{{ $cuota->nombre }}</td>
+                                                            <td data-label="Monto" style="font-weight:600;color:#1e293b;font-size:.76rem;">Bs. {{ number_format($cuota->monto_bs, 2) }}</td>
+                                                            <td data-label="Vence" class="fecha-cell" style="font-size:.72rem;">{{ $cuota->fecha_vencimiento ? \Carbon\Carbon::parse($cuota->fecha_vencimiento)->format('d/m/Y') : '—' }}</td>
+                                                            <td data-label="Avance" style="padding:8px 6px;">
+                                                                <div class="cuota-pay-micro" style="gap:4px;">
+                                                                    <div class="track" style="min-width:40px;">
                                                                         <div class="fill {{ $pctCuotaClass }}" style="width:{{ $pctCuota }}%;"></div>
                                                                     </div>
-                                                                    <span class="pct">{{ $pctCuota }}%</span>
+                                                                    <span class="pct" style="font-size:.65rem;min-width:28px;">{{ $pctCuota }}%</span>
                                                                 </div>
                                                             </td>
-                                                            <td data-label="Estado"><span class="pagos-cuota-badge {{ $estadoClass }}">{{ $cuota->estado }}</span></td>
+                                                            <td data-label="Estado" style="padding:8px 6px;"><span class="pagos-cuota-badge {{ $estadoClass }}" style="font-size:.65rem;padding:2px 8px;">{{ $cuota->estado }}</span></td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -2260,18 +2307,20 @@
     {{-- Modal Ver Detalle Pago (usado por tab contable) --}}
     <div class="modal fade modal-detalle-pago" id="modalVerDetallePago" tabindex="-1" aria-labelledby="modalVerDetallePagoLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalVerDetallePagoLabel"><i class="ri-file-receipt-line"></i> Detalle del Pago</h5>
+            <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+                <div class="modal-header" style="background:linear-gradient(135deg,#fc7b04,#c96004);color:white;padding:1.25rem 1.5rem;border:none;">
+                    <h5 class="modal-title" style="font-weight:600;font-size:1.1rem;color:white;">
+                        <i class="ri-file-receipt-line"></i> Detalle del Pago
+                    </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="padding:1.5rem;background:#f8fafc;">
                     <div id="lista-pagos" class="pago-list-container"></div>
                     <div id="detalle-pago-container" style="display:none;">
                         <div class="detalle-header">
                             <div class="detalle-header-top">
                                 <div class="detalle-logo">
-                                    <img src="{{ asset('build/images/logo-dark.png') }}" alt="Logo" style="width: 40px;">
+                                    <img src="{{ asset('build/images/logo_nuevo.png') }}" alt="Logo" style="height: 45px;">
                                     <div>
                                         <div class="detalle-logo-text">INNOVA CIENCIA VIRTUAL</div>
                                         <div class="detalle-logo-sub">Educación Superior Virtual</div>
@@ -2331,6 +2380,20 @@
                                 <div class="detalle-info-value" style="color: #d97706;" id="detalle-descuento">—</div>
                             </div>
                         </div>
+                        <div id="detalle-factura-container" style="display:none; margin-top: 12px;">
+                            <div class="detalle-info-item" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
+                                <div style="display:flex;align-items:center;justify-content:space-between;">
+                                    <div>
+                                        <div class="detalle-info-label"><i class="ri-file-list-3-line"></i> Factura</div>
+                                        <div class="detalle-info-value" id="detalle-factura-estado" style="color:#059669;">Con factura</div>
+                                    </div>
+                                    <button type="button" id="btn-ver-factura-detalle"
+                                        style="background:#059669;color:white;border:none;border-radius:8px;padding:0.35rem 0.85rem;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:5px;">
+                                        <i class="ri-eye-line"></i> Ver factura
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         <div class="detalle-footer">
                             <div class="detalle-footer-box">
                                 <div class="label"><i class="ri-user-star-line"></i> Emisor</div>
@@ -2343,7 +2406,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;">
                     <a href="#" id="btn-descargar-pdf" class="btn-descargar" target="_blank">
                         <i class="ri-file-pdf-line"></i> Descargar PDF
                     </a>
@@ -2604,6 +2667,51 @@
                     onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#fff'">
                     <i class="ri-close-line"></i> Cerrar
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal para ver factura --}}
+<div class="modal fade" id="modalVerFactura" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+            <div class="modal-header" style="background:linear-gradient(135deg,#fc7b04,#c96004);color:white;padding:1.25rem 1.5rem;border:none;">
+                <h5 class="modal-title" style="font-weight:600;font-size:1.1rem;color:white;">
+                    <i class="ri-file-list-3-line me-2"></i>Factura — Recibo <span id="facturaReciboNum"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;background:#f8fafc;">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <div style="background:white;padding:.75rem 1rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                            <p style="color:#64748b;font-size:.75rem;margin-bottom:.2rem;">Estudiante</p>
+                            <p id="facturaEstudiante" style="font-weight:600;color:#1e293b;margin:0;font-size:.9rem;"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="background:white;padding:.75rem 1rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                            <p style="color:#64748b;font-size:.75rem;margin-bottom:.2rem;">Oferta</p>
+                            <p id="facturaOferta" style="font-weight:600;color:#1e293b;margin:0;font-size:.9rem;"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="background:white;padding:.75rem 1rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                            <p style="color:#64748b;font-size:.75rem;margin-bottom:.2rem;">Monto</p>
+                            <p id="facturaMonto" style="font-weight:700;color:#059669;margin:0;font-size:.9rem;"></p>
+                        </div>
+                    </div>
+                </div>
+                <div style="background:white;padding:1rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);text-align:center;">
+                    <div id="facturaFileContainer" style="max-height:500px;overflow:auto;"></div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background:#f8fafc;border:none;padding:1rem 1.5rem;">
+                <a id="facturaDownloadLink" href="#" target="_blank" class="btn" style="background:linear-gradient(135deg,#fc7b04,#c96004);color:white;border:none;padding:0.6rem 1.25rem;border-radius:8px;font-weight:500;">
+                    <i class="ri-download-line me-1"></i> Descargar
+                </a>
+                <button type="button" class="btn" style="background:#e2e8f0;color:#475569;border:none;padding:0.6rem 1.25rem;border-radius:8px;font-weight:500;" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -2981,20 +3089,29 @@
                         listaPagos.style.display = 'block';
                         container.style.display = 'none';
                         listaPagos.innerHTML = '';
+                        listaPagos.style.padding = '0';
+                        var headerHtml = '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#f8fafc;border-bottom:2px solid #e2e8f0;border-radius:12px 12px 0 0;">' +
+                            '<span style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;"><i class="ri-receipt-line me-1"></i> Selecciona un recibo</span>' +
+                            '<span style="font-size:.72rem;color:#94a3b8;">' + pagosData.length + ' pago(s)</span>' +
+                            '</div>';
+                        listaPagos.innerHTML = headerHtml;
                         pagosData.forEach(function(pago) {
                             const item = document.createElement('div');
-                            item.className =
-                                'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
-                            item.style.cursor = 'pointer';
+                            item.style.cssText = 'display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;border-left:3px solid #fc7b04;margin:4px 0;border-radius:10px;background:#fff;border:1px solid #e2e8f0;transition:all .2s;';
+                            item.onmouseover = function() { this.style.background = '#fef3c7'; this.style.borderColor = '#fc7b04'; };
+                            item.onmouseout = function() { this.style.background = '#fff'; this.style.borderColor = '#e2e8f0'; };
+                            var metodoColor = pago.metodo === 'Efectivo' ? '#2563eb' : pago.metodo === 'Qr' ? '#059669' : pago.metodo === 'Transferencia' ? '#4f46e5' : '#64748b';
+                            var metodoIcon = pago.metodo === 'Efectivo' ? 'ri-cash-line' : pago.metodo === 'Qr' ? 'ri-qr-code-line' : pago.metodo === 'Transferencia' ? 'ri-bank-line' : 'ri-payment-line';
                             item.innerHTML =
-                                '<div><div class="fw-bold text-orange">' + (pago.recibo ||
-                                '—') + '</div>' +
-                                '<small class="text-muted">' + (pago.fecha ? new Date(pago
-                                    .fecha).toLocaleDateString('es-ES') : '') +
-                                '</small></div>' +
-                                '<div class="text-end"><div class="fw-bold">Bs. ' + parseFloat(
-                                    pago.monto).toFixed(2) + '</div>' +
-                                '<small class="text-muted">' + pago.metodo + '</small></div>';
+                                '<div style="width:36px;height:36px;border-radius:10px;background:rgba(252,123,4,.1);color:#fc7b04;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;"><i class="ri-receipt-line"></i></div>' +
+                                '<div style="flex:1;min-width:0;">' +
+                                '<div style="font-weight:700;font-size:.88rem;color:#1e293b;">' + (pago.recibo || '—') + '</div>' +
+                                '<div style="font-size:.72rem;color:#64748b;margin-top:2px;"><i class="ri-calendar-line me-1"></i>' + (pago.fecha ? new Date(pago.fecha).toLocaleDateString('es-ES') : '') + ' <span style="color:#cbd5e1;">·</span> <i class="' + metodoIcon + '" style="color:' + metodoColor + ';margin-right:3px;"></i>' + (pago.metodo || '—') + '</div>' +
+                                '</div>' +
+                                '<div style="text-align:right;flex-shrink:0;">' +
+                                '<div style="font-weight:700;font-size:.9rem;color:#059669;">Bs. ' + parseFloat(pago.monto).toFixed(2) + '</div>' +
+                                '<div style="font-size:.7rem;color:#94a3b8;margin-top:1px;"><i class="ri-arrow-right-s-line"></i> Ver detalle</div>' +
+                                '</div>';
                             item.addEventListener('click', function() {
                                 listaPagos.style.display = 'none';
                                 container.style.display = 'block';
@@ -3004,11 +3121,16 @@
                         });
                         const totalGeneral = pagosData.reduce((s, p) => s + parseFloat(p.monto), 0);
                         const totalItem = document.createElement('div');
-                        totalItem.className = 'list-group-item bg-success text-white';
+                        totalItem.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 16px;margin-top:6px;border-radius:10px;background:linear-gradient(135deg,#fc7b04,#c96004);color:#fff;';
                         totalItem.innerHTML =
-                            '<div class="fw-bold">Total Acumulado</div><div class="fw-bold">Bs. ' +
+                            '<div style="display:flex;align-items:center;gap:8px;"><i class="ri-check-double-line" style="font-size:1.1rem;"></i><span style="font-weight:600;font-size:.85rem;">Total Acumulado</span></div>' +
+                            '<div style="font-weight:800;font-size:1rem;">Bs. ' +
                             totalGeneral.toFixed(2) + '</div>';
                         listaPagos.appendChild(totalItem);
+                        var footerNote = document.createElement('div');
+                        footerNote.style.cssText = 'text-align:center;padding:10px;font-size:.72rem;color:#94a3b8;';
+                        footerNote.innerHTML = '<i class="ri-information-line me-1"></i> Selecciona un recibo para ver su detalle completo';
+                        listaPagos.appendChild(footerNote);
                     }
 
                     const modalEl = document.getElementById('modalVerDetallePago');
@@ -3029,6 +3151,24 @@
                 document.body.classList.remove('modal-open');
                 const backdrops = document.querySelectorAll('.modal-backdrop');
                 backdrops.forEach(function(b) { b.remove(); });
+            }
+
+            function verFactura(url, recibo, estudiante, monto, oferta) {
+                document.getElementById('facturaReciboNum').textContent = recibo;
+                document.getElementById('facturaEstudiante').textContent = estudiante;
+                document.getElementById('facturaOferta').textContent = oferta;
+                document.getElementById('facturaMonto').textContent = 'Bs. ' + monto;
+                document.getElementById('facturaDownloadLink').href = url;
+
+                var container = document.getElementById('facturaFileContainer');
+                var ext = url.split('.').pop().toLowerCase();
+                if (ext === 'pdf') {
+                    container.innerHTML = '<iframe src="' + url + '" style="width:100%;height:500px;border:none;border-radius:8px;"></iframe>';
+                } else {
+                    container.innerHTML = '<img src="' + url + '" style="max-width:100%;max-height:500px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">';
+                }
+
+                new bootstrap.Modal(document.getElementById('modalVerFactura')).show();
             }
 
             document.getElementById('btn-volver-lista')?.addEventListener('click', function() {
@@ -3081,6 +3221,20 @@
                 } else {
                     descContainer.style.display = 'none';
                 }
+
+                const facturaContainer = document.getElementById('detalle-factura-container');
+                const facturaEstado = document.getElementById('detalle-factura-estado');
+                const btnVerFactura = document.getElementById('btn-ver-factura-detalle');
+                if (pago.documento_factura) {
+                    facturaContainer.style.display = 'block';
+                    facturaEstado.textContent = 'Con factura';
+                    btnVerFactura.onclick = function() {
+                        verFactura(pago.documento_factura, pago.recibo, pago.estudiante, pago.monto, pago.programa);
+                    };
+                } else {
+                    facturaContainer.style.display = 'none';
+                }
+
                 document.getElementById('detalle-trabajador').textContent = pago.trabajador || '—';
                 document.getElementById('detalle-depositante').textContent = pago.estudiante || '—';
 

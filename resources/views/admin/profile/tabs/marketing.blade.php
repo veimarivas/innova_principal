@@ -199,7 +199,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" style="max-width:620px;">
         <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 10px 40px rgba(0,0,0,.2);">
             <div class="modal-header" style="background:linear-gradient(135deg,#9a4904,#df6a04);color:white;border-radius:12px 12px 0 0;">
-                <h5 class="modal-title" style="font-weight:600;">
+                <h5 class="modal-title" style="font-weight:600;color:#fff;">
                     <i class="ri-file-list-3-line me-2"></i>Subir Comprobante de Pago
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -252,6 +252,88 @@
                     <i class="ri-upload-cloud-line me-1"></i> Enviar Comprobante
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal Cambiar a Inscrito --}}
+<div class="modal fade" id="modalCambiarAInscritoMkt" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.18);">
+
+            <div class="modal-header" style="background:linear-gradient(135deg,#78350f,#b45309,#f59e0b);color:white;padding:1.25rem 1.5rem;border:none;">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="ri-user-star-line" style="font-size:1.4rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;color:#fff;">Cambiar a Inscrito</h5>
+                        <div style="font-size:.73rem;color:rgba(255,255,255,.8);margin-top:.15rem;">Asignar plan de pago y completar la inscripción</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" style="padding:0;">
+
+                {{-- Info estudiante --}}
+                <div style="padding:1.25rem 1.5rem;background:#fffbeb;border-bottom:1px solid rgba(245,158,11,.25);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(245,158,11,.35);">
+                            <i class="ri-user-line" style="font-size:1.3rem;color:#78350f;"></i>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-weight:700;font-size:.95rem;color:#1e293b;" id="mktCambiarEstNombre">—</div>
+                            <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
+                                <span style="display:inline-flex;align-items:center;gap:.25rem;font-size:.73rem;color:#92400e;background:rgba(245,158,11,.15);padding:.2rem .65rem;border-radius:20px;border:1px solid rgba(245,158,11,.35);font-weight:600;">
+                                    <i class="ri-id-card-line" style="font-size:.75rem;"></i>
+                                    <span id="mktCambiarEstCi">—</span>
+                                </span>
+                                <span style="display:inline-flex;align-items:center;gap:.25rem;font-size:.72rem;color:#92400e;background:rgba(245,158,11,.2);padding:.2rem .65rem;border-radius:20px;border:1px solid rgba(245,158,11,.4);font-weight:700;">
+                                    <i class="ri-user-add-line" style="font-size:.75rem;"></i> Pre-Inscrito
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Selección de plan --}}
+                <div style="padding:1.25rem 1.5rem;">
+                    <label class="form-label" style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;color:#475569;margin-bottom:.55rem;">
+                        <i class="ri-file-list-3-line me-1" style="color:#f59e0b;"></i>Plan de Pago <span class="text-danger">*</span>
+                    </label>
+                    <select id="mktCambiarPlanSelect" class="form-select" style="border-radius:10px;border:1.5px solid #e2e8f0;font-size:.85rem;padding:.65rem .875rem;color:#334155;">
+                        <option value="">— Seleccionar plan de pago —</option>
+                    </select>
+
+                    {{-- Detalle plan --}}
+                    <div id="mktCambiarPlanDetalle" class="mt-3" style="display:none;">
+                        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+                            <div style="padding:.6rem 1rem;background:linear-gradient(135deg,rgba(245,158,11,.07),rgba(251,191,36,.03));border-bottom:1px solid rgba(245,158,11,.15);display:flex;align-items:center;gap:.5rem;">
+                                <i class="ri-list-ordered" style="color:#f59e0b;font-size:.9rem;"></i>
+                                <span style="font-size:.72rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.4px;">Detalle del Plan</span>
+                            </div>
+                            <div style="padding:.75rem 1rem;" id="mktCambiarPlanDetalleBody"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:1rem;padding:.75rem 1rem;background:rgba(245,158,11,.05);border:1px dashed rgba(245,158,11,.35);border-radius:10px;display:flex;align-items:flex-start;gap:.6rem;">
+                        <i class="ri-information-line" style="color:#f59e0b;font-size:1rem;flex-shrink:0;margin-top:.05rem;"></i>
+                        <p class="mb-0" style="font-size:.77rem;color:#64748b;line-height:1.6;">Al confirmar se crearán las cuotas correspondientes al plan seleccionado y se completará la inscripción del estudiante.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;gap:.5rem;">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="border-radius:8px;font-size:.82rem;padding:.4rem 1rem;">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+                <button type="button" id="mktBtnConfirmarCambiar"
+                    style="background:linear-gradient(135deg,#f59e0b,#fbbf24);border:none;color:#78350f;border-radius:8px;font-size:.82rem;padding:.4rem 1.15rem;font-weight:700;box-shadow:0 4px 12px rgba(245,158,11,.35);">
+                    <i class="ri-user-check-line me-1"></i>Confirmar Inscripción
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
