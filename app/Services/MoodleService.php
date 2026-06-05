@@ -282,6 +282,20 @@ class MoodleService
     }
 
     /**
+     * Suspende o reactiva un usuario completo en Moodle (no la matrícula a un curso).
+     * $suspend = true  → bloquea login del usuario
+     * $suspend = false → reactiva el usuario
+     */
+    public function suspendUser(int $moodleUserId, bool $suspend): bool
+    {
+        $response = $this->call('core_user_update_users', [
+            'users[0][id]'        => $moodleUserId,
+            'users[0][suspended]' => $suspend ? 1 : 0,
+        ]);
+        return $response !== null;
+    }
+
+    /**
      * Verifica si un usuario está matriculado en un curso específico.
      * Usa core_enrol_get_users_courses (por usuario).
      */

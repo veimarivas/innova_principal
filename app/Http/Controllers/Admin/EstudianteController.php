@@ -305,7 +305,8 @@ public function verificarDocumento(Request $request, $id)
 
     public function buscarView()
     {
-        return view('admin.estudiantes.buscar');
+        $cuentasBancarias = \App\Models\CuentaBancaria::with('banco')->where('estado', true)->get();
+        return view('admin.estudiantes.buscar', compact('cuentasBancarias'));
     }
 
     public function listar()

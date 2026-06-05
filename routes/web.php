@@ -511,6 +511,8 @@ Route::prefix('admin/users')->middleware(['auth', 'isAdmin'])->name('admin.users
     Route::post('/buscar-carnet', [UserController::class, 'buscarPorCarnet'])->name('buscarCarnet');
     Route::post('/', [UserController::class, 'guardar'])->name('guardar');
     Route::delete('/{id}', [UserController::class, 'eliminar'])->name('eliminar');
+    Route::post('/{id}/reiniciar-password', [UserController::class, 'reiniciarPassword'])->name('reiniciarPassword');
+    Route::post('/{id}/toggle-estado',     [UserController::class, 'toggleEstado'])->name('toggleEstado');
 });
 
 // Cargos

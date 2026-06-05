@@ -5,6 +5,397 @@
 
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+    /* ── Apartado de ofertas académicas (búsqueda) ─────────────── */
+    .ofertas-academicas-wrap {
+        border-top: 1px solid #e2e8f0;
+    }
+    .ofertas-academicas-head {
+        display: flex; align-items: center; gap: .45rem;
+        font-size: .7rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .06em;
+        color: #475569;
+        margin-bottom: .6rem;
+    }
+    .ofertas-academicas-head i { color: #fc7b04; font-size: .95rem; }
+    .ofertas-academicas-count {
+        margin-left: auto;
+        background: rgba(252,123,4,.12);
+        color: #c96004;
+        font-size: .65rem; font-weight: 800;
+        padding: 1px 8px; border-radius: 20px;
+    }
+    .ofertas-academicas-grid {
+        display: flex; flex-direction: column; gap: .55rem;
+    }
+    .oferta-acad-card {
+        position: relative;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: .75rem .9rem;
+        transition: border-color .2s ease, box-shadow .2s ease, transform .15s ease;
+        overflow: hidden;
+    }
+    .oferta-acad-card::before {
+        content: '';
+        position: absolute; left: 0; top: 0; bottom: 0;
+        width: 4px;
+        background: #fc7b04;
+        border-radius: 0 4px 4px 0;
+    }
+    .oferta-acad-card.oferta-al-dia::before    { background: #16a34a; }
+    .oferta-acad-card.oferta-pendiente::before { background: #d97706; }
+    .oferta-acad-card.oferta-sin-pago::before  { background: #dc2626; }
+    .oferta-acad-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 6px 14px rgba(15,23,42,.08);
+        transform: translateY(-1px);
+    }
+    .oferta-acad-head {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        gap: .6rem; margin-bottom: .55rem;
+    }
+    .oferta-acad-titulo {
+        display: flex; flex-direction: column; gap: .2rem;
+        min-width: 0; flex: 1;
+    }
+    .oferta-acad-codigo {
+        display: inline-flex; align-items: center;
+        font-family: 'Outfit', sans-serif;
+        font-size: .65rem; font-weight: 800;
+        background: rgba(252,123,4,.12); color: #c96004;
+        padding: 2px 8px; border-radius: 6px;
+        letter-spacing: .03em; align-self: flex-start;
+    }
+    .oferta-acad-nombre {
+        font-size: .85rem; font-weight: 700; color: #0f172a;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+    .oferta-acad-estado {
+        display: inline-flex; align-items: center; gap: .25rem;
+        font-size: .65rem; font-weight: 700;
+        padding: .2rem .55rem; border-radius: 20px;
+        white-space: nowrap; flex-shrink: 0;
+        text-transform: uppercase; letter-spacing: .03em;
+    }
+    .oferta-acad-estado i { font-size: .68rem; }
+    .oferta-acad-estado.al-dia    { background: rgba(34,197,94,.13); color: #15803d; }
+    .oferta-acad-estado.pendiente { background: rgba(217,119,6,.13); color: #b45309; }
+    .oferta-acad-estado.sin-pago  { background: rgba(220,38,38,.13); color: #b91c1c; }
+    .oferta-acad-progress {
+        display: flex; align-items: center; gap: .55rem;
+        margin-bottom: .65rem;
+    }
+    .oferta-acad-progress-bar {
+        flex: 1;
+        height: 6px; border-radius: 4px;
+        background: #f1f5f9; overflow: hidden;
+    }
+    .oferta-acad-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #16a34a, #22c55e);
+        border-radius: 4px;
+        transition: width .4s ease;
+    }
+    .oferta-acad-card.oferta-pendiente .oferta-acad-progress-fill {
+        background: linear-gradient(90deg, #d97706, #f59e0b);
+    }
+    .oferta-acad-card.oferta-sin-pago .oferta-acad-progress-fill {
+        background: linear-gradient(90deg, #dc2626, #ef4444);
+    }
+    .oferta-acad-progress-pct {
+        font-family: 'Outfit', sans-serif;
+        font-size: .72rem; font-weight: 800;
+        color: #475569;
+        min-width: 36px; text-align: right;
+    }
+    .oferta-acad-stats {
+        display: flex; align-items: center; gap: .85rem;
+    }
+    .oferta-acad-stat {
+        display: flex; flex-direction: column; line-height: 1.2;
+    }
+    .oferta-acad-stat-lbl {
+        font-size: .62rem; color: #94a3b8;
+        text-transform: uppercase; letter-spacing: .04em; font-weight: 600;
+    }
+    .oferta-acad-stat-val {
+        font-family: 'Outfit', sans-serif;
+        font-size: .82rem; font-weight: 700;
+    }
+    .oferta-acad-stat-val.pagado { color: #15803d; }
+    .oferta-acad-stat-val.saldo  { color: #b45309; }
+    .oferta-acad-card.oferta-al-dia .oferta-acad-stat-val.saldo { color: #16a34a; }
+    .oferta-acad-card.oferta-sin-pago .oferta-acad-stat-val.saldo { color: #b91c1c; }
+    .oferta-acad-pagar {
+        margin-left: auto;
+        display: inline-flex; align-items: center; gap: .3rem;
+        padding: .45rem .85rem; border: none;
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        color: #fff;
+        font-size: .76rem; font-weight: 700;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform .15s ease, box-shadow .2s ease;
+        box-shadow: 0 3px 10px rgba(22,163,74,.28);
+    }
+    .oferta-acad-pagar:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(22,163,74,.36);
+    }
+    .oferta-acad-done {
+        margin-left: auto;
+        display: inline-flex; align-items: center; gap: .3rem;
+        font-size: .76rem; font-weight: 700; color: #15803d;
+        padding: .4rem .7rem;
+        background: rgba(34,197,94,.1);
+        border-radius: 8px;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       Modal Pago Masivo — diseño con paleta cálida del sistema
+    ══════════════════════════════════════════════════════════ */
+    .pmp-modal .modal-dialog { max-width: 1100px; }
+    .pmp-content {
+        border: none;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 25px 70px rgba(154,73,4,.18), 0 8px 24px rgba(0,0,0,.08);
+    }
+
+    /* ── Header ── */
+    .pmp-header {
+        position: relative;
+        display: flex; align-items: center; gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(135deg, #5c2a04 0%, #9a4904 45%, #c96004 75%, #fc7b04 100%);
+        overflow: hidden;
+    }
+    .pmp-header::before {
+        content: '';
+        position: absolute; top: -50%; right: -8%;
+        width: 280px; height: 280px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,.14) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .pmp-header-icon {
+        width: 52px; height: 52px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 1.55rem;
+        flex-shrink: 0; z-index: 1;
+        box-shadow: 0 4px 14px rgba(0,0,0,.18);
+    }
+    .pmp-header-text { z-index: 1; min-width: 0; flex: 1; }
+    .pmp-header-title {
+        font-family: 'Outfit', sans-serif;
+        color: #fff; font-weight: 800; font-size: 1.15rem;
+        margin: 0 0 2px;
+        letter-spacing: -.015em;
+    }
+    .pmp-header-sub {
+        color: rgba(255,255,255,.85);
+        font-size: .82rem; font-weight: 500;
+        display: block;
+    }
+    .pmp-close-btn {
+        z-index: 1; flex-shrink: 0;
+        width: 36px; height: 36px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 9px;
+        color: #fff; font-size: 1.15rem;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: background .2s;
+    }
+    .pmp-close-btn:hover { background: rgba(255,255,255,.3); }
+
+    /* ── Body ── */
+    .pmp-body {
+        padding: 1.25rem 1.5rem;
+        background: #faf7f3;
+    }
+    .pmp-section { margin-bottom: 1.15rem; }
+    .pmp-section:last-of-type { margin-bottom: 0; }
+    .pmp-section-title {
+        display: inline-flex; align-items: center; gap: .4rem;
+        font-size: .7rem; font-weight: 800;
+        text-transform: uppercase; letter-spacing: .07em;
+        color: #c96004;
+        margin-bottom: .6rem;
+        padding: .3rem .65rem;
+        background: rgba(252,123,4,.08);
+        border-radius: 6px;
+    }
+    .pmp-section-title i { font-size: .9rem; }
+
+    /* ── Inputs ── */
+    .pmp-label {
+        display: inline-flex; align-items: center; gap: .35rem;
+        font-size: .72rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .04em;
+        color: #475569;
+        margin-bottom: .35rem;
+    }
+    .pmp-label i { color: #fc7b04; font-size: .85rem; }
+    .pmp-label span { color: #94a3b8; font-weight: 600; text-transform: none; letter-spacing: 0; }
+
+    .pmp-input.form-control,
+    .pmp-input.form-select {
+        background: #fff !important;
+        border: 1.5px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        padding: .6rem .85rem !important;
+        font-size: .88rem !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+        transition: border-color .2s, box-shadow .2s !important;
+        font-family: inherit !important;
+    }
+    .pmp-input.form-control:focus,
+    .pmp-input.form-select:focus {
+        border-color: #fc7b04 !important;
+        box-shadow: 0 0 0 4px rgba(252,123,4,.14) !important;
+        outline: none !important;
+    }
+
+    /* ── Cuotas — tabla con look de tarjeta del programa ── */
+    .pmp-cuotas-wrap {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        max-height: 340px; overflow-y: auto;
+    }
+    .pmp-cuotas-wrap h6 { display: none; } /* el subtítulo que mete el JS lo ocultamos: ya tenemos la cabecera de sección */
+    .pmp-cuotas-wrap #tabla-cuotas-pendientes {
+        margin: 0;
+        font-size: .82rem;
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+    .pmp-cuotas-wrap #tabla-cuotas-pendientes thead th {
+        position: sticky; top: 0; z-index: 2;
+        background: linear-gradient(180deg, #f8f5f1 0%, #f1ebe2 100%);
+        color: #6b3102;
+        font-size: .65rem; font-weight: 800;
+        text-transform: uppercase; letter-spacing: .05em;
+        padding: .65rem .75rem;
+        border-bottom: 2px solid rgba(252,123,4,.18);
+        white-space: nowrap;
+    }
+    .pmp-cuotas-wrap #tabla-cuotas-pendientes tbody td {
+        padding: .65rem .75rem;
+        border-top: 1px solid #f1f5f9;
+        vertical-align: middle;
+        color: #1e293b;
+    }
+    .pmp-cuotas-wrap #tabla-cuotas-pendientes tbody tr:hover td {
+        background: rgba(252,123,4,.04);
+    }
+    .pmp-cuotas-wrap #tabla-cuotas-pendientes tbody tr.cuota-incluida td {
+        background: rgba(34,197,94,.06);
+    }
+    .pmp-cuotas-wrap #tabla-cuotas-pendientes .badge {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        border-radius: 20px !important;
+        padding: .2rem .55rem !important;
+        font-size: .65rem !important;
+    }
+
+    /* ── Resumen ── */
+    .pmp-resumen {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: .85rem;
+        padding: 1rem 1.15rem;
+        background: linear-gradient(135deg, #fff 0%, #fff7ed 100%);
+        border: 1px solid rgba(252,123,4,.18);
+        border-radius: 12px;
+    }
+    .pmp-resumen-item {
+        display: flex; align-items: center; gap: .7rem;
+        padding: .35rem 0;
+    }
+    .pmp-resumen-item + .pmp-resumen-item {
+        border-left: 1px dashed #fed7aa;
+        padding-left: .85rem;
+    }
+    .pmp-resumen-icon {
+        width: 38px; height: 38px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(220,38,38,.1);
+        color: #b91c1c;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .pmp-resumen-icon.ingresado { background: rgba(37,99,235,.1); color: #2563eb; }
+    .pmp-resumen-icon.nueva     { background: rgba(34,197,94,.1); color: #16a34a; }
+    .pmp-resumen-lbl {
+        font-size: .65rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .05em;
+        color: #64748b;
+    }
+    .pmp-resumen-val {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.05rem; font-weight: 800;
+        color: #0f172a; line-height: 1.1;
+    }
+    .pmp-resumen-val.pmp-deuda     { color: #b91c1c; }
+    .pmp-resumen-val.pmp-ingresado { color: #2563eb; }
+    .pmp-resumen-val.pmp-nueva     { color: #16a34a; }
+
+    /* ── Footer ── */
+    .pmp-footer {
+        display: flex; align-items: center; justify-content: flex-end;
+        gap: .65rem;
+        padding: 1rem 1.5rem;
+        background: #fff;
+        border-top: 1px solid #e2e8f0;
+    }
+    .pmp-btn {
+        display: inline-flex; align-items: center; gap: .35rem;
+        padding: .6rem 1.25rem;
+        border-radius: 10px;
+        font-size: .85rem; font-weight: 700;
+        border: 1.5px solid transparent;
+        cursor: pointer;
+        transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+        font-family: inherit;
+    }
+    .pmp-btn-cancel {
+        background: #fff;
+        border-color: #e2e8f0;
+        color: #475569;
+    }
+    .pmp-btn-cancel:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+    .pmp-btn-submit {
+        background: linear-gradient(135deg, #9a4904 0%, #fc7b04 100%);
+        color: #fff;
+        border-color: #9a4904;
+        box-shadow: 0 4px 14px rgba(154,73,4,.32);
+    }
+    .pmp-btn-submit:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 22px rgba(154,73,4,.42);
+    }
+
+    @media (max-width: 720px) {
+        .pmp-resumen { grid-template-columns: 1fr; }
+        .pmp-resumen-item + .pmp-resumen-item { border-left: none; border-top: 1px dashed #fed7aa; padding-left: 0; padding-top: .65rem; }
+    }
+    </style>
 @endsection
 
 @section('content')
@@ -102,82 +493,118 @@
         </div>
 
         <!-- Modal Pago Masivo -->
-        <div class="modal fade" id="modalPagoMasivo" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div>
-                            <h5 class="modal-title"><i class="ri-file-list-3-line"></i> Registro Masivo de Cuotas</h5>
-                            <small class="text-muted d-block" id="pago-masivo-oferta"></small>
+        <div class="modal fade pmp-modal" id="modalPagoMasivo" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content pmp-content">
+
+                    {{-- Header con gradiente naranja --}}
+                    <div class="pmp-header">
+                        <div class="pmp-header-icon"><i class="ri-bank-card-line"></i></div>
+                        <div class="pmp-header-text">
+                            <h5 class="pmp-header-title">Registro de Pago</h5>
+                            <small class="pmp-header-sub" id="pago-masivo-oferta">—</small>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="pmp-close-btn" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="ri-close-line"></i>
+                        </button>
                     </div>
+
                     <form id="formPagoMasivo">
-                        <div class="modal-body">
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-3">
-                                    <label class="form-label"><i class="ri-money-dollar-line"></i> Monto a Pagar
-                                        (Bs.)</label>
-                                    <input type="number" class="form-control" id="pago-masivo-monto" name="monto"
-                                        step="0.01" min="0.01" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label"><i class="ri-discount-line"></i> Descuento (Bs.)</label>
-                                    <input type="number" class="form-control" id="pago-masivo-descuento"
-                                        name="descuento" step="0.01" min="0" value="0">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label"><i class="ri-calendar-line"></i> Fecha de Pago</label>
-                                    <input type="date" class="form-control" id="pago-masivo-fecha" name="fecha_pago"
-                                        required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label"><i class="ri-bank-card-line"></i> Método de Pago</label>
-                                    <select class="form-select" id="pago-masivo-metodo" name="metodo" required>
-                                        <option value="">Seleccionar...</option>
-                                        <option value="Efectivo">Efectivo</option>
-                                        <option value="Qr">QR</option>
-                                        <option value="Parcial">Parcial (Efectivo + QR)</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6" id="pago-masivo-campo-efectivo" style="display:none;">
-                                    <label class="form-label"><i class="ri-money-dollar-line"></i> Efectivo (Bs.)</label>
-                                    <input type="number" class="form-control" id="pago-masivo-efectivo" name="efectivo"
-                                        step="0.01" min="0">
-                                </div>
-                                <div class="col-md-6" id="pago-masivo-campo-qr" style="display:none;">
-                                    <label class="form-label"><i class="ri-qr-code-line"></i> QR (Bs.)</label>
-                                    <input type="number" class="form-control" id="pago-masivo-qr" name="qr"
-                                        step="0.01" min="0">
-                                </div>
-                            </div>
-                            <div id="pago-masivo-lista-cuotas" class="mb-4"
-                                style="max-height: 300px; overflow-y: auto;"></div>
-                            <div class="alert alert-info">
-                                <div class="row text-center">
-                                    <div class="col-md-4">
-                                        <div class="text-muted small">Total Deuda</div>
-                                        <div class="fw-bold" id="pago-masivo-deuda-total">—</div>
+                        <div class="modal-body pmp-body">
+
+                            {{-- Inputs principales --}}
+                            <div class="pmp-section">
+                                <div class="pmp-section-title"><i class="ri-edit-2-line"></i> Datos del pago</div>
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="pmp-label"><i class="ri-money-dollar-line"></i> Monto a Pagar <span>(Bs.)</span></label>
+                                        <input type="number" class="form-control pmp-input" id="pago-masivo-monto" name="monto" step="0.01" min="0.01" required placeholder="0.00">
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="text-muted small">Monto Ingresado</div>
-                                        <div class="fw-bold text-primary" id="pago-masivo-monto-ingresado">—</div>
+                                    <div class="col-md-3">
+                                        <label class="pmp-label"><i class="ri-discount-line"></i> Descuento <span>(Bs.)</span></label>
+                                        <input type="number" class="form-control pmp-input" id="pago-masivo-descuento" name="descuento" step="0.01" min="0" value="0">
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="text-muted small">Nueva Deuda</div>
-                                        <div class="fw-bold text-success" id="pago-masivo-nueva-deuda">—</div>
+                                    <div class="col-md-3">
+                                        <label class="pmp-label"><i class="ri-calendar-line"></i> Fecha de Pago</label>
+                                        <input type="date" class="form-control pmp-input" id="pago-masivo-fecha" name="fecha_pago" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="pmp-label"><i class="ri-bank-card-line"></i> Método de Pago</label>
+                                        <select class="form-select pmp-input" id="pago-masivo-metodo" name="metodo" required>
+                                            <option value="">Seleccionar...</option>
+                                            <option value="Efectivo">Efectivo</option>
+                                            <option value="Qr">QR</option>
+                                            <option value="Transferencia">Transferencia</option>
+                                            <option value="Parcial">Parcial (Efectivo + QR)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6" id="pago-masivo-campo-efectivo" style="display:none;">
+                                        <label class="pmp-label"><i class="ri-money-dollar-line"></i> Efectivo <span>(Bs.)</span></label>
+                                        <input type="number" class="form-control pmp-input" id="pago-masivo-efectivo" name="efectivo" step="0.01" min="0" placeholder="0.00">
+                                    </div>
+                                    <div class="col-md-6" id="pago-masivo-campo-qr" style="display:none;">
+                                        <label class="pmp-label"><i class="ri-qr-code-line"></i> QR <span>(Bs.)</span></label>
+                                        <input type="number" class="form-control pmp-input" id="pago-masivo-qr" name="qr" step="0.01" min="0" placeholder="0.00">
+                                    </div>
+                                    <div class="col-md-6" id="pago-masivo-cuenta-bancaria-container" style="display:none;">
+                                        <label class="pmp-label"><i class="ri-bank-line"></i> Cuenta Bancaria</label>
+                                        <select class="form-select pmp-input" id="pago-masivo-cuenta-bancaria" name="cuenta_bancaria_id">
+                                            <option value="">Seleccionar cuenta...</option>
+                                            @foreach(($cuentasBancarias ?? []) as $cuenta)
+                                                <option value="{{ $cuenta->id }}">{{ $cuenta->banco->nombre }} - {{ $cuenta->numero_cuenta }} ({{ $cuenta->tipo_cuenta }})</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6" id="pago-masivo-referencia-container" style="display:none;">
+                                        <label class="pmp-label"><i class="ri-file-info-line"></i> Referencia</label>
+                                        <input type="text" class="form-control pmp-input" id="pago-masivo-referencia" name="referencia" placeholder="Número de referencia">
                                     </div>
                                 </div>
                             </div>
+
+                            {{-- Lista de cuotas --}}
+                            <div class="pmp-section">
+                                <div class="pmp-section-title"><i class="ri-list-check-2"></i> Cuotas del programa</div>
+                                <div id="pago-masivo-lista-cuotas" class="pmp-cuotas-wrap"></div>
+                            </div>
+
+                            {{-- Resumen --}}
+                            <div class="pmp-resumen">
+                                <div class="pmp-resumen-item">
+                                    <div class="pmp-resumen-icon"><i class="ri-wallet-3-line"></i></div>
+                                    <div>
+                                        <div class="pmp-resumen-lbl">Total Deuda</div>
+                                        <div class="pmp-resumen-val pmp-deuda" id="pago-masivo-deuda-total">—</div>
+                                    </div>
+                                </div>
+                                <div class="pmp-resumen-item">
+                                    <div class="pmp-resumen-icon ingresado"><i class="ri-money-dollar-circle-line"></i></div>
+                                    <div>
+                                        <div class="pmp-resumen-lbl">Monto Ingresado</div>
+                                        <div class="pmp-resumen-val pmp-ingresado" id="pago-masivo-monto-ingresado">—</div>
+                                    </div>
+                                </div>
+                                <div class="pmp-resumen-item">
+                                    <div class="pmp-resumen-icon nueva"><i class="ri-checkbox-circle-line"></i></div>
+                                    <div>
+                                        <div class="pmp-resumen-lbl">Nueva Deuda</div>
+                                        <div class="pmp-resumen-val pmp-nueva" id="pago-masivo-nueva-deuda">—</div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <input type="hidden" id="pago-masivo-estudiante-id" name="estudiante_id">
                             <input type="hidden" id="pago-masivo-inscripcion-id" name="inscripcion_id">
                             <input type="hidden" id="pago-masivo-trabajador-cargo" name="trabajador_cargo_id">
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i
-                                    class="ri-close-line"></i> Cancelar</button>
-                            <button type="submit" class="btn btn-primary"><i class="ri-save-line"></i> Registrar
-                                Pago</button>
+
+                        <div class="pmp-footer">
+                            <button type="button" class="pmp-btn pmp-btn-cancel" data-bs-dismiss="modal">
+                                <i class="ri-close-line"></i> Cancelar
+                            </button>
+                            <button type="submit" class="pmp-btn pmp-btn-submit">
+                                <i class="ri-save-line"></i> Registrar Pago
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -301,49 +728,54 @@
 
                     var ofertasHtml = '';
                     if (est.ofertas && est.ofertas.length > 0) {
-                        ofertasHtml = '<div class="mt-3 pt-3" style="border-top: 1px solid #e2e8f0;">' +
-                            '<h6 class="fw-semibold mb-2" style="color: #64748b; font-size: 0.75rem; text-transform: uppercase;">Ofertas Académicas</h6>' +
-                            '<div class="row g-2">';
+                        ofertasHtml = '<div class="ofertas-academicas-wrap mt-3 pt-3">' +
+                            '<div class="ofertas-academicas-head">' +
+                                '<i class="ri-graduation-cap-line"></i>' +
+                                '<span>Ofertas académicas</span>' +
+                                '<span class="ofertas-academicas-count">' + est.ofertas.length + '</span>' +
+                            '</div>' +
+                            '<div class="ofertas-academicas-grid">';
 
                         est.ofertas.forEach(function(oferta, idx) {
-                            var ofertaEstadoColor = oferta.saldo <= 0 ? '#16a34a' : (oferta
-                                .total_pagado > 0 ? '#d97706' : '#dc2626');
-                            ofertasHtml += '<div class="col-12">' +
-                                '<div class="d-flex justify-content-between align-items-center p-2 rounded-2" style="background: #f8fafc;">' +
-                                '<div class="d-flex align-items-center gap-2">' +
-                                '<span class="badge fs-10 fw-semibold" style="background: #fc7b0420; color: #fc7b04;">' +
-                                oferta.oferta_codigo + '</span>' +
-                                '<span class="text-decoration-none fw-semibold" style="color: #1e293b; font-size: 0.8rem;">' +
-                                oferta.oferta_nombre + '</span>' +
+                            var pagadoNum   = parseFloat(oferta.total_pagado) || 0;
+                            var saldoNum    = parseFloat(oferta.saldo) || 0;
+                            var totalNum    = pagadoNum + saldoNum;
+                            var pct         = totalNum > 0 ? Math.round((pagadoNum / totalNum) * 100) : 0;
+                            var estadoCls   = saldoNum <= 0 ? 'al-dia' : (pagadoNum > 0 ? 'pendiente' : 'sin-pago');
+                            var estadoTxt   = saldoNum <= 0 ? 'Al día' : (pagadoNum > 0 ? 'Pendiente' : 'Sin pagos');
+                            var estadoIco   = saldoNum <= 0 ? 'ri-checkbox-circle-fill' : (pagadoNum > 0 ? 'ri-time-line' : 'ri-error-warning-line');
+
+                            ofertasHtml += '<div class="oferta-acad-card oferta-' + estadoCls + '">' +
+                                '<div class="oferta-acad-head">' +
+                                    '<div class="oferta-acad-titulo">' +
+                                        '<span class="oferta-acad-codigo">' + oferta.oferta_codigo + '</span>' +
+                                        '<span class="oferta-acad-nombre">' + oferta.oferta_nombre + '</span>' +
+                                    '</div>' +
+                                    '<span class="oferta-acad-estado ' + estadoCls + '"><i class="' + estadoIco + '"></i> ' + estadoTxt + '</span>' +
                                 '</div>' +
-                                '<div class="d-flex align-items-center gap-3">' +
-                                '<div class="text-end">' +
-                                '<div class="fs-10 text-muted">Pagado</div>' +
-                                '<div class="fw-bold text-success">Bs. ' + parseFloat(oferta
-                                    .total_pagado).toFixed(2) + '</div>' +
+                                '<div class="oferta-acad-progress">' +
+                                    '<div class="oferta-acad-progress-bar"><div class="oferta-acad-progress-fill" style="width:' + pct + '%;"></div></div>' +
+                                    '<span class="oferta-acad-progress-pct">' + pct + '%</span>' +
                                 '</div>' +
-                                '<div class="text-end">' +
-                                '<div class="fs-10 text-muted">Saldo</div>' +
-                                '<div class="fw-bold" style="color: ' + ofertaEstadoColor +
-                                ';">Bs. ' + parseFloat(oferta.saldo).toFixed(2) + '</div>' +
+                                '<div class="oferta-acad-stats">' +
+                                    '<div class="oferta-acad-stat">' +
+                                        '<span class="oferta-acad-stat-lbl">Pagado</span>' +
+                                        '<span class="oferta-acad-stat-val pagado">Bs. ' + pagadoNum.toFixed(2) + '</span>' +
+                                    '</div>' +
+                                    '<div class="oferta-acad-stat">' +
+                                        '<span class="oferta-acad-stat-lbl">Saldo</span>' +
+                                        '<span class="oferta-acad-stat-val saldo">Bs. ' + saldoNum.toFixed(2) + '</span>' +
+                                    '</div>' +
+                                    (saldoNum > 0 ?
+                                        '<button type="button" class="oferta-acad-pagar btn-pagar-oferta" ' +
+                                            'data-estudiante-id="' + est.estudiante_id + '" ' +
+                                            'data-inscripcion-id="' + (oferta.inscripcion_id || '') + '" ' +
+                                            'data-oferta-name="' + oferta.oferta_nombre + '">' +
+                                            '<i class="ri-bank-card-line"></i> Pagar' +
+                                        '</button>'
+                                        : '<div class="oferta-acad-done"><i class="ri-checkbox-circle-fill"></i> Cancelado</div>') +
                                 '</div>' +
-                                '<div class="d-flex gap-1">' +
-                                (oferta.saldo > 0 ?
-                                    '<button type="button" class="btn btn-sm btn-pagar-oferta" style="background: #22c55e; color: white; border-radius: 6px; padding: 4px 10px;" title="Pagar" data-estudiante-id="' +
-                                    est.estudiante_id + '" data-inscripcion-id="' + (oferta
-                                        .inscripcion_id || '') + '" data-oferta-name="Pago: ' +
-                                    oferta.oferta_nombre + '">' +
-                                    '<i class="ri-bank-card-line"></i>' +
-                                    '</button>' : '') +
-                                '<a href="/admin/estudiantes/' + est.estudiante_id +
-                                '/detalle?oferta=' + oferta.oferta_id +
-                                '" class="btn btn-sm" style="background: #fc7b04; color: white; border-radius: 6px; padding: 4px 10px;" title="Ver Detalle">' +
-                                '<i class="ri-eye-line"></i>' +
-                                '</a>' +
-                                '</div>' +
-                                '</div>' +
-                                '</div>' +
-                                '</div>';
+                            '</div>';
                         });
 
                         ofertasHtml += '</div></div>';
@@ -370,10 +802,6 @@
                         '</div>' +
                         '</div>' +
                         '</div>' +
-                        '<a href="/admin/estudiantes/' + est.estudiante_id +
-                        '/detalle" class="btn btn-sm" style="background: #1e293b; color: white; border-radius: 8px; width: 32px; height: 32px; padding: 0;">' +
-                        '<i class="ri-eye-line"></i>' +
-                        '</a>' +
                         '</div>' +
 
                         '<div class="d-flex justify-content-between align-items-center py-2 px-2 rounded-2 mb-2" style="background: #f8fafc;">' +
@@ -417,11 +845,6 @@
                         '</div>' +
 
                         '<div class="d-flex justify-content-end gap-2 mt-2">' +
-                        (est.saldo > 0 ?
-                            '<button type="button" class="btn btn-sm fw-semibold btn-pagar-estudiante" style="background: #22c55e; color: white; border-radius: 8px; padding: 6px 16px;" data-estudiante-id="' +
-                            est.estudiante_id + '" data-oferta-name="Pago General">' +
-                            '<i class="ri-bank-card-line me-1"></i>Pagar' +
-                            '</button>' : '') +
                         '<a href="/admin/estudiantes/' + est.estudiante_id +
                         '/detalle" class="btn btn-sm fw-semibold" style="background: #1e293b; color: white; border-radius: 8px; padding: 6px 16px;">' +
                         '<i class="ri-eye-line me-1"></i>Ver Detalle' +
@@ -500,16 +923,29 @@
             document.getElementById('pago-masivo-metodo').value = '';
             document.getElementById('pago-masivo-efectivo').value = '';
             document.getElementById('pago-masivo-qr').value = '';
+            var cbSel = document.getElementById('pago-masivo-cuenta-bancaria');
+            if (cbSel) cbSel.value = '';
+            var refInp = document.getElementById('pago-masivo-referencia');
+            if (refInp) refInp.value = '';
             document.getElementById('pago-masivo-campo-efectivo').style.display = 'none';
             document.getElementById('pago-masivo-campo-qr').style.display = 'none';
+            var cbCont = document.getElementById('pago-masivo-cuenta-bancaria-container');
+            if (cbCont) cbCont.style.display = 'none';
+            var refCont = document.getElementById('pago-masivo-referencia-container');
+            if (refCont) refCont.style.display = 'none';
 
             fetch('/admin/estudiantes/' + estudianteId + '/cuotas-json')
                 .then(function(res) {
                     return res.json();
                 })
                 .then(function(data) {
-                    // Set inscripcion_id from first cuota if not set
-                    if (!inscripcionId && data.length > 0) {
+                    // Si recibimos inscripcion_id, filtrar SOLO las cuotas de ese programa
+                    if (inscripcionId) {
+                        data = data.filter(function(c) {
+                            return String(c.inscripcion_id || '') === String(inscripcionId);
+                        });
+                    } else if (data.length > 0) {
+                        // Sin inscripción específica: usar la primera disponible para el guardado
                         for (var i = 0; i < data.length; i++) {
                             if (data[i].inscripcion_id) {
                                 document.getElementById('pago-masivo-inscripcion-id').value = data[i].inscripcion_id;
@@ -649,11 +1085,32 @@
         });
 
         document.getElementById('pago-masivo-metodo').addEventListener('change', function() {
-            var metodo = this.value;
-            document.getElementById('pago-masivo-campo-efectivo').style.display = (metodo === 'Parcial') ? 'block' :
-                'none';
-            document.getElementById('pago-masivo-campo-qr').style.display = (metodo === 'Parcial') ? 'block' :
-                'none';
+            var campoEfectivo = document.getElementById('pago-masivo-campo-efectivo');
+            var campoQr       = document.getElementById('pago-masivo-campo-qr');
+            var cuentaBancariaContainer = document.getElementById('pago-masivo-cuenta-bancaria-container');
+            var referenciaContainer     = document.getElementById('pago-masivo-referencia-container');
+
+            if (this.value === 'Parcial') {
+                campoEfectivo.style.display = 'block';
+                campoQr.style.display = 'block';
+                cuentaBancariaContainer.style.display = 'block';
+                referenciaContainer.style.display = 'none';
+            } else if (this.value === 'Qr') {
+                campoEfectivo.style.display = 'none';
+                campoQr.style.display = 'none';
+                cuentaBancariaContainer.style.display = 'block';
+                referenciaContainer.style.display = 'none';
+            } else if (this.value === 'Transferencia') {
+                campoEfectivo.style.display = 'none';
+                campoQr.style.display = 'none';
+                cuentaBancariaContainer.style.display = 'block';
+                referenciaContainer.style.display = 'block';
+            } else {
+                campoEfectivo.style.display = 'none';
+                campoQr.style.display = 'none';
+                cuentaBancariaContainer.style.display = 'none';
+                referenciaContainer.style.display = 'none';
+            }
             actualizarResumenPagoMasivo();
         });
 
@@ -738,6 +1195,8 @@
                         cuotas: cuotasSeleccionadas,
                         trabajador_cargo_id: document.getElementById('pago-masivo-trabajador-cargo')
                             .value,
+                        cuenta_bancaria_id: document.getElementById('pago-masivo-cuenta-bancaria')?.value || '',
+                        referencia: document.getElementById('pago-masivo-referencia')?.value || '',
                     })
                 })
                 .then(function(res) {

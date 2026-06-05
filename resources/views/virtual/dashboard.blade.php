@@ -368,6 +368,119 @@
         padding: .25rem .65rem; border-radius: 30px;
     }
 
+    /* ── Cuenta inactiva ─────────────────────────────────────────── */
+    .cuenta-inactiva-card {
+        background: linear-gradient(180deg, #fff 0%, #fff7ed 100%);
+        border: 1.5px solid #fed7aa;
+        border-radius: 18px;
+        padding: 2.25rem 2rem;
+        text-align: center;
+        max-width: 720px;
+        margin: 1.25rem auto 0;
+        box-shadow: 0 14px 38px rgba(154,73,4,.10), 0 4px 12px rgba(0,0,0,.04);
+        position: relative;
+        overflow: hidden;
+    }
+    .cuenta-inactiva-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0; height: 4px;
+        background: linear-gradient(90deg, #b91c1c, #d97706, #b91c1c);
+    }
+    .cuenta-inactiva-icon {
+        width: 78px; height: 78px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #fee2e2 0%, #fef3c7 100%);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 8px 22px rgba(217,119,6,.18);
+    }
+    .cuenta-inactiva-icon i { font-size: 2.2rem; color: #b91c1c; }
+    .cuenta-inactiva-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.6rem; font-weight: 800;
+        color: #0f172a; margin: 0 0 .5rem;
+        letter-spacing: -.015em;
+    }
+    .cuenta-inactiva-title span {
+        color: #b91c1c;
+        background: rgba(185,28,28,.08);
+        padding: .1rem .65rem;
+        border-radius: 10px;
+        margin-left: .25rem;
+    }
+    .cuenta-inactiva-desc {
+        font-size: .95rem; color: #475569;
+        line-height: 1.55; margin: 0 auto 1.5rem;
+        max-width: 480px;
+    }
+    .cuenta-inactiva-action {
+        display: flex; align-items: flex-start; gap: .9rem;
+        background: #fff;
+        border: 1px solid #fed7aa;
+        border-left: 4px solid #fc7b04;
+        border-radius: 12px;
+        padding: 1rem 1.15rem;
+        text-align: left;
+        max-width: 560px; margin: 0 auto 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.03);
+    }
+    .cuenta-inactiva-action-icon {
+        width: 42px; height: 42px;
+        background: linear-gradient(135deg, #fc7b04 0%, #c96004 100%);
+        color: #fff; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(252,123,4,.32);
+    }
+    .cuenta-inactiva-action-label {
+        font-size: .68rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .08em;
+        color: #c96004; margin-bottom: .25rem;
+    }
+    .cuenta-inactiva-action-text {
+        font-size: .88rem; color: #334155; line-height: 1.5;
+    }
+    .cuenta-inactiva-action-text strong { color: #0f172a; }
+    .cuenta-inactiva-channels {
+        display: flex; gap: .75rem; justify-content: center;
+        flex-wrap: wrap;
+    }
+    .cuenta-inactiva-channel {
+        display: inline-flex; align-items: center; gap: .65rem;
+        padding: .7rem 1rem;
+        background: #fff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all .2s ease;
+        min-width: 200px;
+    }
+    .cuenta-inactiva-channel:hover {
+        border-color: #fc7b04;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(252,123,4,.18);
+    }
+    .cuenta-inactiva-channel.wa:hover {
+        border-color: #25D366;
+        box-shadow: 0 8px 18px rgba(37,211,102,.18);
+    }
+    .cuenta-inactiva-channel i {
+        font-size: 1.3rem; color: #fc7b04; flex-shrink: 0;
+    }
+    .cuenta-inactiva-channel.wa i { color: #25D366; }
+    .cuenta-inactiva-channel span {
+        display: flex; flex-direction: column; text-align: left;
+    }
+    .cuenta-inactiva-channel small {
+        font-size: .65rem; color: #94a3b8;
+        text-transform: uppercase; letter-spacing: .06em;
+        font-weight: 600;
+    }
+    .cuenta-inactiva-channel strong {
+        font-size: .82rem; color: #0f172a;
+        font-weight: 700;
+    }
+
     /* Suavizar la animación al cambiar de programa */
     .est-oferta-content { animation: acadFadeIn .35s ease both; }
     @keyframes acadFadeIn {
@@ -577,10 +690,566 @@
         transform: translateY(-1px);
         box-shadow: 0 6px 14px rgba(22,163,74,.28);
     }
+
+    /* ══════════════════════════════════════════════════════════════
+       REFINEMENTS — Contable & Pagos (elegante, estilo ctb-*)
+    ══════════════════════════════════════════════════════════════ */
+
+    /* ── Balance card ── */
+    .contable-balance-card {
+        border: 1px solid #e9e2d9;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px -6px rgba(0,0,0,.06);
+        transition: box-shadow .25s ease;
+    }
+    .contable-balance-card:hover {
+        box-shadow: 0 8px 28px -8px rgba(0,0,0,.1);
+    }
+    .contable-balance-header {
+        background: linear-gradient(135deg, #391b04, #5c2d0a) !important;
+        padding: 14px 20px;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .contable-balance-header i { color: #fc7b04; font-size: 1.15rem; }
+    .contable-balance-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: .88rem; font-weight: 700; color: #fff; margin: 0;
+        letter-spacing: .02em;
+    }
+
+    /* ── Stat items ── */
+    .contable-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        background: #fff;
+    }
+    .contable-stat-item {
+        display: flex; align-items: center; gap: 14px;
+        padding: 20px 20px;
+        border-right: 1px solid #f0ebe4;
+        transition: background .2s;
+    }
+    .contable-stat-item:last-child { border-right: none; }
+    .contable-stat-item:hover { background: #faf7f3; }
+    .contable-stat-icon {
+        width: 46px; height: 46px;
+        border-radius: 13px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.25rem; flex-shrink: 0;
+    }
+    .contable-stat-icon.pagado   { background: rgba(34,197,94,.12); color: #15803d; }
+    .contable-stat-icon.pendiente { background: rgba(245,158,11,.12); color: #b45309; }
+    .contable-stat-icon.vencido  { background: rgba(239,68,68,.12); color: #dc2626; }
+    .contable-stat-value {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800; font-size: 1.1rem; line-height: 1.1; margin-bottom: 2px;
+    }
+    .contable-stat-value.pagado   { color: #15803d; }
+    .contable-stat-value.pendiente { color: #b45309; }
+    .contable-stat-value.vencido  { color: #dc2626; }
+    .contable-stat-label { font-size: .7rem; color: #7b6f62; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+
+    /* ── Tabs wrapper ── */
+    .contable-tabs-wrapper {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #e9e2d9;
+        overflow: hidden;
+        box-shadow: 0 4px 20px -6px rgba(0,0,0,.06);
+    }
+    .contable-tabs-header {
+        background: linear-gradient(180deg, #f8f5f1 0%, #f0ebe4 100%) !important;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e9e2d9;
+    }
+
+    /* ── Pill tabs ── */
+    .contable-prog-pill {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 9px 15px;
+        font-size: .8rem; font-weight: 600;
+        color: #7b6f62;
+        background: #fff;
+        border: 1.5px solid #e9e2d9;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all .2s ease;
+        white-space: nowrap;
+    }
+    .contable-prog-pill:hover {
+        border-color: var(--est-primary);
+        color: var(--est-primary);
+        background: rgba(252,123,4,.06);
+    }
+    .contable-prog-pill.active {
+        background: var(--est-primary) !important;
+        color: #fff;
+        border-color: var(--est-primary);
+        box-shadow: 0 4px 12px rgba(252,123,4,.22);
+    }
+
+    /* ── Mini stats ── */
+    .contable-mini-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-bottom: 1px solid #f0ebe4;
+    }
+    .contable-mini-stat {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 18px;
+        border-right: 1px solid #f0ebe4;
+    }
+    .contable-mini-stat:last-child { border-right: none; }
+    .contable-mini-icon {
+        width: 34px; height: 34px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; flex-shrink: 0;
+    }
+    .contable-mini-icon.green { background: rgba(34,197,94,.1); color: #15803d; }
+    .contable-mini-icon.amber { background: rgba(245,158,11,.1); color: #b45309; }
+    .contable-mini-icon.red   { background: rgba(239,68,68,.1); color: #dc2626; }
+    .contable-mini-val {
+        font-family: 'Outfit', sans-serif;
+        font-size: .9rem; font-weight: 700; line-height: 1.1;
+    }
+    .contable-mini-val.green { color: #15803d; }
+    .contable-mini-val.amber { color: #b45309; }
+    .contable-mini-val.red   { color: #dc2626; }
+    .contable-mini-lbl {
+        font-size: .62rem; color: #7b6f62;
+        text-transform: uppercase; letter-spacing: .04em;
+        font-weight: 600;
+    }
+
+    /* ── Cuotas table ── */
+    .contable-cuotas-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .contable-cuotas-table thead th {
+        padding: .6rem .85rem;
+        font-size: .62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #7b6f62;
+        background: #f8f5f1 !important;
+        border-bottom: 1px solid #e9e2d9;
+        white-space: nowrap;
+    }
+    .contable-cuotas-table tbody td {
+        padding: .75rem .85rem;
+        border-bottom: 1px solid #f0ebe4;
+        vertical-align: middle;
+        font-size: .82rem;
+        color: #1e293b;
+    }
+    .contable-cuotas-table tbody tr:last-child td { border-bottom: none; }
+    .contable-cuotas-table tbody tr:hover td { background: rgba(252,123,4,.035); }
+    .contable-cuotas-table .cuota-name {
+        font-weight: 600; color: #1e293b;
+    }
+    .contable-cuotas-table .estado-badge-est {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 4px 10px; border-radius: 20px;
+        font-size: .66rem; font-weight: 700; letter-spacing: .02em;
+        width: fit-content;
+    }
+    .contable-cuotas-table .estado-badge-est.pagado {
+        background: rgba(34,197,94,.1); color: #15803d;
+    }
+    .contable-cuotas-table .estado-badge-est.vencido {
+        background: rgba(239,68,68,.1); color: #dc2626;
+    }
+    .contable-cuotas-table .estado-badge-est.pendiente {
+        background: rgba(245,158,11,.1); color: #b45309;
+    }
+
+    /* ── Progress bar ── */
+    .contable-pay-progress {
+        display: flex; align-items: center; gap: 12px;
+        padding: 14px 18px;
+        border-bottom: 1px solid #f0ebe4;
+        background: #faf7f3;
+    }
+    .contable-pay-track {
+        flex: 1; height: 8px;
+        background: #e4ddd4;
+        border-radius: 10px; overflow: hidden;
+    }
+    .contable-pay-track-fill {
+        height: 100%; border-radius: 10px;
+        background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+        transition: width .6s ease;
+    }
+    .contable-pay-track-fill.some {
+        background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+    }
+    .contable-pay-track-fill.low {
+        background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    /* ── Cuota pay micro bar ── */
+    .cuota-pay-micro { gap: 6px; }
+    .cuota-pay-micro .track { height: 6px; background: #e4ddd4; }
+    .cuota-pay-micro .pct { font-size: .7rem; color: #7b6f62; }
+
+    /* ── Pagos tabs ── */
+    .pagos-tabs-wrapper {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #e9e2d9;
+        overflow: hidden;
+        box-shadow: 0 4px 20px -6px rgba(0,0,0,.06);
+    }
+    .pagos-tabs-header {
+        background: linear-gradient(180deg, #f8f5f1 0%, #f0ebe4 100%);
+        padding: 12px 16px;
+        border-bottom: 1px solid #e9e2d9;
+    }
+
+    /* ── Pagos card (2-column) ── */
+    .pagos-card {
+        border: 1px solid #e9e2d9;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 2px 10px -4px rgba(0,0,0,.04);
+        transition: box-shadow .25s ease;
+    }
+    .pagos-card:hover {
+        box-shadow: 0 6px 20px -8px rgba(0,0,0,.08);
+    }
+    .pagos-card-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: .85rem 1rem;
+        background: linear-gradient(180deg, #f8f5f1 0%, #f0ebe4 100%);
+        border-bottom: 1px solid #e9e2d9;
+    }
+    .pagos-card-icon {
+        width: 34px; height: 34px;
+        border-radius: 9px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; flex-shrink: 0;
+    }
+    .pagos-card-icon.orange { background: rgba(252,123,4,.12); color: #c96004; }
+    .pagos-card-icon.indigo { background: rgba(99,102,241,.12); color: #6366f1; }
+    .pagos-card-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: .82rem; font-weight: 700; color: #1e293b; margin: 0;
+    }
+    .pagos-card-sub {
+        font-size: .68rem; color: #7b6f62; margin-top: 1px;
+    }
+
+    /* ── Pagos mini table ── */
+    .pagos-mini-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .pagos-mini-table thead th {
+        padding: .55rem .75rem;
+        font-size: .6rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .06em;
+        color: #7b6f62;
+        background: #f8f5f1;
+        border-bottom: 1px solid #e9e2d9;
+        white-space: nowrap;
+    }
+    .pagos-mini-table tbody td {
+        padding: .65rem .75rem;
+        border-bottom: 1px solid #f0ebe4;
+        vertical-align: middle;
+        font-size: .78rem;
+        color: #1e293b;
+    }
+    .pagos-mini-table tbody tr:last-child td { border-bottom: none; }
+    .pagos-mini-table tbody tr:hover td { background: rgba(252,123,4,.03); }
+    .pagos-mini-table .num-cuota {
+        width: 24px; height: 24px;
+        border-radius: 6px;
+        background: #f0ebe4;
+        display: inline-flex;
+        align-items: center; justify-content: center;
+        font-weight: 700; font-size: .68rem;
+        color: #7b6f62;
+    }
+    .pagos-mini-table .fecha-cell { color: #7b6f62; font-size: .72rem; }
+    .pagos-cuota-badge {
+        display: inline-flex; align-items: center; gap: 3px;
+        padding: 3px 9px; border-radius: 20px;
+        font-size: .62rem !important; font-weight: 700 !important;
+        letter-spacing: .02em;
+    }
+    .pagos-cuota-badge.pagado   { background: rgba(34,197,94,.1); color: #15803d; }
+    .pagos-cuota-badge.vencido  { background: rgba(239,68,68,.1); color: #dc2626; }
+    .pagos-cuota-badge.pendiente { background: rgba(245,158,11,.1); color: #b45309; }
+
+    /* ── Pagos comprobante row ── */
+    .pagos-comp-row {
+        display: flex; align-items: center; gap: 10px;
+        padding: .75rem .85rem;
+        border-bottom: 1px solid #f0ebe4;
+        transition: background .2s;
+    }
+    .pagos-comp-row:last-child { border-bottom: none; }
+    .pagos-comp-row:hover { background: rgba(252,123,4,.03); }
+    .pagos-comp-icon {
+        width: 34px; height: 34px;
+        border-radius: 9px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; flex-shrink: 0;
+    }
+    .pagos-comp-icon.pdf { background: rgba(220,38,38,.1); color: #dc2626; }
+    .pagos-comp-icon.img { background: rgba(99,102,241,.1); color: #6366f1; }
+    .pagos-comp-body .top .fecha {
+        font-size: .72rem; color: #475569;
+        display: flex; align-items: center; gap: 4px;
+    }
+    .pagos-comp-body .top .cuota-tag {
+        display: inline-flex;
+        padding: 2px 8px; border-radius: 6px;
+        font-size: .62rem; font-weight: 600;
+        background: rgba(252,123,4,.08); color: #c96004;
+    }
+    .pagos-comp-badge {
+        display: inline-flex; align-items: center; gap: 3px;
+        padding: 3px 9px; border-radius: 20px;
+        font-size: .62rem; font-weight: 700;
+    }
+    .pagos-comp-badge.verificado { background: #dcfce7; color: #15803d; }
+    .pagos-comp-badge.revision   { background: #fef3c7; color: #b45309; }
+    .pagos-comp-badge.rechazado  { background: #fee2e2; color: #dc2626; }
+    .pagos-comp-link {
+        width: 28px; height: 28px;
+        border-radius: 7px;
+        display: flex; align-items: center; justify-content: center;
+        color: #7b6f62;
+        background: #f0ebe4;
+        transition: all .2s;
+        text-decoration: none;
+    }
+    .pagos-comp-link:hover { background: rgba(252,123,4,.14); color: #c96004; }
+    .pagos-card-empty {
+        padding: 2rem; text-align: center;
+        color: #7b6f62;
+    }
+    .pagos-card-empty i { font-size: 1.8rem; opacity: .4; margin-bottom: 8px; }
+    .pagos-card-empty p { font-size: .8rem; margin: 0; }
+
+    /* ── Pagos banco card ── */
+    .pagos-banco-card {
+        border: 1px solid #e9e2d9;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 2px 10px -4px rgba(0,0,0,.04);
+        transition: box-shadow .25s ease;
+    }
+    .pagos-banco-card:hover {
+        box-shadow: 0 6px 20px -8px rgba(0,0,0,.08);
+    }
+    .pagos-banco-head {
+        display: flex; align-items: center; gap: 10px;
+        padding: .85rem 1rem;
+        background: linear-gradient(180deg, #f8f5f1 0%, #f0ebe4 100%);
+        border-bottom: 1px solid #e9e2d9;
+    }
+    .pagos-banco-icon {
+        width: 34px; height: 34px;
+        border-radius: 9px;
+        background: rgba(252,123,4,.1);
+        color: #c96004;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; flex-shrink: 0;
+    }
+    .pagos-banco-name {
+        font-family: 'Outfit', sans-serif;
+        font-size: .82rem; font-weight: 700; color: #1e293b;
+    }
+    .pagos-banco-sigla {
+        font-size: .65rem; color: #7b6f62;
+    }
+    .pagos-banco-body {
+        padding: .5rem 0;
+    }
+    .pagos-banco-cuenta {
+        display: flex; align-items: center; gap: 10px;
+        padding: .65rem 1rem;
+        border-bottom: 1px solid #f0ebe4;
+    }
+    .pagos-banco-cuenta:last-child { border-bottom: none; }
+    .pagos-banco-cuenta-num {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600; font-size: .82rem; color: #1e293b;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .pagos-banco-cuenta-num i { color: #c96004; }
+    .pagos-banco-cuenta-meta {
+        display: flex; align-items: center; gap: 6px;
+        margin-top: 3px;
+    }
+    .pagos-banco-badge {
+        display: inline-flex; padding: 2px 8px;
+        border-radius: 6px; font-size: .62rem; font-weight: 600;
+    }
+    .pagos-banco-badge.cc { background: rgba(99,102,241,.1); color: #6366f1; }
+    .pagos-banco-badge.ca { background: rgba(34,197,94,.1); color: #16a34a; }
+    .pagos-banco-titular {
+        font-size: .65rem; color: #7b6f62;
+        display: flex; align-items: center; gap: 3px;
+    }
+
+    /* ── Contable & Pagos program tabs (como admin ctb-tab) ── */
+    .ctb-tabs {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-bottom: 0;
+        background: #f8f5f1;
+        border-radius: 12px;
+        padding: 4px;
+        border: 1px solid #e9e2d9;
+    }
+    .ctb-tab {
+        padding: .5rem 1rem;
+        border-radius: 9px;
+        font-size: .78rem;
+        font-weight: 600;
+        color: #7b6f62;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: all .2s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .ctb-tab:hover { color: var(--est-primary); }
+    .ctb-tab.active {
+        background: #fff;
+        color: var(--est-primary);
+        box-shadow: 0 2px 8px -2px rgba(0,0,0,.08);
+    }
+
+    /* ── Pagos buttons ── */
+    .pagos-btn-subir {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 6px 14px; border-radius: 8px;
+        font-size: .72rem; font-weight: 600;
+        border: 1px solid #e9e2d9;
+        background: #fff; color: var(--est-primary);
+        cursor: pointer; transition: all .2s ease;
+    }
+    .pagos-btn-subir:hover {
+        background: rgba(252,123,4,.08);
+        border-color: var(--est-primary);
+    }
+    .pagos-btn-al-dia {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 5px 12px; border-radius: 20px;
+        font-size: .7rem; font-weight: 700;
+        background: rgba(34,197,94,.1); color: #15803d;
+    }
+
+    /* ── PMP modal classes (para modalVerDetallePago como admin) ── */
+    .pmp-modal .modal-dialog { max-width: 1080px; }
+    .pmp-modal .modal-dialog.modal-lg { max-width: 760px; }
+    .pmp-content {
+        border: none; border-radius: 18px; overflow: hidden;
+        box-shadow: 0 25px 70px rgba(154,73,4,.18), 0 8px 24px rgba(0,0,0,.08);
+    }
+    .pmp-header {
+        position: relative; display: flex; align-items: center; gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(135deg, #5c2a04 0%, #9a4904 45%, #c96004 75%, #fc7b04 100%);
+        overflow: hidden;
+    }
+    .pmp-header::before {
+        content: '';
+        position: absolute; top: -50%; right: -8%;
+        width: 280px; height: 280px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,.14) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .pmp-header-icon {
+        width: 52px; height: 52px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 1.55rem;
+        flex-shrink: 0; z-index: 1;
+        box-shadow: 0 4px 14px rgba(0,0,0,.18);
+    }
+    .pmp-header-text { z-index: 1; min-width: 0; flex: 1; }
+    .pmp-header-title {
+        font-family: 'Outfit', sans-serif;
+        color: #fff; font-weight: 800; font-size: 1.15rem;
+        margin: 0 0 2px; letter-spacing: -.015em;
+    }
+    .pmp-header-sub {
+        color: rgba(255,255,255,.85);
+        font-size: .8rem; font-weight: 500; display: block; line-height: 1.3;
+    }
+    .pmp-close-btn {
+        z-index: 1; flex-shrink: 0; width: 36px; height: 36px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 9px; color: #fff; font-size: 1.15rem;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: background .2s;
+    }
+    .pmp-close-btn:hover { background: rgba(255,255,255,.3); }
+    .pmp-body {
+        padding: 1.25rem 1.5rem;
+        background: #faf7f3;
+    }
+    .pmp-section-title {
+        display: inline-flex; align-items: center; gap: .4rem;
+        font-size: .7rem; font-weight: 800;
+        text-transform: uppercase; letter-spacing: .07em;
+        color: #c96004; margin-bottom: .6rem;
+        padding: .3rem .65rem;
+        background: rgba(252,123,4,.08); border-radius: 6px;
+    }
+    .pmp-section-title i { font-size: .9rem; }
+    .pmp-footer {
+        display: flex; align-items: center; justify-content: flex-end;
+        gap: .65rem; padding: 1rem 1.5rem;
+        background: #fff; border-top: 1px solid #e2e8f0;
+    }
+    .pmp-btn {
+        display: inline-flex; align-items: center; gap: .35rem;
+        padding: .6rem 1.25rem; border-radius: 10px;
+        font-size: .85rem; font-weight: 700;
+        border: 1.5px solid transparent; cursor: pointer;
+        transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+        font-family: inherit; text-decoration: none;
+    }
+    .pmp-btn-cancel { background: #fff; border-color: #e2e8f0; color: #475569; }
+    .pmp-btn-cancel:hover { background: #f8fafc; border-color: #cbd5e1; color: #475569; }
+    .pmp-btn-submit {
+        background: linear-gradient(135deg, #9a4904 0%, #fc7b04 100%);
+        color: #fff; border-color: #9a4904;
+        box-shadow: 0 4px 14px rgba(154,73,4,.32);
+    }
+    .pmp-btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(154,73,4,.42); color: #fff; }
+
+    /* ── Responsive overrides ── */
+    @media (max-width: 767px) {
+        .contable-stats-grid { grid-template-columns: 1fr; }
+        .contable-stat-item { border-right: none; border-bottom: 1px solid #f0ebe4; }
+        .contable-stat-item:last-child { border-bottom: none; }
+    }
     </style>
 @endsection
 
 @php
+    $cuentaActiva = strtolower($user->estado ?? 'activo') === 'activo';
     $tieneFotoReal = $persona && $persona->fotografia && file_exists(public_path('images/personas/' . $persona->fotografia));
     if ($tieneFotoReal) {
         $heroAvatarUrl = asset('images/personas/' . $persona->fotografia);
@@ -619,13 +1288,17 @@
                 @else
                     <span class="est-hero-badge sin"><i class="ri-close-circle-line"></i> Sin Moodle</span>
                 @endif
-                <span class="est-hero-badge"><i class="ri-checkbox-circle-line"></i> Sesión activa</span>
+                @if ($cuentaActiva)
+                    <span class="est-hero-badge"><i class="ri-checkbox-circle-line"></i> Sesión activa</span>
+                @else
+                    <span class="est-hero-badge sin"><i class="ri-shield-cross-line"></i> Cuenta inactiva</span>
+                @endif
             </div>
         </div>
     </div>
 
-    {{-- ── SELECTOR DE ROL (solo si tiene ambos roles) ────────────────── --}}
-    @if ($esEstudiante && $esDocente)
+    {{-- ── SELECTOR DE ROL (solo si tiene ambos roles y cuenta activa) ── --}}
+    @if ($esEstudiante && $esDocente && $cuentaActiva)
     <div class="rol-switcher" id="rol-switcher">
         <span class="rol-switcher-label">Ver como</span>
         <div class="rol-switcher-btns">
@@ -721,6 +1394,44 @@
     </div>
     @endif
 
+    @if (!$cuentaActiva)
+        {{-- ── CUENTA INACTIVA — bloqueo de acceso ───────────────────── --}}
+        <div class="cuenta-inactiva-card">
+            <div class="cuenta-inactiva-icon">
+                <i class="ri-shield-cross-line"></i>
+            </div>
+            <h3 class="cuenta-inactiva-title">Tu cuenta está <span>Inactiva</span></h3>
+            <p class="cuenta-inactiva-desc">
+                Por el momento no tienes acceso al portal académico.
+                Tu cuenta del sistema y de Moodle han sido deshabilitadas.
+            </p>
+            <div class="cuenta-inactiva-action">
+                <div class="cuenta-inactiva-action-icon"><i class="ri-customer-service-2-line"></i></div>
+                <div class="cuenta-inactiva-action-body">
+                    <div class="cuenta-inactiva-action-label">¿Cómo reactivar mi cuenta?</div>
+                    <div class="cuenta-inactiva-action-text">
+                        Comunícate con el <strong>Área Contable</strong> de InnovaCiencia Virtual para regularizar tu situación y solicitar la reactivación.
+                    </div>
+                </div>
+            </div>
+            <div class="cuenta-inactiva-channels">
+                <a href="mailto:contabilidad@innovaciencia.edu.bo" class="cuenta-inactiva-channel">
+                    <i class="ri-mail-send-line"></i>
+                    <span>
+                        <small>Correo</small>
+                        <strong>contabilidad@innovaciencia.edu.bo</strong>
+                    </span>
+                </a>
+                <a href="https://wa.me/59100000000" target="_blank" rel="noopener" class="cuenta-inactiva-channel wa">
+                    <i class="ri-whatsapp-line"></i>
+                    <span>
+                        <small>WhatsApp</small>
+                        <strong>Contactar</strong>
+                    </span>
+                </a>
+            </div>
+        </div>
+    @else
     {{-- ── TABS ──────────────────────────────────────────────────────── --}}
     <div class="est-tabs-card">
 
@@ -2277,24 +2988,20 @@
 
             @if ($inscripciones->count() > 0)
                 <div class="contable-tabs-wrapper">
-                    {{-- Navegación por programas con pills que envuelven en vez de scroll --}}
-                    <div class="contable-tabs-header">
-                        <div class="contable-prog-pills">
-                            @foreach ($inscripciones as $key => $ins)
-                                @php
-                                    $insNombre = $ins->ofertaAcademica?->programa?->nombre
-                                        ?? ($ins->ofertaAcademica?->posgrado?->nombre
-                                        ?? 'Oferta #' . ($key + 1));
-                                @endphp
-                                <button type="button"
-                                    class="contable-prog-pill est-oferta-tab-btn {{ $key == 0 ? 'active' : '' }}"
-                                    data-target="contable-oferta-{{ $key }}">
-                                    <span class="pill-badge">{{ $key + 1 }}</span>
-                                    {{ $insNombre }}
-                                    <span class="pill-arrow"><i class="ri-arrow-right-s-line"></i></span>
-                                </button>
-                            @endforeach
-                        </div>
+                    <div class="ctb-tabs">
+                        @foreach ($inscripciones as $key => $ins)
+                            @php
+                                $insNombre = $ins->ofertaAcademica?->programa?->nombre
+                                    ?? ($ins->ofertaAcademica?->posgrado?->nombre
+                                    ?? 'Oferta #' . ($key + 1));
+                            @endphp
+                            <button type="button"
+                                class="ctb-tab est-oferta-tab-btn {{ $key == 0 ? 'active' : '' }}"
+                                data-target="contable-oferta-{{ $key }}">
+                                <i class="ri-money-dollar-circle-line"></i>
+                                {{ $insNombre }}
+                            </button>
+                        @endforeach
                     </div>
 
                     <div class="contable-tabs-body">
@@ -2624,26 +3331,21 @@
 
             @if ($inscripciones->count() > 0)
 
-                {{-- Sub-tabs por inscripción con pills que envuelven (estilo contable) --}}
                 <div class="pagos-tabs-wrapper">
-                    <div class="pagos-tabs-header">
-                        <div class="contable-prog-pills">
-                            @foreach ($inscripciones as $key => $ins)
-                                @php
-                                    $insNombre = $ins->ofertaAcademica?->programa?->nombre
-                                        ?? ($ins->ofertaAcademica?->posgrado?->nombre
-                                        ?? 'Oferta #' . ($key + 1));
-                                @endphp
-                                <button type="button"
-                                    class="contable-prog-pill pagos-tab-btn {{ $key == 0 ? 'active' : '' }}"
-                                    data-target="pagos-oferta-{{ $key }}">
-                                    <span class="pill-badge">{{ $key + 1 }}</span>
-                                    <i class="ri-book-2-line" style="font-size:.85rem;"></i>
-                                    {{ $insNombre }}
-                                    <span class="pill-arrow"><i class="ri-arrow-right-s-line"></i></span>
-                                </button>
-                            @endforeach
-                        </div>
+                    <div class="ctb-tabs">
+                        @foreach ($inscripciones as $key => $ins)
+                            @php
+                                $insNombre = $ins->ofertaAcademica?->programa?->nombre
+                                    ?? ($ins->ofertaAcademica?->posgrado?->nombre
+                                    ?? 'Oferta #' . ($key + 1));
+                            @endphp
+                            <button type="button"
+                                class="ctb-tab pagos-tab-btn {{ $key == 0 ? 'active' : '' }}"
+                                data-target="pagos-oferta-{{ $key }}">
+                                <i class="ri-money-dollar-circle-line"></i>
+                                {{ $insNombre }}
+                            </button>
+                        @endforeach
                     </div>
 
                     @foreach ($inscripciones as $key => $ins)
@@ -2902,115 +3604,113 @@
     <div id="est-toast-container" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:.5rem;"></div>
 
     {{-- Modal Ver Detalle Pago (usado por tab contable) --}}
-    <div class="modal fade modal-detalle-pago" id="modalVerDetallePago" tabindex="-1" aria-labelledby="modalVerDetallePagoLabel" aria-hidden="true">
+    <div class="modal fade pmp-modal" id="modalVerDetallePago" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
-                <div class="modal-header" style="background:linear-gradient(135deg,#fc7b04,#c96004);color:white;padding:1.25rem 1.5rem;border:none;">
-                    <h5 class="modal-title" style="font-weight:600;font-size:1.1rem;color:white;">
-                        <i class="ri-file-receipt-line"></i> Detalle del Pago
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content pmp-content">
+
+                <div class="pmp-header">
+                    <div class="pmp-header-icon"><i class="ri-file-list-3-line"></i></div>
+                    <div class="pmp-header-text">
+                        <h5 class="pmp-header-title">Detalle del Pago</h5>
+                        <small class="pmp-header-sub">Comprobante de pago</small>
+                    </div>
+                    <button type="button" class="pmp-close-btn" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="ri-close-line"></i>
+                    </button>
                 </div>
-                <div class="modal-body" style="padding:1.5rem;background:#f8fafc;">
-                    <div id="lista-pagos" class="pago-list-container"></div>
-                    <div id="detalle-pago-container" style="display:none;">
-                        <div class="detalle-header">
-                            <div class="detalle-header-top">
-                                <div class="detalle-logo">
-                                    <img src="{{ asset('build/images/logo_nuevo.png') }}" alt="Logo" style="height: 45px;">
+
+                <div class="pmp-body">
+                    <div id="lista-pagos" class="list-group list-group-flush"
+                        style="max-height: 400px; overflow-y: auto; border-radius: 10px; border: 1px solid #e2e8f0;"></div>
+                    <div id="detalle-pago-container" class="p-3" style="display: none; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <button type="button" class="pmp-btn pmp-btn-cancel btn-cerrar mb-2" id="btn-volver-lista">
+                            <i class="ri-arrow-left-line"></i> Volver
+                        </button>
+                        <div class="border-bottom pb-2 mb-3" style="border-bottom: 2px solid var(--est-primary);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="{{ asset('images/logo_secundario.png') }}" alt="Logo" style="width: 40px;">
                                     <div>
-                                        <div class="detalle-logo-text">INNOVA CIENCIA VIRTUAL</div>
-                                        <div class="detalle-logo-sub">Educación Superior Virtual</div>
+                                        <div class="fw-bold" style="font-size: 12px; color: #1e293b;">INNOVA CIENCIA VIRTUAL</div>
+                                        <div class="text-muted" style="font-size: 9px;">Educación Superior Virtual</div>
                                     </div>
                                 </div>
-                                <div class="detalle-recibo-badge">
-                                    <i class="ri-file-list-3-line"></i>
-                                    <span id="detalle-recibo">—</span>
+                                <div class="text-end">
+                                    <div class="fw-bold" style="font-size: 14px; color: var(--est-primary);">COMPROBANTE</div>
+                                    <div class="pmp-section-title d-inline-flex mt-1" id="detalle-recibo">—</div>
                                 </div>
                             </div>
-                            <div class="detalle-meta">
+                            <div class="d-flex justify-content-between mt-2 text-muted" style="font-size: 10px;">
                                 <span><strong>Fecha:</strong> <span id="detalle-fecha">—</span></span>
-                                <span><strong>Forma de Pago:</strong> <span id="detalle-metodo">—</span></span>
+                                <span><strong>Forma Pago:</strong> <span id="detalle-metodo">—</span></span>
                             </div>
                         </div>
-                        <div class="detalle-info-section">
-                            <h6><i class="ri-user-line"></i> Información del Estudiante</h6>
-                            <div class="detalle-info-row">
-                                <div class="detalle-info-item">
-                                    <div class="detalle-info-label">Estudiante</div>
-                                    <div class="detalle-info-value" id="detalle-estudiante">—</div>
+                        <div class="mb-3">
+                            <div class="mb-1" style="font-size: 0.85rem;">
+                                <strong>Estudiante:</strong> <span id="detalle-estudiante">—</span>
+                            </div>
+                            <div class="mb-1" style="font-size: 0.85rem;">
+                                <strong>Programa:</strong> <span id="detalle-programa">—</span>
+                            </div>
+                            <div class="mb-1" style="font-size: 0.85rem;">
+                                <strong>Plan de Pago:</strong> <span id="detalle-plan">—</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <table class="table table-bordered table-sm" style="font-size: 10px; margin-bottom: 0;">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Concepto</th>
+                                        <th class="text-end">Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detalle-tabla"></tbody>
+                                <tfoot class="table-warning">
+                                    <tr>
+                                        <td colspan="2" class="fw-bold">Total (Bs.)</td>
+                                        <td class="text-end fw-bold" id="detalle-total">—</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="mb-2" id="detalle-descuento-container" style="display: none;">
+                            <strong>Descuento:</strong> <span class="text-warning" id="detalle-descuento">—</span>
+                        </div>
+                        <div id="detalle-factura-container" style="display:none; margin-bottom:12px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);border-radius:10px;">
+                                <div>
+                                    <div style="font-size:.7rem;font-weight:600;color:#059669;"><i class="ri-file-list-3-line"></i> Factura</div>
+                                    <div style="font-size:.85rem;font-weight:700;color:#059669;" id="detalle-factura-estado">Con factura</div>
                                 </div>
-                                <div class="detalle-info-item">
-                                    <div class="detalle-info-label">Programa</div>
-                                    <div class="detalle-info-value" id="detalle-programa">—</div>
-                                </div>
+                                <button type="button" id="btn-ver-factura-detalle"
+                                    style="background:#059669;color:white;border:none;border-radius:8px;padding:6px 14px;font-size:.78rem;cursor:pointer;display:flex;align-items:center;gap:5px;">
+                                    <i class="ri-eye-line"></i> Ver factura
+                                </button>
                             </div>
                         </div>
-                        <div class="detalle-info-section">
-                            <h6><i class="ri-money-dollar-line"></i> Detalle del Pago</h6>
-                            <div class="detalle-info-item" style="margin-bottom: 12px;">
-                                <div class="detalle-info-label">Plan de Pago</div>
-                                <div class="detalle-info-value" id="detalle-plan">—</div>
+                        <div class="d-flex justify-content-between mt-4" style="font-size: 10px;">
+                            <div class="text-center" style="width: 45%;">
+                                <div class="border-top py-1" id="detalle-trabajador">—</div>
+                                <div class="fw-bold">EMISOR</div>
                             </div>
-                            <div class="detalle-tabla">
-                                <table class="table table-bordered table-sm mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 50px;">#</th>
-                                            <th>Concepto</th>
-                                            <th class="text-end">Monto</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="detalle-tabla"></tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="2" class="fw-bold">Total (Bs.)</td>
-                                            <td class="text-end fw-bold" id="detalle-total">—</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        </div>
-                        <div id="detalle-descuento-container" style="display:none; margin-top: 12px;">
-                            <div class="detalle-info-item" style="background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);">
-                                <div class="detalle-info-label">Descuento Aplicado</div>
-                                <div class="detalle-info-value" style="color: #d97706;" id="detalle-descuento">—</div>
-                            </div>
-                        </div>
-                        <div id="detalle-factura-container" style="display:none; margin-top: 12px;">
-                            <div class="detalle-info-item" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
-                                <div style="display:flex;align-items:center;justify-content:space-between;">
-                                    <div>
-                                        <div class="detalle-info-label"><i class="ri-file-list-3-line"></i> Factura</div>
-                                        <div class="detalle-info-value" id="detalle-factura-estado" style="color:#059669;">Con factura</div>
-                                    </div>
-                                    <button type="button" id="btn-ver-factura-detalle"
-                                        style="background:#059669;color:white;border:none;border-radius:8px;padding:0.35rem 0.85rem;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:5px;">
-                                        <i class="ri-eye-line"></i> Ver factura
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="detalle-footer">
-                            <div class="detalle-footer-box">
-                                <div class="label"><i class="ri-user-star-line"></i> Emisor</div>
-                                <div class="value" id="detalle-trabajador">—</div>
-                            </div>
-                            <div class="detalle-footer-box">
-                                <div class="label"><i class="ri-account-circle-line"></i> Depositante</div>
-                                <div class="value" id="detalle-depositante">—</div>
+                            <div class="text-center" style="width: 45%;">
+                                <div class="border-top py-1" id="detalle-depositante">—</div>
+                                <div class="fw-bold">DEPOSITANTE</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;">
-                    <a href="#" id="btn-descargar-pdf" class="btn-descargar" target="_blank">
+
+                <div class="pmp-footer">
+                    <a href="#" id="btn-descargar-pdf" class="pmp-btn pmp-btn-submit" target="_blank">
                         <i class="ri-file-pdf-line"></i> Descargar PDF
                     </a>
-                    <button type="button" class="btn-cerrar" data-bs-dismiss="modal">
+                    <button type="button" class="pmp-btn pmp-btn-cancel btn-cerrar" data-bs-dismiss="modal">
                         <i class="ri-close-line"></i> Cerrar
                     </button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -3084,6 +3784,7 @@
     @endif
         </div>{{-- /content-estudiante --}}
 </div>
+    @endif
 
 {{-- ══════════════════════════════════════════════════════════════════════════
      MODAL ACTIVIDADES ESTUDIANTE
@@ -3270,46 +3971,48 @@
 </div>
 
 {{-- Modal para ver factura --}}
-<div class="modal fade" id="modalVerFactura" tabindex="-1" aria-hidden="true">
+<div class="modal fade pmp-modal" id="modalVerFactura" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
-            <div class="modal-header" style="background:linear-gradient(135deg,#fc7b04,#c96004);color:white;padding:1.25rem 1.5rem;border:none;">
-                <h5 class="modal-title" style="font-weight:600;font-size:1.1rem;color:white;">
-                    <i class="ri-file-list-3-line me-2"></i>Factura — Recibo <span id="facturaReciboNum"></span>
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <div class="modal-content pmp-content">
+
+            <div class="pmp-header">
+                <div class="pmp-header-icon"><i class="ri-file-list-3-line"></i></div>
+                <div class="pmp-header-text">
+                    <h5 class="pmp-header-title">Factura — <span id="facturaReciboNum"></span></h5>
+                    <small class="pmp-header-sub">Documento fiscal del pago</small>
+                </div>
+                <button type="button" class="pmp-close-btn" data-bs-dismiss="modal" aria-label="Cerrar">
+                    <i class="ri-close-line"></i>
+                </button>
             </div>
-            <div class="modal-body" style="padding:1.5rem;background:#f8fafc;">
-                <div class="row g-3 mb-3">
-                    <div class="col-md-4">
-                        <div style="background:white;padding:.75rem 1rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-                            <p style="color:#64748b;font-size:.75rem;margin-bottom:.2rem;">Estudiante</p>
-                            <p id="facturaEstudiante" style="font-weight:600;color:#1e293b;margin:0;font-size:.9rem;"></p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div style="background:white;padding:.75rem 1rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-                            <p style="color:#64748b;font-size:.75rem;margin-bottom:.2rem;">Oferta</p>
-                            <p id="facturaOferta" style="font-weight:600;color:#1e293b;margin:0;font-size:.9rem;"></p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div style="background:white;padding:.75rem 1rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-                            <p style="color:#64748b;font-size:.75rem;margin-bottom:.2rem;">Monto</p>
-                            <p id="facturaMonto" style="font-weight:700;color:#059669;margin:0;font-size:.9rem;"></p>
+
+            <div class="pmp-body">
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;padding:14px 18px;background:linear-gradient(135deg,#fdf6ee,#fef9f2);border:1px solid #e9e2d9;border-radius:12px;">
+                    <img src="{{ asset('images/logo_secundario.png') }}" alt="Logo" style="width:42px;height:42px;object-fit:contain;flex-shrink:0;">
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:.7rem;color:#927f64;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">INNOVA CIENCIA VIRTUAL</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;font-size:.82rem;">
+                            <span><span style="color:#927f64;">Estudiante:</span> <strong id="facturaEstudiante" style="color:#1e293b;">—</strong></span>
+                            <span><span style="color:#927f64;">Monto:</span> <strong id="facturaMonto" style="color:#059669;">—</strong></span>
+                            <span><span style="color:#927f64;">Programa:</span> <strong id="facturaOferta" style="color:#1e293b;">—</strong></span>
                         </div>
                     </div>
                 </div>
-                <div style="background:white;padding:1rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);text-align:center;">
-                    <div id="facturaFileContainer" style="max-height:500px;overflow:auto;"></div>
+
+                <div style="background:#faf8f5;border:1px solid #e9e2d9;border-radius:12px;padding:4px;min-height:300px;">
+                    <div id="facturaFileContainer" style="max-height:520px;overflow:auto;border-radius:10px;"></div>
                 </div>
             </div>
-            <div class="modal-footer" style="background:#f8fafc;border:none;padding:1rem 1.5rem;">
-                <a id="facturaDownloadLink" href="#" target="_blank" class="btn" style="background:linear-gradient(135deg,#fc7b04,#c96004);color:white;border:none;padding:0.6rem 1.25rem;border-radius:8px;font-weight:500;">
-                    <i class="ri-download-line me-1"></i> Descargar
+
+            <div class="pmp-footer">
+                <a id="facturaDownloadLink" href="#" target="_blank" class="pmp-btn pmp-btn-submit">
+                    <i class="ri-download-2-line"></i> Descargar
                 </a>
-                <button type="button" class="btn" style="background:#e2e8f0;color:#475569;border:none;padding:0.6rem 1.25rem;border-radius:8px;font-weight:500;" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="pmp-btn pmp-btn-cancel" data-bs-dismiss="modal">
+                    <i class="ri-close-line"></i> Cerrar
+                </button>
             </div>
+
         </div>
     </div>
 </div>
@@ -3361,6 +4064,13 @@
         @endif
         let moduloSeleccionadoId = null;
         let moduloSeleccionadoHorarioDocenteId = null;
+
+        function formatDateEs(dateStr) {
+            if (!dateStr) return '—';
+            const d = new Date(dateStr);
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            return d.getDate() + ' de ' + meses[d.getMonth()] + ' del ' + d.getFullYear();
+        }
 
         /* ── switchTab (estudiante tabs) ── */
         function switchTab(btn, tabId) {
@@ -3733,7 +4443,7 @@
                                 '<div style="width:36px;height:36px;border-radius:10px;background:rgba(252,123,4,.1);color:#fc7b04;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;"><i class="ri-receipt-line"></i></div>' +
                                 '<div style="flex:1;min-width:0;">' +
                                 '<div style="font-weight:700;font-size:.88rem;color:#1e293b;">' + (pago.recibo || '—') + '</div>' +
-                                '<div style="font-size:.72rem;color:#64748b;margin-top:2px;"><i class="ri-calendar-line me-1"></i>' + (pago.fecha ? new Date(pago.fecha).toLocaleDateString('es-ES') : '') + ' <span style="color:#cbd5e1;">·</span> <i class="' + metodoIcon + '" style="color:' + metodoColor + ';margin-right:3px;"></i>' + (pago.metodo || '—') + '</div>' +
+                                '<div style="font-size:.72rem;color:#64748b;margin-top:2px;"><i class="ri-calendar-line me-1"></i>' + formatDateEs(pago.fecha) + ' <span style="color:#cbd5e1;">·</span> <i class="' + metodoIcon + '" style="color:' + metodoColor + ';margin-right:3px;"></i>' + (pago.metodo || '—') + '</div>' +
                                 '</div>' +
                                 '<div style="text-align:right;flex-shrink:0;">' +
                                 '<div style="font-weight:700;font-size:.9rem;color:#059669;">Bs. ' + parseFloat(pago.monto).toFixed(2) + '</div>' +
@@ -3816,8 +4526,7 @@
 
             function mostrarDetallePago(pago) {
                 document.getElementById('detalle-recibo').textContent = pago.recibo || '—';
-                document.getElementById('detalle-fecha').textContent = pago.fecha ? new Date(pago.fecha)
-                    .toLocaleDateString('es-ES') : '—';
+                document.getElementById('detalle-fecha').textContent = formatDateEs(pago.fecha);
                 document.getElementById('detalle-metodo').textContent = pago.metodo || '—';
                 document.getElementById('detalle-estudiante').textContent = pago.estudiante || '—';
                 document.getElementById('detalle-programa').textContent = pago.programa || '—';

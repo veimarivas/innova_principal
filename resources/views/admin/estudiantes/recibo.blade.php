@@ -302,7 +302,7 @@
         <div class="header">
             <div class="header-top">
                 <div class="header-logo">
-                    <img src="{{ public_path('build/images/logo-recibo.png') }}" alt="Logo">
+                    <img src="{{ public_path('images/logo_secundario.png') }}" alt="Logo">
                     <div class="header-logo-text">
                         <div class="nombre">INNOVA CIENCIA VIRTUAL</div>
                         <div class="slogan">Educación Superior Virtual</div>
@@ -315,7 +315,7 @@
             <div class="sede">Lugar/Sede:
                 {{ $inscripcion?->ofertaAcademica?->sucursal?->sede?->nombre ?? 'ESAM SUCRE' }}</div>
             <div class="header-grid">
-                <div><strong>Fecha Emisión:</strong> {{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d/m/Y') }}
+                <div><strong>Fecha Emisión:</strong> {{ \Carbon\Carbon::parse($pago->fecha_pago)->locale('es')->isoFormat('D [de] MMMM [del] YYYY') }}
                 </div>
                 <div><strong>Forma Pago:</strong> {{ $pago->tipo_pago ?? 'Transferencia' }}</div>
                 <div><strong>N° Factura:</strong> {{ $pago->factura_nro ?? '————' }}</div>

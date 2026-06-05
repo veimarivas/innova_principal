@@ -942,6 +942,253 @@
         .est-doc-btn-check:hover  { background: #15803d; color: #fff; }
         .est-doc-btn-uncheck { background: rgba(148,163,184,0.1); color: #64748b; }
         .est-doc-btn-uncheck:hover { background: #64748b; color: #fff; }
+
+        /* ══════════════════════════════════════════════════════════
+           Modal de pago (cuota / masivo) — paleta cálida del sistema
+        ══════════════════════════════════════════════════════════ */
+        .pmp-modal .modal-dialog { max-width: 1080px; }
+        .pmp-modal .modal-dialog.modal-lg { max-width: 760px; }
+        .pmp-content {
+            border: none;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(154,73,4,.18), 0 8px 24px rgba(0,0,0,.08);
+        }
+
+        /* Header con gradiente cálido */
+        .pmp-header {
+            position: relative;
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(135deg, #5c2a04 0%, #9a4904 45%, #c96004 75%, #fc7b04 100%);
+            overflow: hidden;
+        }
+        .pmp-header::before {
+            content: '';
+            position: absolute; top: -50%; right: -8%;
+            width: 280px; height: 280px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,.14) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .pmp-header-icon {
+            width: 52px; height: 52px;
+            background: rgba(255,255,255,.18);
+            border: 1px solid rgba(255,255,255,.28);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 1.55rem;
+            flex-shrink: 0; z-index: 1;
+            box-shadow: 0 4px 14px rgba(0,0,0,.18);
+        }
+        .pmp-header-text { z-index: 1; min-width: 0; flex: 1; }
+        .pmp-header-title {
+            font-family: 'Outfit', sans-serif;
+            color: #fff; font-weight: 800; font-size: 1.15rem;
+            margin: 0 0 2px;
+            letter-spacing: -.015em;
+        }
+        .pmp-header-sub {
+            color: rgba(255,255,255,.85);
+            font-size: .8rem; font-weight: 500;
+            display: block;
+            line-height: 1.3;
+        }
+        .pmp-header-sub.danger { color: rgba(255, 200, 200, .95); }
+        .pmp-close-btn {
+            z-index: 1; flex-shrink: 0;
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,.18);
+            border: 1px solid rgba(255,255,255,.28);
+            border-radius: 9px;
+            color: #fff; font-size: 1.15rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .pmp-close-btn:hover { background: rgba(255,255,255,.3); }
+
+        /* Body */
+        .pmp-body {
+            padding: 1.25rem 1.5rem;
+            background: #faf7f3;
+        }
+        .pmp-section { margin-bottom: 1.15rem; }
+        .pmp-section:last-of-type { margin-bottom: 0; }
+        .pmp-section-title {
+            display: inline-flex; align-items: center; gap: .4rem;
+            font-size: .7rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .07em;
+            color: #c96004;
+            margin-bottom: .6rem;
+            padding: .3rem .65rem;
+            background: rgba(252,123,4,.08);
+            border-radius: 6px;
+        }
+        .pmp-section-title i { font-size: .9rem; }
+
+        /* Labels e inputs */
+        .pmp-label {
+            display: inline-flex; align-items: center; gap: .35rem;
+            font-size: .72rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .04em;
+            color: #475569;
+            margin-bottom: .35rem;
+        }
+        .pmp-label i { color: #fc7b04; font-size: .85rem; }
+        .pmp-label span.opt { color: #94a3b8; font-weight: 600; text-transform: none; letter-spacing: 0; }
+
+        .pmp-input.form-control,
+        .pmp-input.form-select {
+            background: #fff !important;
+            border: 1.5px solid #e2e8f0 !important;
+            border-radius: 10px !important;
+            padding: .6rem .85rem !important;
+            font-size: .88rem !important;
+            font-weight: 600 !important;
+            color: #0f172a !important;
+            transition: border-color .2s, box-shadow .2s !important;
+            font-family: inherit !important;
+        }
+        .pmp-input.form-control:focus,
+        .pmp-input.form-select:focus {
+            border-color: #fc7b04 !important;
+            box-shadow: 0 0 0 4px rgba(252,123,4,.14) !important;
+            outline: none !important;
+        }
+        .pmp-input[readonly] { background: #f8fafc !important; color: #475569 !important; }
+
+        /* Banners (deuda actual / nueva deuda / error) */
+        .pmp-banner {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: .75rem;
+            padding: .85rem 1rem;
+            border-radius: 12px;
+            border: 1px solid transparent;
+        }
+        .pmp-banner-text {
+            display: inline-flex; align-items: center; gap: .45rem;
+            font-size: .82rem; font-weight: 700;
+        }
+        .pmp-banner-text i { font-size: 1.05rem; }
+        .pmp-banner-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem; font-weight: 800;
+        }
+        .pmp-banner.deuda    { background: rgba(220,38,38,.08); border-color: rgba(220,38,38,.22); color: #b91c1c; }
+        .pmp-banner.deuda .pmp-banner-val    { color: #b91c1c; }
+        .pmp-banner.nueva    { background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.22); color: #15803d; }
+        .pmp-banner.nueva .pmp-banner-val    { color: #15803d; }
+        .pmp-banner.error    { background: rgba(220,38,38,.06); border-color: rgba(220,38,38,.25); color: #991b1b; }
+
+        /* Lista de cuotas (pago masivo) */
+        .pmp-cuotas-wrap {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            max-height: 340px; overflow-y: auto;
+        }
+        .pmp-cuotas-wrap h6 { display: none; }
+        .pmp-cuotas-wrap #tabla-cuotas-pendientes {
+            margin: 0;
+            font-size: .82rem;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+        .pmp-cuotas-wrap #tabla-cuotas-pendientes thead th {
+            position: sticky; top: 0; z-index: 2;
+            background: linear-gradient(180deg, #f8f5f1 0%, #f1ebe2 100%);
+            color: #6b3102;
+            font-size: .65rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .05em;
+            padding: .65rem .75rem;
+            border-bottom: 2px solid rgba(252,123,4,.18);
+            white-space: nowrap;
+        }
+        .pmp-cuotas-wrap #tabla-cuotas-pendientes tbody td {
+            padding: .65rem .75rem;
+            border-top: 1px solid #f1f5f9;
+            vertical-align: middle;
+            color: #1e293b;
+        }
+        .pmp-cuotas-wrap #tabla-cuotas-pendientes tbody tr:hover td { background: rgba(252,123,4,.04); }
+        .pmp-cuotas-wrap #tabla-cuotas-pendientes tbody tr.cuota-incluida td { background: rgba(34,197,94,.06); }
+        .pmp-cuotas-wrap #tabla-cuotas-pendientes .badge {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            border-radius: 20px !important;
+            padding: .2rem .55rem !important;
+            font-size: .65rem !important;
+        }
+
+        /* Resumen (pago masivo) */
+        .pmp-resumen {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .85rem;
+            padding: 1rem 1.15rem;
+            background: linear-gradient(135deg, #fff 0%, #fff7ed 100%);
+            border: 1px solid rgba(252,123,4,.18);
+            border-radius: 12px;
+        }
+        .pmp-resumen-item { display: flex; align-items: center; gap: .7rem; padding: .35rem 0; }
+        .pmp-resumen-item + .pmp-resumen-item { border-left: 1px dashed #fed7aa; padding-left: .85rem; }
+        .pmp-resumen-icon {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(220,38,38,.1); color: #b91c1c;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .pmp-resumen-icon.ingresado { background: rgba(37,99,235,.1); color: #2563eb; }
+        .pmp-resumen-icon.nueva     { background: rgba(34,197,94,.1); color: #16a34a; }
+        .pmp-resumen-lbl {
+            font-size: .65rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .05em;
+            color: #64748b;
+        }
+        .pmp-resumen-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem; font-weight: 800;
+            color: #0f172a; line-height: 1.1;
+        }
+        .pmp-resumen-val.pmp-deuda     { color: #b91c1c; }
+        .pmp-resumen-val.pmp-ingresado { color: #2563eb; }
+        .pmp-resumen-val.pmp-nueva     { color: #16a34a; }
+
+        /* Footer */
+        .pmp-footer {
+            display: flex; align-items: center; justify-content: flex-end;
+            gap: .65rem;
+            padding: 1rem 1.5rem;
+            background: #fff;
+            border-top: 1px solid #e2e8f0;
+        }
+        .pmp-btn {
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .6rem 1.25rem;
+            border-radius: 10px;
+            font-size: .85rem; font-weight: 700;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+            font-family: inherit;
+        }
+        .pmp-btn-cancel { background: #fff; border-color: #e2e8f0; color: #475569; }
+        .pmp-btn-cancel:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .pmp-btn-submit {
+            background: linear-gradient(135deg, #9a4904 0%, #fc7b04 100%);
+            color: #fff; border-color: #9a4904;
+            box-shadow: 0 4px 14px rgba(154,73,4,.32);
+        }
+        .pmp-btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(154,73,4,.42); }
+
+        @media (max-width: 720px) {
+            .pmp-resumen { grid-template-columns: 1fr; }
+            .pmp-resumen-item + .pmp-resumen-item { border-left: none; border-top: 1px dashed #fed7aa; padding-left: 0; padding-top: .65rem; }
+        }
     </style>
 @endsection
 @section('content')
@@ -1200,6 +1447,13 @@
     </style>
 
     <script>
+        function formatDateEs(dateStr) {
+            if (!dateStr) return '—';
+            const d = new Date(dateStr);
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            return d.getDate() + ' de ' + meses[d.getMonth()] + ' del ' + d.getFullYear();
+        }
+
         function toast(tipo, mensaje) {
             const iconMap = {
                 success: 'ri-checkbox-circle-line',
@@ -1299,7 +1553,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.est-oferta-tab-btn').forEach(function(btn) {
+            document.querySelectorAll('.ctb-tab').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     const targetId = this.getAttribute('data-target');
@@ -1308,7 +1562,7 @@
                     const parentTab = this.closest('.est-tabs-body');
                     if (!parentTab) return;
 
-                    parentTab.querySelectorAll('.est-oferta-tab-btn').forEach(b => b.classList
+                    parentTab.querySelectorAll('.ctb-tab').forEach(b => b.classList
                         .remove('active'));
                     this.classList.add('active');
                     parentTab.querySelectorAll('.est-oferta-content').forEach(c => c.classList
@@ -1490,6 +1744,18 @@ document.querySelectorAll('.btn-pagar-cuota').forEach(function(btn) {
                 }
             }
 
+            if (['Qr','Transferencia','Parcial'].includes(metodo) && !formData.cuenta_bancaria_id) {
+                const errCont = document.getElementById('pago-mensaje-error');
+                const errTxt = document.getElementById('pago-mensaje-texto');
+                if (errCont && errTxt) {
+                    errCont.style.display = 'block';
+                    errTxt.textContent = 'Debe seleccionar una cuenta bancaria.';
+                }
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = originalText;
+                return;
+            }
+
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
             fetch(`/admin/estudiantes/cuota/${cuotaId}/pagar`, {
                     method: 'POST',
@@ -1572,16 +1838,15 @@ document.querySelectorAll('.btn-pagar-cuota').forEach(function(btn) {
                     listaPagos.innerHTML = '';
                     pagosData.forEach(function(pago, index) {
                         const item = document.createElement('div');
-                        item.className =
-                            'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
-                        item.style.cursor = 'pointer';
-                        item.innerHTML = '<div><div class="fw-bold text-orange">' + (pago.recibo ||
-                                '—') + '</div>' +
-                            '<small class="text-muted">' + (pago.fecha ? new Date(pago.fecha)
-                                .toLocaleDateString('es-ES') : '') + '</small></div>' +
-                            '<div class="text-end"><div class="fw-bold">Bs. ' + parseFloat(pago
-                                .monto).toFixed(2) + '</div>' +
-                            '<small class="text-muted">' + pago.metodo + '</small></div>';
+                        item.style.cssText = 'display: flex; align-items: center; gap: 14px; padding: 14px 16px; cursor: pointer; border-bottom: 1px solid #f1ebe2; transition: all 0.2s ease; background: #fff;';
+                        item.onmouseover = function() { this.style.background = 'rgba(252,123,4,0.04)'; };
+                        item.onmouseout = function() { this.style.background = '#fff'; };
+                        item.innerHTML = '<div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, rgba(252,123,4,0.12), rgba(252,123,4,0.06)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #c96004; font-size: 1.1rem;"><i class="ri-receipt-line"></i></div>' +
+                            '<div style="flex: 1; min-width: 0;"><div style="font-weight: 700; font-size: 0.88rem; color: #c96004;">' + (pago.recibo || '—') + '</div>' +
+                            '<div style="font-size: 0.72rem; color: #64748b; display: flex; align-items: center; gap: 6px; margin-top: 2px;"><i class="ri-calendar-line"></i> ' + (pago.fecha ? formatDateEs(pago.fecha) : '') + '</div></div>' +
+                            '<div style="text-align: right;"><div style="font-weight: 800; font-size: 1rem; color: #0f172a; font-family: Outfit, sans-serif;">Bs. ' + parseFloat(pago.monto).toFixed(2) + '</div>' +
+                            '<div style="font-size: 0.7rem; color: #64748b; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; background: rgba(252,123,4,0.08); margin-top: 3px; font-weight: 600;"><i class="ri-bank-card-line"></i> ' + pago.metodo + '</div></div>' +
+                            '<div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(252,123,4,0.1); display: flex; align-items: center; justify-content: center; color: #c96004; font-size: 0.9rem; flex-shrink: 0;"><i class="ri-arrow-right-s-line"></i></div>';
                         item.addEventListener('click', function() {
                             listaPagos.style.display = 'none';
                             container.style.display = 'block';
@@ -1592,10 +1857,11 @@ document.querySelectorAll('.btn-pagar-cuota').forEach(function(btn) {
 
                     const totalGeneral = pagosData.reduce((sum, p) => sum + parseFloat(p.monto), 0);
                     const totalItem = document.createElement('div');
-                    totalItem.className = 'list-group-item bg-success text-white';
+                    totalItem.style.cssText = 'display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: linear-gradient(135deg, #9a4904, #fc7b04); color: #fff; border-radius: 0 0 10px 10px;';
                     totalItem.innerHTML =
-                        '<div class="fw-bold">Total Acumulado</div><div class="fw-bold">Bs. ' + totalGeneral
-                        .toFixed(2) + '</div>';
+                        '<div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;"><i class="ri-wallet-3-line"></i></div>' +
+                        '<div style="flex: 1; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em;">Total Acumulado</div>' +
+                        '<div style="font-weight: 800; font-size: 1.1rem; font-family: Outfit, sans-serif;">Bs. ' + totalGeneral.toFixed(2) + '</div>';
                     listaPagos.appendChild(totalItem);
                 }
 
@@ -1617,7 +1883,7 @@ document.querySelectorAll('.btn-pagar-cuota').forEach(function(btn) {
             console.log('mostrarDetallePago - pago:', pago);
             
             document.getElementById('detalle-recibo').textContent = pago.recibo || '—';
-            document.getElementById('detalle-fecha').textContent = pago.fecha ? new Date(pago.fecha).toLocaleDateString('es-ES') : '—';
+            document.getElementById('detalle-fecha').textContent = formatDateEs(pago.fecha);
             document.getElementById('detalle-metodo').textContent = pago.metodo || '—';
             
             document.getElementById('detalle-estudiante').textContent = pago.estudiante || '—';
@@ -1650,6 +1916,21 @@ document.querySelectorAll('.btn-pagar-cuota').forEach(function(btn) {
             document.getElementById('detalle-trabajador').textContent = pago.trabajador || '—';
             document.getElementById('detalle-depositante').textContent = pago.estudiante || '—';
 
+            const facturaContainer = document.getElementById('detalle-factura-container');
+            if (facturaContainer) {
+                const facturaEstado = document.getElementById('detalle-factura-estado');
+                const btnVerFactura = document.getElementById('btn-ver-factura-detalle');
+                if (pago.documento_factura) {
+                    facturaContainer.style.display = 'block';
+                    facturaEstado.textContent = 'Con factura';
+                    btnVerFactura.onclick = function() {
+                        verFactura(pago.documento_factura, pago.recibo, pago.estudiante, pago.monto, pago.programa);
+                    };
+                } else {
+                    facturaContainer.style.display = 'none';
+                }
+            }
+
             const btnPdf = document.getElementById('btn-descargar-pdf');
             const footerBtns = btnPdf ? btnPdf.parentNode : null;
             
@@ -1671,6 +1952,23 @@ document.querySelectorAll('.btn-pagar-cuota').forEach(function(btn) {
             if (btnPdf && pago && pago.id) {
                 btnPdf.href = '/admin/estudiantes/recibo/' + pago.id + '/pdf';
             }
+        }
+
+        function verFactura(url, recibo, estudiante, monto, oferta) {
+            document.getElementById('facturaReciboNum').textContent = recibo;
+            document.getElementById('facturaEstudiante').textContent = estudiante;
+            document.getElementById('facturaOferta').textContent = oferta;
+            document.getElementById('facturaMonto').textContent = 'Bs. ' + monto;
+            document.getElementById('facturaDownloadLink').href = url;
+            var container = document.getElementById('facturaFileContainer');
+            container.innerHTML = '';
+            if (url.match(/\.pdf$/i)) {
+                container.innerHTML = '<iframe src="' + url + '" style="width:100%;height:500px;border-radius:10px;border:1px solid #e2e8f0;" frameborder="0"></iframe>';
+            } else {
+                container.innerHTML = '<img src="' + url + '" style="width:100%;border-radius:10px;border:1px solid #e2e8f0;" alt="Factura"/>';
+            }
+            var modal = new bootstrap.Modal(document.getElementById('modalVerFactura'));
+            modal.show();
         }
 
         let modalPagoMasivoInstance = null;
@@ -1843,7 +2141,7 @@ document.querySelectorAll('.btn-pagar-cuota').forEach(function(btn) {
                 html += '<td>Bs. ' + parseFloat(cuota.monto_bs).toFixed(2) + '</td>';
                 html += '<td class="text-warning fw-bold" data-pendiente="' + pendiente + '">Bs. ' + pendiente.toFixed(2) + '</td>';
                 html += '<td class="text-success fw-bold a-pagar-cell">—</td>';
-                html += '<td>' + (cuota.fecha_vencimiento ? new Date(cuota.fecha_vencimiento).toLocaleDateString('es-ES') : '—') + '</td>';
+                html += '<td>' + formatDateEs(cuota.fecha_vencimiento) + '</td>';
                 html += '<td><span class="badge bg-warning text-dark">' + cuota.estado + '</span></td>';
                 html += '</tr>';
                 deudaTotal += pendiente;
@@ -1926,17 +2224,27 @@ document.querySelectorAll('.btn-pagar-cuota').forEach(function(btn) {
                 });
             }
 
+            const metodo = document.getElementById('pago-masivo-metodo').value;
+            const cuentaBancariaId = document.getElementById('pago-masivo-cuenta-bancaria')?.value || '';
+
+            if (['Qr','Transferencia','Parcial'].includes(metodo) && !cuentaBancariaId) {
+                toast('warning', 'Debe seleccionar una cuenta bancaria para este método de pago.');
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = originalText;
+                return;
+            }
+
             const formData = {
                 estudiante_id: document.getElementById('pago-masivo-estudiante-id').value,
                 inscripcion_id: document.getElementById('pago-masivo-inscripcion-id').value,
                 monto: parseFloat(document.getElementById('pago-masivo-monto').value),
                 descuento: parseFloat(document.getElementById('pago-masivo-descuento').value) || 0,
-                metodo: document.getElementById('pago-masivo-metodo').value,
+                metodo: metodo,
                 efectivo: parseFloat(document.getElementById('pago-masivo-efectivo').value) || 0,
                 qr: parseFloat(document.getElementById('pago-masivo-qr').value) || 0,
                 trabajador_cargo_id: document.getElementById('pago-masivo-trabajador-cargo').value,
                 fecha_pago: document.getElementById('pago-masivo-fecha').value,
-                cuenta_bancaria_id: document.getElementById('pago-masivo-cuenta-bancaria')?.value || '',
+                cuenta_bancaria_id: cuentaBancariaId,
                 referencia: document.getElementById('pago-masivo-referencia')?.value || '',
                 cuotas: cuotasSeleccionadas,
                 _token: '{{ csrf_token() }}'

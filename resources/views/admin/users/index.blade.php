@@ -24,6 +24,35 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
 .badge-estado { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
 .badge-activo { background: rgba(90, 138, 48, 0.1); color: #5a8a30; }
 .badge-inactivo { background: rgba(201, 96, 4, 0.1); color: #c96004; }
+
+/* ── Badges de cuentas (Sistema / Moodle) ── */
+.user-cuentas-cell { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.user-cuenta-badge { display: inline-flex; align-items: center; gap: 0.22rem; border-radius: 20px; padding: 0.18rem 0.55rem; font-size: 0.7rem; font-weight: 700; }
+.user-cuenta-badge.active { background: rgba(90,138,48,0.10); color: #5a8a30; border: 1px solid rgba(90,138,48,0.22); }
+.user-cuenta-badge.inactive { background: rgba(150,150,150,0.08); color: #6b7280; border: 1px solid rgba(150,150,150,0.18); }
+
+/* ── Botones de acción ── */
+.user-action-cell { display: flex; align-items: center; justify-content: center; gap: 0.28rem; flex-wrap: wrap; }
+.user-btn-action { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; border: none; transition: all 0.2s; cursor: pointer; }
+.user-btn-action i { font-size: 0.92rem; }
+.user-btn-action[disabled] { opacity: 0.35; cursor: not-allowed; }
+.user-btn-wa       { background: rgba(37,211,102,0.08); color: #25D366; border: 1px solid rgba(37,211,102,0.22); }
+.user-btn-wa:hover:not([disabled]) { background: rgba(37,211,102,0.18); color: #128C7E; }
+.user-btn-reset    { background: rgba(37,99,235,0.08); color: #2563eb; border: 1px solid rgba(37,99,235,0.22); }
+.user-btn-reset:hover:not([disabled]) { background: rgba(37,99,235,0.18); color: #1d4ed8; }
+.user-btn-disable  { background: rgba(217,119,6,0.08); color: #d97706; border: 1px solid rgba(217,119,6,0.22); }
+.user-btn-disable:hover:not([disabled]) { background: rgba(217,119,6,0.18); color: #b45309; }
+.user-btn-enable   { background: rgba(22,163,74,0.08); color: #16a34a; border: 1px solid rgba(22,163,74,0.22); }
+.user-btn-enable:hover:not([disabled]) { background: rgba(22,163,74,0.18); color: #15803d; }
+.user-btn-delete   { background: rgba(220,38,38,0.06); color: #dc2626; border: 1px solid rgba(220,38,38,0.18); }
+.user-btn-delete:hover:not([disabled]) { background: rgba(220,38,38,0.15); color: #b91c1c; }
+
+/* ── Modal — credenciales preview ── */
+.cred-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: .85rem 1rem; margin-top: .75rem; }
+.cred-row { display: flex; align-items: center; gap: .65rem; padding: .35rem 0; font-size: .85rem; }
+.cred-row + .cred-row { border-top: 1px dashed #e2e8f0; }
+.cred-row .lbl { width: 90px; font-weight: 700; color: #64748b; font-size: .72rem; text-transform: uppercase; letter-spacing: .03em; }
+.cred-row .val { font-family: 'Outfit', sans-serif; color: #0f172a; font-weight: 600; word-break: break-all; }
 .search-feedback { font-size: 0.78rem; font-weight: 600; min-height: 1.2em; margin-top: 0.35rem; display: flex; align-items: center; gap: 0.3rem; transition: all 0.2s; }
 .search-feedback.error { color: var(--d-invalid-color); }
 .search-feedback.success { color: var(--d-valid-color); }
@@ -84,8 +113,8 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
                                 <th>Correo</th>
                                 <th>Persona</th>
                                 <th>Rol</th>
-                                <th>Estado</th>
-                                <th class="text-center" style="width:80px;">Acciones</th>
+                                <th class="text-center">Cuentas</th>
+                                <th class="text-center" style="width:200px;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -228,6 +257,88 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
     </div>
 </div>
 
+<!-- ===================== MODAL ENVIAR CREDENCIALES ===================== -->
+<div class="modal fade" id="modalCredenciales" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-whatsapp-line"></i> Enviar credenciales</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2" style="font-size:.88rem;color:#475569;">Se abrirá WhatsApp con un mensaje pre-formado para <strong id="credModalNombre">—</strong>.</p>
+                <div class="cred-box">
+                    <div class="cred-row"><span class="lbl">Usuario</span><span class="val" id="credModalUsuario">—</span></div>
+                    <div class="cred-row"><span class="lbl">Contraseña</span><span class="val" id="credModalPassword">—</span></div>
+                    <div class="cred-row"><span class="lbl">Celular</span><span class="val" id="credModalCelular">—</span></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal"><i class="ri-close-line me-1"></i>Cancelar</button>
+                <button type="button" class="btn btn-modal-submit" id="credModalBtnEnviar"><i class="ri-send-plane-line"></i> Abrir WhatsApp</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== MODAL REINICIAR PASSWORD ===================== -->
+<div class="modal fade" id="modalReiniciarPassword" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-lock-password-line"></i> Reiniciar contraseña</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body px-4 py-3">
+                <div class="delete-warning-box">
+                    <div class="delete-icon-ring" style="background:rgba(37,99,235,.1);color:#2563eb;">
+                        <i class="ri-key-2-line"></i>
+                    </div>
+                    <p class="delete-msg-primary">¿Reiniciar contraseña?</p>
+                    <p class="delete-msg-name"><strong id="resetNombre">—</strong></p>
+                    <p class="delete-msg-warn">
+                        <i class="ri-information-line"></i>
+                        La contraseña se restablecerá al carnet del usuario en sistema y Moodle.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center gap-3">
+                <button type="button" class="btn btn-modal-cancel px-4" data-bs-dismiss="modal"><i class="ri-close-line me-1"></i>Cancelar</button>
+                <button type="button" class="btn btn-modal-submit px-4" id="btnConfirmarReset"><i class="ri-refresh-line"></i> Reiniciar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== MODAL TOGGLE ESTADO ===================== -->
+<div class="modal fade" id="modalToggleEstado" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-shield-line"></i> <span id="toggleTitulo">Cambiar estado</span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body px-4 py-3">
+                <div class="delete-warning-box">
+                    <div class="delete-icon-ring" id="toggleIconRing">
+                        <i class="ri-shield-cross-line" id="toggleIcon"></i>
+                    </div>
+                    <p class="delete-msg-primary" id="toggleMsgPrimary">¿Deshabilitar cuenta?</p>
+                    <p class="delete-msg-name"><strong id="toggleNombre">—</strong></p>
+                    <p class="delete-msg-warn">
+                        <i class="ri-information-line"></i>
+                        <span id="toggleMsgInfo">La cuenta no podrá ingresar al sistema ni a Moodle.</span>
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center gap-3">
+                <button type="button" class="btn btn-modal-cancel px-4" data-bs-dismiss="modal"><i class="ri-close-line me-1"></i>Cancelar</button>
+                <button type="button" class="btn btn-modal-submit px-4" id="btnConfirmarToggle"><i class="ri-shield-check-line"></i> <span id="toggleBtnLabel">Confirmar</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="toastContainer" class="toast-container"></div>
 @endsection
 
@@ -251,8 +362,9 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
         tabla = $('#tabla-users').DataTable({
             ajax: { url: '{{ route("admin.users.listar") }}', dataSrc: 'data' },
             ordering: true,
-            paging: false,
-            info: false,
+            paging: true,
+            info: true,
+            pagingType: 'simple_numbers',
             columns: [
                 {
                     data: 'name',
@@ -283,20 +395,68 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
                     }
                 },
                 {
-                    data: 'estado',
-                    render: e => {
-                        if (e === 'activo') {
-                            return '<span class="badge-estado badge-activo"><i class="ri-checkbox-circle-fill"></i> Activo</span>';
-                        }
-                        return '<span class="badge-estado badge-inactivo"><i class="ri-close-circle-fill"></i> Inactivo</span>';
+                    data: null, className: 'text-center',
+                    render: d => {
+                        const sis  = d.tiene_cuenta_sistema
+                            ? '<span class="user-cuenta-badge active"><i class="ri-check-line"></i>Sistema</span>'
+                            : '<span class="user-cuenta-badge inactive"><i class="ri-close-line"></i>Sistema</span>';
+                        const mood = d.tiene_cuenta_moodle
+                            ? '<span class="user-cuenta-badge active"><i class="ri-check-line"></i>Moodle</span>'
+                            : '<span class="user-cuenta-badge inactive"><i class="ri-close-line"></i>Moodle</span>';
+                        return '<div class="user-cuentas-cell">' + sis + mood + '</div>';
                     }
                 },
                 {
                     data: null, className: 'text-center',
-                    render: d =>
-                        '<div class="action-cell">'
-                        + '<button class="btn btn-action btn-action-delete btn-accion-eliminar" data-id="' + d.id + '" data-nombre="' + escHtml(d.name) + '" title="Eliminar usuario"><i class="ri-delete-bin-fill"></i></button>'
-                        + '</div>'
+                    render: d => {
+                        const persona = d.persona || {};
+                        const nombre  = escHtml([persona.nombres, persona.apellido_paterno, persona.apellido_materno].filter(Boolean).join(' ') || d.name);
+                        const carnet  = persona.carnet || '';
+                        const celular = (persona.celular || '').replace(/\D/g, '');
+                        const username = d.usuario_username || d.username || d.email || '';
+                        const password = generarPasswordDefault(carnet);
+                        const activo   = d.tiene_cuenta_sistema;
+
+                        let btns = '<div class="user-action-cell">';
+
+                        // 1) Enviar credenciales por WhatsApp
+                        if (celular.length >= 8 && username) {
+                            btns += '<button type="button" class="user-btn-action user-btn-wa btn-enviar-credenciales" '
+                                  + 'data-celular="' + celular + '" '
+                                  + 'data-nombre="'  + nombre  + '" '
+                                  + 'data-username="' + escHtml(username) + '" '
+                                  + 'data-password="' + escHtml(password) + '" '
+                                  + 'title="Enviar credenciales por WhatsApp"><i class="ri-whatsapp-line"></i></button>';
+                        } else {
+                            btns += '<button type="button" class="user-btn-action user-btn-wa" disabled title="Sin celular o usuario para enviar"><i class="ri-whatsapp-line"></i></button>';
+                        }
+
+                        // 2) Reiniciar contraseña
+                        btns += '<button type="button" class="user-btn-action user-btn-reset btn-reiniciar-password" '
+                              + 'data-id="' + d.id + '" '
+                              + 'data-nombre="' + nombre + '" '
+                              + 'data-carnet="' + escHtml(carnet) + '" '
+                              + 'title="Reiniciar contraseña"><i class="ri-lock-password-line"></i></button>';
+
+                        // 3) Habilitar / Deshabilitar cuenta
+                        if (activo) {
+                            btns += '<button type="button" class="user-btn-action user-btn-disable btn-toggle-estado" '
+                                  + 'data-id="' + d.id + '" data-nombre="' + nombre + '" data-activo="1" '
+                                  + 'title="Deshabilitar cuenta"><i class="ri-shield-cross-line"></i></button>';
+                        } else {
+                            btns += '<button type="button" class="user-btn-action user-btn-enable btn-toggle-estado" '
+                                  + 'data-id="' + d.id + '" data-nombre="' + nombre + '" data-activo="0" '
+                                  + 'title="Habilitar cuenta"><i class="ri-shield-check-line"></i></button>';
+                        }
+
+                        // 4) Eliminar
+                        btns += '<button type="button" class="user-btn-action user-btn-delete btn-accion-eliminar" '
+                              + 'data-id="' + d.id + '" data-nombre="' + escHtml(d.name) + '" '
+                              + 'title="Eliminar usuario"><i class="ri-delete-bin-fill"></i></button>';
+
+                        btns += '</div>';
+                        return btns;
+                    }
                 }
             ],
             language: {
@@ -321,30 +481,137 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
                 }
             },
             order: [[0, 'asc']],
-            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'Todos']],
+            lengthChange: false,
             pageLength: 10,
             drawCallback: function () {
                 const api = this.api();
-                const recordsTotal = api.rows().data().length;
-
-                $('#stat-total').text(recordsTotal);
-
-                if (recordsTotal > 10) {
-                    api.page('first').draw(false);
-                    $('.dataTables_paginate').show();
-                    $('.dataTables_length').show();
-                } else {
-                    $('.dataTables_paginate').hide();
-                    $('.dataTables_length').hide();
-                }
+                $('#stat-total').text(api.rows().data().length);
             }
         });
     }
+
+    let idReiniciar = null;
+    let idToggle = null;
+    let toggleEsActivo = null;
+
+    function generarPasswordDefault(carnet) {
+        const digits = String(carnet || '').replace(/\D/g, '');
+        return digits.length >= 7 ? digits : 'innova' + digits;
+    }
+    window.generarPasswordDefault = generarPasswordDefault;
 
     function bindEvents() {
         $('#btn-nuevo').on('click', () => {
             resetCreateModal();
             openModal('modalCrear');
+        });
+
+        // === Enviar credenciales por WhatsApp ===
+        $(document).on('click', '.btn-enviar-credenciales', function () {
+            const $b = $(this);
+            const celular  = $b.data('celular');
+            const nombre   = $b.data('nombre');
+            const username = $b.data('username');
+            const password = $b.data('password');
+            $('#credModalNombre').text(nombre);
+            $('#credModalUsuario').text(username);
+            $('#credModalPassword').text(password);
+            $('#credModalCelular').text('+' + celular);
+            $('#credModalBtnEnviar').data('celular', celular)
+                                    .data('nombre', nombre)
+                                    .data('username', username)
+                                    .data('password', password);
+            openModal('modalCredenciales');
+        });
+
+        $('#credModalBtnEnviar').on('click', function () {
+            const $b = $(this);
+            const celular  = $b.data('celular');
+            const nombre   = $b.data('nombre');
+            const username = $b.data('username');
+            const password = $b.data('password');
+
+            const mensaje = '*¡Bienvenido/a a tu plataforma académica!*\n\n' +
+                'Estimado/a ' + nombre + ',\n' +
+                'A continuación encontrarás tus credenciales de acceso al portal.\n\n' +
+                '*ACCESO A LA PLATAFORMA*\n' +
+                '──────────────────────\n' +
+                'Sitio web:  https://posgradosinnovaciencia.com\n' +
+                'Usuario:    ' + username + '\n' +
+                'Contraseña: ' + password + '\n' +
+                '──────────────────────\n\n' +
+                'Por favor cambia tu contraseña en el primer acceso.\n' +
+                'Si necesitas ayuda, contáctanos.\n\n' +
+                'Área Académica — Innova Ciencia Virtual';
+
+            window.open('https://wa.me/' + celular + '?text=' + encodeURIComponent(mensaje), '_blank');
+            closeModal('modalCredenciales');
+        });
+
+        // === Reiniciar contraseña ===
+        $(document).on('click', '.btn-reiniciar-password', function () {
+            idReiniciar = $(this).data('id');
+            $('#resetNombre').text($(this).data('nombre'));
+            openModal('modalReiniciarPassword');
+        });
+
+        $('#btnConfirmarReset').on('click', function () {
+            if (!idReiniciar) return;
+            setBtnLoading('#btnConfirmarReset', true, 'Reiniciando…');
+            $.post('/admin/users/' + idReiniciar + '/reiniciar-password', { _token: CSRF })
+                .done(r => {
+                    closeModal('modalReiniciarPassword');
+                    toast('success', r.message || 'Contraseña reiniciada.');
+                    tabla.ajax.reload(null, false);
+                })
+                .fail(xhr => toast('error', xhr.responseJSON?.message || 'Error al reiniciar.'))
+                .always(() => {
+                    setBtnLoading('#btnConfirmarReset', false, '<i class="ri-refresh-line"></i> Reiniciar');
+                    idReiniciar = null;
+                });
+        });
+
+        // === Toggle estado (habilitar / deshabilitar) ===
+        $(document).on('click', '.btn-toggle-estado', function () {
+            idToggle       = $(this).data('id');
+            toggleEsActivo = String($(this).data('activo')) === '1';
+            const nombre   = $(this).data('nombre');
+
+            $('#toggleNombre').text(nombre);
+            if (toggleEsActivo) {
+                $('#toggleTitulo').text('Deshabilitar cuenta');
+                $('#toggleMsgPrimary').text('¿Deshabilitar cuenta?');
+                $('#toggleMsgInfo').text('La cuenta no podrá ingresar al sistema ni a Moodle.');
+                $('#toggleIcon').attr('class', 'ri-shield-cross-line');
+                $('#toggleIconRing').css({ background: 'rgba(217,119,6,.1)', color: '#d97706' });
+                $('#toggleBtnLabel').text('Deshabilitar');
+                $('#btnConfirmarToggle').find('i').attr('class', 'ri-shield-cross-line');
+            } else {
+                $('#toggleTitulo').text('Habilitar cuenta');
+                $('#toggleMsgPrimary').text('¿Habilitar cuenta?');
+                $('#toggleMsgInfo').text('La cuenta volverá a tener acceso al sistema y Moodle.');
+                $('#toggleIcon').attr('class', 'ri-shield-check-line');
+                $('#toggleIconRing').css({ background: 'rgba(22,163,74,.1)', color: '#16a34a' });
+                $('#toggleBtnLabel').text('Habilitar');
+                $('#btnConfirmarToggle').find('i').attr('class', 'ri-shield-check-line');
+            }
+            openModal('modalToggleEstado');
+        });
+
+        $('#btnConfirmarToggle').on('click', function () {
+            if (!idToggle) return;
+            setBtnLoading('#btnConfirmarToggle', true, 'Procesando…');
+            $.post('/admin/users/' + idToggle + '/toggle-estado', { _token: CSRF })
+                .done(r => {
+                    closeModal('modalToggleEstado');
+                    toast(r.moodle_ok === false ? 'warning' : 'success', r.message || 'Estado actualizado.');
+                    tabla.ajax.reload(null, false);
+                })
+                .fail(xhr => toast('error', xhr.responseJSON?.message || 'Error al actualizar.'))
+                .always(() => {
+                    setBtnLoading('#btnConfirmarToggle', false, '<i class="ri-shield-check-line"></i> <span id="toggleBtnLabel">Confirmar</span>');
+                    idToggle = null;
+                });
         });
 
         $('#btnBuscar').on('click', buscarPersona);
