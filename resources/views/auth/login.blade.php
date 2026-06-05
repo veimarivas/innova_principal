@@ -53,10 +53,12 @@
             }
 
             .login-viewport {
+                height: 100vh;
                 min-height: 100vh;
                 display: flex;
                 position: relative;
                 background: var(--midnight);
+                overflow: hidden;
             }
 
             /* === AMBIENT BACKGROUND === */
@@ -99,7 +101,7 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                padding: clamp(2.5rem, 5vw, 5rem);
+                padding: clamp(1.5rem, 3vw, 3rem);
                 overflow: hidden;
                 z-index: 1;
                 background: linear-gradient(135deg, var(--deep-warmth) 0%, var(--midnight) 100%);
@@ -162,13 +164,14 @@
                 z-index: 2;
                 max-width: 600px;
                 width: 100%;
+                margin-left: auto;
             }
 
             .brand-logo {
                 display: inline-flex;
                 align-items: center;
                 gap: 0.85rem;
-                margin-bottom: 2rem;
+                margin-bottom: 1.25rem;
                 animation: fadeSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
             }
 
@@ -203,7 +206,7 @@
                 font-weight: 500;
                 line-height: 1.15;
                 color: var(--text-primary);
-                margin-bottom: 1.4rem;
+                margin-bottom: 1rem;
                 animation: fadeSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
             }
 
@@ -225,8 +228,8 @@
             .brand-stats {
                 display: flex;
                 gap: 2.5rem;
-                margin-top: 2rem;
-                padding-top: 1.5rem;
+                margin-top: 1.25rem;
+                padding-top: 1rem;
                 border-top: 1px solid var(--border-subtle);
                 animation: fadeSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
             }
@@ -257,7 +260,7 @@
                 display: flex;
                 align-items: center;
                 gap: 0.6rem;
-                margin-top: 1.5rem;
+                margin-top: 1rem;
                 padding: 0.75rem 1.1rem;
                 background: var(--surface-subtle);
                 border: 1px solid var(--border-subtle);
@@ -282,11 +285,10 @@
             .login-panel {
                 width: 45%;
                 min-width: 420px;
-                min-height: 100vh;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                padding: clamp(1.5rem, 3vw, 3rem);
+                padding: clamp(1rem, 2vw, 2rem);
                 position: relative;
                 background: linear-gradient(180deg, var(--midnight) 0%, var(--deep-warmth) 100%);
                 z-index: 1;
@@ -317,6 +319,7 @@
             .login-container {
                 width: 100%;
                 max-width: 420px;
+                margin-right: auto;
                 animation: fadeSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
             }
 
@@ -820,6 +823,15 @@
                     width: 100%;
                     border-left: none;
                     background: radial-gradient(ellipse 100% 80% at 50% 0%, rgba(252, 123, 4, 0.05) 0%, var(--midnight) 60%);
+                }
+
+                .login-container {
+                    margin-right: 0;
+                }
+
+                .login-viewport {
+                    height: auto;
+                    overflow: visible;
                 }
 
                 .login-panel::before {

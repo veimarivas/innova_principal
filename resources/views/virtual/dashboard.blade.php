@@ -80,17 +80,520 @@
     }
     .pers-info-separator::before,
     .pers-info-separator::after { content:''; flex:1; height:1px; background:#e2e8f0; }
+
+    /* ── Foto editable en tab Personal ── */
+    .est-ci-foto-edit-wrap { position: relative; }
+    .est-ci-foto-edit-wrap img { display: block; }
+    .est-ci-foto-edit-btn {
+        position: absolute; left: 0; right: 0; bottom: 0;
+        display: flex; align-items: center; justify-content: center; gap: .3rem;
+        padding: .45rem .35rem;
+        background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.72) 100%);
+        color: #fff; border: none;
+        font-size: .68rem; font-weight: 600; letter-spacing: .03em;
+        cursor: pointer; opacity: 0; transition: opacity .2s ease;
+    }
+    .est-ci-foto-edit-wrap:hover .est-ci-foto-edit-btn,
+    .est-ci-foto-edit-btn:focus-visible { opacity: 1; }
+    .est-ci-foto-edit-btn i { font-size: .85rem; }
+
+    /* ── Modal cambio de foto (estudiante) ── */
+    .est-foto-modal .modal-content {
+        border: none; border-radius: 16px; overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0,0,0,.18);
+    }
+    .est-foto-modal .modal-header {
+        background: linear-gradient(135deg, #9a4904 0%, #df6a04 100%);
+        border: none; padding: 1rem 1.25rem;
+    }
+    .est-foto-modal .modal-title { color: #fff; font-weight: 700; font-size: 1rem; }
+    .est-foto-preview-wrap {
+        display: flex; justify-content: center; margin-bottom: 1rem;
+    }
+    .est-foto-preview {
+        width: 140px; height: 175px; object-fit: cover;
+        border-radius: 10px; border: 3px solid #e2e8f0;
+        box-shadow: 0 6px 18px rgba(0,0,0,.12);
+    }
+    .est-foto-drop {
+        border: 2px dashed #cbd5e1; border-radius: 12px;
+        padding: 1.5rem 1rem; text-align: center; cursor: pointer;
+        background: #f8fafc; transition: all .2s ease;
+    }
+    .est-foto-drop:hover { background: #fff7ed; border-color: #fc7b04; }
+    .est-foto-drop i { font-size: 1.8rem; color: #9a4904; display: block; margin-bottom: .35rem; }
+    .est-foto-btn-save {
+        background: linear-gradient(135deg, #9a4904, #df6a04);
+        color: #fff; border: none; padding: .55rem 1.2rem;
+        border-radius: 8px; font-weight: 600; font-size: .85rem;
+        display: inline-flex; align-items: center; gap: .35rem;
+        transition: all .2s ease;
+    }
+    .est-foto-btn-save:disabled { opacity: .5; cursor: not-allowed; }
+    .est-foto-btn-save:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(154,73,4,.3); }
+
+    /* ── Académico — Selector de programas (tarjetas) ─────────────── */
+    .acad-progs-wrap {
+        margin-bottom: 1.25rem;
+    }
+    .acad-progs-head {
+        display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+        margin-bottom: .75rem; flex-wrap: wrap;
+    }
+    .acad-progs-head-title {
+        display: inline-flex; align-items: center; gap: .5rem;
+        font-size: .78rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .06em; color: #475569;
+    }
+    .acad-progs-head-title i { color: #fc7b04; font-size: 1rem; }
+    .acad-progs-head-hint {
+        display: inline-flex; align-items: center; gap: .35rem;
+        font-size: .72rem; color: #94a3b8; font-style: italic;
+    }
+    .acad-progs-head-hint i { color: #fc7b04; }
+
+    .acad-progs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+        gap: .9rem;
+    }
+    .acad-prog-card {
+        position: relative;
+        display: flex; flex-direction: column;
+        width: 100%; min-width: 0;
+        background: #fff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0;
+        text-align: left;
+        text-transform: none;
+        cursor: pointer;
+        overflow: hidden;
+        transition: transform .22s cubic-bezier(.4,0,.2,1),
+                    box-shadow .22s ease,
+                    border-color .22s ease;
+        font-family: inherit;
+    }
+    .acad-prog-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(154,73,4,.12), 0 4px 10px rgba(0,0,0,.04);
+        border-color: var(--prog-color, #fc7b04);
+    }
+    .acad-prog-card.active {
+        border-color: var(--prog-color, #9a4904);
+        background: linear-gradient(180deg,
+            color-mix(in srgb, var(--prog-color, #9a4904) 5%, #fff) 0%,
+            #fff 60%);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--prog-color, #9a4904) 22%, transparent),
+                    0 12px 28px rgba(154,73,4,.18);
+        transform: translateY(-3px);
+    }
+    .acad-prog-card-stripe {
+        height: 5px; width: 100%;
+        background: linear-gradient(90deg,
+            var(--prog-color, #9a4904) 0%,
+            color-mix(in srgb, var(--prog-color, #9a4904) 60%, #fc7b04) 100%);
+    }
+    .acad-prog-card-body {
+        padding: .9rem 1rem 1rem;
+        display: flex; flex-direction: column; gap: .6rem;
+        width: 100%; min-width: 0;
+        box-sizing: border-box;
+    }
+    .acad-prog-card-top {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: .5rem; min-width: 0;
+    }
+    .acad-prog-card-num {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 32px; height: 32px; padding: 0 .55rem;
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--prog-color, #9a4904) 12%, transparent);
+        color: var(--prog-color, #9a4904);
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800; font-size: .82rem;
+        letter-spacing: .02em;
+        flex-shrink: 0;
+    }
+    .acad-prog-card.active .acad-prog-card-num {
+        background: var(--prog-color, #9a4904);
+        color: #fff;
+    }
+    .acad-prog-card-estado {
+        display: inline-flex; align-items: center; gap: .3rem;
+        font-size: .64rem; font-weight: 700;
+        padding: .25rem .55rem; border-radius: 30px;
+        text-transform: uppercase; letter-spacing: .03em;
+        flex-shrink: 0;
+        white-space: nowrap;
+        max-width: 60%;
+        overflow: hidden; text-overflow: ellipsis;
+    }
+    .acad-prog-card-estado i { font-size: .55rem; }
+    .acad-prog-card-estado.inscrito { background: rgba(34,197,94,.12); color: #15803d; }
+    .acad-prog-card-estado.pendiente { background: rgba(252,123,4,.13); color: #c96004; }
+    .acad-prog-card-estado.otro { background: rgba(100,116,139,.12); color: #475569; }
+
+    .acad-prog-card-name {
+        font-family: 'Outfit', sans-serif;
+        font-size: .94rem; font-weight: 700;
+        color: #0f172a; line-height: 1.35;
+        text-transform: none;
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        hyphens: auto;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+    }
+    .acad-prog-card.active .acad-prog-card-name {
+        color: var(--prog-color, #9a4904);
+    }
+    .acad-prog-card-meta {
+        display: flex; flex-wrap: wrap; gap: .35rem .8rem;
+    }
+    .acad-prog-card-meta span {
+        display: inline-flex; align-items: center; gap: .3rem;
+        font-size: .7rem; color: #64748b; font-weight: 500;
+    }
+    .acad-prog-card-meta i { color: var(--prog-color, #9a4904); font-size: .8rem; }
+    .acad-prog-card.active .acad-prog-card-meta span { color: #334155; font-weight: 600; }
+
+    /* ── Conteo simple de módulos (reemplaza la barra de progreso) ── */
+    .acad-prog-card-modcount {
+        display: inline-flex; align-items: center; gap: .4rem;
+        padding: .35rem .65rem;
+        background: color-mix(in srgb, var(--prog-color, #9a4904) 7%, #f8fafc);
+        border: 1px solid color-mix(in srgb, var(--prog-color, #9a4904) 15%, #e2e8f0);
+        border-radius: 8px;
+        font-size: .72rem; color: #475569;
+        align-self: flex-start;
+    }
+    .acad-prog-card-modcount i { color: var(--prog-color, #9a4904); font-size: .85rem; }
+    .acad-prog-card-modcount strong {
+        font-family: 'Outfit', sans-serif; color: var(--prog-color, #9a4904);
+        font-weight: 800; font-size: .82rem;
+    }
+
+    /* ── CTA: Ver módulos / Visualizando módulos ─────────────────── */
+    .acad-prog-card-cta {
+        display: flex; align-items: center; gap: .55rem;
+        margin-top: .35rem;
+        padding: .6rem .85rem;
+        background: linear-gradient(135deg,
+            color-mix(in srgb, var(--prog-color, #9a4904) 6%, #fff) 0%,
+            color-mix(in srgb, var(--prog-color, #9a4904) 14%, #fff) 100%);
+        border: 1px solid color-mix(in srgb, var(--prog-color, #9a4904) 22%, transparent);
+        border-radius: 10px;
+        font-size: .78rem; font-weight: 700;
+        color: var(--prog-color, #9a4904);
+        letter-spacing: .02em;
+        transition: background .25s ease, color .25s ease, border-color .25s ease,
+                    box-shadow .25s ease, transform .15s ease;
+        min-width: 0;
+    }
+    .acad-prog-card-cta-icon {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 26px; height: 26px; border-radius: 7px;
+        background: color-mix(in srgb, var(--prog-color, #9a4904) 18%, #fff);
+        color: var(--prog-color, #9a4904);
+        flex-shrink: 0;
+        transition: background .25s ease, color .25s ease;
+    }
+    .acad-prog-card-cta-icon i { font-size: .95rem; line-height: 1; }
+    .acad-prog-card-cta-i-active { display: none; }
+    .acad-prog-card-cta-text {
+        flex: 1; min-width: 0;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .acad-prog-card-cta-when-active { display: none; }
+    .acad-prog-card-arrow {
+        margin-left: auto; flex-shrink: 0;
+        font-size: 1rem;
+        transition: transform .25s ease;
+    }
+    .acad-prog-card:hover .acad-prog-card-cta {
+        background: linear-gradient(135deg,
+            color-mix(in srgb, var(--prog-color, #9a4904) 10%, #fff) 0%,
+            color-mix(in srgb, var(--prog-color, #9a4904) 20%, #fff) 100%);
+    }
+    .acad-prog-card:hover .acad-prog-card-arrow { transform: translateX(4px); }
+
+    /* Estado activo */
+    .acad-prog-card.active .acad-prog-card-cta-when-idle { display: none; }
+    .acad-prog-card.active .acad-prog-card-cta-when-active { display: inline; }
+    .acad-prog-card.active .acad-prog-card-cta-i-idle { display: none; }
+    .acad-prog-card.active .acad-prog-card-cta-i-active { display: inline-block; }
+    .acad-prog-card.active .acad-prog-card-cta {
+        background: linear-gradient(135deg,
+            var(--prog-color, #9a4904) 0%,
+            color-mix(in srgb, var(--prog-color, #9a4904) 75%, #fc7b04) 100%);
+        border-color: var(--prog-color, #9a4904);
+        color: #fff;
+        box-shadow: 0 6px 18px color-mix(in srgb, var(--prog-color, #9a4904) 38%, transparent);
+    }
+    .acad-prog-card.active .acad-prog-card-cta-icon {
+        background: rgba(255,255,255,.22);
+        color: #fff;
+    }
+    .acad-prog-card.active .acad-prog-card-arrow { color: #fff; }
+
+    /* ── Académico — Contexto compacto sobre los módulos ────────── */
+    .acad-prog-context {
+        display: flex; align-items: center; flex-wrap: wrap;
+        gap: .35rem .55rem;
+        padding: .65rem .95rem;
+        background: linear-gradient(135deg, #fff 0%, #faf7f3 100%);
+        border: 1px solid #e2e8f0;
+        border-left: 4px solid #fc7b04;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        font-size: .82rem; color: #475569;
+    }
+    .acad-prog-context i { color: #fc7b04; }
+    .acad-prog-context strong { color: #0f172a; font-weight: 700; }
+    .acad-prog-context-label { color: #94a3b8; font-weight: 500; }
+    .acad-prog-context-sep { color: #cbd5e1; }
+    .acad-prog-context-code {
+        font-family: 'Outfit', sans-serif; font-weight: 700;
+        background: rgba(252,123,4,.1); color: #c96004;
+        padding: .1rem .5rem; border-radius: 6px; font-size: .72rem;
+    }
+    .acad-prog-context-modcount {
+        margin-left: auto;
+        display: inline-flex; align-items: center; gap: .3rem;
+        font-size: .75rem; font-weight: 600; color: #475569;
+        background: rgba(252,123,4,.08);
+        padding: .25rem .65rem; border-radius: 30px;
+    }
+
+    /* Suavizar la animación al cambiar de programa */
+    .est-oferta-content { animation: acadFadeIn .35s ease both; }
+    @keyframes acadFadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       Tarjetas de Módulos — rediseño + grid 3 columnas
+    ══════════════════════════════════════════════════════════ */
+    .acad-modulos-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+        align-items: stretch;
+    }
+    @media (max-width: 1100px) {
+        .acad-modulos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+        .acad-modulos-grid { grid-template-columns: 1fr; }
+    }
+
+    .acad-mod-card {
+        position: relative;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex; flex-direction: column;
+        min-width: 0;
+        transition: transform .22s cubic-bezier(.4,0,.2,1),
+                    box-shadow .22s ease,
+                    border-color .22s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    }
+    .acad-mod-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; bottom: 0;
+        width: 4px;
+        background: var(--mod-color, #6366f1);
+        transition: width .22s ease;
+    }
+    .acad-mod-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--mod-color, #6366f1);
+        box-shadow: 0 12px 28px rgba(15,23,42,.10), 0 4px 10px rgba(0,0,0,.04);
+    }
+    .acad-mod-card:hover::before { width: 6px; }
+
+    /* Card resaltada cuando su panel de actividades está abierto */
+    .acad-mod-card.is-activity-open {
+        border-color: var(--mod-color, #6366f1);
+        background: linear-gradient(180deg,
+            color-mix(in srgb, var(--mod-color, #6366f1) 7%, #fff) 0%,
+            #fff 70%);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--mod-color, #6366f1) 22%, transparent),
+                    0 10px 24px color-mix(in srgb, var(--mod-color, #6366f1) 20%, transparent);
+        transform: translateY(-3px);
+    }
+    .acad-mod-card.is-activity-open::before { width: 6px; }
+    .acad-mod-card.is-activity-open .acad-mod-btn.btn-ver-actividades {
+        background: var(--mod-color, #6366f1);
+        border-color: var(--mod-color, #6366f1);
+        color: #fff;
+        box-shadow: 0 4px 12px color-mix(in srgb, var(--mod-color, #6366f1) 35%, transparent);
+    }
+
+    .acad-mod-stripe { display: none; } /* reemplazado por barra lateral */
+
+    /* Contenedor para los paneles de actividades (fuera del grid) */
+    .acad-mod-panels-wrap { margin-top: 1rem; }
+    .acad-mod-panels-wrap .est-act-panel {
+        display: none;
+        margin-top: 1rem;
+        border: 1px solid color-mix(in srgb, var(--mod-color, #6366f1) 28%, #e2e8f0);
+        border-radius: 12px;
+        background: #fff;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(15,23,42,.08);
+        animation: acadFadeIn .3s ease both;
+    }
+    .acad-mod-panels-wrap .est-act-panel.is-open { display: block; }
+
+    .acad-mod-body {
+        padding: 1rem 1.1rem 1.1rem 1.25rem;
+        display: flex; flex-direction: column; gap: .65rem;
+        flex: 1; min-width: 0;
+    }
+
+    /* Encabezado: número + badge de acceso */
+    .acad-mod-top {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: .5rem; min-width: 0;
+        padding-bottom: .55rem;
+        border-bottom: 1px dashed #eef1f5;
+    }
+    .acad-mod-num {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 38px; height: 32px;
+        padding: 0 .6rem;
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--mod-color, #6366f1) 14%, #fff) !important;
+        color: var(--mod-color, #6366f1) !important;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800; font-size: .82rem;
+        letter-spacing: .02em;
+        flex-shrink: 0;
+        text-transform: uppercase;
+    }
+
+    /* Nombre del módulo */
+    .acad-mod-card .acad-mod-name {
+        font-family: 'Outfit', sans-serif;
+        font-size: .94rem; font-weight: 700;
+        color: #0f172a; line-height: 1.35;
+        text-transform: none;
+        white-space: normal;
+        word-break: break-word; overflow-wrap: anywhere; hyphens: auto;
+        display: block; width: 100%;
+        margin: 0;
+    }
+
+    /* Badge de estado de acceso */
+    .acad-mod-card .acad-mod-badge {
+        display: inline-flex; align-items: center; gap: .25rem;
+        padding: .22rem .55rem; border-radius: 30px;
+        font-size: .64rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .03em;
+        white-space: nowrap; flex-shrink: 0;
+    }
+    .acad-mod-card .acad-mod-badge.activo  { background: rgba(34,197,94,.13); color: #15803d; }
+    .acad-mod-card .acad-mod-badge.blocked { background: rgba(239,68,68,.12); color: #b91c1c; }
+    .acad-mod-card .acad-mod-badge.pending { background: rgba(100,116,139,.12); color: #475569; }
+
+    /* Meta info */
+    .acad-mod-card .acad-mod-meta {
+        display: flex; flex-direction: column; gap: .35rem;
+        margin-top: .15rem;
+    }
+    .acad-mod-card .acad-mod-meta span {
+        display: inline-flex; align-items: center; gap: .35rem;
+        font-size: .75rem; color: #475569; font-weight: 500;
+        line-height: 1.3;
+    }
+    .acad-mod-card .acad-mod-meta i {
+        color: var(--mod-color, #6366f1);
+        font-size: .9rem; flex-shrink: 0;
+    }
+
+    /* Bloque "bloqueado por pagos" */
+    .acad-mod-card .acad-mod-blocked {
+        display: flex; align-items: center; gap: .45rem;
+        margin-top: auto;
+        padding: .55rem .8rem;
+        background: rgba(239,68,68,.06);
+        border: 1px solid rgba(239,68,68,.2);
+        border-radius: 10px;
+        font-size: .76rem; color: #991b1b; font-weight: 600;
+    }
+    .acad-mod-card .acad-mod-blocked i { font-size: 1rem; flex-shrink: 0; }
+
+    /* Acciones */
+    .acad-mod-card .acad-mod-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .5rem;
+        margin-top: auto;
+        padding-top: .75rem;
+        border-top: 1px solid #f1f5f9;
+    }
+    .acad-mod-card .acad-mod-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        gap: .3rem;
+        padding: .5rem .65rem;
+        border-radius: 9px;
+        font-size: .75rem; font-weight: 700;
+        letter-spacing: .02em;
+        border: 1.5px solid transparent;
+        cursor: pointer; text-decoration: none;
+        transition: background .2s ease, color .2s ease, border-color .2s ease,
+                    transform .15s ease, box-shadow .2s ease;
+        flex: initial; min-width: 0;
+    }
+    .acad-mod-card .acad-mod-btn i { font-size: .9rem; }
+
+    /* Botón "Actividades" — outlined */
+    .acad-mod-card .acad-mod-btn.btn-ver-actividades {
+        background: #fff;
+        border-color: color-mix(in srgb, var(--mod-color, #6366f1) 40%, #e2e8f0);
+        color: var(--mod-color, #6366f1);
+    }
+    .acad-mod-card .acad-mod-btn.btn-ver-actividades:hover {
+        background: color-mix(in srgb, var(--mod-color, #6366f1) 8%, #fff);
+        border-color: var(--mod-color, #6366f1);
+        transform: translateY(-1px);
+    }
+
+    /* Botón "Ir al curso" — sólido verde (acción primaria) */
+    .acad-mod-card .acad-mod-btn.acad-mod-btn-go {
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        color: #fff;
+        border-color: #15803d;
+    }
+    .acad-mod-card .acad-mod-btn.acad-mod-btn-go:hover {
+        background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(22,163,74,.28);
+    }
     </style>
 @endsection
 
+@php
+    $tieneFotoReal = $persona && $persona->fotografia && file_exists(public_path('images/personas/' . $persona->fotografia));
+    if ($tieneFotoReal) {
+        $heroAvatarUrl = asset('images/personas/' . $persona->fotografia);
+    } else {
+        $sexoHero = $persona?->sexo;
+        $defaultFile = $sexoHero === 'F' ? 'mujer.png' : 'chico.png';
+        $heroAvatarUrl = asset('images/' . $defaultFile);
+    }
+@endphp
 @section('content')
     <div class="est-hero">
-        @if ($persona && $persona->fotografia)
-            <img src="{{ url('images/personas/' . $persona->fotografia) }}" alt="Foto" class="est-hero-avatar"
-                onerror="this.src='{{ URL::asset('build/images/users/avatar-1.jpg') }}'">
-        @else
-            <img src="{{ URL::asset('build/images/users/avatar-1.jpg') }}" alt="Foto" class="est-hero-avatar">
-        @endif
+        <img src="{{ $heroAvatarUrl }}" alt="Foto" class="est-hero-avatar" id="est-hero-avatar-img"
+            onerror="this.src='{{ URL::asset('build/images/users/avatar-1.jpg') }}'">
         <div style="flex:1;min-width:0;">
             <div class="est-hero-name">
                 {{ $persona ? trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '')) : $user->name }}
@@ -268,7 +771,13 @@
         <div class="est-tabs-body active" id="tab-personal-docente">
             @php
                 $tieneFotoDoc = $persona && $persona->fotografia && file_exists(public_path('images/personas/' . $persona->fotografia));
-                $avatarUrlDoc = $tieneFotoDoc ? asset('images/personas/' . $persona->fotografia) : null;
+                if ($tieneFotoDoc) {
+                    $avatarUrlDoc = asset('images/personas/' . $persona->fotografia);
+                } else {
+                    $sexoDoc = $persona?->sexo;
+                    $defaultFileDoc = $sexoDoc === 'F' ? 'mujer.png' : 'chico.png';
+                    $avatarUrlDoc = asset('images/' . $defaultFileDoc);
+                }
                 $nombreCompletoDoc = $persona
                     ? trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''))
                     : $user->name;
@@ -285,14 +794,14 @@
                     {{-- Izquierda: foto --}}
                     <div class="est-ci-left">
                         <div class="est-ci-foto-label"><i class="ri-building-2-line"></i><span>INNOVA CIENCIA</span></div>
-                        <div class="est-ci-foto">
-                            <img src="{{ $avatarUrlDoc ?? '' }}" alt="Foto" id="doc-ci-foto-img"
-                                style="{{ $tieneFotoDoc ? '' : 'display:none;' }}"
-                                onerror="this.style.display='none';document.getElementById('doc-ci-initials').style.display='flex';">
-                            <div id="doc-ci-initials" class="est-ci-initials"
-                                style="{{ $tieneFotoDoc ? 'display:none;' : '' }}">
-                                {{ $inicialesDoc ?: '?' }}
-                            </div>
+                        <div class="est-ci-foto est-ci-foto-edit-wrap">
+                            <img src="{{ $avatarUrlDoc }}" alt="Foto" id="doc-ci-foto-img"
+                                onerror="this.src='{{ asset('images/chico.png') }}'">
+                            <button type="button" class="est-ci-foto-edit-btn"
+                                    onclick="abrirCambioFoto()" title="Cambiar foto">
+                                <i class="ri-camera-line"></i>
+                                <span>Cambiar foto</span>
+                            </button>
                         </div>
                         <div class="est-ci-quick-data">
                             @if ($persona?->carnet)
@@ -704,38 +1213,74 @@
                     $modulosPorOferta = $modulosDocente->groupBy('ofertas_academica_id');
                 @endphp
 
-                {{-- Selector de oferta (solo si hay más de una) --}}
-                @if ($modulosPorOferta->count() > 1)
-                <div class="acad-prog-selector">
-                    <div class="acad-prog-selector-header">
-                        <i class="ri-book-open-line"></i>
-                        <span>Seleccionar oferta académica</span>
-                        <span class="acad-prog-count">{{ $modulosPorOferta->count() }}</span>
+                {{-- ── Selector de ofertas (tarjetas elegantes) ────────────── --}}
+                <div class="acad-progs-wrap">
+                    <div class="acad-progs-head">
+                        <div class="acad-progs-head-title">
+                            <i class="ri-book-open-line"></i>
+                            <span>{{ $modulosPorOferta->count() > 1 ? 'Selecciona una oferta académica' : 'Tu oferta académica' }}</span>
+                        </div>
+                        @if ($modulosPorOferta->count() > 1)
+                        <span class="acad-progs-head-hint"><i class="ri-cursor-line"></i> Haz clic en una tarjeta para ver sus módulos</span>
+                        @endif
                     </div>
-                    <div class="acad-prog-pills">
+                    <div class="acad-progs-grid">
                         @foreach ($modulosPorOferta as $ofertaId => $mods)
                         @php
                             $primerMod    = $mods->first();
-                            $nombreOferta = $primerMod->ofertaAcademica?->programa?->nombre
-                                ?? $primerMod->ofertaAcademica?->posgrado?->nombre
+                            $ofertaCard   = $primerMod->ofertaAcademica;
+                            $nombreOferta = $ofertaCard?->programa?->nombre
+                                ?? $ofertaCard?->posgrado?->nombre
                                 ?? 'Oferta #' . $ofertaId;
+                            $progColor   = $ofertaCard?->color ?? '#9a4904';
+                            $progTotalMod = $mods->count();
+                            $progMoodleMod = $mods->filter(fn($m) => $m->moodle_course_id)->count();
                         @endphp
                         <button type="button"
-                            class="acad-prog-pill est-oferta-tab-btn {{ $loop->first ? 'active' : '' }}"
-                            data-target="doc-oferta-{{ $loop->index }}">
-                            <span class="acad-prog-pill-num">{{ $loop->iteration }}</span>
-                            <div class="acad-prog-pill-info">
-                                <span class="acad-prog-pill-name">{{ $nombreOferta }}</span>
-                                @if ($primerMod->ofertaAcademica?->codigo)
-                                    <span class="acad-prog-pill-code">{{ $primerMod->ofertaAcademica->codigo }}</span>
-                                @endif
+                            class="acad-prog-card est-oferta-tab-btn {{ $loop->first ? 'active' : '' }}"
+                            data-target="doc-oferta-{{ $loop->index }}"
+                            style="--prog-color: {{ $progColor }};">
+                            <div class="acad-prog-card-stripe"></div>
+                            <div class="acad-prog-card-body">
+                                <div class="acad-prog-card-top">
+                                    <span class="acad-prog-card-num">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                    <span class="acad-prog-card-estado inscrito">
+                                        <i class="ri-user-settings-fill"></i>
+                                        Docente
+                                    </span>
+                                </div>
+                                <div class="acad-prog-card-name">{{ $nombreOferta }}</div>
+                                <div class="acad-prog-card-meta">
+                                    @if ($ofertaCard?->codigo)
+                                        <span><i class="ri-hashtag"></i>{{ $ofertaCard->codigo }}</span>
+                                    @endif
+                                    @if ($ofertaCard?->fase?->nombre)
+                                        <span><i class="ri-flag-2-line"></i>{{ $ofertaCard->fase->nombre }}</span>
+                                    @endif
+                                    @if ($ofertaCard?->modalidad?->nombre)
+                                        <span><i class="ri-global-line"></i>{{ $ofertaCard->modalidad->nombre }}</span>
+                                    @endif
+                                </div>
+                                <div class="acad-prog-card-modcount">
+                                    <i class="ri-stack-line"></i>
+                                    <span><strong>{{ $progMoodleMod }}</strong> de {{ $progTotalMod }} módulo(s) con Moodle</span>
+                                </div>
+                                <div class="acad-prog-card-cta">
+                                    <span class="acad-prog-card-cta-icon">
+                                        <i class="ri-eye-line acad-prog-card-cta-i-idle"></i>
+                                        <i class="ri-checkbox-circle-fill acad-prog-card-cta-i-active"></i>
+                                    </span>
+                                    <span class="acad-prog-card-cta-text">
+                                        <span class="acad-prog-card-cta-when-idle">Ver módulos</span>
+                                        <span class="acad-prog-card-cta-when-active">Visualizando módulos</span>
+                                    </span>
+                                    <i class="ri-arrow-right-s-line acad-prog-card-arrow"></i>
+                                </div>
                             </div>
-                            <span class="acad-prog-pill-estado inscrito">{{ $mods->count() }} mód.</span>
                         </button>
                         @endforeach
                     </div>
                 </div>
-                @endif
 
                 {{-- Contenido por oferta --}}
                 @foreach ($modulosPorOferta as $ofertaId => $mods)
@@ -749,40 +1294,38 @@
                 <div class="est-oferta-content {{ $loop->first ? 'active' : '' }}"
                     id="doc-oferta-{{ $loop->index }}">
 
-                    {{-- Cabecera de la oferta --}}
-                    <div class="acad-prog-header-bar">
-                        <div class="acad-prog-header-info">
-                            <div class="acad-prog-header-name">{{ $nombreOferta }}</div>
-                            <div class="acad-prog-header-meta">
-                                @if ($oferta?->codigo)
-                                    <span><i class="ri-hashtag"></i>{{ $oferta->codigo }}</span>
-                                @endif
-                                @if ($oferta?->fecha_inicio)
-                                    <span><i class="ri-calendar-line"></i>Inicio: {{ \Carbon\Carbon::parse($oferta->fecha_inicio)->format('d/m/Y') }}</span>
-                                @endif
-                                <span><i class="ri-stack-line"></i>{{ $mods->count() }} módulo(s) asignado(s)</span>
-                            </div>
-                        </div>
-                        <span class="est-estado-badge inscrito">Docente</span>
+                    {{-- Contexto compacto de la oferta --}}
+                    <div class="acad-prog-context">
+                        <i class="ri-graduation-cap-line"></i>
+                        <span class="acad-prog-context-label">Módulos de</span>
+                        <strong>{{ $nombreOferta }}</strong>
+                        @if ($oferta?->codigo)
+                            <span class="acad-prog-context-sep">·</span>
+                            <span class="acad-prog-context-code">{{ $oferta->codigo }}</span>
+                        @endif
+                        @if ($oferta?->fecha_inicio)
+                            <span class="acad-prog-context-sep">·</span>
+                            <span><i class="ri-calendar-line"></i> Inicio {{ \Carbon\Carbon::parse($oferta->fecha_inicio)->format('d/m/Y') }}</span>
+                        @endif
+                        <span class="acad-prog-context-modcount">
+                            <i class="ri-stack-line"></i> {{ $mods->count() }} módulo(s)
+                        </span>
                     </div>
 
                     {{-- Grid de módulos --}}
                     <div class="acad-modulos-grid">
                         @foreach ($mods->sortBy('n_modulo') as $modulo)
                         @php $modColor = $modulo->color ?? '#6366f1'; @endphp
-                        <div class="acad-mod-card">
-                            <div class="acad-mod-stripe" style="background:{{ $modColor }};"></div>
+                        <div class="acad-mod-card" style="--mod-color: {{ $modColor }};">
+                            <div class="acad-mod-stripe"></div>
                             <div class="acad-mod-body">
                                 <div class="acad-mod-top">
-                                    <span class="acad-mod-num"
-                                        style="background:{{ $modColor }}22;color:{{ $modColor }};">
-                                        M{{ $modulo->n_modulo }}
-                                    </span>
-                                    <span class="acad-mod-name">{{ $modulo->nombre }}</span>
+                                    <span class="acad-mod-num">M{{ $modulo->n_modulo }}</span>
                                     <span class="acad-mod-badge activo">
                                         <i class="ri-user-settings-line"></i> Docente
                                     </span>
                                 </div>
+                                <div class="acad-mod-name">{{ $modulo->nombre }}</div>
                                 <div class="acad-mod-meta">
                                     @if ($modulo->fecha_inicio)
                                         <span>
@@ -800,7 +1343,7 @@
                                 </div>
                                 <div class="acad-mod-actions">
                                     <a href="{{ route('virtual.docente.modulo', $modulo->id) }}"
-                                        class="acad-mod-btn">
+                                        class="acad-mod-btn btn-ver-actividades">
                                         <i class="ri-layout-grid-line"></i> Ver detalle
                                     </a>
                                     @if ($modulo->moodle_course_id)
@@ -912,7 +1455,13 @@
         @php
             $tieneFoto =
                 $persona && $persona->fotografia && file_exists(public_path('images/personas/' . $persona->fotografia));
-            $avatarUrl = $tieneFoto ? asset('images/personas/' . $persona->fotografia) : null;
+            if ($tieneFoto) {
+                $avatarUrl = asset('images/personas/' . $persona->fotografia);
+            } else {
+                $sexoEst = $persona?->sexo;
+                $defaultFileEst = $sexoEst === 'F' ? 'mujer.png' : 'chico.png';
+                $avatarUrl = asset('images/' . $defaultFileEst);
+            }
             $nombreCompleto = $persona
                 ? trim(
                     ($persona->nombres ?? '') .
@@ -944,14 +1493,14 @@
                     {{-- Izquierda: foto --}}
                     <div class="est-ci-left">
                         <div class="est-ci-foto-label"><i class="ri-building-2-line"></i><span>INNOVA CIENCIA</span></div>
-                        <div class="est-ci-foto">
-                            <img src="{{ $avatarUrl ?? '' }}" alt="Foto" id="est-ci-foto-img"
-                                style="{{ $tieneFoto ? '' : 'display:none;' }}"
-                                onerror="this.style.display='none';document.getElementById('est-ci-initials').style.display='flex';">
-                            <div id="est-ci-initials" class="est-ci-initials"
-                                style="{{ $tieneFoto ? 'display:none;' : '' }}">
-                                {{ $iniciales ?: '?' }}
-                            </div>
+                        <div class="est-ci-foto est-ci-foto-edit-wrap">
+                            <img src="{{ $avatarUrl }}" alt="Foto" id="est-ci-foto-img"
+                                onerror="this.src='{{ asset('images/chico.png') }}'">
+                            <button type="button" class="est-ci-foto-edit-btn"
+                                    onclick="abrirCambioFoto()" title="Cambiar foto">
+                                <i class="ri-camera-line"></i>
+                                <span>Cambiar foto</span>
+                            </button>
                         </div>
                         <div class="est-ci-quick-data">
                             @if ($persona?->carnet)
@@ -1439,17 +1988,28 @@
 
             @if ($inscripciones->count() > 0)
 
-                {{-- Selector de programa (solo si hay más de uno) --}}
-                @if ($inscripciones->count() > 1)
-                <div class="acad-prog-selector">
-                    <div class="acad-prog-selector-header">
-                        <i class="ri-book-open-line"></i>
-                        <span>Seleccionar programa</span>
-                        <span class="acad-prog-count">{{ $inscripciones->count() }}</span>
+                {{-- ── Selector de programas (tarjetas elegantes) ────────────── --}}
+                <div class="acad-progs-wrap">
+                    <div class="acad-progs-head">
+                        <div class="acad-progs-head-title">
+                            <i class="ri-book-open-line"></i>
+                            <span>{{ $inscripciones->count() > 1 ? 'Selecciona un programa' : 'Tu programa' }}</span>
+                        </div>
+                        @if ($inscripciones->count() > 1)
+                        <span class="acad-progs-head-hint"><i class="ri-cursor-line"></i> Haz clic en una tarjeta para ver sus módulos</span>
+                        @endif
                     </div>
-                    <div class="acad-prog-pills">
+                    <div class="acad-progs-grid">
                         @foreach ($inscripciones as $key => $insc)
                         @php
+                            $progPosgrado = $insc->ofertaAcademica?->posgrado;
+                            $progPrograma = $insc->ofertaAcademica?->programa;
+                            $progNombre   = $progPosgrado?->nombre ?? $progPrograma?->nombre ?? 'Programa ' . ($key + 1);
+                            $progColor    = $insc->ofertaAcademica?->color ?? '#9a4904';
+                            $progMatriculas = $insc->moodleMatriculas;
+                            $progTotalMod   = $progMatriculas->count();
+                            $progActivosMod = $progMatriculas->filter(fn($m) => $m->moodle_course_id && $m->moodle_user_id && !$m->acceso_suspendido)->count();
+                            $progPct = $progTotalMod > 0 ? round(($progActivosMod / $progTotalMod) * 100) : 0;
                             $pillEstado = match ($insc->estado) {
                                 'Inscrito', 'Confirmado' => 'inscrito',
                                 'Pre-Inscrito'           => 'pendiente',
@@ -1457,23 +2017,50 @@
                             };
                         @endphp
                         <button type="button"
-                            class="acad-prog-pill est-oferta-tab-btn {{ $key == 0 ? 'active' : '' }}"
-                            data-target="academico-oferta-{{ $key }}">
-                            <span class="acad-prog-pill-num">{{ $key + 1 }}</span>
-                            <div class="acad-prog-pill-info">
-                                <span class="acad-prog-pill-name">
-                                    {{ $insc->ofertaAcademica?->programa?->nombre ?? ($insc->ofertaAcademica?->posgrado?->nombre ?? 'Programa ' . ($key + 1)) }}
-                                </span>
-                                @if ($insc->ofertaAcademica?->codigo)
-                                <span class="acad-prog-pill-code">{{ $insc->ofertaAcademica->codigo }}</span>
-                                @endif
+                            class="acad-prog-card est-oferta-tab-btn {{ $key == 0 ? 'active' : '' }}"
+                            data-target="academico-oferta-{{ $key }}"
+                            style="--prog-color: {{ $progColor }};">
+                            <div class="acad-prog-card-stripe"></div>
+                            <div class="acad-prog-card-body">
+                                <div class="acad-prog-card-top">
+                                    <span class="acad-prog-card-num">{{ str_pad($key + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                    <span class="acad-prog-card-estado {{ $pillEstado }}">
+                                        <i class="ri-checkbox-blank-circle-fill"></i>
+                                        {{ $insc->estado }}
+                                    </span>
+                                </div>
+                                <div class="acad-prog-card-name">{{ $progNombre }}</div>
+                                <div class="acad-prog-card-meta">
+                                    @if ($insc->ofertaAcademica?->codigo)
+                                        <span><i class="ri-hashtag"></i>{{ $insc->ofertaAcademica->codigo }}</span>
+                                    @endif
+                                    @if ($insc->ofertaAcademica?->fase?->nombre)
+                                        <span><i class="ri-flag-2-line"></i>{{ $insc->ofertaAcademica->fase->nombre }}</span>
+                                    @endif
+                                    @if ($insc->ofertaAcademica?->modalidad?->nombre)
+                                        <span><i class="ri-global-line"></i>{{ $insc->ofertaAcademica->modalidad->nombre }}</span>
+                                    @endif
+                                </div>
+                                <div class="acad-prog-card-modcount">
+                                    <i class="ri-stack-line"></i>
+                                    <span><strong>{{ $progActivosMod }}</strong> de {{ $progTotalMod }} módulo(s) con acceso</span>
+                                </div>
+                                <div class="acad-prog-card-cta">
+                                    <span class="acad-prog-card-cta-icon">
+                                        <i class="ri-eye-line acad-prog-card-cta-i-idle"></i>
+                                        <i class="ri-checkbox-circle-fill acad-prog-card-cta-i-active"></i>
+                                    </span>
+                                    <span class="acad-prog-card-cta-text">
+                                        <span class="acad-prog-card-cta-when-idle">Ver módulos</span>
+                                        <span class="acad-prog-card-cta-when-active">Visualizando módulos</span>
+                                    </span>
+                                    <i class="ri-arrow-right-s-line acad-prog-card-arrow"></i>
+                                </div>
                             </div>
-                            <span class="acad-prog-pill-estado {{ $pillEstado }}">{{ $insc->estado }}</span>
                         </button>
                         @endforeach
                     </div>
                 </div>
-                @endif
 
                 {{-- Contenido de cada programa --}}
                 @foreach ($inscripciones as $key => $insc)
@@ -1481,32 +2068,26 @@
                     $oferta     = $insc->ofertaAcademica;
                     $programa   = $oferta?->programa;
                     $matriculas = $insc->moodleMatriculas->sortBy(fn($m) => $m->modulo?->n_modulo);
-                    $estadoClass = match ($insc->estado) {
-                        'Inscrito', 'Confirmado' => 'inscrito',
-                        'Pre-Inscrito'           => 'pendiente',
-                        default                  => 'otro',
-                    };
                 @endphp
                 <div class="est-oferta-content {{ $key == 0 ? 'active' : '' }}"
                     id="academico-oferta-{{ $key }}">
 
-                    {{-- Cabecera del programa --}}
-                    <div class="acad-prog-header-bar">
-                        <div class="acad-prog-header-info">
-                            <div class="acad-prog-header-name">
-                                {{ $programa?->nombre ?? ($oferta?->posgrado?->nombre ?? 'Programa') }}
-                            </div>
-                            <div class="acad-prog-header-meta">
-                                @if ($oferta?->codigo)
-                                    <span><i class="ri-hashtag"></i>{{ $oferta->codigo }}</span>
-                                @endif
-                                @if ($oferta?->fecha_inicio)
-                                    <span><i class="ri-calendar-line"></i>Inicio: {{ \Carbon\Carbon::parse($oferta->fecha_inicio)->format('d/m/Y') }}</span>
-                                @endif
-                                <span><i class="ri-stack-line"></i>{{ $matriculas->count() }} módulo(s)</span>
-                            </div>
-                        </div>
-                        <span class="est-estado-badge {{ $estadoClass }}">{{ $insc->estado }}</span>
+                    {{-- Contexto compacto del programa seleccionado --}}
+                    <div class="acad-prog-context">
+                        <i class="ri-graduation-cap-line"></i>
+                        <span class="acad-prog-context-label">Módulos de</span>
+                        <strong>{{ $oferta?->posgrado?->nombre ?? $programa?->nombre ?? 'Programa' }}</strong>
+                        @if ($oferta?->codigo)
+                            <span class="acad-prog-context-sep">·</span>
+                            <span class="acad-prog-context-code">{{ $oferta->codigo }}</span>
+                        @endif
+                        @if ($oferta?->fecha_inicio)
+                            <span class="acad-prog-context-sep">·</span>
+                            <span><i class="ri-calendar-line"></i> Inicio {{ \Carbon\Carbon::parse($oferta->fecha_inicio)->format('d/m/Y') }}</span>
+                        @endif
+                        <span class="acad-prog-context-modcount">
+                            <i class="ri-stack-line"></i> {{ $matriculas->count() }} módulo(s)
+                        </span>
                     </div>
 
                     {{-- Grid de módulos --}}
@@ -1526,15 +2107,13 @@
                             @endphp
                             @if (!$modulo) @continue @endif
 
-                            <div class="acad-mod-card">
-                                <div class="acad-mod-stripe" style="background:{{ $modColor }};"></div>
+                            <div class="acad-mod-card" id="card-mod-{{ $modulo->id }}" style="--mod-color: {{ $modColor }};">
+                                <div class="acad-mod-stripe"></div>
                                 <div class="acad-mod-body">
                                     <div class="acad-mod-top">
-                                        <span class="acad-mod-num"
-                                            style="background:{{ $modColor }}22;color:{{ $modColor }};">
+                                        <span class="acad-mod-num">
                                             M{{ $modulo->n_modulo }}
                                         </span>
-                                        <span class="acad-mod-name">{{ $modulo->nombre }}</span>
                                         @if ($tieneMoodle)
                                             @if ($suspendido)
                                                 <span class="acad-mod-badge blocked">
@@ -1551,6 +2130,7 @@
                                             </span>
                                         @endif
                                     </div>
+                                    <div class="acad-mod-name">{{ $modulo->nombre }}</div>
                                     <div class="acad-mod-meta">
                                         @if ($modulo->fecha_inicio)
                                             <span>
@@ -1596,15 +2176,27 @@
                                 </div>
                             </div>
 
-                            @if ($tieneMoodle && !$suspendido)
-                                <div class="est-act-panel" id="panel-mod-{{ $modulo->id }}">
-                                    <div class="est-spinner" id="spinner-mod-{{ $modulo->id }}">
-                                        <div class="spinner-border spinner-border-sm"></div> Cargando actividades…
-                                    </div>
-                                    <div id="contenido-mod-{{ $modulo->id }}"></div>
-                                </div>
-                            @endif
+                            @endforeach
+                        </div>
 
+                        {{-- Paneles de actividades — fuera del grid, abajo de todos los módulos --}}
+                        <div class="acad-mod-panels-wrap">
+                            @foreach ($matriculas as $matricula)
+                                @php
+                                    $modulo      = $matricula->modulo;
+                                    $tieneMoodle = $matricula->moodle_course_id && $matricula->moodle_user_id;
+                                    $suspendido  = (bool) $matricula->acceso_suspendido;
+                                    $modColor    = $modulo->color ?? '#6366f1';
+                                @endphp
+                                @if (!$modulo) @continue @endif
+                                @if ($tieneMoodle && !$suspendido)
+                                    <div class="est-act-panel" id="panel-mod-{{ $modulo->id }}" style="--mod-color: {{ $modColor }};">
+                                        <div class="est-spinner" id="spinner-mod-{{ $modulo->id }}">
+                                            <div class="spinner-border spinner-border-sm"></div> Cargando actividades…
+                                        </div>
+                                        <div id="contenido-mod-{{ $modulo->id }}"></div>
+                                    </div>
+                                @endif
                             @endforeach
                         </div>
                     @endif
@@ -2722,6 +3314,36 @@
     </div>
 </div>
 
+{{-- ── Modal: Cambiar foto de perfil (estudiante/docente) ─────────── --}}
+<div class="modal fade est-foto-modal" id="estFotoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-camera-line me-2"></i>Cambiar foto de perfil</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="est-foto-preview-wrap">
+                    <img id="estFotoPreview" src="{{ $heroAvatarUrl }}" alt="Preview" class="est-foto-preview">
+                </div>
+                <div class="est-foto-drop" id="estFotoDrop" onclick="document.getElementById('estFotoInput').click()">
+                    <i class="ri-upload-cloud-2-line"></i>
+                    <div style="font-size:.85rem;font-weight:600;color:#1e293b;">Haz clic para seleccionar tu foto</div>
+                    <div style="font-size:.72rem;color:#64748b;margin-top:.2rem;">JPG, JPEG o PNG — máximo 2 MB</div>
+                </div>
+                <input type="file" id="estFotoInput" accept="image/jpeg,image/jpg,image/png" class="d-none">
+                <div id="estFotoAlert" class="alert d-none mt-3 mb-0" role="alert" style="font-size:.82rem;"></div>
+            </div>
+            <div class="modal-footer border-0 pt-0 pb-3 px-4">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="est-foto-btn-save" id="estFotoBtnSave" disabled>
+                    <i class="ri-save-line"></i> Guardar Foto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('script')
@@ -3283,16 +3905,34 @@
 
             $(document).on('click', '.btn-ver-actividades', function() {
                 const moduloId = $(this).data('modulo');
-                const panelId = $(this).data('panel');
-                const $panel = $('#' + panelId);
+                const panelId  = $(this).data('panel');
+                const $btn     = $(this);
+                const $card    = $('#card-mod-' + moduloId);
+                const $panel   = $('#' + panelId);
+                const $oferta  = $card.closest('.est-oferta-content');
+                const $panels  = $oferta.find('.acad-mod-panels-wrap .est-act-panel');
+                const $cards   = $oferta.find('.acad-mod-card');
 
-                if ($panel.is(':visible')) {
-                    $panel.slideUp(200);
-                    $(this).html('<i class="ri-eye-line"></i> Ver actividades');
+                const yaAbierto = $panel.hasClass('is-open');
+
+                // Cerrar otros paneles y limpiar highlights del programa actual
+                $panels.not($panel).removeClass('is-open').hide();
+                $cards.not($card).removeClass('is-activity-open')
+                    .find('.btn-ver-actividades').html('<i class="ri-eye-line"></i> Actividades');
+
+                if (yaAbierto) {
+                    $panel.removeClass('is-open').slideUp(200);
+                    $card.removeClass('is-activity-open');
+                    $btn.html('<i class="ri-eye-line"></i> Actividades');
                     return;
                 }
-                $panel.slideDown(200);
-                $(this).html('<i class="ri-eye-off-line"></i> Ocultar');
+
+                $card.addClass('is-activity-open');
+                $panel.addClass('is-open').css('display','none').slideDown(220, function() {
+                    const top = $panel.offset().top - 80;
+                    $('html, body').animate({ scrollTop: top }, 280);
+                });
+                $btn.html('<i class="ri-eye-off-line"></i> Ocultar');
                 if (loaded[moduloId]) return;
 
                 $.get('/virtual/actividades/' + moduloId)
@@ -5092,5 +5732,100 @@
             }
         });
         @endif
+
+        /* ──────────────────────────────────────────────────────────────
+           Cambio de foto de perfil (estudiante)
+        ────────────────────────────────────────────────────────────── */
+        let estFotoArchivoSeleccionado = null;
+
+        function abrirCambioFoto() {
+            const modal = new bootstrap.Modal(document.getElementById('estFotoModal'));
+            estFotoArchivoSeleccionado = null;
+            document.getElementById('estFotoBtnSave').disabled = true;
+            const alertEl = document.getElementById('estFotoAlert');
+            alertEl.classList.add('d-none');
+            alertEl.textContent = '';
+            document.getElementById('estFotoInput').value = '';
+            const headerImg = document.getElementById('est-hero-avatar-img');
+            const previewImg = document.getElementById('estFotoPreview');
+            if (headerImg && previewImg) previewImg.src = headerImg.src;
+            modal.show();
+        }
+        window.abrirCambioFoto = abrirCambioFoto;
+
+        (function() {
+            const inputFile = document.getElementById('estFotoInput');
+            const btnSave   = document.getElementById('estFotoBtnSave');
+            const preview   = document.getElementById('estFotoPreview');
+            const alertEl   = document.getElementById('estFotoAlert');
+            if (!inputFile || !btnSave) return;
+
+            function mostrarAlerta(tipo, msg) {
+                alertEl.className = 'alert mt-3 mb-0 alert-' + tipo;
+                alertEl.textContent = msg;
+                alertEl.classList.remove('d-none');
+            }
+
+            inputFile.addEventListener('change', function() {
+                const file = this.files[0];
+                if (!file) return;
+                if (!['image/jpeg','image/jpg','image/png'].includes(file.type)) {
+                    mostrarAlerta('danger', 'Formato no válido. Solo JPG, JPEG o PNG.');
+                    btnSave.disabled = true;
+                    return;
+                }
+                if (file.size > 2 * 1024 * 1024) {
+                    mostrarAlerta('danger', 'La imagen no debe superar 2 MB.');
+                    btnSave.disabled = true;
+                    return;
+                }
+                alertEl.classList.add('d-none');
+                estFotoArchivoSeleccionado = file;
+                const reader = new FileReader();
+                reader.onload = e => { preview.src = e.target.result; };
+                reader.readAsDataURL(file);
+                btnSave.disabled = false;
+            });
+
+            btnSave.addEventListener('click', async function() {
+                if (!estFotoArchivoSeleccionado) return;
+                btnSave.disabled = true;
+                btnSave.innerHTML = '<i class="ri-loader-2-line ri-spin"></i> Subiendo...';
+                const fd = new FormData();
+                fd.append('foto', estFotoArchivoSeleccionado);
+                fd.append('_token', '{{ csrf_token() }}');
+                try {
+                    const res = await fetch('{{ route('admin.profile.upload-foto') }}', {
+                        method: 'POST',
+                        body: fd,
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                    });
+                    const data = await res.json();
+                    if (!data.success) {
+                        mostrarAlerta('danger', data.message || 'No se pudo actualizar la foto.');
+                        btnSave.disabled = false;
+                        btnSave.innerHTML = '<i class="ri-save-line"></i> Guardar Foto';
+                        return;
+                    }
+                    const nuevaUrl = data.url + '?t=' + Date.now();
+                    ['est-ci-foto-img', 'doc-ci-foto-img', 'est-hero-avatar-img',
+                     'est-nav-avatar-img', 'est-nav-tud-avatar-img']
+                        .forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el) el.src = nuevaUrl;
+                        });
+                    mostrarAlerta('success', data.message || 'Foto actualizada.');
+                    setTimeout(() => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('estFotoModal'));
+                        if (modal) modal.hide();
+                        btnSave.innerHTML = '<i class="ri-save-line"></i> Guardar Foto';
+                    }, 900);
+                } catch (e) {
+                    mostrarAlerta('danger', 'Error de red. Intenta nuevamente.');
+                    btnSave.disabled = false;
+                    btnSave.innerHTML = '<i class="ri-save-line"></i> Guardar Foto';
+                }
+            });
+        })();
     </script>
 @endsection

@@ -52,6 +52,20 @@ class PreInscripcionController extends Controller
         ));
     }
 
+    public function checkDisponibilidad(Request $request)
+    {
+        $campo = $request->input('campo');
+        $valor = trim((string) $request->input('valor', ''));
+
+        if ($valor === '' || !in_array($campo, ['carnet', 'celular', 'correo'], true)) {
+            return response()->json(['disponible' => true]);
+        }
+
+        $existe = Persona::where($campo, $valor)->exists();
+
+        return response()->json(['disponible' => !$existe]);
+    }
+
     public function store(Request $request, string $token)
     {
         $enlace = EnlacePreinscripcion::where('token', $token)
@@ -62,10 +76,15 @@ class PreInscripcionController extends Controller
             'nombres'          => 'required|string|max:120',
             'apellido_paterno' => 'required|string|max:80',
             'apellido_materno' => 'nullable|string|max:80',
-            'carnet'           => 'nullable|string|max:30',
-            'telefono'         => 'nullable|string|max:20',
-            'email'            => 'nullable|email|max:120',
+            'carnet'           => ['required', 'regex:/^\d{7,10}$/', 'unique:personas,carnet'],
+            'telefono'         => ['required', 'regex:/^\d{8}$/'],
+            'email'            => 'required|email|max:120|unique:personas,correo',
             'observacion'      => 'nullable|string|max:500',
+        ], [
+            'carnet.regex'    => 'El carnet debe tener entre 7 y 10 dígitos numéricos.',
+            'carnet.unique'   => 'Este carnet ya está registrado.',
+            'telefono.regex'  => 'El celular debe contener exactamente 8 dígitos numéricos.',
+            'email.unique'    => 'Este correo ya está registrado.',
         ]);
 
         // 1. Buscar o crear Persona (por carnet si se proporcionó)

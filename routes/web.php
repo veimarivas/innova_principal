@@ -145,6 +145,7 @@ Route::get('/catalogo', [LandingController::class, 'catalogo'])->name('catalogo'
 Route::get('/preinscripcion/{token}', [PreInscripcionController::class, 'show'])->name('preinscripcion.show');
 Route::post('/preinscripcion/{token}', [PreInscripcionController::class, 'store'])->name('preinscripcion.store');
 Route::get('/preinscripcion/{token}/exito', [PreInscripcionController::class, 'exito'])->name('preinscripcion.exito');
+Route::post('/preinscripcion/check/disponibilidad', [PreInscripcionController::class, 'checkDisponibilidad'])->name('preinscripcion.check');
 
 // Dashboard
 Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {

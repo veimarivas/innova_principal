@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Pre-inscripción — {{ optional($oferta->programa)->nombre ?? 'Programa' }} — InnovaCiencia Virtual</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -622,6 +623,40 @@
             border-color: #ef4444
         }
 
+        .form-control.is-valid {
+            border-color: #10b981
+        }
+
+        .form-control.is-checking {
+            border-color: var(--gold-lt)
+        }
+
+        .field-feedback {
+            display: block;
+            min-height: 16px;
+            margin-top: 6px;
+            font-size: .72rem;
+            line-height: 1.3;
+            color: rgba(255, 255, 255, .55);
+        }
+
+        .field-feedback.error {
+            color: #ef4444
+        }
+
+        .field-feedback.success {
+            color: #10b981
+        }
+
+        .field-feedback.checking {
+            color: var(--gold-lt)
+        }
+
+        .field-feedback i {
+            margin-right: 4px;
+            font-size: .7rem;
+        }
+
         textarea.form-control {
             resize: vertical;
             min-height: 78px
@@ -690,7 +725,7 @@
     <header id="hdr">
         <div class="container">
             <nav class="nav">
-                <a href="{{ route('welcome') }}" class="brand">
+                <a href="{{ route('login') }}" class="brand">
                     <img src="{{ asset('images/logo-secundario.png') }}" alt="InnovaCiencia"
                         style="width:44px;height:44px;border-radius:8px;object-fit:contain;">
                     <div class="brand-name">
@@ -698,7 +733,7 @@
                         <small>Virtual — Posgrados</small>
                     </div>
                 </a>
-                <a href="{{ route('welcome') }}"
+                <a href="{{ route('login') }}"
                     style="font-size:.8rem;color:var(--t-muted);display:flex;align-items:center;gap:.4rem;">
                     <i class="fa-solid fa-arrow-left" style="font-size:.72rem;"></i> Inicio
                 </a>
@@ -910,21 +945,28 @@
 
                         <div class="row-2">
                             <div class="form-group">
-                                <label class="form-label">Carnet de identidad</label>
-                                <input type="text" name="carnet" class="form-control" placeholder="Ej: 12345678"
-                                    value="{{ old('carnet') }}">
+                                <label class="form-label">Carnet de identidad <span class="req">*</span></label>
+                                <input type="text" name="carnet" id="fldCarnet" class="form-control" placeholder="Ej: 12345678"
+                                    value="{{ old('carnet') }}" data-check="carnet" required
+                                    inputmode="numeric" maxlength="10"
+                                    oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)">
+                                <small class="field-feedback" data-feedback-for="carnet"></small>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Teléfono / WhatsApp</label>
-                                <input type="text" name="telefono" class="form-control"
-                                    placeholder="Ej: 70123456" value="{{ old('telefono') }}">
+                                <label class="form-label">Celular <span class="req">*</span></label>
+                                <input type="text" name="telefono" id="fldTelefono" class="form-control"
+                                    placeholder="Ej: 70123456" value="{{ old('telefono') }}" required
+                                    inputmode="numeric" maxlength="8"
+                                    oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)">
+                                <small class="field-feedback" data-feedback-for="telefono"></small>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Correo electrónico</label>
-                            <input type="email" name="email" class="form-control"
-                                placeholder="tucorreo@ejemplo.com" value="{{ old('email') }}">
+                            <label class="form-label">Correo electrónico <span class="req">*</span></label>
+                            <input type="email" name="email" id="fldEmail" class="form-control"
+                                placeholder="tucorreo@ejemplo.com" value="{{ old('email') }}" data-check="correo" required>
+                            <small class="field-feedback" data-feedback-for="email"></small>
                         </div>
 
                         <div class="form-group">
@@ -998,8 +1040,154 @@
 
         const form = document.getElementById('preinscripcionForm');
         const btn = document.getElementById('btnSubmit');
+
         if (form && btn) {
-            form.addEventListener('submit', function() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const checkUrl = "{{ route('preinscripcion.check') }}";
+
+            const fields = {
+                nombres:          { el: form.querySelector('[name="nombres"]'),          required: true, check: null,      valid: false },
+                apellido_paterno: { el: form.querySelector('[name="apellido_paterno"]'), required: true, check: null,      valid: false },
+                carnet:           { el: form.querySelector('[name="carnet"]'),           required: true, check: 'carnet',  valid: false },
+                telefono:         { el: form.querySelector('[name="telefono"]'),         required: true, check: null,      valid: false },
+                email:            { el: form.querySelector('[name="email"]'),            required: true, check: 'correo',  valid: false },
+            };
+
+            btn.disabled = true;
+
+            function setFeedback(name, state, message) {
+                const f = fields[name];
+                if (!f || !f.el) return;
+                const fb = form.querySelector(`[data-feedback-for="${name}"]`);
+                f.el.classList.remove('is-invalid', 'is-valid', 'is-checking');
+                if (state === 'error')    f.el.classList.add('is-invalid');
+                if (state === 'success')  f.el.classList.add('is-valid');
+                if (state === 'checking') f.el.classList.add('is-checking');
+                if (fb) {
+                    fb.className = 'field-feedback' + (state ? ' ' + state : '');
+                    let icon = '';
+                    if (state === 'error')    icon = '<i class="fa-solid fa-circle-exclamation"></i>';
+                    if (state === 'success')  icon = '<i class="fa-solid fa-circle-check"></i>';
+                    if (state === 'checking') icon = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+                    fb.innerHTML = message ? icon + message : '';
+                }
+            }
+
+            function updateSubmit() {
+                const allValid = Object.values(fields).every(f => f.valid);
+                btn.disabled = !allValid;
+            }
+
+            function isEmail(v) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+            }
+
+            async function checkRemote(name, valor) {
+                const f = fields[name];
+                if (!f.check) return true;
+                try {
+                    const res = await fetch(checkUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ campo: f.check, valor: valor }),
+                    });
+                    const data = await res.json();
+                    return data.disponible === true;
+                } catch (e) {
+                    return true;
+                }
+            }
+
+            const debouncers = {};
+            function debounce(name, fn, delay) {
+                clearTimeout(debouncers[name]);
+                debouncers[name] = setTimeout(fn, delay);
+            }
+
+            async function validateField(name) {
+                const f = fields[name];
+                if (!f || !f.el) return;
+                const valor = f.el.value.trim();
+
+                if (f.required && valor === '') {
+                    f.valid = false;
+                    setFeedback(name, 'error', 'Este campo es obligatorio.');
+                    updateSubmit();
+                    return;
+                }
+
+                if (name === 'email' && !isEmail(valor)) {
+                    f.valid = false;
+                    setFeedback(name, 'error', 'Ingresa un correo válido.');
+                    updateSubmit();
+                    return;
+                }
+
+                if (name === 'carnet' && !/^\d{7,10}$/.test(valor)) {
+                    f.valid = false;
+                    setFeedback(name, 'error', 'El carnet debe tener entre 7 y 10 dígitos.');
+                    updateSubmit();
+                    return;
+                }
+
+                if (name === 'telefono' && !/^\d{8}$/.test(valor)) {
+                    f.valid = false;
+                    setFeedback(name, 'error', 'Debe contener exactamente 8 dígitos numéricos.');
+                    updateSubmit();
+                    return;
+                }
+
+                if (!f.check) {
+                    f.valid = true;
+                    setFeedback(name, 'success', 'Correcto.');
+                    updateSubmit();
+                    return;
+                }
+
+                f.valid = false;
+                setFeedback(name, 'checking', 'Verificando disponibilidad...');
+                updateSubmit();
+
+                const valorEnMomentoDeChequeo = valor;
+                const disponible = await checkRemote(name, valor);
+
+                if (f.el.value.trim() !== valorEnMomentoDeChequeo) return;
+
+                if (!disponible) {
+                    f.valid = false;
+                    const msgs = {
+                        carnet:   'Este carnet ya está registrado.',
+                        telefono: 'Este celular ya está registrado.',
+                        email:    'Este correo ya está registrado.',
+                    };
+                    setFeedback(name, 'error', msgs[name]);
+                } else {
+                    f.valid = true;
+                    setFeedback(name, 'success', 'Disponible.');
+                }
+                updateSubmit();
+            }
+
+            Object.keys(fields).forEach(name => {
+                const f = fields[name];
+                if (!f.el) return;
+                f.el.addEventListener('input', () => {
+                    debounce(name, () => validateField(name), f.check ? 450 : 150);
+                });
+                f.el.addEventListener('blur', () => validateField(name));
+                if (f.el.value.trim() !== '') validateField(name);
+            });
+
+            form.addEventListener('submit', function(e) {
+                const allValid = Object.values(fields).every(f => f.valid);
+                if (!allValid) {
+                    e.preventDefault();
+                    return;
+                }
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Enviando...';
             });

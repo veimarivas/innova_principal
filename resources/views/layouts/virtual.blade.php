@@ -35,16 +35,35 @@
 
     /* Brand */
     .est-nav-brand {
-        display: flex; align-items: center; gap: .6rem;
+        display: flex; align-items: center; gap: .65rem;
         text-decoration: none; flex-shrink: 0;
+        padding: .3rem .55rem .3rem .3rem;
+        border-radius: 10px;
+        transition: background .18s ease;
     }
-    .est-nav-brand img { height: 22px; }
+    .est-nav-brand:hover { background: rgba(252,123,4,.06); }
+    .est-nav-brand-logo {
+        height: 38px; width: 38px;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 6px rgba(154,73,4,.25));
+        transition: transform .2s ease;
+    }
+    .est-nav-brand:hover .est-nav-brand-logo { transform: scale(1.05) rotate(-3deg); }
     .est-nav-brand-text {
-        font-size: .9rem; font-weight: 700; letter-spacing: -.01em;
-        color: var(--vz-header-item-color, #495057);
+        display: inline-flex; flex-direction: column; line-height: 1;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.02rem; font-weight: 700; letter-spacing: -.015em;
+        color: var(--vz-header-item-color, #1e1610);
         transition: color .15s;
     }
-    .est-nav-brand:hover .est-nav-brand-text { color: var(--est-accent); }
+    .est-nav-brand-text small {
+        display: block;
+        font-size: .58rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: .12em;
+        color: var(--est-accent);
+        margin-top: 2px;
+    }
+    .est-nav-brand:hover .est-nav-brand-text { color: var(--est-accent2); }
 
     /* Icon buttons (fullscreen, dark mode) */
     .est-nav-icon-btn {
@@ -143,6 +162,114 @@
     .est-main { margin-top: var(--est-nav-h); min-height: calc(100vh - var(--est-nav-h)); }
     .est-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.25rem; }
 
+    /* ─── Footer ───────────────────────────────────── */
+    .est-footer {
+        position: relative;
+        margin-top: 3rem;
+        padding: 1.75rem 1.25rem 1.25rem;
+        background: linear-gradient(135deg, #1a0d05 0%, #2e1600 45%, #5c2e00 100%);
+        color: rgba(255,255,255,.8);
+        overflow: hidden;
+    }
+    .est-footer::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, transparent 0%, #9a4904 25%, #fc7b04 50%, #9a4904 75%, transparent 100%);
+    }
+    .est-footer::after {
+        content: '';
+        position: absolute; top: -40%; right: -10%;
+        width: 360px; height: 360px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(252,123,4,.10) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .est-footer-inner {
+        max-width: 1200px; margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        grid-template-areas:
+            "brand links"
+            "copy  copy";
+        gap: 1.25rem 1.5rem;
+        align-items: center;
+        position: relative; z-index: 1;
+    }
+    .est-footer-brand {
+        grid-area: brand;
+        display: flex; align-items: center; gap: .8rem;
+    }
+    .est-footer-logo {
+        width: 44px; height: 44px;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 12px rgba(252,123,4,.35));
+        flex-shrink: 0;
+    }
+    .est-footer-brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+    .est-footer-brand-name {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1rem; font-weight: 700;
+        color: #fff; letter-spacing: -.01em;
+    }
+    .est-footer-brand-tag {
+        font-size: .72rem; color: rgba(255,255,255,.55);
+        margin-top: 3px; font-weight: 500;
+    }
+
+    .est-footer-links {
+        grid-area: links;
+        display: flex; justify-content: flex-end; align-items: center;
+        gap: .65rem; flex-wrap: wrap;
+    }
+    .est-footer-link {
+        display: inline-flex; align-items: center; gap: .35rem;
+        font-size: .78rem; font-weight: 600;
+        color: rgba(255,255,255,.7);
+        text-decoration: none;
+        padding: .35rem .7rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,.08);
+        background: rgba(255,255,255,.04);
+        transition: all .2s ease;
+    }
+    .est-footer-link i { font-size: .9rem; color: #fc7b04; }
+    .est-footer-link:hover {
+        color: #fff;
+        background: rgba(252,123,4,.18);
+        border-color: rgba(252,123,4,.4);
+        transform: translateY(-1px);
+    }
+    .est-footer-sep {
+        width: 1px; height: 14px;
+        background: rgba(255,255,255,.12);
+    }
+
+    .est-footer-copy {
+        grid-area: copy;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255,255,255,.08);
+        font-size: .74rem;
+        color: rgba(255,255,255,.55);
+        text-align: center;
+        letter-spacing: .015em;
+    }
+    .est-footer-copy strong {
+        color: rgba(255,255,255,.85); font-weight: 700;
+    }
+    .est-footer-copy-divider { margin: 0 .35rem; color: rgba(255,255,255,.25); }
+
+    @media (max-width: 720px) {
+        .est-footer-inner {
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "brand"
+                "links"
+                "copy";
+            text-align: center;
+        }
+        .est-footer-brand { justify-content: center; }
+        .est-footer-links { justify-content: center; }
+    }
+
     </style>
     @yield('css')
 </head>
@@ -156,7 +283,9 @@
     } elseif ($navUser && $navUser->avatar && file_exists(public_path('images/' . $navUser->avatar))) {
         $navAvatar = URL::asset('images/' . $navUser->avatar);
     } else {
-        $navAvatar = URL::asset('build/images/users/avatar-1.jpg');
+        $sexoNav = $navPersona?->sexo;
+        $defaultNavFile = $sexoNav === 'F' ? 'mujer.png' : 'chico.png';
+        $navAvatar = URL::asset('images/' . $defaultNavFile);
     }
     $navNombre = $navPersona
         ? (trim(($navPersona->nombres ?? '') . ' ' . ($navPersona->apellido_paterno ?? '')) ?: $navUser->name)
@@ -167,9 +296,13 @@
 <nav class="est-nav">
     {{-- Brand / Logo --}}
     <a href="{{ route('virtual.dashboard') }}" class="est-nav-brand">
-        <img src="{{ URL::asset('build/images/logo_chico.png') }}" alt="Logo"
+        <img src="{{ asset('images/logo_secundario.png') }}" alt="InnovaCiencia"
+             class="est-nav-brand-logo"
              onerror="this.style.display='none'">
-        <span class="est-nav-brand-text">Portal Virtual</span>
+        <span class="est-nav-brand-text">
+            InnovaCiencia Virtual
+            <small>Portal Académico</small>
+        </span>
     </a>
 
     {{-- Right actions --}}
@@ -184,7 +317,7 @@
         <div class="dropdown">
             <button type="button" class="est-nav-user-btn" id="virt-user-dropdown"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="{{ $navAvatar }}" alt="Avatar" class="est-nav-avatar"
+                <img src="{{ $navAvatar }}" alt="Avatar" class="est-nav-avatar" id="est-nav-avatar-img"
                      onerror="this.src='{{ URL::asset('build/images/users/avatar-1.jpg') }}'">
                 <span class="est-nav-user-info d-none d-xl-flex">
                     <span class="est-nav-username">{{ $navNombre }}</span>
@@ -196,7 +329,7 @@
             <div class="dropdown-menu dropdown-menu-end est-nav-tud-menu"
                  aria-labelledby="virt-user-dropdown">
                 <div class="est-nav-tud-header">
-                    <img src="{{ $navAvatar }}" alt="Avatar" class="est-nav-tud-avatar"
+                    <img src="{{ $navAvatar }}" alt="Avatar" class="est-nav-tud-avatar" id="est-nav-tud-avatar-img"
                          onerror="this.src='{{ URL::asset('build/images/users/avatar-1.jpg') }}'">
                     <div class="est-nav-tud-info">
                         <div class="est-nav-tud-name">{{ $navNombre }}</div>
@@ -232,7 +365,34 @@
 </main>
 
 <footer class="est-footer">
-    &copy; {{ date('Y') }} <span>Innova Ciencia Virtual</span> — Portal Estudiantil. Todos los derechos reservados.
+    <div class="est-footer-inner">
+        <div class="est-footer-brand">
+            <img src="{{ asset('images/logo_secundario.png') }}" alt="InnovaCiencia"
+                 class="est-footer-logo" onerror="this.style.display='none'">
+            <div class="est-footer-brand-text">
+                <span class="est-footer-brand-name">InnovaCiencia Virtual</span>
+                <span class="est-footer-brand-tag">Plataforma académica y científica</span>
+            </div>
+        </div>
+        <div class="est-footer-links">
+            <a href="{{ route('virtual.dashboard') }}" class="est-footer-link">
+                <i class="ri-home-4-line"></i> Mi Portal
+            </a>
+            <span class="est-footer-sep"></span>
+            <a href="mailto:soporte@innovaciencia.edu.bo" class="est-footer-link">
+                <i class="ri-customer-service-2-line"></i> Soporte
+            </a>
+            <span class="est-footer-sep"></span>
+            <a href="https://wa.me/59100000000" target="_blank" rel="noopener" class="est-footer-link">
+                <i class="ri-whatsapp-line"></i> WhatsApp
+            </a>
+        </div>
+        <div class="est-footer-copy">
+            &copy; {{ date('Y') }} <strong>InnovaCiencia Virtual</strong>
+            <span class="est-footer-copy-divider">·</span>
+            Todos los derechos reservados
+        </div>
+    </div>
 </footer>
 
 <!-- jQuery -->

@@ -64,7 +64,7 @@ footer span{color:var(--or1)}
     </div>
     @endif
 
-    <a href="{{ route('welcome') }}" class="btn-home">
+    <a href="{{ route('login') }}" class="btn-home">
         <i class="fa-solid fa-house"></i>
         Volver al inicio
     </a>
