@@ -137,7 +137,7 @@ Route::prefix('virtual')->name('virtual.')->middleware(['auth', 'isMoodle'])->gr
 });
 
 // Página principal pública
-Route::get('/', [LandingController::class, 'index'])->name('welcome');
+Route::redirect('/', '/login');
 Route::get('/oferta/{id}', [LandingController::class, 'show'])->name('oferta.detalle');
 Route::get('/catalogo', [LandingController::class, 'catalogo'])->name('catalogo');
 
