@@ -93,7 +93,8 @@
 
             /* === LEFT PANEL - BRANDING === */
             .brand-panel {
-                flex: 1;
+                width: 55%;
+                flex: none;
                 position: relative;
                 display: flex;
                 flex-direction: column;
@@ -159,7 +160,8 @@
             .brand-content {
                 position: relative;
                 z-index: 2;
-                max-width: 520px;
+                max-width: 600px;
+                width: 100%;
             }
 
             .brand-logo {
@@ -278,7 +280,8 @@
 
             /* === RIGHT PANEL - LOGIN FORM === */
             .login-panel {
-                width: 540px;
+                width: 45%;
+                min-width: 420px;
                 min-height: 100vh;
                 display: flex;
                 align-items: center;
@@ -783,14 +786,8 @@
 
             /* === RESPONSIVE === */
             @media (max-width: 1200px) {
-                .login-panel {
-                    width: 480px;
-                }
                 .brand-panel {
                     padding: clamp(2rem, 3vw, 3rem);
-                }
-                .brand-content {
-                    max-width: 380px;
                 }
                 .brand-headline {
                     font-size: clamp(1.6rem, 2.8vw, 2.4rem);
