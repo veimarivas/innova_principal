@@ -784,7 +784,33 @@
             /* === RESPONSIVE === */
             @media (max-width: 1200px) {
                 .login-panel {
-                    width: 500px;
+                    width: 480px;
+                }
+                .brand-panel {
+                    padding: clamp(2rem, 3vw, 3rem);
+                }
+                .brand-content {
+                    max-width: 380px;
+                }
+                .brand-headline {
+                    font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+                }
+                .brand-description {
+                    font-size: 0.9rem;
+                }
+                .brand-stats {
+                    gap: 1.5rem;
+                    margin-top: 1.5rem;
+                    padding-top: 1rem;
+                }
+                .stat-number {
+                    font-size: 1.4rem;
+                }
+                .brand-logo {
+                    margin-bottom: 1.5rem;
+                }
+                .brand-logo img {
+                    max-height: 60px !important;
                 }
             }
 
