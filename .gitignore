@@ -16,7 +16,10 @@ public_html/storage
 public_html/hot
 
 storage/*.key
+storage/framework/views/*.php
 .env
+.claude/
+nul
 Homestead.yaml
 Homestead.json
 /.vagrant

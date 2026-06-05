@@ -656,6 +656,124 @@ return $result !== null ? [] : false;
     }
 
     /**
+     * Lee tareas (assignments) directamente de la BD de Moodle (sin WS).
+     */
+    public function getAssignmentsFromDb(int $moodleCourseId): array
+    {
+        try {
+            $db = DB::connection('moodle');
+            $moduleId = $db->table('modules')->where('name', 'assign')->value('id');
+            if (!$moduleId) return [];
+
+            $cms = $db->table('course_modules')
+                ->where('course', $moodleCourseId)
+                ->where('module', $moduleId)
+                ->get(['id as cmid', 'instance']);
+
+            if ($cms->isEmpty()) return [];
+
+            $instanceIds = $cms->pluck('instance')->filter()->unique()->values()->toArray();
+            $rows = $db->table('assign')
+                ->whereIn('id', $instanceIds)
+                ->get();
+
+            $result = [];
+            $cmIndex = [];
+            foreach ($cms as $cm) {
+                $cmIndex[(int)$cm->instance] = (int)$cm->cmid;
+            }
+            foreach ($rows as $row) {
+                $cmid = $cmIndex[(int)$row->id] ?? null;
+                $entry = [
+                    'id'                     => (int)$row->id,
+                    'cmid'                   => $cmid,
+                    'coursemodule'           => $cmid,
+                    'name'                   => $row->name ?? '',
+                    'intro'                  => $row->intro ?? '',
+                    'introformat'            => 1,
+                    'introfiles'             => [],
+                    'duedate'                => (int)$row->duedate,
+                    'allowsubmissionsfromdate' => (int)$row->allowsubmissionsfromdate,
+                    'cutoffdate'             => (int)$row->cutoffdate,
+                    'grade'                  => (int)$row->grade,
+                ];
+                // Chequear si tiene archivo adjunto en intro
+                if ($cmid) {
+                    $file = $db->table('files')
+                        ->where('component', 'mod_assign')
+                        ->where('filearea', 'introattachment')
+                        ->where('itemid', 0)
+                        ->where('filename', '<>', '.')
+                        ->join('context', function ($j) use ($cmid) {
+                            $j->on('files.contextid', '=', 'context.id')
+                              ->where('context.contextlevel', 70)
+                              ->where('context.instanceid', $cmid);
+                        })
+                        ->first(['files.filename', 'files.filesize', 'files.mimetype']);
+                    if ($file) {
+                        $entry['introfiles'][] = [
+                            'filename' => $file->filename,
+                            'filesize' => (int)$file->filesize,
+                            'mimetype' => $file->mimetype,
+                            'filepath' => '/',
+                        ];
+                    }
+                }
+                $result[] = $entry;
+            }
+            return $result;
+        } catch (\Exception $e) {
+            Log::warning("getAssignmentsFromDb: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Pobla description en módulos assign de secciones desde BD directa de Moodle.
+     */
+    public function populateAssignDescriptionsFromDb(array &$secciones, int $moodleCourseId): void
+    {
+        try {
+            $db = DB::connection('moodle');
+            $moduleId = $db->table('modules')->where('name', 'assign')->value('id');
+            if (!$moduleId) return;
+
+            $cms = $db->table('course_modules')
+                ->where('course', $moodleCourseId)
+                ->where('module', $moduleId)
+                ->get(['id as cmid', 'instance']);
+
+            if ($cms->isEmpty()) return;
+
+            $instanceIds = $cms->pluck('instance')->filter()->unique()->values()->toArray();
+            $rows = $db->table('assign')
+                ->whereIn('id', $instanceIds)
+                ->get(['id', 'intro', 'introformat']);
+
+            $introMap = [];
+            foreach ($rows as $row) {
+                $introMap[(int)$row->id] = $row->intro ?? '';
+            }
+
+            foreach ($secciones as &$section) {
+                foreach ($section['modules'] ?? [] as &$mod) {
+                    if (($mod['modname'] ?? '') !== 'assign') continue;
+                    $instance = $mod['instance'] ?? null;
+                    if (!$instance || !isset($introMap[$instance])) continue;
+                    $intro = $introMap[$instance];
+                    if (!empty($intro)) {
+                        $mod['description'] = $this->rewritePluginfileUrlsInText($intro);
+                    }
+                }
+                unset($mod);
+            }
+            unset($section);
+        } catch (\Exception $e) {
+            Log::warning("populateAssignDescriptionsFromDb: " . $e->getMessage());
+        }
+    }
+
+    /**
      * Devuelve los cuestionarios (quizzes) de un curso.
      */
     public function getQuizzes(int $moodleCourseId): array
@@ -674,6 +792,55 @@ return $result !== null ? [] : false;
         return $this->call('mod_forum_get_forums_by_courses', [
             'courseids[0]' => $moodleCourseId,
         ]) ?? [];
+    }
+
+    /**
+     * Lee foros directamente de la BD de Moodle (sin WS).
+     */
+    public function getForumsFromDb(int $moodleCourseId): array
+    {
+        try {
+            $db = DB::connection('moodle');
+            $moduleId = $db->table('modules')->where('name', 'forum')->value('id');
+            if (!$moduleId) return [];
+
+            $cms = $db->table('course_modules')
+                ->where('course', $moodleCourseId)
+                ->where('module', $moduleId)
+                ->get(['id as cmid', 'instance']);
+
+            if ($cms->isEmpty()) return [];
+
+            $instanceIds = $cms->pluck('instance')->filter()->unique()->values()->toArray();
+            $rows = $db->table('forum')
+                ->whereIn('id', $instanceIds)
+                ->get();
+
+            $result = [];
+            $cmIndex = [];
+            foreach ($cms as $cm) {
+                $cmIndex[(int)$cm->instance] = (int)$cm->cmid;
+            }
+            foreach ($rows as $row) {
+                $cmid = $cmIndex[(int)$row->id] ?? null;
+                $result[] = [
+                    'id'          => (int)$row->id,
+                    'cmid'        => $cmid,
+                    'coursemodule'=> $cmid,
+                    'name'        => $row->name ?? '',
+                    'intro'       => $row->intro ?? '',
+                    'type'        => $row->type ?? 'general',
+                    'duedate'     => (int)$row->duedate,
+                    'cutoffdate'  => (int)$row->cutoffdate,
+                    'timeopen'    => (int)$row->timeopen,
+                    'timeclose'   => (int)$row->timeclose,
+                ];
+            }
+            return $result;
+        } catch (\Exception $e) {
+            Log::warning("getForumsFromDb: " . $e->getMessage());
+            return [];
+        }
     }
 
     /**
@@ -829,10 +996,13 @@ return $result !== null ? [] : false;
                         'open'  => $row->allowsubmissionsfromdate  ?: null,
                         'close' => $row->cutoffdate                ?: null,
                     ];
-                    // Usar intro de BD si el WS no la devolvió
-                    if (!isset($assignsMap[$row->id])) {
-                        $assignsMap[$row->id] = ['description' => $row->intro ?? '', 'dates' => $assignDbDates[$row->id]];
-                    }
+                    // Fuente principal: BD de Moodle (más confiable que el WS)
+                    $assignsMap[$row->id] = [
+                        'instance'    => $row->id,
+                        'description' => $row->intro ?? ($assignsMap[$row->id]['description'] ?? ''),
+                        'cmid'        => $assignsMap[$row->id]['cmid'] ?? null,
+                        'dates'       => $assignDbDates[$row->id],
+                    ];
                 }
             }
         } catch (\Exception $e) {
@@ -948,7 +1118,7 @@ return $result !== null ? [] : false;
      * Descarga las imágenes pluginfile de Moodle y las convierte a data URIs base64.
      * Primero normaliza @@PLUGINFILE@@ y URLs pluginfile.php, luego descarga y embebe.
      */
-    private function rewritePluginfileUrlsInText(string $html): string
+    public function rewritePluginfileUrlsInText(string $html): string
     {
         if (empty($html)) return $html;
 
@@ -1264,11 +1434,30 @@ return $result !== null ? [] : false;
         try {
             $db = DB::connection('moodle');
 
+            // Resolver dinámicamente el ID del servicio Moodle Mobile (shortname 'moodle_mobile_app')
+            // En instalaciones distintas el id puede no ser 1.
+            $serviceId = $db->table('external_services')
+                ->where('shortname', 'moodle_mobile_app')
+                ->value('id');
+
+            if (!$serviceId) {
+                // Fallback: usar cualquier servicio habilitado y restringido a usuarios
+                $serviceId = $db->table('external_services')
+                    ->where('enabled', 1)
+                    ->orderBy('id')
+                    ->value('id');
+            }
+
+            if (!$serviceId) {
+                Log::error("getUserQuizToken: no se encontró ningún external_service en Moodle");
+                return null;
+            }
+
             $existing = $db->table('external_tokens')
                 ->where('userid', $moodleUserId)
-                ->where('externalserviceid', 1)
+                ->where('externalserviceid', $serviceId)
                 ->where(function ($q) {
-                    $q->whereNull('validuntil')->orWhere('validuntil', '>', time());
+                    $q->whereNull('validuntil')->orWhere('validuntil', 0)->orWhere('validuntil', '>', time());
                 })
                 ->orderBy('id', 'desc')
                 ->first(['token']);
@@ -1277,19 +1466,45 @@ return $result !== null ? [] : false;
                 return $existing->token;
             }
 
-            // Create a new mobile service token for this user
+            // Si el servicio está restringido a usuarios específicos, asegurar que el usuario esté autorizado
+            try {
+                $svc = $db->table('external_services')->where('id', $serviceId)->first(['restrictedusers']);
+                if ($svc && (int) $svc->restrictedusers === 1) {
+                    $exists = $db->table('external_services_users')
+                        ->where('externalserviceid', $serviceId)
+                        ->where('userid', $moodleUserId)
+                        ->exists();
+                    if (!$exists) {
+                        $db->table('external_services_users')->insert([
+                            'externalserviceid' => $serviceId,
+                            'userid'            => $moodleUserId,
+                            'iprestriction'     => null,
+                            'validuntil'        => null,
+                            'timecreated'       => time(),
+                        ]);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning("getUserQuizToken: no se pudo asegurar autorización en servicio {$serviceId} para user {$moodleUserId}: " . $e->getMessage());
+            }
+
+            // Create a new service token for this user
             $newToken = md5(uniqid('quiz_' . $moodleUserId . '_', true));
 
             $db->table('external_tokens')->insert([
                 'token'             => $newToken,
+                'tokentype'         => 0,
                 'userid'            => $moodleUserId,
-                'externalserviceid' => 1,
+                'externalserviceid' => $serviceId,
                 'sid'               => null,
+                'contextid'         => 1,
                 'validuntil'        => 0,
                 'iprestriction'     => null,
+                'name'              => '',
                 'creatorid'         => 2,
                 'timecreated'       => time(),
-                'timemodified'      => time(),
+                'lastaccess'        => null,
+                'privatetoken'      => null,
             ]);
 
             return $newToken;
@@ -1828,42 +2043,121 @@ return $result !== null ? [] : false;
      * @param int $attemptId ID del intento
      * @return array Preguntas con respuestas
      */
-    public function getAttemptData(int $attemptId): array
+    public function getAttemptData(int $attemptId, ?int $userId = null): array
     {
         $questions = [];
+        $attemptInfo = null;
+        $usageId = 0;
         try {
             $db = DB::connection('moodle');
 
-            $attempt = $db->table('quiz_attempts')->where('id', $attemptId)->first(['uniqueid', 'quiz']);
-            if (!$attempt) return ['questions' => []];
+            $attempt = $db->table('quiz_attempts')->where('id', $attemptId)->first([
+                'id', 'uniqueid', 'quiz', 'userid', 'attempt', 'state',
+                'timestart', 'timefinish', 'timemodified', 'timecheckstate', 'sumgrades',
+            ]);
+            if (!$attempt) return ['questions' => [], 'attempt' => null];
+
+            // Obtener timelimit del quiz para conocer cuándo termina el intento
+            $quizRow = $db->table('quiz')->where('id', $attempt->quiz)->first(['timelimit', 'timeclose']);
+            $timelimit = (int) ($quizRow->timelimit ?? 0);
+            $timeclose = (int) ($quizRow->timeclose ?? 0);
+            $timestart = (int) ($attempt->timestart ?? 0);
+            $timeFinishExpected = 0;
+            if ($timestart > 0 && $timelimit > 0) {
+                $timeFinishExpected = $timestart + $timelimit;
+                if ($timeclose > 0 && $timeclose < $timeFinishExpected) {
+                    $timeFinishExpected = $timeclose;
+                }
+            } elseif ($timestart > 0 && $timeclose > 0) {
+                $timeFinishExpected = $timeclose;
+            }
+
+            $attemptInfo = [
+                'id'                   => (int) $attempt->id,
+                'quiz'                 => (int) $attempt->quiz,
+                'userid'               => (int) $attempt->userid,
+                'attempt'              => (int) $attempt->attempt,
+                'state'                => $attempt->state,
+                'timestart'            => $timestart,
+                'timefinish'           => (int) $attempt->timefinish,
+                'timemodified'         => (int) $attempt->timemodified,
+                'timelimit'            => $timelimit,
+                'time_finish_expected' => $timeFinishExpected,
+            ];
 
             $usageId = (int) $attempt->uniqueid;
+
+            // 1) Intento principal: usar WS de Moodle (renderiza el HTML interactivo de cada pregunta).
+            //    Esto provee las opciones (radio buttons, textarea, etc.) que el estudiante puede responder.
+            $effectiveUserId = $userId ?: (int) $attempt->userid;
+            $wsFn = $attempt->state === 'finished' ? 'mod_quiz_get_attempt_review' : 'mod_quiz_get_attempt_data';
+
+            // 1a) Intentar con token del estudiante
+            if ($effectiveUserId > 0) {
+                $resp = $this->callWsGetAttemptQuestions($wsFn, $effectiveUserId, $attemptId);
+                if (!empty($resp)) {
+                    $questions = $resp;
+                    return ['questions' => $questions, 'attempt' => $attemptInfo];
+                }
+                Log::warning("getAttemptData: WS {$wsFn} con token de usuario no devolvió preguntas para attempt={$attemptId}, reintentando con token admin…");
+            }
+
+            // 1b) Fallback con token de administrador (por si el WS del estudiante falla por permisos)
+            $resp = $this->callWsGetAttemptQuestions($wsFn, null, $attemptId);
+            if (!empty($resp)) {
+                $questions = $resp;
+                return ['questions' => $questions, 'attempt' => $attemptInfo];
+            }
+            Log::warning("getAttemptData: WS {$wsFn} con token admin tampoco devolvió preguntas para attempt={$attemptId}, fallback a BD.");
 
             // Obtener question_attempts para este usage (ya incluye questionid y slot)
             $qAttempts = $db->table('question_attempts')
                 ->where('questionusageid', $usageId)
                 ->orderBy('slot')
-                ->get(['id', 'slot', 'questionid', 'maxmark', 'behaviour', 'responsesummary', 'rightanswer']);
+                ->get(['id', 'slot', 'questionid', 'maxmark', 'behaviour', 'responsesummary', 'rightanswer', 'variant']);
 
-            // Obtener preguntas (texto)
+            // Obtener preguntas (texto y tipo)
             $qIds = $qAttempts->pluck('questionid')->filter()->unique()->toArray();
             $questionsData = [];
             if (!empty($qIds)) {
                 $questionsData = $db->table('question')
                     ->whereIn('id', $qIds)
-                    ->get(['id', 'questiontext', 'name'])
+                    ->get(['id', 'qtype', 'questiontext', 'name'])
                     ->keyBy('id');
+            }
+
+            // Obtener step_data names/values para reconstruir form field names
+            $qaIds = $qAttempts->pluck('id')->toArray();
+            $stepDataMap = [];
+            if (!empty($qaIds)) {
+                $latestStepIds = $db->table('question_attempt_steps')
+                    ->selectRaw('MAX(id) as id, questionattemptid')
+                    ->whereIn('questionattemptid', $qaIds)
+                    ->groupBy('questionattemptid')
+                    ->pluck('id', 'questionattemptid');
+                if (!empty($latestStepIds)) {
+                    $allStepData = $db->table('question_attempt_step_data')
+                        ->whereIn('attemptstepid', $latestStepIds->values()->toArray())
+                        ->get(['attemptstepid', 'name', 'value']);
+                    foreach ($allStepData as $sd) {
+                        $qaid = $latestStepIds->search($sd->attemptstepid);
+                        if ($qaid !== false) {
+                            $stepDataMap[$qaid][$sd->name] = $sd->value;
+                        }
+                    }
+                }
             }
 
             foreach ($qAttempts as $qa) {
                 $qData = $questionsData->get($qa->questionid);
 
-                // Extraer fraction del último step
+                // Extraer fraction del último step y sequencecheck (num_steps = dernière sequencenumber + 1)
                 $fraction = null;
                 $lastStep = $db->table('question_attempt_steps')
                     ->where('questionattemptid', $qa->id)
                     ->orderByDesc('sequencenumber')
-                    ->first(['state', 'fraction']);
+                    ->first(['state', 'fraction', 'sequencenumber']);
+                $sequencecheck = $lastStep ? (int) $lastStep->sequencenumber + 1 : 1;
                 if ($lastStep) {
                     $fraction = $lastStep->fraction !== null ? (float) $lastStep->fraction : null;
                     $state = $lastStep->state;
@@ -1874,6 +2168,7 @@ return $result !== null ? [] : false;
 
                 // Extraer texto de pregunta
                 $questionText = '';
+                $qtype = $qData->qtype ?? 'unknown';
                 if ($qData && !empty($qData->questiontext)) {
                     $qtxt = json_decode($qData->questiontext, true);
                     if (is_array($qtxt) && isset($qtxt[0]['text'])) {
@@ -1885,9 +2180,22 @@ return $result !== null ? [] : false;
                     }
                 }
 
+                // Construir HTML interactivo desde BD para types comunes
+                // Form field naming compatible con Moodle: q{slot}:{seq}_{variant}_
+                $variant = (int) ($qa->variant ?? 0);
+                $basePrefix = 'q' . $qa->slot . ':' . $sequencecheck . ($variant > 1 ? '_' . $variant : '') . '_';
+                $localStepData = $stepDataMap[$qa->id] ?? [];
+                $localStepData['_sequencecheck'] = (string) $sequencecheck; // inyectar sequencecheck real
+                $qHtml = $this->buildDbQuestionHtml($qtype, $qa->id, $qa->questionid, $questionText, $basePrefix, $db, $localStepData);
+
                 $questions[] = [
+                    'slot'           => (int) $qa->slot,
                     'questionnumber' => (int) $qa->slot,
+                    'questionname'   => $qData->name ?? ('Pregunta ' . $qa->slot),
                     'questiontext'   => $questionText,
+                    'html'           => $qHtml,
+                    'sequencecheck'  => $sequencecheck,
+                    'maxmark'        => (float) ($qa->maxmark ?? 0),
                     'fraction'       => $fraction,
                     'response'       => $qa->responsesummary ?? '',
                     'rightanswer'    => $qa->rightanswer ?? '',
@@ -1896,7 +2204,219 @@ return $result !== null ? [] : false;
         } catch (\Exception $e) {
             Log::error("getAttemptData DB failed: " . $e->getMessage());
         }
-        return ['questions' => $questions, 'attempt' => null];
+        return ['questions' => $questions, 'attempt' => $attemptInfo];
+    }
+
+    /**
+     * Construye HTML interactivo para una pregunta desde la BD de Moodle.
+     * Se usa como fallback cuando el WS no devuelve preguntas.
+     */
+    private function buildDbQuestionHtml(
+        string $qtype,
+        int $questionAttemptId,
+        int $questionId,
+        string $questionText,
+        string $fieldPrefix,
+        $db,
+        array $stepData
+    ): string {
+        $html = '<div class="qtext">' . $questionText . '</div>';
+        $html .= '<div class="ablock"><div class="answer">';
+
+        try {
+            // Helper para extraer texto de columna que puede ser JSON (Moodle multi-format) o texto plano
+            $extractText = function($val): string {
+                if (empty($val)) return '';
+                $decoded = json_decode($val, true);
+                if (is_array($decoded) && isset($decoded[0]['text'])) {
+                    return $decoded[0]['text'];
+                }
+                if (is_string($decoded)) return $decoded;
+                return (string) $val;
+            };
+
+            switch ($qtype) {
+                case 'multichoice':
+                    $mcOpts = $db->table('qtype_multichoice_options')
+                        ->where('questionid', $questionId)->first(['single']);
+                    $single = $mcOpts && (int) $mcOpts->single === 1;
+                    $answers = $db->table('question_answers')
+                        ->where('question', $questionId)
+                        ->orderBy('id')
+                        ->get();
+                    $inputType = $single ? 'radio' : 'checkbox';
+                    $currentAnswer = $stepData['_answer'] ?? '';
+                    $currentOrder = $stepData['_order'] ?? '';
+                    $orderedIds = $currentOrder ? explode(',', $currentOrder) : $answers->pluck('id')->toArray();
+                    $inputName = $fieldPrefix . 'answer';
+                    $rowIdx = 0;
+                    foreach ($orderedIds as $aid) {
+                        $ans = $answers->firstWhere('id', $aid);
+                        if (!$ans) continue;
+                        $cls = $rowIdx % 2 === 0 ? 'r0' : 'r1';
+                        $checked = (string) $aid === (string) $currentAnswer ? ' checked' : '';
+                        $html .= '<div class="' . $cls . '">';
+                        $html .= '<input type="' . $inputType . '" name="' . $inputName . '" value="' . $aid . '" id="' . $inputName . '_' . $aid . '"' . $checked . '>';
+                        $html .= '<label for="' . $inputName . '_' . $aid . '">' . e($extractText($ans->answer ?? '')) . '</label>';
+                        $html .= '</div>';
+                        $rowIdx++;
+                    }
+                    break;
+
+                case 'truefalse':
+                    // Usar question_answers con fraction (1=true, 0=false) en vez de qtype_truefalse_options
+                    $allAnswers = $db->table('question_answers')
+                        ->where('question', $questionId)
+                        ->orderBy('id')
+                        ->get();
+                    $trueAns  = $allAnswers->firstWhere('fraction', 1);
+                    $falseAns = $allAnswers->firstWhere('fraction', 0);
+                    $trueId   = $trueAns  ? (int) $trueAns->id  : 0;
+                    $falseId  = $falseAns ? (int) $falseAns->id : 0;
+                    $currentAnswer = $stepData['_answer'] ?? '';
+                    $inputName = $fieldPrefix . 'answer';
+                    $tChecked = (string) $trueId === (string) $currentAnswer ? ' checked' : '';
+                    $fChecked = (string) $falseId === (string) $currentAnswer ? ' checked' : '';
+                    $trueLabel  = $trueAns  ? e($extractText($trueAns->answer))  : 'Verdadero';
+                    $falseLabel = $falseAns ? e($extractText($falseAns->answer)) : 'Falso';
+                    $html .= '<div class="r0">';
+                    $html .= '<input type="radio" name="' . $inputName . '" value="' . $trueId . '" id="' . $inputName . '_true"' . $tChecked . '>';
+                    $html .= '<label for="' . $inputName . '_true">' . $trueLabel . '</label>';
+                    $html .= '</div>';
+                    $html .= '<div class="r1">';
+                    $html .= '<input type="radio" name="' . $inputName . '" value="' . $falseId . '" id="' . $inputName . '_false"' . $fChecked . '>';
+                    $html .= '<label for="' . $inputName . '_false">' . $falseLabel . '</label>';
+                    $html .= '</div>';
+                    break;
+
+                case 'shortanswer':
+                case 'numerical':
+                case 'calculated':
+                case 'calculatedsimple':
+                    $currentValue = $stepData['_answer'] ?? '';
+                    $html .= '<div class="r0">';
+                    $html .= '<input type="' . ($qtype === 'numerical' || $qtype === 'calculated' || $qtype === 'calculatedsimple' ? 'number' : 'text') . '" name="' . $fieldPrefix . 'answer" value="' . e($currentValue) . '" style="width:100%;">';
+                    $html .= '</div>';
+                    break;
+
+                case 'matching':
+                    $subqs = [];
+                    $allMatchAnswers = [];
+                    try {
+                        $subqs = $db->table('qtype_matching_subquestions')
+                            ->where('questionid', $questionId)
+                            ->orderBy('id')
+                            ->get();
+                        $allMatchAnswers = $db->table('question_answers')
+                            ->where('question', $questionId)
+                            ->orderBy('id')
+                            ->get();
+                    } catch (\Exception $e) {
+                        Log::warning("buildDbQuestionHtml: matching tables not found for qid={$questionId}: " . $e->getMessage());
+                    }
+                    $subIdx = 0;
+                    foreach ($subqs as $sq) {
+                        $subName = $fieldPrefix . 'sub' . $subIdx;
+                        $currentVal = $stepData['_sub' . $subIdx] ?? '';
+                        $html .= '<div class="r0" style="display:flex;align-items:center;gap:.5rem;margin:.35rem 0;">';
+                        $html .= '<span style="font-weight:500;font-size:.82rem;">' . e($extractText($sq->questiontext ?? '')) . '</span>';
+                        $html .= '<select name="' . $subName . '" style="padding:.3rem .5rem;border:1px solid #d1d5db;border-radius:6px;">';
+                        $html .= '<option value="">Seleccionar…</option>';
+                        foreach ($allMatchAnswers as $ans) {
+                            $sel = (string) $ans->id === (string) $currentVal ? ' selected' : '';
+                            $html .= '<option value="' . $ans->id . '"' . $sel . '>' . e($extractText($ans->answer ?? '')) . '</option>';
+                        }
+                        $html .= '</select></div>';
+                        $subIdx++;
+                    }
+                    if ($subIdx === 0) {
+                        $html .= '<div style="color:#64748b;font-size:.82rem;"><i class="ri-information-line"></i> Pregunta de cotejamiento — no se pudieron cargar las opciones desde la BD.</div>';
+                    }
+                    break;
+
+                case 'essay':
+                    $currentValue = $stepData['_answer'] ?? '';
+                    $html .= '<div class="r0">';
+                    $html .= '<textarea name="' . $fieldPrefix . 'answer" rows="6" style="width:100%;">' . e($currentValue) . '</textarea>';
+                    $html .= '</div>';
+                    break;
+
+                default:
+                    $html .= '<div style="color:#64748b;font-size:.82rem;">' . $questionText . '</div>';
+                    break;
+            }
+        } catch (\Exception $e) {
+            Log::warning("buildDbQuestionHtml: error qtype={$qtype} qid={$questionId}: " . $e->getMessage());
+            $html .= '<div style="color:#64748b;font-size:.82rem;">' . $questionText . '</div>';
+        }
+
+        $html .= '</div></div>';
+        // sequencecheck = num_steps (inyectado desde getAttemptData)
+        $seqVal = $stepData['_sequencecheck'] ?? '1';
+        $html .= '<input type="hidden" name="sequencecheck" value="' . $seqVal . '">';
+        return $html;
+    }
+
+    /**
+     * Llama al WS get_attempt_data / get_attempt_review iterando por páginas si es necesario.
+     * @param int|null $userId null = usar token admin
+     */
+    private function callWsGetAttemptQuestions(string $wsFn, ?int $userId, int $attemptId): array
+    {
+        $allQuestions = [];
+        $seenSlots = [];
+
+        // Iterar páginas 0..9 hasta encontrar una sin preguntas nuevas
+        for ($page = 0; $page <= 9; $page++) {
+            $params = ['attemptid' => $attemptId, 'page' => $page];
+
+            if ($userId !== null) {
+                $resp = $this->callAsUser($wsFn, $userId, $params);
+            } else {
+                $resp = $this->call($wsFn, $params);
+            }
+
+            if (!is_array($resp) || empty($resp['questions'])) {
+                break;
+            }
+
+            $hasNew = false;
+            foreach ($resp['questions'] as $q) {
+                $slot = (int) ($q['slot'] ?? 0);
+                if ($slot > 0 && !isset($seenSlots[$slot])) {
+                    $seenSlots[$slot] = true;
+                    $hasNew = true;
+                    $allQuestions[] = $q;
+                }
+            }
+
+            if (!$hasNew) break;
+        }
+
+        return $allQuestions;
+    }
+
+    /**
+     * Parsea el array de preguntas devuelto por el WS de Moodle al formato interno.
+     */
+    private function parseWsQuestions(array $rawQuestions): array
+    {
+        $questions = [];
+        foreach ($rawQuestions as $q) {
+            $questions[] = [
+                'slot'           => (int) ($q['slot'] ?? 0),
+                'questionnumber' => (int) ($q['number'] ?? $q['slot'] ?? 0),
+                'questionname'   => $q['questionname'] ?? '',
+                'html'           => $q['html'] ?? '',
+                'sequencecheck'  => (int) ($q['sequencecheck'] ?? 0),
+                'state'          => $q['state'] ?? '',
+                'status'         => $q['status'] ?? '',
+                'maxmark'        => (float) ($q['maxmark'] ?? 0),
+                'mark'           => $q['mark'] ?? null,
+                'flagged'        => (bool) ($q['flagged'] ?? false),
+            ];
+        }
+        return $questions;
     }
 
     /**
@@ -1935,6 +2455,12 @@ return $result !== null ? [] : false;
         }
 
         $response = $this->callAsUser('mod_quiz_process_attempt', $userId, $params);
+
+        // Fallback: si el token del estudiante falla, reintentar con token admin
+        if ($response === null) {
+            Log::warning("processAttempt: WS mod_quiz_process_attempt con token usuario falló para attempt={$attemptId}, reintentando con token admin…");
+            $response = $this->call('mod_quiz_process_attempt', $params);
+        }
 
         if ($response === null) return null;
 
@@ -3478,6 +4004,39 @@ return $result !== null ? [] : false;
             ->toArray();
     }
 
+    public function getForumAllPostsByForum(int $forumId): array
+    {
+        $db = DB::connection('moodle');
+        try {
+            return $db->table('forum_posts as p')
+                ->join('forum_discussions as d', 'd.id', '=', 'p.discussion')
+                ->join('user as u', 'u.id', '=', 'p.userid')
+                ->where('d.forum', $forumId)
+                ->where('p.deleted', 0)
+                ->select('p.id', 'p.discussion', 'p.parent', 'p.userid', 'p.created', 'p.subject', 'p.message', 'p.messageformat', 'd.name as discussion_name', 'u.firstname', 'u.lastname')
+                ->orderBy('d.id')
+                ->orderBy('p.created')
+                ->get()
+                ->map(fn($p) => [
+                    'id'              => $p->id,
+                    'discussion_id'   => $p->discussion,
+                    'discussion_name' => $p->discussion_name,
+                    'parent'          => $p->parent,
+                    'userid'          => $p->userid,
+                    'author'          => trim($p->firstname . ' ' . $p->lastname),
+                    'created'         => $p->created,
+                    'subject'         => $p->subject,
+                    'message'         => $p->messageformat == 1
+                        ? $p->message
+                        : nl2br(htmlspecialchars($p->message ?? '', ENT_QUOTES, 'UTF-8')),
+                ])
+                ->toArray();
+        } catch (\Exception $e) {
+            Log::warning("getForumAllPostsByForum: " . $e->getMessage());
+            return [];
+        }
+    }
+
     public function createForumDiscussionAsUser(int $forumId, int $courseId, int $userId, string $subject, string $message): ?int
     {
         $db  = DB::connection('moodle');
@@ -3633,9 +4192,10 @@ return $result !== null ? [] : false;
 
     /**
      * Sincroniza la ponderación de una actividad con Moodle:
-     * - Actualiza grademax en grade_items y en la tabla específica del módulo.
-     * - En modo 'ponderar': recalcula las notas de cada estudiante proporcionalmente.
-     * - En modo 'mantener': solo actualiza grademax (las notas ya estaban en escala ponderada).
+     * - Actualiza grademax en grade_items y en la tabla del módulo (assign/quiz).
+     * - En modo 'ponderar': rescala las notas de los estudiantes proporcionalmente.
+     * - En modo 'mantener': deja las notas intactas, solo cambia grademax.
+     * - Actualiza aggregationcoef/aggregationcoef2 según el método de agregación.
      */
     public function sincronizarPonderacion(
         int    $gradeItemId,
@@ -3712,24 +4272,89 @@ return $result !== null ? [] : false;
                 if ($cat) $aggregation = (int) $cat->aggregation;
             }
 
-            // ── 3. Actualizar peso según método de agregación ──
-            // Natural (13): peso va en aggregationcoef2 como decimal (30% → 0.30)
-            // Weighted Mean (1) y otros: peso va en aggregationcoef
-            // Se actualizan ambos para máxima compatibilidad.
+            // ── 3. Actualizar grademax en grade_items y coeficiente de peso ──
+            // Natural (13): aggregationcoef2 lleva el peso decimal; aggregationcoef es flag extra-crédito.
+            // Weighted Mean (1): aggregationcoef lleva el peso decimal.
+            // Suma (10) y otros: no hay ponderación nativa; no tocar aggregationcoef (flag extra-crédito).
             $pesoDecimal = round($nuevaNotaMax / 100, 10);
-            $updateData  = [
-                'aggregationcoef'  => $pesoDecimal,
+
+            $gradeItemUpdate = [
+                'grademax'         => $nuevaNotaMax,
                 'aggregationcoef2' => $pesoDecimal,
-                'weightoverride'   => 1,
                 'timemodified'     => $now,
             ];
 
-            $rows = $db->table('grade_items')->where('id', $gradeItemId)->update($updateData);
-            \Log::info("sincronizarPonderacion: gradeItemId={$gradeItemId} aggregation={$aggregation} peso={$nuevaNotaMax}% pesoDecimal={$pesoDecimal} rowsUpdated={$rows}");
+            if ($aggregation === 1) {
+                $gradeItemUpdate['aggregationcoef'] = $pesoDecimal;
+                $gradeItemUpdate['weightoverride']  = 1;
+            } elseif ($aggregation === 13) {
+                $gradeItemUpdate['weightoverride'] = 1;
+            }
+            // Suma (10): NO tocar aggregationcoef ni weightoverride
+
+            $db->table('grade_items')->where('id', $gradeItemId)->update($gradeItemUpdate);
+
+            // ── 4. Actualizar grademax en la tabla del módulo (assign / quiz) ──
+            $moduleTablesWithGrade = ['assign', 'quiz', 'workshop', 'lesson'];
+            if (in_array($moduleType, $moduleTablesWithGrade)) {
+                try {
+                    $db->table($moduleType)->where('id', $instanceId)->update(['grade' => $nuevaNotaMax]);
+                } catch (\Throwable $ex) {
+                    \Log::warning("sincronizarPonderacion: no se pudo actualizar {$moduleType}.grade: " . $ex->getMessage());
+                }
+            }
+
+            // ── 5. Rescalar o mantener notas de estudiantes en grade_grades y tablas del módulo ──
+            if ($modo === 'ponderar' && $viejaNotaMax > 0 && $viejaNotaMax != $nuevaNotaMax) {
+                $factor = $nuevaNotaMax / $viejaNotaMax;
+
+                // Libro de calificaciones
+                $db->table('grade_grades')
+                    ->where('itemid', $gradeItemId)
+                    ->whereNotNull('rawgrade')
+                    ->update([
+                        'rawgrade'     => DB::raw("ROUND(rawgrade * {$factor}, 5)"),
+                        'finalgrade'   => DB::raw("CASE WHEN finalgrade IS NOT NULL THEN ROUND(finalgrade * {$factor}, 5) ELSE NULL END"),
+                        'rawgrademax'  => $nuevaNotaMax,
+                        'timemodified' => $now,
+                        'information'  => null,
+                    ]);
+
+                // Tabla específica del módulo (casilla del calificador)
+                if ($moduleType === 'assign') {
+                    $db->table('assign_grades')
+                        ->where('assignment', $instanceId)
+                        ->whereNotNull('grade')
+                        ->where('grade', '>=', 0)
+                        ->update([
+                            'grade'        => DB::raw("ROUND(grade * {$factor}, 5)"),
+                            'timemodified' => $now,
+                        ]);
+                } elseif ($moduleType === 'quiz') {
+                    $db->table('quiz_grades')
+                        ->where('quiz', $instanceId)
+                        ->whereNotNull('grade')
+                        ->update([
+                            'grade'        => DB::raw("ROUND(grade * {$factor}, 5)"),
+                            'timemodified' => $now,
+                        ]);
+                }
+            } else {
+                // modo 'mantener': solo actualizar rawgrademax para consistencia
+                $db->table('grade_grades')
+                    ->where('itemid', $gradeItemId)
+                    ->whereNotNull('rawgrade')
+                    ->update([
+                        'rawgrademax'  => $nuevaNotaMax,
+                        'timemodified' => $now,
+                    ]);
+            }
+
+            \Log::info("sincronizarPonderacion: gradeItemId={$gradeItemId} aggregation={$aggregation} modo={$modo} peso={$viejaNotaMax}→{$nuevaNotaMax}");
 
             $actualizados = 1;
 
-            // ── 4. Invalidar caché del curso para que Moodle recalcule ──
+            // ── 6. Invalidar caché del curso para que Moodle recalcule ──
             $db->table('course')->where('id', $courseId)->increment('cacherev');
 
         } catch (\Throwable $e) {

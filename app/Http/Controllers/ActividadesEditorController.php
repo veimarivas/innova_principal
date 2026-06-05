@@ -384,8 +384,10 @@ class ActividadesEditorController extends Controller
     /**
      * Sirve el archivo de un recurso (resource) directamente desde el filedir de Moodle.
      */
-    public function verArchivoRecurso(int $moduloId, int $cmid)
+    public function verArchivoRecurso(int $moduloId, int $cmid, \Illuminate\Http\Request $request = null)
     {
+        $request = $request ?: request();
+        $forceDownload = (bool) $request->boolean('download');
         try {
             $db         = DB::connection('moodle');
             $moodleData = rtrim(config('moodle.dataroot'), DIRECTORY_SEPARATOR);
@@ -427,14 +429,122 @@ class ActividadesEditorController extends Controller
             $mime     = $file->mimetype ?: 'application/octet-stream';
             $filename = $file->filename;
 
+            $disp = $forceDownload ? 'attachment' : 'inline';
             return response()->file($filePath, [
                 'Content-Type'        => $mime,
-                'Content-Disposition' => 'inline; filename="' . addslashes($filename) . '"',
+                'Content-Disposition' => $disp . '; filename="' . addslashes($filename) . '"',
                 'Cache-Control'       => 'private, max-age=3600',
             ]);
 
         } catch (\Exception $e) {
             Log::error("verArchivoRecurso cmid=$cmid: " . $e->getMessage());
+            abort(500, 'Error al servir el archivo.');
+        }
+    }
+
+    /**
+     * Sirve el archivo adjunto del intro de un foro (mod_forum / filearea intro).
+     */
+    public function verArchivoForoIntro(int $moduloId, int $cmid, \Illuminate\Http\Request $request = null)
+    {
+        $request = $request ?: request();
+        $forceDownload = (bool) $request->boolean('download');
+        try {
+            $db         = DB::connection('moodle');
+            $moodleData = rtrim(config('moodle.dataroot'), DIRECTORY_SEPARATOR);
+
+            $context = $db->table('context')
+                ->where('contextlevel', 70)
+                ->where('instanceid', $cmid)
+                ->first();
+
+            if (!$context) abort(404, 'Contexto no encontrado.');
+
+            $file = $db->table('files')
+                ->where('contextid', $context->id)
+                ->where('component', 'mod_forum')
+                ->where('filearea', 'intro')
+                ->where('itemid', 0)
+                ->where('filename', '<>', '.')
+                ->orderByDesc('timemodified')
+                ->first();
+
+            if (!$file) abort(404, 'Archivo no encontrado.');
+
+            $hash     = $file->contenthash;
+            $filePath = $moodleData . DIRECTORY_SEPARATOR . 'filedir'
+                . DIRECTORY_SEPARATOR . substr($hash, 0, 2)
+                . DIRECTORY_SEPARATOR . substr($hash, 2, 2)
+                . DIRECTORY_SEPARATOR . $hash;
+
+            if (!file_exists($filePath)) abort(404, 'Archivo físico no encontrado.');
+
+            $mime     = $file->mimetype ?: 'application/octet-stream';
+            $filename = $file->filename;
+            $disp     = $forceDownload ? 'attachment' : 'inline';
+
+            return response()->file($filePath, [
+                'Content-Type'        => $mime,
+                'Content-Disposition' => $disp . '; filename="' . addslashes($filename) . '"',
+                'Cache-Control'       => 'private, max-age=3600',
+            ]);
+        } catch (\Exception $e) {
+            Log::error("verArchivoForoIntro cmid=$cmid: " . $e->getMessage());
+            abort(500, 'Error al servir el archivo.');
+        }
+    }
+
+    /**
+     * Sirve el archivo adjunto (introattachment) de una tarea (assign) desde el filedir de Moodle.
+     */
+    public function verArchivoTareaIntro(int $moduloId, int $cmid)
+    {
+        try {
+            $db         = DB::connection('moodle');
+            $moodleData = rtrim(config('moodle.dataroot'), DIRECTORY_SEPARATOR);
+
+            $context = $db->table('context')
+                ->where('contextlevel', 70)
+                ->where('instanceid', $cmid)
+                ->first();
+
+            if (!$context) {
+                abort(404, 'Contexto no encontrado.');
+            }
+
+            $file = $db->table('files')
+                ->where('contextid', $context->id)
+                ->where('component', 'mod_assign')
+                ->where('filearea', 'introattachment')
+                ->where('itemid', 0)
+                ->where('filename', '<>', '.')
+                ->orderByDesc('timemodified')
+                ->first();
+
+            if (!$file) {
+                abort(404, 'Archivo no encontrado.');
+            }
+
+            $hash     = $file->contenthash;
+            $filePath = $moodleData . DIRECTORY_SEPARATOR . 'filedir'
+                . DIRECTORY_SEPARATOR . substr($hash, 0, 2)
+                . DIRECTORY_SEPARATOR . substr($hash, 2, 2)
+                . DIRECTORY_SEPARATOR . $hash;
+
+            if (!file_exists($filePath)) {
+                abort(404, 'Archivo físico no encontrado.');
+            }
+
+            $mime     = $file->mimetype ?: 'application/octet-stream';
+            $filename = $file->filename;
+
+            return response()->download($filePath, $filename, [
+                'Content-Type'  => $mime,
+                'Cache-Control' => 'private, max-age=3600',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("verArchivoTareaIntro cmid=$cmid: " . $e->getMessage());
             abort(500, 'Error al servir el archivo.');
         }
     }

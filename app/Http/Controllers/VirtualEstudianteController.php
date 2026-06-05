@@ -215,7 +215,32 @@ class VirtualEstudianteController extends Controller
 
         try {
             $data = $this->moodle->getForumDiscussionsWithCount($cm->instance, $mat->moodle_user_id);
-            return response()->json(['success' => true, 'data' => $data]);
+
+            // Datos del foro (descripción + existencia de archivo adjunto)
+            $db = DB::connection('moodle');
+            $forum = $db->table('forum')->where('id', $cm->instance)->first(['name', 'intro']);
+            $context = $db->table('context')
+                ->where('contextlevel', 70)->where('instanceid', $cmid)->first();
+            $hasFile = false;
+            if ($context) {
+                $hasFile = $db->table('files')
+                    ->where('contextid', $context->id)
+                    ->where('component', 'mod_forum')
+                    ->where('filearea', 'intro')
+                    ->where('itemid', 0)
+                    ->where('filename', '<>', '.')
+                    ->exists();
+            }
+
+            return response()->json([
+                'success' => true,
+                'data'    => $data,
+                'forum'   => [
+                    'name'           => $forum->name ?? '',
+                    'intro'          => $forum->intro ?? '',
+                    'has_intro_file' => $hasFile,
+                ],
+            ]);
         } catch (\Exception $e) {
             Log::error("VirtualEstudiante::getForoDiscusiones [{$moduloId}/{$cmid}]: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Error al obtener las discusiones.'], 500);
@@ -377,7 +402,11 @@ class VirtualEstudianteController extends Controller
         try {
             $attempt = $this->moodle->startQuizAttempt($cm->instance, $mat->moodle_user_id);
             if (!$attempt) {
-                return response()->json(['success' => false, 'message' => 'No se pudo iniciar el intento.'], 500);
+                Log::warning("startQuiz: attempt nulo para user={$mat->moodle_user_id} quiz_instance={$cm->instance} cmid={$cmid}");
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo iniciar el cuestionario. Verifica que tengas permisos en Moodle o intenta nuevamente.',
+                ], 500);
             }
 
             return response()->json([
@@ -387,7 +416,7 @@ class VirtualEstudianteController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error("VirtualEstudiante::startQuiz [{$moduloId}/{$cmid}]: " . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Error al iniciar el cuestionario.'], 500);
+            return response()->json(['success' => false, 'message' => 'Error al iniciar el cuestionario: ' . $e->getMessage()], 500);
         }
     }
 

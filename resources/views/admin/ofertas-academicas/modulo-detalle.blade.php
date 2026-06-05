@@ -610,6 +610,36 @@
         </div>
     </div>
 
+    {{-- Modal: Confirmación sincronizar con Moodle --}}
+    <div class="modal fade" id="modalSincronizarMoodle" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:540px;">
+            <div class="modal-content" style="border-radius:14px;border:none;box-shadow:0 8px 40px rgba(0,0,0,.16);">
+                <div class="modal-header" style="border-bottom:1px solid #f1f5f9;padding:1.1rem 1.4rem;background:#1e293b;border-radius:14px 14px 0 0;">
+                    <h5 class="modal-title" style="font-size:.93rem;font-weight:700;color:#f1f5f9;display:flex;align-items:center;gap:.5rem;">
+                        <i class="ri-refresh-line" style="color:#fc7b04;"></i> Sincronizar ponderaciones con Moodle
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="padding:1.3rem 1.5rem;">
+                    <p style="font-size:.85rem;color:#475569;margin:0 0 .9rem;">
+                        Se actualizarán las ponderaciones de las siguientes actividades en Moodle:
+                    </p>
+                    <div id="smResumenItems" style="display:flex;flex-direction:column;gap:.45rem;margin-bottom:1rem;"></div>
+                    <div style="background:#fef9ec;border:1px solid #fde68a;border-radius:8px;padding:.7rem 1rem;font-size:.8rem;color:#92400e;display:flex;align-items:center;gap:.5rem;">
+                        <i class="ri-user-line" style="font-size:1rem;flex-shrink:0;"></i>
+                        <span>Afectará las calificaciones de <strong id="smTotalEstudiantes">0</strong> estudiante(s).</span>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid #f1f5f9;padding:.9rem 1.4rem;gap:.5rem;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="font-size:.82rem;">Cancelar</button>
+                    <button type="button" id="btnConfirmarSincMoodle" class="btn btn-sm" style="font-size:.82rem;font-weight:600;background:#fc7b04;border-color:#fc7b04;color:#fff;">
+                        <i class="ri-refresh-line"></i> Confirmar sincronización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Modal: Nueva actividad manual --}}
     <div class="modal fade" id="modalNuevaActividad" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
@@ -878,24 +908,22 @@
 
 {{-- Modal: Resultados Quiz --}}
 <div class="disc-modal-overlay" id="modalQuizResultados">
-    <div class="disc-modal" style="max-width:720px;">
+    <div class="disc-modal" style="max-width:760px;">
         <div class="disc-modal-hdr">
             <span class="disc-modal-title"><i class="ri-bar-chart-grouped-line"></i> Resultados: <span id="quizResultadosNombre"></span></span>
             <button class="disc-modal-close" onclick="ActividadesEditor.cerrarModalQuiz()">&times;</button>
         </div>
         <div class="disc-modal-body">
-            <div id="quizLoading" class="text-center py-4"><div class="spinner-border"></div><p class="mt-2">Cargando resultados...</p></div>
-            <div id="quizError" class="alert alert-danger d-none"><span id="quizErrorText"></span></div>
-            <div id="quizContent" class="d-none">
-                <div class="table-responsive">
-                    <table class="table table-sm">
-                        <thead><tr><th>Estudiante</th><th>Intento</th><th>Estado</th><th>Calificación</th><th>Acción</th></tr></thead>
-                        <tbody id="quizTableBody"></tbody>
-                    </table>
-                </div>
+            <div id="quizLoading" style="text-align:center;padding:2.5rem;color:#64748b;"><i class="ri-loader-4-line" style="font-size:1.5rem;animation:spin 1s linear infinite;"></i><p style="margin-top:.5rem;">Cargando resultados...</p></div>
+            <div id="quizError" style="display:none;padding:0.75rem 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#dc2626;font-size:0.85rem;"><span id="quizErrorText"></span></div>
+            <div id="quizContent" style="display:none;">
+                <div id="quizCardsContainer"></div>
             </div>
-            <div id="quizAttemptDetail" class="d-none mt-3">
-                <hr><h6>Detalle del intento</h6>
+            <div id="quizAttemptDetail" style="display:none;margin-top:1rem;">
+                <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;padding:0.5rem 0;">
+                    <button onclick="ActividadesEditor.cerrarDetalleIntento()" style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.3rem 0.7rem;font-size:0.78rem;font-weight:600;border-radius:6px;background:#f1f5f9;color:#475569;border:none;cursor:pointer;"><i class="ri-arrow-left-line"></i> Volver</button>
+                    <span style="font-size:0.85rem;font-weight:700;color:#1e293b;"><span id="quizDetailNombre"></span></span>
+                </div>
                 <div id="quizQuestionsContainer"></div>
             </div>
         </div>
@@ -2080,40 +2108,62 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ── Sincronizar ponderaciones con Moodle ──
+    let _itemsSincPendientes = [];
+
     function sincronizarConMoodle() {
         if (!_moduloId || !_items.length) return;
 
+        _itemsSincPendientes = _items.map(item => ({
+            id:            item.id,
+            module:        item.module,
+            cmid:          item.cmid,
+            peso:          getPeso(item.id),
+            peso_original: parseFloat(item.max) || 0,
+            modo:          getModo(item.id),
+            grades:        item.grades ?? {},
+        }));
+
+        // Poblar resumen en el modal
+        const MOD_ICON = { quiz: 'ri-questionnaire-line', assign: 'ri-task-line', forum: 'ri-discuss-line', resource: 'ri-file-line', url: 'ri-link', page: 'ri-file-text-line' };
+        const resumenEl = document.getElementById('smResumenItems');
+        if (resumenEl) {
+            resumenEl.innerHTML = _itemsSincPendientes.map(it => {
+                const nombre = _items.find(i => i.id === it.id)?.name ?? ('Item ' + it.id);
+                const modo   = it.modo === 'mantener'
+                    ? '<span style="color:#b45309;font-size:.75rem;"><i class="ri-lock-line"></i> Mantiene nota</span>'
+                    : '<span style="color:#6366f1;font-size:.75rem;"><i class="ri-calculator-line"></i> Recalcula nota</span>';
+                const icon   = MOD_ICON[it.module] || 'ri-checkbox-blank-circle-line';
+                return `<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.55rem .85rem;">
+                    <span style="display:flex;align-items:center;gap:.45rem;font-size:.83rem;color:#1e293b;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                        <i class="${icon}" style="color:#fc7b04;flex-shrink:0;"></i>${nombre}
+                    </span>
+                    <span style="display:flex;align-items:center;gap:.6rem;flex-shrink:0;">
+                        <span style="font-size:.8rem;color:#64748b;">${it.peso_original}% → <strong style="color:#0f172a;">${it.peso}%</strong></span>
+                        ${modo}
+                    </span>
+                </div>`;
+            }).join('');
+        }
+
+        const totalEl = document.getElementById('smTotalEstudiantes');
+        if (totalEl) totalEl.textContent = _estudiantes.length;
+
+        const modal = new bootstrap.Modal(document.getElementById('modalSincronizarMoodle'));
+        modal.show();
+    }
+
+    function ejecutarSincronizacionMoodle() {
         const btn  = document.getElementById('btnSincronizarMoodle');
         const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
-        // Construir payload: para cada ítem incluir grades (raw de Moodle) y modo
-        const items = _items.map(item => ({
-            id:             item.id,
-            module:         item.module,
-            cmid:           item.cmid,
-            peso:           getPeso(item.id),          // nueva nota máx (ponderación)
-            peso_original:  parseFloat(item.max) || 0, // grademax actual en Moodle
-            modo:           getModo(item.id),           // 'ponderar' | 'mantener'
-            grades:         item.grades ?? {},          // { moodle_user_id: raw_grade }
-        }));
-
-        // Resumen para el confirm
-        const resumen = items.map(it => {
-            const modo = it.modo === 'mantener' ? 'Mantiene nota' : 'Recalcula nota';
-            return `• ${_items.find(i=>i.id===it.id)?.name ?? it.id}: ${it.peso_original} → ${it.peso} pts (${modo})`;
-        }).join('\n');
-
-        const totalEstudiantes = _estudiantes.length;
-        const confirmMsg = `Se actualizará en Moodle:\n\n${resumen}\n\nAfectará las notas de ${totalEstudiantes} estudiante(s).\n\n¿Continuar?`;
-
-        if (!confirm(confirmMsg)) return;
+        bootstrap.Modal.getInstance(document.getElementById('modalSincronizarMoodle'))?.hide();
 
         if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ri-loader-4-line"></i> Sincronizando…'; }
 
         fetch('/admin/posgrads/modulos/' + _moduloId + '/centralizador/sincronizar-moodle', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
-            body: JSON.stringify({ items }),
+            body: JSON.stringify({ items: _itemsSincPendientes }),
         })
         .then(r => r.json())
         .then(data => {
@@ -2121,10 +2171,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (data.success) {
                 mostrarToastCentr('success', data.mensaje || 'Moodle actualizado correctamente.');
-                // Actualizar item.max con los nuevos valores para futuros recálculos
-                _items.forEach(item => {
-                    item.max = getPeso(item.id);
-                });
+                _items.forEach(item => { item.max = getPeso(item.id); });
                 renderCentralizador({ grade_items: _items, estudiantes: _estudiantes, modulo_id: _moduloId, manual_mode: _manualMode });
             } else {
                 mostrarToastCentr('error', data.mensaje || 'Error al sincronizar con Moodle.');
@@ -2145,6 +2192,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         document.getElementById('btnGuardarPesosCentr')?.addEventListener('click', guardarPesosCentr);
         document.getElementById('btnSincronizarMoodle')?.addEventListener('click', sincronizarConMoodle);
+        document.getElementById('btnConfirmarSincMoodle')?.addEventListener('click', ejecutarSincronizacionMoodle);
         document.getElementById('btnExportarCentralizador')?.addEventListener('click', exportarCentralizadorCSV);
 
         // Botones del modal de confirmación

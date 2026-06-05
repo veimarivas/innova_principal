@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Modulo;
 use App\Services\MoodleService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ActividadesController extends Controller
 {
@@ -31,6 +32,70 @@ class ActividadesController extends Controller
         $cuestionarios = $this->moodle->getQuizzes($courseId);
         $foros         = $this->moodle->getForums($courseId);
         $urls          = $this->moodle->getUrls($courseId);
+
+        // Si el WS no devolvió tareas, leer desde BD directa de Moodle
+        if (empty($tareas)) {
+            $tareas = $this->moodle->getAssignmentsFromDb($courseId);
+        }
+
+        // Poblar description en módulos assign desde BD de Moodle (fallback directo)
+        $tareasByInstance = [];
+        foreach ($tareas as $t) {
+            $tareasByInstance[(int)($t['id'] ?? 0)] = $t;
+        }
+        foreach ($secciones as $si => &$section) {
+            foreach ($section['modules'] ?? [] as $mi => $mod) {
+                $modname = $mod['modname'] ?? '';
+                $inst = (int)($mod['instance'] ?? 0);
+                if ($modname === 'assign' && $inst && isset($tareasByInstance[$inst])) {
+                    $intro = $tareasByInstance[$inst]['intro'] ?? '';
+                    if (!empty($intro)) {
+                        try {
+                            $secciones[$si]['modules'][$mi]['description'] = $this->moodle->rewritePluginfileUrlsInText($intro);
+                        } catch (\Exception $e) {
+                            $secciones[$si]['modules'][$mi]['description'] = $intro;
+                        }
+                    }
+                }
+                if ($modname === 'forum') {
+                    // Poblar descripción y fechas desde BD de Moodle
+                    if ($inst) {
+                        $fechas = [];
+                        // Consulta directa a la BD de Moodle (más confiable)
+                        try {
+                            $forumRow = DB::connection('moodle')->table('forum')->where('id', $inst)->first();
+                            if ($forumRow) {
+                                $intro = $forumRow->intro ?? '';
+                                if (!empty($intro)) {
+                                    try {
+                                        $secciones[$si]['modules'][$mi]['description'] = $this->moodle->rewritePluginfileUrlsInText($intro);
+                                    } catch (\Exception $e) {
+                                        $secciones[$si]['modules'][$mi]['description'] = $intro;
+                                    }
+                                }
+                                $open = (int)($forumRow->timeopen ?? 0);
+                                $close = (int)($forumRow->cutoffdate ?? 0);
+                                $timeclose = (int)($forumRow->timeclose ?? 0);
+                                if ($open)       $fechas['open'] = $open;
+                                if ($close)      $fechas['close'] = $close;
+                                if ($timeclose)  $fechas['close'] = $timeclose;
+                            }
+                        } catch (\Exception $e) {
+                            // Silencioso - no romper la petición
+                        }
+                        if (!empty($fechas)) {
+                            if (!isset($secciones[$si]['modules'][$mi]['activity_dates'])) {
+                                $secciones[$si]['modules'][$mi]['activity_dates'] = [];
+                            }
+                            foreach ($fechas as $k => $v) {
+                                $secciones[$si]['modules'][$mi]['activity_dates'][$k] = $v;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        unset($section);
 
         // Fechas desde BD directa (no depende del WS mod_assign_get_assignments)
         $tareasFechas = $this->moodle->getAssignDatesByCourseDirect($courseId);
@@ -68,7 +133,7 @@ class ActividadesController extends Controller
     }
 
     /**
-     * Devuelve las discusiones de un foro específico dentro del módulo.
+     * Devuelve discusiones y posts de un foro específico dentro del módulo.
      */
     public function getDiscusiones(int $moduloId, int $forumId)
     {
@@ -81,11 +146,20 @@ class ActividadesController extends Controller
             ]);
         }
 
+        $descripcion = '';
+        try {
+            $row = DB::connection('moodle')->table('forum')->where('id', $forumId)->first(['intro']);
+            if ($row) $descripcion = $this->moodle->rewritePluginfileUrlsInText($row->intro ?? '');
+        } catch (\Exception $e) {}
+
         $discusiones = $this->moodle->getForumDiscussions($forumId);
+        $posts = $this->moodle->getForumAllPostsByForum($forumId);
 
         return response()->json([
             'success'     => true,
+            'descripcion' => $descripcion,
             'discusiones' => $discusiones,
+            'posts'       => $posts,
         ]);
     }
 

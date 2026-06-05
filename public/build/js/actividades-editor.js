@@ -261,24 +261,33 @@ var ActividadesEditor = (function () {
                         extraBtns = '<button class="btn-act-link btn-act-disc" onclick="ActividadesEditor.abrirDiscusiones(' + getModuloId() + ', ' + (mod.instance || 0) + ', \'' + escHtml(mod.name) + '\')"><i class="ri-discuss-line"></i> Discusiones</button>' +
                             '<button class="btn-act-link btn-act-grade" onclick="ActividadesEditor.calificarForo(' + getModuloId() + ', ' + mod.id + ', ' + (mod.instance || 0) + ', \'' + escHtml(mod.name) + '\')"><i class="ri-bar-chart-line"></i> Calificar</button>';
                     } else if (mod.modname === 'assign') {
-                        extraBtns = '<button class="btn-act-link btn-act-grade" onclick="ActividadesEditor.calificarTarea(' + getModuloId() + ', ' + mod.id + ', \'' + escHtml(mod.name) + '\')"><i class="ri-bar-chart-line"></i> Calificar</button>';
+                        var tareaFile = tareasMap[mod.instance] || tareasByCmid[mod.id];
+                        var hasIntroFile = tareaFile && (
+                            (Array.isArray(tareaFile.introfiles) && tareaFile.introfiles.length > 0) ||
+                            parseInt(tareaFile.introattachments || 0) > 0
+                        );
+                        if (hasIntroFile) {
+                            var adjUrl = getApiBase() + '/' + getModuloId() + '/actividades/' + mod.id + '/adjunto-intro';
+                            extraBtns += '<a href="' + adjUrl + '" target="_blank" class="btn-act-link btn-act-resource"><i class="ri-download-line"></i> Descargar adjunto</a>';
+                        }
+                        extraBtns += '<button class="btn-act-link btn-act-grade" onclick="ActividadesEditor.calificarTarea(' + getModuloId() + ', ' + mod.id + ', \'' + escHtml(mod.name) + '\')"><i class="ri-bar-chart-line"></i> Calificar</button>';
                     } else if (mod.modname === 'quiz') {
                         extraBtns = '<button class="btn-act-link btn-act-quiz" onclick="ActividadesEditor.verPreguntasQuiz(' + getModuloId() + ', ' + (mod.instance || 0) + ', \'' + escHtml(mod.name) + '\')"><i class="ri-question-line"></i> Preguntas</button>' +
                             '<button class="btn-act-link btn-act-quiz" onclick="ActividadesEditor.verResultadosQuiz(' + getModuloId() + ', ' + (mod.instance || 0) + ', \'' + escHtml(mod.name) + '\')"><i class="ri-bar-chart-grouped-line"></i> Resultados</button>';
                     } else if (mod.modname === 'resource') {
                         var recursoUrl = getApiBase() + '/' + getModuloId() + '/actividades/' + mod.id + '/recurso';
-                        extraBtns = '<a href="' + recursoUrl + '" target="_blank" class="btn-act-link btn-act-resource"><i class="ri-download-line"></i> Abrir archivo</a>';
+                        extraBtns = '<a href="' + recursoUrl + '" target="_blank" class="btn-act-link btn-act-resource"><i class="ri-eye-line"></i> Visualizar</a>' +
+                            '<a href="' + recursoUrl + '?download=1" class="btn-act-link btn-act-resource"><i class="ri-download-line"></i> Descargar</a>';
                     } else if (mod.modname === 'url') {
-                        var rawUrl = urlsByCmid[mod.id] || mod.externalurl || '';
-                        if (rawUrl && !/^https?:\/\//i.test(rawUrl)) {
-                            rawUrl = 'https://' + rawUrl;
-                        }
+                        var rawUrl = (urlsByCmid[mod.id] && (urlsByCmid[mod.id].externalurl || urlsByCmid[mod.id])) || mod.externalurl || '';
+                        if (typeof rawUrl === 'object' && rawUrl.externalurl) rawUrl = rawUrl.externalurl;
+                        if (rawUrl && !/^https?:\/\//i.test(rawUrl)) rawUrl = 'https://' + rawUrl;
                         var destUrl = rawUrl || cmUrl;
                         extraBtns = '<a href="' + escHtml(destUrl) + '" target="_blank" rel="noopener noreferrer" class="btn-act-link btn-act-url"><i class="ri-external-link-line"></i> Abrir enlace</a>';
                     }
 
                     var tieneCont = mod.description && mod.description.trim().length > 0;
-                    var toggleBtn = tieneCont
+                    var toggleBtn = tieneCont && mod.modname !== 'assign' && mod.modname !== 'forum'
                         ? '<button class="btn-toggle-contenido" onclick="ActividadesEditor.toggleContenido(this, event)"><i class="ri-arrow-down-s-line"></i> Ver contenido</button>'
                         : '';
 
@@ -366,17 +375,29 @@ var ActividadesEditor = (function () {
                         }
                     } else if (mod.modname === 'forum') {
                         var foro = forosMap[mod.instance] || forosByCmid[mod.id];
-                        var opents = (mod.activity_dates && mod.activity_dates.open)
+                        var openTs = (mod.activity_dates && mod.activity_dates.open)
+                            || (foro && foro.timeopen)
                             || (foro && foro.dates && foro.dates.open)
+                            || 0;
+                        var dueTs = (mod.activity_dates && mod.activity_dates.close)
+                            || (mod.activity_dates && mod.activity_dates.due)
+                            || (foro && foro.timeclose)
+                            || (foro && foro.cutoffdate)
                             || (foro && foro.duedate)
+                            || (foro && foro.dates && foro.dates.close)
+                            || (foro && foro.dates && foro.dates.due)
                             || 0;
 
                         var htmlFechas = '';
                         var nowF = Math.floor(Date.now() / 1000);
-                        if (opents) {
-                            var fechaApertura = new Date(opents * 1000);
-                            var abiertoF = opents <= nowF;
-                            htmlFechas += '<span class="act-date-chip act-date-open' + (abiertoF ? ' act-date-active' : '') + '"><i class="ri-calendar-event-line"></i> Vencimiento: ' + fechaApertura.toLocaleString('es-BO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) + '</span>';
+                        if (openTs) {
+                            var fechaOpen = new Date(openTs * 1000);
+                            htmlFechas += '<span class="act-date-chip act-date-open"><i class="ri-calendar-event-line"></i> Inicio: ' + fechaOpen.toLocaleString('es-BO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) + '</span>';
+                        }
+                        if (dueTs) {
+                            var fechaDue = new Date(dueTs * 1000);
+                            var vencido = dueTs < nowF;
+                            htmlFechas += '<span class="act-date-chip act-date-due' + (vencido ? ' act-date-overdue' : '') + '"><i class="ri-calendar-check-line"></i> Vencimiento: ' + fechaDue.toLocaleString('es-BO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) + '</span>';
                         }
                         if (htmlFechas) extraInfo = '<div class="act-dates-row">' + htmlFechas + '</div>';
 
@@ -387,6 +408,12 @@ var ActividadesEditor = (function () {
                         }
                     }
 
+                    var descHtml = tieneCont ? '<div class="act-contenido act-contenido-assign" style="display:block;margin:4px 0 0 0;padding:0.4rem 0;background:transparent;border:none;border-top:1px dashed var(--d-card-border);font-size:0.82rem;color:var(--d-body);line-height:1.5;">' + mod.description + '</div>' : '';
+                    var downloadLink = (mod.modname === 'assign' && hasIntroFile)
+                        ? '<div style="margin-top:6px;"><a href="' + getApiBase() + '/' + getModuloId() + '/actividades/' + mod.id + '/adjunto-intro" class="btn-act-link btn-act-download" target="_blank" style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.65rem;font-size:0.75rem;font-weight:600;border-radius:5px;background:rgba(37,99,235,.1);color:#2563eb;text-decoration:none;cursor:pointer;"><i class="ri-download-2-line"></i> Descargar archivo</a></div>'
+                        : '';
+                    var descInline = (mod.modname === 'assign' || mod.modname === 'forum') ? descHtml + downloadLink : '';
+
                     item.innerHTML =
                         '<div class="act-item-left">' +
                             '<span class="drag-handle"><i class="ri-draggable"></i></span>' +
@@ -394,6 +421,7 @@ var ActividadesEditor = (function () {
                             '<div>' +
                                 '<div class="act-name">' + escHtml(mod.name) + '</div>' +
                                 '<div class="act-tipo">' + info.label + '</div>' +
+                                descInline +
                                 extraInfo +
                             '</div>' +
                         '</div>' +
@@ -405,7 +433,7 @@ var ActividadesEditor = (function () {
                             '<a href="' + cmUrl + '" target="_blank" class="btn-act-link btn-act-moodle"><i class="ri-external-link-line"></i></a>' +
                         '</div>';
 
-                    if (tieneCont) {
+                    if (tieneCont && mod.modname !== 'assign' && mod.modname !== 'forum') {
                         var contDiv = document.createElement('div');
                         contDiv.className = 'act-contenido';
                         contDiv.innerHTML = mod.description;
@@ -614,15 +642,6 @@ var ActividadesEditor = (function () {
                         extra.duedate      = d.duedate || d.timeopen || 0;
                         extra.cutoffdate   = d.cutoffdate || d.timeclose || 0;
                         extra.grade        = d.grade || 0;
-                    } else if (modname === 'url') {
-                        extra.intro       = d.intro || '';
-                        extra.externalurl = d.externalurl || '';
-                        extra.display     = d.display != null ? parseInt(d.display) : 2;
-                    } else if (modname === 'resource') {
-                        extra.intro = d.intro || '';
-                    } else if (modname === 'page') {
-                        extra.intro   = d.intro || '';
-                        extra.content = d.content || '';
                     }
 
                     abrirModal(modname, extra);
@@ -910,27 +929,15 @@ var ActividadesEditor = (function () {
             quiz: quizHTML,
             forum: forumHTML,
             page: '<div class="form-group"><label>Nombre de la página <span class="required">*</span></label><input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Introducción"></div><div class="form-group"><label>Contenido</label><div class="wysiwyg-toolbar"><button onclick="document.execCommand(\'bold\')"><strong>B</strong></button><button onclick="document.execCommand(\'italic\')"><em>I</em></button><button onclick="document.execCommand(\'insertOrderedList\')"><i class="ri-list-ordered"></i></button><button onclick="document.execCommand(\'insertUnorderedList\')"><i class="ri-list-unordered"></i></button></div><div class="wysiwyg-editor" contenteditable="true" id="fldContent" style="min-height:150px;"></div></div>',
-            url: (function() {
-                var externalUrlVal = editando ? escHtml(data.externalurl || '') : '';
-                // Moodle display constants: 5=OPEN(misma ventana), 3=NEW(nueva ventana), 1=EMBED(incrustado)
-                var display = editando ? parseInt(data.display || 5) : 5;
-                var dispOpts = [[5,'Misma ventana (recomendado)'],[3,'Nueva ventana'],[1,'Incrustado']].map(function(o) {
-                    return '<option value="' + o[0] + '"' + (display === o[0] ? ' selected' : '') + '>' + o[1] + '</option>';
-                }).join('');
-                return '<div class="form-group"><label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;"><i class="ri-link" style="color:#c2410c;"></i> Nombre <span class="required">*</span></label><input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Video complementario" style="font-size:.87rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;"></div>'
-                    + '<div class="form-group"><label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;"><i class="ri-links-line" style="color:#c2410c;"></i> URL externa <span class="required">*</span></label><input class="form-control" id="fldExternalUrl" type="url" value="' + externalUrlVal + '" placeholder="https://ejemplo.com/video" style="font-size:.87rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;"></div>'
-                    + '<div class="form-group"><label style="font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;">Descripción</label><textarea class="form-control" id="fldDescription" rows="3" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;">' + introVal + '</textarea></div>'
-                    + '<div class="form-group"><label style="font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;">Abrir en</label><select class="form-control" id="fldDisplay" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .6rem;">' + dispOpts + '</select></div>';
-            })(),
-            resource: (function() {
-                return '<div class="form-group"><label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;"><i class="ri-file-line" style="color:#0284c7;"></i> Nombre del recurso <span class="required">*</span></label><input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Material de lectura" style="font-size:.87rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;"></div>'
-                    + '<div class="form-group"><label style="font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;">Descripción</label><textarea class="form-control" id="fldDescription" rows="3" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;">' + introVal + '</textarea></div>'
-                    + (!editando
-                        ? '<div class="form-group"><label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;"><i class="ri-upload-cloud-line" style="color:#0284c7;"></i> Archivo <span class="required">*</span></label>'
-                          + '<input type="file" class="form-control" id="fldArchivoRecurso" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.mp4,.jpg,.jpeg,.png" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .5rem;">'
-                          + '<div style="font-size:.72rem;color:#94a3b8;margin-top:.25rem;"><i class="ri-information-line"></i> Formatos: PDF, Word, Excel, PPT, ZIP, imágenes, vídeo. Máx. 50 MB.</div></div>'
-                        : '<div style="padding:.65rem .9rem;background:rgba(14,165,233,.07);border:1px solid rgba(14,165,233,.25);border-radius:8px;font-size:.82rem;color:#0369a1;"><i class="ri-information-line"></i> Al editar un recurso solo se puede cambiar el nombre y la descripción. Para reemplazar el archivo, elimine este recurso y cree uno nuevo.</div>');
-            })(),
+            url: '<div class="form-group"><label>Nombre <span class="required">*</span></label><input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Video complementario"></div><div class="form-group"><label>URL <span class="required">*</span></label><input class="form-control" id="fldExternalUrl" type="url" value="' + (editando ? escHtml(data.externalurl || '') : '') + '" placeholder="https://ejemplo.com/video"></div><div class="form-group"><label>Descripción</label><textarea class="form-control" id="fldDescription" rows="3">' + introVal + '</textarea></div><div class="form-group"><label>Abrir en</label><select class="form-control" id="fldDisplay"><option value="3"' + (editando && parseInt(data.display)===3 ? ' selected' : '') + '>Nueva ventana</option><option value="5"' + (editando && parseInt(data.display)===5 ? ' selected' : (!editando ? ' selected' : '')) + '>Misma ventana</option><option value="1"' + (editando && parseInt(data.display)===1 ? ' selected' : '') + '>Incrustado</option></select></div>',
+            resource:
+                '<div class="form-group"><label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;"><i class="ri-file-line" style="color:#0284c7;"></i> Nombre del recurso <span class="required">*</span></label><input class="form-control" id="fldName" value="' + nameVal + '" placeholder="Ej: Material de lectura" style="font-size:.87rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;"></div>'
+                + '<div class="form-group"><label style="font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;">Descripción</label><textarea class="form-control" id="fldDescription" rows="3" style="font-size:.85rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.5rem .7rem;">' + introVal + '</textarea></div>'
+                + (!editando
+                    ? '<div class="form-group"><label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;font-weight:700;color:#1e293b;margin-top:.2rem;"><i class="ri-upload-cloud-line" style="color:#0284c7;"></i> Archivo <span class="required">*</span></label>'
+                      + '<input type="file" class="form-control" id="fldArchivoRecurso" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.mp4,.jpg,.jpeg,.png" style="font-size:.83rem;border-radius:8px;border:1.5px solid #e2e8f0;padding:.4rem .5rem;">'
+                      + '</div>'
+                    : '<div style="padding:.65rem .9rem;background:rgba(14,165,233,.07);border:1px solid rgba(14,165,233,.25);border-radius:8px;font-size:.82rem;color:#0369a1;"><i class="ri-information-line"></i> Al editar un recurso solo se puede cambiar el nombre y la descripción. Para reemplazar el archivo, elimine este recurso y cree uno nuevo.</div>'),
         };
 
         return templates[tipo] || null;
@@ -1017,53 +1024,64 @@ var ActividadesEditor = (function () {
         }
         if (tipo === 'url') {
             payload.externalurl = document.getElementById('fldExternalUrl')?.value || '';
-            payload.display = parseInt(document.getElementById('fldDisplay')?.value || '2');
+            payload.display = parseInt(document.getElementById('fldDisplay')?.value || '5');
         }
 
         var adjuntoFile = (tipo === 'assign') ? (document.getElementById('fldAdjunto')?.files[0] || null) : null;
         var recursoFile = (tipo === 'resource') ? (document.getElementById('fldArchivoRecurso')?.files[0] || null) : null;
 
-        // Recurso nuevo: requiere archivo — usar endpoint dedicado de subida
-        if (tipo === 'resource' && !cmid) {
-            if (!recursoFile) {
-                _guardando = false;
-                mostrarToast('error', 'Debe seleccionar un archivo para el recurso.');
-                return;
-            }
-            var saveBtn = overlay.querySelector('.btn-save');
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = '<i class="ri-loader-4-line" style="animation:spin 1s linear infinite;"></i> Subiendo...';
-            var fd = new FormData();
-            fd.append('file', recursoFile);
-            fd.append('section', payload.section);
-            fd.append('name', payload.name);
-            fd.append('course_id', payload.course_id);
-            fd.append('description', payload.description || '');
-            fetch(getApiBase() + '/' + getModuloId() + '/subir-archivo', {
-                method: 'POST',
-                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken() },
-                body: fd,
-            })
-            .then(function(r) { return r.json(); })
-            .then(function(res) {
-                _guardando = false;
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = '<i class="ri-check-line"></i> Guardar en Moodle';
-                if (res.success) { cerrarModal(); mostrarToast('success', 'Recurso creado correctamente.'); cargarYRenderizar(); }
-                else mostrarToast('error', res.message || 'Error al subir el recurso.');
-            })
-            .catch(function() {
-                _guardando = false;
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = '<i class="ri-check-line"></i> Guardar en Moodle';
-                mostrarToast('error', 'Error de conexión al subir el recurso.');
-            });
-            return;
-        }
-
         var saveBtn = overlay.querySelector('.btn-save');
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<i class="ri-loader-4-line" style="animation:spin 1s linear infinite;"></i> Guardando...';
+
+        // Recurso nuevo: requiere archivo — usar endpoint dedicado de subida (multipart)
+        if (tipo === 'resource' && !cmid) {
+            if (!recursoFile) {
+                _guardando = false;
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="ri-check-line"></i> Guardar en Moodle';
+                mostrarToast('error', 'Debe seleccionar un archivo para el recurso.');
+                return;
+            }
+            if (!payload.name) {
+                _guardando = false;
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="ri-check-line"></i> Guardar en Moodle';
+                mostrarToast('error', 'Debe ingresar un nombre para el recurso.');
+                return;
+            }
+            var fdRec = new FormData();
+            fdRec.append('file', recursoFile);
+            fdRec.append('section', payload.section);
+            fdRec.append('name', payload.name);
+            fdRec.append('course_id', payload.course_id);
+            fdRec.append('description', payload.description || '');
+            fetch(getApiBase() + '/' + getModuloId() + '/subir-archivo', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken() },
+                body: fdRec,
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (res) {
+                _guardando = false;
+                saveBtn.disabled = false;
+                if (!res.success) {
+                    saveBtn.innerHTML = '<i class="ri-check-line"></i> Guardar en Moodle';
+                    mostrarToast('error', res.message || 'Error al subir el recurso');
+                    return;
+                }
+                cerrarModal();
+                mostrarToast('success', res.message || 'Recurso creado correctamente');
+                cargarYRenderizar();
+            })
+            .catch(function () {
+                _guardando = false;
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="ri-check-line"></i> Guardar en Moodle';
+                mostrarToast('error', 'Error de conexión al subir el recurso');
+            });
+            return;
+        }
 
         fetch(getApiBase() + '/' + getModuloId() + '/actividades/guardar', {
             method: 'POST',
@@ -1249,24 +1267,47 @@ var ActividadesEditor = (function () {
                 body.innerHTML = '<div class="disc-empty">Error al cargar discusiones.</div>';
                 return;
             }
-            var discs = data.discusiones || [];
-            if (discs.length === 0) {
-                body.innerHTML = '<div class="disc-empty"><i class="ri-inbox-line" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;opacity:0.4;"></i>No hay discusiones en este foro.</div>';
+
+            var html = '';
+            if (data.descripcion && data.descripcion.trim().length > 0) {
+                html += '<div class="foro-descripcion" style="padding:0.75rem 1rem;margin-bottom:1rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;font-size:0.85rem;color:#334155;line-height:1.6;">' + data.descripcion + '</div>';
+            }
+
+            var posts = data.posts || [];
+            if (posts.length === 0) {
+                html += '<div class="disc-empty"><i class="ri-inbox-line" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;opacity:0.4;"></i>No hay respuestas de estudiantes en este foro.</div>';
+                body.innerHTML = html;
                 return;
             }
-            body.innerHTML = discs.map(function (d) {
-                return '<div class="disc-item">' +
-                    '<div class="disc-item-name">' + escHtml(d.name || d.subject || 'Sin título') + '</div>' +
-                    '<div class="disc-item-meta">' +
-                        (d.userfullname ? escHtml(d.userfullname) + ' · ' : '') +
-                        (d.created ? new Date(d.created * 1000).toLocaleString('es-BO') : '') +
-                        ' · ' + (d.numreplies || 0) + ' respuesta' + ((d.numreplies || 0) !== 1 ? 's' : '') +
-                    '</div>' +
-                    '<div class="disc-item-actions" style="margin-top:6px;">' +
-                        '<button class="btn-act-link" onclick="ActividadesEditor.verPosts(' + modId + ', ' + forumId + ', ' + d.id + ', \'' + escHtml(d.name || d.subject || '') + '\')"><i class="ri-chat-1-line"></i> Ver respuestas</button>' +
-                    '</div>' +
-                '</div>';
-            }).join('');
+
+            var grupos = {};
+            posts.forEach(function (p) {
+                var g = p.discussion_id || 0;
+                if (!grupos[g]) grupos[g] = { name: p.discussion_name || 'Discusi\u00f3n', posts: [] };
+                grupos[g].posts.push(p);
+            });
+
+            html += '<div style="font-size:0.78rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.75rem;"><i class="ri-chat-1-line"></i> Respuestas de estudiantes</div>';
+
+            Object.keys(grupos).forEach(function (dg) {
+                var grp = grupos[dg];
+                html += '<div style="margin-bottom:1rem;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">';
+                html += '<div style="padding:0.5rem 0.75rem;background:#f1f5f9;font-size:0.8rem;font-weight:700;color:#1e293b;border-bottom:1px solid #e2e8f0;"><i class="ri-discuss-line"></i> ' + escHtml(grp.name) + '</div>';
+                grp.posts.forEach(function (p) {
+                    var isFirst = p.parent === '0' || !p.parent;
+                    html += '<div style="padding:0.6rem 0.75rem;border-bottom:1px solid #f1f5f9;' + (isFirst ? 'background:#fff;' : 'background:#fafafa;margin-left:1.25rem;border-left:2px solid #e2e8f0;') + '">' +
+                        '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">' +
+                            '<span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.7rem;flex-shrink:0;">' + escHtml((p.author || 'D').charAt(0).toUpperCase()) + '</span>' +
+                            '<strong style="font-size:0.8rem;color:#1e293b;">' + escHtml(p.author) + '</strong>' +
+                            '<span style="font-size:0.7rem;color:#94a3b8;">' + (p.created ? new Date(p.created * 1000).toLocaleString('es-BO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '') + '</span>' +
+                        '</div>' +
+                        '<div style="font-size:0.82rem;color:#334155;line-height:1.5;padding-left:2rem;">' + p.message + '</div>' +
+                    '</div>';
+                });
+                html += '</div>';
+            });
+
+            body.innerHTML = html;
         })
         .catch(function () {
             document.getElementById('discModalBody').innerHTML = '<div class="disc-empty">Error de conexión.</div>';
@@ -1749,22 +1790,22 @@ var ActividadesEditor = (function () {
         var modal = document.getElementById('modalQuizResultados');
         if (!modal) return;
         document.getElementById('quizResultadosNombre').textContent = nombre;
-        document.getElementById('quizLoading').classList.remove('d-none');
-        document.getElementById('quizContent').classList.add('d-none');
-        document.getElementById('quizAttemptDetail').classList.add('d-none');
-        document.getElementById('quizError').classList.add('d-none');
+        document.getElementById('quizLoading').style.display = 'block';
+        document.getElementById('quizContent').style.display = 'none';
+        document.getElementById('quizAttemptDetail').style.display = 'none';
+        document.getElementById('quizError').style.display = 'none';
         modal.style.display = 'flex';
 
         fetch(getApiBase() + '/' + moduloId + '/actividades/quiz/' + quizId + '/resultados')
             .then(function (r) { return r.json(); })
             .then(function (data) {
-                document.getElementById('quizLoading').classList.add('d-none');
+                document.getElementById('quizLoading').style.display = 'none';
                 if (!data.success) throw new Error(data.message);
-                var tbody = document.getElementById('quizTableBody');
-                tbody.innerHTML = '';
-                if (data.attempts.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Sin intentos aun.</td></tr>';
-                    document.getElementById('quizContent').classList.remove('d-none');
+                var container = document.getElementById('quizCardsContainer');
+                container.innerHTML = '';
+                if (!data.attempts || data.attempts.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;padding:2rem;color:#94a3b8;"><i class="ri-inbox-line" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;opacity:0.4;"></i>Sin intentos aun.</div>';
+                    document.getElementById('quizContent').style.display = 'block';
                     return;
                 }
                 data.attempts.forEach(function (a) {
@@ -1772,53 +1813,117 @@ var ActividadesEditor = (function () {
                         : a.state === 'inprogress' ? 'En progreso'
                         : a.state === 'overdue' ? 'Vencido'
                         : a.state;
+                    var stateIcon = a.state === 'finished' ? 'ri-checkbox-circle-line'
+                        : a.state === 'inprogress' ? 'ri-timer-flash-line'
+                        : a.state === 'overdue' ? 'ri-time-warning-line'
+                        : 'ri-question-line';
+                    var stateColor = a.state === 'finished' ? '#15803d'
+                        : a.state === 'inprogress' ? '#d97706'
+                        : a.state === 'overdue' ? '#dc2626'
+                        : '#64748b';
+                    var stateBg = a.state === 'finished' ? 'rgba(22,163,74,.12)'
+                        : a.state === 'inprogress' ? 'rgba(217,119,6,.12)'
+                        : a.state === 'overdue' ? 'rgba(220,38,38,.12)'
+                        : 'rgba(100,116,139,.1)';
                     var score = a.grade !== null ? a.grade : '-';
-                    tbody.innerHTML +=
-                        '<tr>' +
-                            '<td><strong>' + escHtml(a.user_name || 'Usuario #' + a.userid) + '</strong></td>' +
-                            '<td>' + a.attempt + '</td>' +
-                            '<td>' + stateText + '</td>' +
-                            '<td>' + score + ' / ' + (a.grade_max || 100) + '</td>' +
-                            '<td><button class="btn btn-sm btn-outline-info" onclick="ActividadesEditor.verDetalleIntento(' + moduloId + ', ' + quizId + ', ' + a.id + ')">Ver detalle</button></td>' +
-                        '</tr>';
+                    var maxScore = a.grade_max || 100;
+                    var pct = a.grade !== null ? Math.round((a.grade / maxScore) * 100) : 0;
+                    var barColor = pct >= 80 ? '#16a34a' : pct >= 50 ? '#d97706' : '#dc2626';
+                    var barBg = pct >= 80 ? 'rgba(22,163,74,.15)' : pct >= 50 ? 'rgba(217,119,6,.15)' : 'rgba(220,38,38,.15)';
+                    var initial = (a.user_name || 'U').charAt(0).toUpperCase();
+                    container.innerHTML +=
+                        '<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:0.85rem 1rem;margin-bottom:0.6rem;transition:box-shadow .15s;" onmouseover="this.style.boxShadow=\'0 2px 12px rgba(0,0,0,.07)\'" onmouseout="this.style.boxShadow=\'none\'">' +
+                            '<div style="display:flex;align-items:center;gap:0.85rem;flex-wrap:wrap;">' +
+                                '<div style="display:flex;align-items:center;gap:0.6rem;flex:1;min-width:160px;">' +
+                                    '<span style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#d97706,#b45309);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.85rem;flex-shrink:0;">' + escHtml(initial) + '</span>' +
+                                    '<div><div style="font-size:0.87rem;font-weight:700;color:#1e293b;">' + escHtml(a.user_name || 'Usuario #' + a.userid) + '</div></div>' +
+                                '</div>' +
+                                '<div style="flex:1;min-width:120px;">' +
+                                    '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.22rem 0.65rem;border-radius:20px;background:' + stateBg + ';color:' + stateColor + ';font-size:0.78rem;font-weight:600;"><i class="' + stateIcon + '"></i> ' + stateText + '</span>' +
+                                    '<span style="display:inline-flex;align-items:center;gap:0.3rem;margin-left:0.4rem;padding:0.22rem 0.65rem;border-radius:20px;background:#eff6ff;color:#1d4ed8;font-size:0.78rem;font-weight:600;"><i class="ri-stack-line"></i> Intento ' + a.attempt + '</span>' +
+                                '</div>' +
+                                '<div style="min-width:180px;flex:1;">' +
+                                    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.2rem;">' +
+                                        '<span style="font-size:0.75rem;font-weight:600;color:#64748b;">Calificaci\u00f3n</span>' +
+                                        '<span style="font-size:0.82rem;font-weight:700;color:' + barColor + ';">' + score + ' / ' + maxScore + '</span>' +
+                                    '</div>' +
+                                    '<div style="height:6px;background:' + barBg + ';border-radius:3px;overflow:hidden;">' +
+                                        '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:3px;transition:width .3s;"></div>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div style="display:flex;align-items:center;">' +
+                                    '<button onclick="ActividadesEditor.verDetalleIntento(' + moduloId + ', ' + quizId + ', ' + a.id + ', \'' + escHtml(a.user_name || '') + '\')" style="padding:0.4rem 0.9rem;border-radius:8px;font-size:0.78rem;font-weight:700;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:0.3rem;transition:opacity .15s;" onmouseover="this.style.opacity=\'.85\'" onmouseout="this.style.opacity=\'1\'"><i class="ri-eye-line"></i> Detalle</button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
                 });
-                document.getElementById('quizContent').classList.remove('d-none');
+                document.getElementById('quizContent').style.display = 'block';
             })
             .catch(function (err) {
-                document.getElementById('quizLoading').classList.add('d-none');
+                document.getElementById('quizLoading').style.display = 'none';
                 document.getElementById('quizErrorText').textContent = err.message || 'Error al cargar resultados.';
-                document.getElementById('quizError').classList.remove('d-none');
+                document.getElementById('quizError').style.display = 'block';
             });
     }
 
-    function verDetalleIntento(moduloId, quizId, attemptId) {
+    function verDetalleIntento(moduloId, quizId, attemptId, userName) {
         var container = document.getElementById('quizQuestionsContainer');
-        container.innerHTML = '<div class="text-center py-2"><div class="spinner-border spinner-border-sm"></div> Cargando...</div>';
-        document.getElementById('quizAttemptDetail').classList.remove('d-none');
+        document.getElementById('quizDetailNombre').textContent = userName ? 'Intento de ' + userName : 'Detalle del intento';
+        container.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#64748b;"><i class="ri-loader-4-line" style="font-size:1.2rem;animation:spin 1s linear infinite;"></i><p style="margin-top:.3rem;font-size:0.8rem;">Cargando detalle...</p></div>';
+        document.getElementById('quizContent').style.display = 'none';
+        document.getElementById('quizAttemptDetail').style.display = 'block';
 
         fetch(getApiBase() + '/' + moduloId + '/actividades/quiz/' + quizId + '/resultados/' + attemptId)
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 if (!data.success) throw new Error(data.message);
                 container.innerHTML = '';
+                if (!data.questions || data.questions.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#94a3b8;">No hay preguntas disponibles.</div>';
+                    return;
+                }
+                var qIdx = 0;
                 data.questions.forEach(function (q) {
-                    var pct = (q.fraction * 100).toFixed(0);
-                    var badgeClass = q.fraction >= 1 ? 'bg-success' : q.fraction > 0 ? 'bg-warning text-dark' : 'bg-danger';
+                    qIdx++;
+                    var pct = q.fraction !== null && q.fraction !== undefined ? Math.round(q.fraction * 100) : 0;
+                    var isCorrect = q.fraction >= 1;
+                    var isPartial = q.fraction > 0 && q.fraction < 1;
+                    var isWrong = q.fraction <= 0;
+                    var icon = isCorrect ? 'ri-checkbox-circle-line' : isPartial ? 'ri-indeterminate-circle-line' : 'ri-close-circle-line';
+                    var iconColor = isCorrect ? '#16a34a' : isPartial ? '#d97706' : '#dc2626';
+                    var borderColor = isCorrect ? '#bbf7d0' : isPartial ? '#fde68a' : '#fecaca';
+                    var bgColor = isCorrect ? 'rgba(22,163,74,.05)' : isPartial ? 'rgba(217,119,6,.05)' : 'rgba(220,38,38,.05)';
                     container.innerHTML +=
-                        '<div class="card mb-2">' +
-                            '<div class="card-body py-2">' +
-                                '<small class="text-muted">Pregunta ' + q.questionnumber + '</small>' +
-                                '<div class="mt-1">' + (q.questiontext || '') + '</div>' +
-                                '<div class="mt-1"><strong>Respuesta:</strong> ' + (q.response || '(sin respuesta)') + '</div>' +
-                                (q.rightanswer ? '<div class="mt-1"><strong>Correcta:</strong> ' + q.rightanswer + '</div>' : '') +
-                                '<div class="mt-1"><span class="badge ' + badgeClass + '">' + pct + '%</span></div>' +
+                        '<div style="background:#fff;border:1.5px solid ' + borderColor + ';border-radius:10px;margin-bottom:0.6rem;overflow:hidden;">' +
+                            '<div style="display:flex;align-items:flex-start;gap:0.6rem;padding:0.7rem 0.85rem;background:' + bgColor + ';">' +
+                                '<i class="' + icon + '" style="font-size:1.1rem;color:' + iconColor + ';margin-top:0.1rem;flex-shrink:0;"></i>' +
+                                '<div style="flex:1;min-width:0;">' +
+                                    '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;margin-bottom:0.25rem;">' +
+                                        '<span style="font-size:0.72rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.03em;">Pregunta ' + (q.questionnumber || qIdx) + '</span>' +
+                                        '<span style="font-size:0.78rem;font-weight:700;color:' + iconColor + ';">' + pct + '%</span>' +
+                                    '</div>' +
+                                    '<div style="font-size:0.85rem;color:#1e293b;line-height:1.5;margin-bottom:0.4rem;">' + (q.questiontext || '') + '</div>' +
+                                    '<div style="display:flex;flex-wrap:wrap;gap:0.4rem;">' +
+                                        '<div style="flex:1;min-width:140px;padding:0.35rem 0.55rem;background:#f8fafc;border-radius:6px;font-size:0.78rem;">' +
+                                            '<span style="font-weight:600;color:#475569;">Respuesta:</span> ' + (q.response || '<span style="color:#94a3b8;">(sin respuesta)</span>') +
+                                        '</div>' +
+                                        (q.rightanswer ? '<div style="flex:1;min-width:140px;padding:0.35rem 0.55rem;background:rgba(22,163,74,.06);border-radius:6px;font-size:0.78rem;">' +
+                                            '<span style="font-weight:600;color:#16a34a;">Correcta:</span> ' + q.rightanswer +
+                                        '</div>' : '') +
+                                    '</div>' +
+                                '</div>' +
                             '</div>' +
                         '</div>';
                 });
             })
             .catch(function (err) {
-                container.innerHTML = '<div class="alert alert-danger">' + (err.message || 'Error al cargar detalle.') + '</div>';
+                container.innerHTML = '<div style="padding:0.75rem 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#dc2626;font-size:0.85rem;">' + (err.message || 'Error al cargar detalle.') + '</div>';
             });
+    }
+
+    function cerrarDetalleIntento() {
+        document.getElementById('quizAttemptDetail').style.display = 'none';
+        document.getElementById('quizContent').style.display = 'block';
     }
 
     function cerrarModalQuiz() {
@@ -1841,7 +1946,6 @@ var ActividadesEditor = (function () {
         var modal = document.getElementById('modalPreguntasQuiz');
         if (modal) modal.classList.add('open');
 
-        console.log('Fetching preguntas for quiz', quizId, 'in modulo', moduloId);
         fetch(getApiBase() + '/' + moduloId + '/actividades/quiz/' + quizId + '/preguntas')
             .then(function (r) { return r.json(); })
             .then(function (data) {

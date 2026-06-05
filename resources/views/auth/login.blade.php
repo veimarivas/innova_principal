@@ -1,6 +1,6 @@
 @extends('layouts.master-without-nav')
 @section('title')
-    @lang('translation.signin')
+    InnovaCiencia Virtual
 @endsection
 
 @section('body')
@@ -1007,12 +1007,12 @@
 
                         <div class="form-field">
                             <label for="username" class="form-label-custom">
-                                Usuario o correo <span class="required">*</span>
+                                Usuario <span class="required">*</span>
                             </label>
                             <div class="input-wrapper">
                                 <input type="text" class="form-input-custom @error('email') is-invalid @enderror"
-                                    value="{{ old('email', 'admin@innova.com') }}" id="username" name="email"
-                                    placeholder="usuario o tu@correo.com" autocomplete="username">
+                                    value="{{ old('email') }}" id="username" name="email"
+                                    placeholder="Tu usuario" autocomplete="username">
                                 <i class="ri-user-line input-icon"></i>
                             </div>
                             @error('email')
@@ -1029,7 +1029,7 @@
                             <div class="input-wrapper">
                                 <input type="password"
                                     class="form-input-custom form-input-password @error('password') is-invalid @enderror"
-                                    name="password" placeholder="Tu contraseña" id="password-input" value="admin123"
+                                    name="password" placeholder="Tu contraseña" id="password-input"
                                     autocomplete="current-password">
                                 <i class="ri-lock-line input-icon"></i>
                                 <button type="button" class="password-toggle" id="password-addon"

@@ -1865,6 +1865,8 @@
     .btn-act-delete:hover { background: #dc2626; color: #fff; }
     .btn-act-grade { background: rgba(217,119,6,.1); color: #b45309; }
     .btn-act-grade:hover { background: #d97706; color: #fff; }
+    .btn-act-download { background: rgba(37,99,235,.1); color: #2563eb; text-decoration: none; }
+    .btn-act-download:hover { background: #2563eb; color: #fff; }
     .btn-act-quiz { background: rgba(124,58,237,.1); color: #6d28d9; }
     .btn-act-quiz:hover { background: #7c3aed; color: #fff; }
     .btn-act-resource { background: rgba(14,165,233,.1); color: #0284c7; text-decoration: none; }

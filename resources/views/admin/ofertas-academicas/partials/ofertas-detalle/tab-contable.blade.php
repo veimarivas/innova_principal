@@ -16,7 +16,7 @@
 
     {{-- Empty state --}}
     <div id="contableEmptyState" class="ins-state-box" style="display:none;">
-        <div class="ins-empty-icon" style="color:#6366f1;background:rgba(99,102,241,.08);">
+        <div class="ins-empty-icon" style="color:var(--brand-color);background:rgba(var(--brand-color-rgb),.08);">
             <i class="ri-receipt-line"></i>
         </div>
         <p class="ins-state-text fw-semibold" style="color:#334155;">No hay configuraciones de precio registradas</p>

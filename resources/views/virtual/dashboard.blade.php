@@ -14,28 +14,33 @@
 @section('css')
     @include('virtual.partials.styles')
     <style>
-    .quiz-pregunta-html .qtext { font-size:.85rem; color:#334155; margin-bottom:.75rem; line-height:1.65; }
-    .quiz-pregunta-html .ablock .answer { display:flex; flex-direction:column; gap:.35rem; }
+    .quiz-pregunta-html .qtext { font-size:.85rem; color:#1e293b; margin-bottom:.85rem; line-height:1.7; }
+    .quiz-pregunta-html .ablock .answer { display:flex; flex-direction:column; gap:.4rem; }
     .quiz-pregunta-html .ablock .answer .r0,
-    .quiz-pregunta-html .ablock .answer .r1 { padding:.5rem .65rem; border-radius:8px; display:flex; align-items:center; gap:.55rem; font-size:.85rem; transition:background .15s; cursor:pointer; }
-    .quiz-pregunta-html .ablock .answer .r0 { background:#f8fafc; }
-    .quiz-pregunta-html .ablock .answer .r1 { background:#f1f5f9; }
+    .quiz-pregunta-html .ablock .answer .r1 { padding:.55rem .75rem; border-radius:10px; display:flex; align-items:center; gap:.65rem; font-size:.85rem; transition:all .15s; cursor:pointer; border:1px solid transparent; }
+    .quiz-pregunta-html .ablock .answer .r0 { background:#f8fafc; border-color:#eef2f6; }
+    .quiz-pregunta-html .ablock .answer .r1 { background:#f1f5f9; border-color:#e2e8f0; }
     .quiz-pregunta-html .ablock .answer .r0:hover,
-    .quiz-pregunta-html .ablock .answer .r1:hover { background:#e2e8f0; }
+    .quiz-pregunta-html .ablock .answer .r1:hover { background:#fff; border-color:#fc7b04; box-shadow:0 0 0 3px rgba(252,123,4,.08); }
+    .quiz-pregunta-html .ablock .answer .r0 input[type="radio"]:checked ~ label,
+    .quiz-pregunta-html .ablock .answer .r1 input[type="radio"]:checked ~ label,
+    .quiz-pregunta-html .ablock .answer .r0 input[type="checkbox"]:checked ~ label,
+    .quiz-pregunta-html .ablock .answer .r1 input[type="checkbox"]:checked ~ label { color:#fc7b04; }
     .quiz-pregunta-html .ablock .answer input[type="radio"],
-    .quiz-pregunta-html .ablock .answer input[type="checkbox"] { accent-color:#fc7b04; width:17px; height:17px; flex-shrink:0; cursor:pointer; }
+    .quiz-pregunta-html .ablock .answer input[type="checkbox"] { accent-color:#fc7b04; width:18px; height:18px; flex-shrink:0; cursor:pointer; }
     .quiz-pregunta-html .ablock .answer label { cursor:pointer; flex:1; font-weight:500; color:#1e293b; }
     .quiz-pregunta-html input[type="text"],
     .quiz-pregunta-html input[type="number"],
-    .quiz-pregunta-html textarea { width:100%; border:1.5px solid #d1d5db; border-radius:8px; padding:.55rem .7rem; font-size:.85rem; box-sizing:border-box; transition:border-color .2s,box-shadow .2s; }
+    .quiz-pregunta-html textarea { width:100%; border:1.5px solid #d1d5db; border-radius:10px; padding:.6rem .8rem; font-size:.85rem; box-sizing:border-box; transition:border-color .2s,box-shadow .2s; background:#fafbfc; }
     .quiz-pregunta-html input[type="text"]:focus,
     .quiz-pregunta-html input[type="number"]:focus,
-    .quiz-pregunta-html textarea:focus { outline:none; border-color:#fc7b04; box-shadow:0 0 0 3px rgba(252,123,4,.12); }
-    .quiz-pregunta-html select { border:1.5px solid #d1d5db; border-radius:8px; padding:.4rem .6rem; font-size:.85rem; background:#fff; cursor:pointer; }
-    .quiz-pregunta-html select:focus { outline:none; border-color:#fc7b04; box-shadow:0 0 0 3px rgba(252,123,4,.12); }
-    .quiz-pregunta:hover { border-color:#fc7b04 !important; box-shadow:0 2px 12px rgba(252,123,4,.08); }
+    .quiz-pregunta-html textarea:focus { outline:none; border-color:#fc7b04; box-shadow:0 0 0 3px rgba(252,123,4,.12); background:#fff; }
+    .quiz-pregunta-html select { border:1.5px solid #d1d5db; border-radius:10px; padding:.45rem .7rem; font-size:.85rem; background:#fafbfc; cursor:pointer; }
+    .quiz-pregunta-html select:focus { outline:none; border-color:#fc7b04; box-shadow:0 0 0 3px rgba(252,123,4,.12); background:#fff; }
+    .quiz-pregunta { transition:border-color .2s,box-shadow .2s,transform .15s; }
+    .quiz-pregunta:hover { border-color:#fc7b04 !important; box-shadow:0 4px 16px rgba(252,123,4,.1); transform:translateY(-1px); }
     .quiz-status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; background:#d1d5db; vertical-align:middle; flex-shrink:0; }
-    .quiz-status-dot.answered { background:#16a34a; }
+    .quiz-status-dot.answered { background:#16a34a; box-shadow:0 0 0 3px rgba(22,163,74,.2); }
 
     /* ── Postergado event style (cronograma estudiante) ── */
     .cronograma-calendar-wrapper .fc-event-postergado {
@@ -3262,10 +3267,20 @@
 
             /* ── Moodle SSO helper ─────────────────────────────────── */
             function openMoodleSso(targetUrl) {
-                window.open('/estudiante/moodle-sso?target=' + encodeURIComponent(targetUrl), '_blank');
+                window.open('/virtual/moodle-sso?target=' + encodeURIComponent(targetUrl), '_blank');
             }
 
             /* ── Actividades (tab académico) ───────────────────────── */
+            // Recargar el panel de actividades de un módulo (usado tras entregar/subir archivo)
+            window.recargarActividadesModulo = function(moduloId) {
+                $.get('/virtual/actividades/' + moduloId)
+                    .done(function(r) {
+                        if (!r.success) return;
+                        renderActividades(moduloId, r.contenidos, r.calificaciones, r.entregas || {}, r.archivos_subidos || {}, r.foros_participacion || {}, r.tareas_fechas || {}, r.cuestionarios || [], r.foros || [], r.tareas || [], r.urls_by_cmid || {});
+                        loaded[moduloId] = true;
+                    });
+            };
+
             $(document).on('click', '.btn-ver-actividades', function() {
                 const moduloId = $(this).data('modulo');
                 const panelId = $(this).data('panel');
@@ -3290,7 +3305,7 @@
                             return;
                         }
                         console.log('[Moodle actividades] módulo=' + moduloId, r.contenidos);
-                        renderActividades(moduloId, r.contenidos, r.calificaciones, r.entregas || {}, r.archivos_subidos || {}, r.foros_participacion || {}, r.tareas_fechas || {}, r.cuestionarios || [], r.foros || []);
+                        renderActividades(moduloId, r.contenidos, r.calificaciones, r.entregas || {}, r.archivos_subidos || {}, r.foros_participacion || {}, r.tareas_fechas || {}, r.cuestionarios || [], r.foros || [], r.tareas || [], r.urls_by_cmid || {});
                         loaded[moduloId] = true;
                     })
                     .fail(function() {
@@ -3301,7 +3316,7 @@
                     });
             });
 
-            function renderActividades(moduloId, contenidos, calificaciones, entregas, archivosSubidos, forosParticipacion, tareasFechas, cuestionarios, forosData) {
+            function renderActividades(moduloId, contenidos, calificaciones, entregas, archivosSubidos, forosParticipacion, tareasFechas, cuestionarios, forosData, tareasData, urlsByCmid) {
                 const gradeMap = {};
                 if (calificaciones && Array.isArray(calificaciones)) {
                     calificaciones.forEach(function(item) {
@@ -3323,6 +3338,12 @@
                 (forosData || []).forEach(function(f) {
                     if (f.id)   forosMap[f.id]   = f;
                     if (f.cmid) forosByCmid[f.cmid] = f;
+                });
+                const tareasMap = {}, tareasByCmid = {};
+                (tareasData || []).forEach(function(t) {
+                    if (t.id)            tareasMap[t.id]              = t;
+                    if (t.cmid)          tareasByCmid[t.cmid]          = t;
+                    if (t.coursemodule)  tareasByCmid[t.coursemodule]  = t;
                 });
                 let html = '';
                 if (!contenidos || contenidos.length === 0) {
@@ -3346,10 +3367,6 @@
                                 return;
                             }
                             
-                            // Mostrar contenido de otras actividades si existe
-                            if (mod.description) {
-                                html += '<div class="est-mod-descripcion">' + mod.description + '</div>';
-                            }
                             
                             const grade = gradeMap[mod.id];
                             const nota = grade ? grade.gradeformatted : null;
@@ -3378,10 +3395,16 @@
                             } else {
                                 badge = '<span class="est-nota-badge pendiente">Pendiente</span>';
                             }
-                            const url = mod.url ?
-                                '<a href="#" class="moodle-link" data-target="' + escHtml(mod.url) +
-                                '" style="font-size:.72rem;color:#fc7b04;margin-left:.5rem;"><i class="ri-external-link-line"></i></a>' :
-                                '';
+                            const url = (function() {
+                                if (mod.modname === 'url') {
+                                    var eu = (urlsByCmid || {})[mod.id] || mod.externalurl || '';
+                                    if (eu && !/^https?:\/\//i.test(eu)) eu = 'https://' + eu;
+                                    if (eu) return '<a href="' + escHtml(eu) + '" target="_blank" rel="noopener noreferrer" style="font-size:.72rem;color:#10b981;margin-left:.5rem;" title="Abrir enlace"><i class="ri-external-link-line"></i></a>';
+                                }
+                                return mod.url
+                                    ? '<a href="#" class="moodle-link" data-target="' + escHtml(mod.url) + '" style="font-size:.72rem;color:#fc7b04;margin-left:.5rem;"><i class="ri-external-link-line"></i></a>'
+                                    : '';
+                            })();
                             // Fechas de actividad — misma lógica que modulo-detalle admin
                             let fechasHtml = '';
                             const now = Math.floor(Date.now() / 1000);
@@ -3418,13 +3441,8 @@
                                 // Fuente primaria: forosMap
                                 const foro = forosMap[mod.instance] || forosByCmid[mod.id];
                                 if (foro) {
-                                    tsInicio = foro.timeopen || foro.duedate || null;
-                                    tsFin    = foro.duedate  || foro.timeopen || null;
-                                    // Si timeopen y duedate son distintos, usar timeopen como inicio y duedate como vencimiento
-                                    if (foro.timeopen && foro.duedate && foro.timeopen !== foro.duedate) {
-                                        tsInicio = foro.timeopen;
-                                        tsFin    = foro.duedate;
-                                    }
+                                    tsInicio = foro.timeopen || null;
+                                    tsFin    = foro.timeclose || foro.cutoffdate || foro.duedate || null;
                                 }
                                 // Fallback: activity_dates
                                 if (!tsInicio && !tsFin) {
@@ -3491,6 +3509,54 @@
                                 if (chips) fechasHtml = '<div class="act-dates-row">' + chips + '</div>';
                             }
 
+                            // Descripción inline + archivo adjunto (como admin)
+                            let descInline = '';
+                            if (mod.modname === 'assign' || mod.modname === 'forum') {
+                                if (mod.description && String(mod.description).trim() !== '') {
+                                    descInline += '<div style="margin:4px 0 0 0;padding:0.4rem 0;font-size:0.82rem;color:#374151;line-height:1.5;">' + mod.description + '</div>';
+                                }
+                                // Download link for assign/forum
+                                let hasFile = false;
+                                let adjUrl = '';
+                                if (mod.modname === 'assign') {
+                                    const tInfo = tareasMap[mod.instance] || tareasByCmid[mod.id];
+                                    hasFile = mod.has_intro_file === true || (tInfo && (
+                                        (Array.isArray(tInfo.introfiles) && tInfo.introfiles.length > 0) ||
+                                        parseInt(tInfo.introattachments || 0) > 0
+                                    ));
+                                    adjUrl = '/virtual/modulo/' + moduloId + '/actividad/tarea/' + mod.id + '/adjunto';
+                                } else {
+                                    const fInfo = forosMap[mod.instance] || forosByCmid[mod.id];
+                                    hasFile = mod.has_intro_file === true || (fInfo && Array.isArray(fInfo.introfiles) && fInfo.introfiles.length > 0);
+                                    adjUrl = '/virtual/modulo/' + moduloId + '/actividad/foro/' + mod.id + '/adjunto';
+                                }
+                                if (hasFile) {
+                                    descInline += '<div style="margin-top:6px;"><a href="' + adjUrl + '" target="_blank" style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.65rem;font-size:0.75rem;font-weight:600;border-radius:5px;background:rgba(37,99,235,.1);color:#2563eb;text-decoration:none;cursor:pointer;"><i class="ri-download-2-line"></i> Descargar archivo</a></div>';
+                                }
+                            }
+
+                            // Botones de material/recurso (no dependen de fechas)
+                            let btnMaterial = '';
+                            if (mod.modname === 'resource') {
+                                const recursoUrl = '/virtual/modulo/' + moduloId + '/actividad/recurso/' + mod.id;
+                                btnMaterial =
+                                    '<a href="' + recursoUrl + '" target="_blank" rel="noopener noreferrer"' +
+                                    ' style="margin-left:auto;background:#0ea5e9;color:#fff;border:none;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;">' +
+                                    '<i class="ri-eye-line"></i> Visualizar</a>' +
+                                    '<a href="' + recursoUrl + '?download=1"' +
+                                    ' style="background:#16a34a;color:#fff;border:none;border-radius:6px;padding:.3rem .7rem;font-size:.72rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;">' +
+                                    '<i class="ri-download-2-line"></i> Descargar</a>';
+                            } else if (mod.modname === 'url') {
+                                let rawUrl = (urlsByCmid || {})[mod.id] || mod.externalurl || '';
+                                if (rawUrl && !/^https?:\/\//i.test(rawUrl)) rawUrl = 'https://' + rawUrl;
+                                if (rawUrl) {
+                                    btnMaterial =
+                                        '<a href="' + escHtml(rawUrl) + '" target="_blank" rel="noopener noreferrer"' +
+                                        ' style="margin-left:auto;background:#10b981;color:#fff;border:none;border-radius:6px;padding:.3rem .75rem;font-size:.72rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;">' +
+                                        '<i class="ri-external-link-line"></i> Abrir enlace</a>';
+                                }
+                            }
+
                             let btnRealizar = '';
                             if (['assign', 'quiz', 'forum'].includes(mod.modname) && dentroDeFecha) {
                                 const iconBtn = mod.modname === 'assign' ? 'ri-upload-2-line'
@@ -3543,9 +3609,10 @@
                                 '<div class="est-act-item-name">' +
                                     icono + ' ' + escHtml(mod.name) + url +
                                     '<small>' + etiquetaModulo(mod.modname) + '</small>' +
+                                    (descInline ? '<div class="est-act-item-desc">' + descInline + '</div>' : '') +
                                 '</div>' +
                                 (fechasHtml ? '<div class="est-act-item-dates">' + fechasHtml + '</div>' : '<div class="est-act-item-dates"></div>') +
-                                '<div class="est-act-item-actions">' + badge + btnRealizar + '</div>' +
+                                '<div class="est-act-item-actions">' + badge + btnMaterial + btnRealizar + '</div>' +
                                 (infoVencidaHtml ? '<div class="est-act-item-dates" style="padding-top:.25rem;">' + infoVencidaHtml + '</div>' : '') +
                                 '</div>';
                         });
@@ -4125,12 +4192,15 @@
                     '<div><div style="font-weight:600;font-size:.85rem;color:#166534;">Entrega registrada</div>' +
                     '<div style="font-size:.75rem;color:#6c757d;">Última modificación: ' + fmtTs(sub.timemodified) + '</div></div></div>';
 
-                // Mostrar calificación si existe
-                if (assign.grade !== null && assign.grade !== undefined) {
+                // Mostrar calificación si existe (Moodle usa -1 cuando aún no se ha calificado)
+                var gradeNum = (assign.grade !== null && assign.grade !== undefined && assign.grade !== '') ? parseFloat(assign.grade) : NaN;
+                var yaCalificado = !isNaN(gradeNum) && gradeNum >= 0;
+                if (yaCalificado) {
+                    var gradeMaxStr = (assign.grademax && parseFloat(assign.grademax) > 0) ? (' / ' + assign.grademax) : '';
                     statusHtml += '<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding:.75rem 1rem;background:#f0fdf4;border-radius:8px;border-left:3px solid #16a34a;">' +
                         '<i class="ri-award-line" style="color:#16a34a;font-size:1.1rem;"></i>' +
                         '<div><div style="font-weight:600;font-size:.85rem;color:#166534;">Calificación</div>' +
-                        '<div style="font-size:.85rem;font-weight:700;color:#16a34a;">' + assign.grade + '</div></div></div>';
+                        '<div style="font-size:.85rem;font-weight:700;color:#16a34a;">' + gradeNum + gradeMaxStr + '</div></div></div>';
                 } else {
                     statusHtml += '<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding:.75rem 1rem;background:#f8f9fa;border-radius:8px;border-left:3px solid #6c757d;">' +
                         '<i class="ri-hourglass-line" style="color:#6c757d;font-size:1.1rem;"></i>' +
@@ -4215,10 +4285,12 @@
             .done(function(r) {
                 btn.disabled = false;
                 if (r.success) {
-                    btn.innerHTML = '<i class="ri-check-line"></i> Guardado';
-                    btn.style.background = '#16a34a';
-                    estMostrarToast('success', r.message);
-                    setTimeout(function() { location.reload(); }, 800);
+                    estMostrarToast('success', r.message || 'Tarea entregada correctamente.');
+                    // Cerrar modal inmediatamente y actualizar el panel de actividades
+                    cerrarModalAct();
+                    if (typeof window.recargarActividadesModulo === 'function') {
+                        window.recargarActividadesModulo(moduloId);
+                    }
                 } else {
                     btn.innerHTML = '<i class="ri-send-plane-line"></i> ' + (esActualizacion ? 'Guardar cambios' : 'Entregar ahora');
                     estMostrarToast('error', r.message || 'Error al entregar.');
@@ -4250,8 +4322,10 @@
             .done(function(r) {
                 if (r.success) {
                     document.getElementById('tarea-file-name').textContent = '✓ ' + file.name + ' adjuntado.';
-                    estMostrarToast('success', r.message);
-                    setTimeout(function() { cargarTarea(cmid, moduloId); }, 800);
+                    estMostrarToast('success', r.message || 'Archivo adjuntado correctamente.');
+                    // Mantener el modal abierto y refrescar su contenido para mostrar el archivo cargado.
+                    // El cierre + actualización del panel de actividades ocurre al pulsar "Guardar cambios".
+                    cargarTarea(cmid, moduloId);
                 } else {
                     document.getElementById('tarea-file-name').textContent = '';
                     estMostrarToast('error', r.message || 'No se pudo adjuntar el archivo.');
@@ -4292,13 +4366,35 @@
             $.get('/virtual/modulo/' + moduloId + '/actividad/foro/' + cmid)
             .done(function(r) {
                 if (!r.success) { actSetBody(actErrHtml(r.message)); return; }
-                renderForoLista(r.data, cmid, moduloId);
+                renderForoLista(r.data, cmid, moduloId, r.forum || null);
             })
             .fail(function() { actSetBody(actErrHtml('No se pudo cargar el foro.')); });
         }
 
-        function renderForoLista(discusiones, cmid, moduloId) {
-            var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">' +
+        function renderForoLista(discusiones, cmid, moduloId, forumInfo) {
+            var html = '';
+
+            // Cabecera con descripción del foro y archivo adjunto (si existen)
+            if (forumInfo) {
+                if (forumInfo.intro && String(forumInfo.intro).trim() !== '') {
+                    html += '<div style="background:#f8fafc;border-left:3px solid #8b5cf6;border-radius:6px;padding:.65rem .85rem;margin-bottom:.85rem;font-size:.85rem;color:#374151;line-height:1.45;">' +
+                        '<div style="font-size:.72rem;font-weight:700;color:#6d28d9;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem;"><i class="ri-information-line"></i> Descripción del foro</div>' +
+                        forumInfo.intro + '</div>';
+                }
+                if (forumInfo.has_intro_file) {
+                    var adjUrl = '/virtual/modulo/' + moduloId + '/actividad/foro/' + cmid + '/adjunto';
+                    html += '<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.85rem;flex-wrap:wrap;">' +
+                        '<a href="' + adjUrl + '" target="_blank" rel="noopener noreferrer"' +
+                        ' style="background:#0ea5e9;color:#fff;border-radius:6px;padding:.35rem .75rem;font-size:.78rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;">' +
+                        '<i class="ri-attachment-line"></i> Ver adjunto</a>' +
+                        '<a href="' + adjUrl + '?download=1"' +
+                        ' style="background:#16a34a;color:#fff;border-radius:6px;padding:.35rem .75rem;font-size:.78rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;">' +
+                        '<i class="ri-download-2-line"></i> Descargar</a>' +
+                        '</div>';
+                }
+            }
+
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">' +
                 '<span style="font-size:.85rem;color:#6c757d;">' + discusiones.length + ' discusión(es)</span>' +
                 '<button onclick="mostrarFormNuevaDisc(' + cmid + ',' + moduloId + ')" ' +
                 'style="background:#fc7b04;color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;">' +
@@ -4495,58 +4591,64 @@
             var html = '';
 
             if (q.intro) {
-                html += '<div style="background:#f8f9fa;border-radius:12px;padding:1rem;margin-bottom:1rem;font-size:.85rem;color:#495057;line-height:1.6;">' + q.intro + '</div>';
+                html += '<div style="background:linear-gradient(135deg,#fef9ef,#fff7ed);border-left:4px solid #fc7b04;border-radius:12px;padding:1rem 1.15rem;margin-bottom:1.15rem;font-size:.85rem;color:#78350f;line-height:1.65;">' +
+                    '<div style="font-weight:600;font-size:.78rem;color:#d97706;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.35rem;"><i class="ri-information-line"></i> Acerca de este cuestionario</div>' + q.intro + '</div>';
             }
 
-            html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin-bottom:1.25rem;">';
-            html += infoCard('<i class="ri-time-line"></i>', 'Tiempo límite', fmtDur(q.timelimit));
-            html += infoCard('<i class="ri-repeat-line"></i>', 'Intentos permitidos', q.attempts === 0 ? 'Ilimitados' : q.attempts);
-            html += infoCard('<i class="ri-star-line"></i>', 'Calificación máx.', q.grade ? q.grade + ' pts' : '—');
-            if (q.timeopen) html += infoCard('<i class="ri-calendar-check-line"></i>', 'Disponible desde', fmtTs(q.timeopen));
-            if (q.timeclose) html += infoCard('<i class="ri-calendar-close-line"></i>', 'Cierra', fmtTs(q.timeclose));
+            html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:.75rem;margin-bottom:1.35rem;">';
+            html += infoCard('ri-time-line', 'Tiempo límite', fmtDur(q.timelimit));
+            html += infoCard('ri-repeat-line', 'Intentos permitidos', q.attempts === 0 ? 'Ilimitados' : q.attempts);
+            html += infoCard('ri-star-line', 'Calificación máx.', q.grade ? q.grade + ' pts' : '—');
+            if (q.timeopen) html += infoCard('ri-calendar-check-line', 'Disponible desde', fmtTs(q.timeopen));
+            if (q.timeclose) html += infoCard('ri-calendar-close-line', 'Cierra', fmtTs(q.timeclose));
             html += '</div>';
 
             if (attempts.length > 0) {
                 html += '<div style="margin-bottom:1.25rem;">';
-                html += '<div style="font-weight:600;font-size:.82rem;color:#64748b;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px;">Tus intentos</div>';
-                html += '<div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">';
-                html += '<table style="width:100%;border-collapse:collapse;font-size:.82rem;">';
-                html += '<thead><tr style="background:#f8fafc;">' +
-                    '<th style="padding:.55rem .85rem;text-align:left;color:#64748b;font-weight:600;">Intento</th>' +
-                    '<th style="padding:.55rem .85rem;text-align:left;color:#64748b;font-weight:600;">Inicio</th>' +
-                    '<th style="padding:.55rem .85rem;text-align:left;color:#64748b;font-weight:600;">Fin</th>' +
-                    '<th style="padding:.55rem .85rem;text-align:right;color:#64748b;font-weight:600;">Nota</th></tr></thead><tbody>';
+                html += '<div style="font-weight:700;font-size:.8rem;color:#475569;margin-bottom:.55rem;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:.45rem;"><i class="ri-history-line" style="font-size:1rem;"></i> Tus intentos <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#94a3b8;font-size:.75rem;">(' + attempts.length + ')</span></div>';
+                html += '<div style="border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">';
+                html += '<table style="width:100%;border-collapse:collapse;font-size:.8rem;">';
+                html += '<thead><tr style="background:#f1f5f9;">' +
+                    '<th style="padding:.6rem .9rem;text-align:left;color:#475569;font-weight:600;">Intento</th>' +
+                    '<th style="padding:.6rem .9rem;text-align:left;color:#475569;font-weight:600;">Inicio</th>' +
+                    '<th style="padding:.6rem .9rem;text-align:left;color:#475569;font-weight:600;">Fin</th>' +
+                    '<th style="padding:.6rem .9rem;text-align:right;color:#475569;font-weight:600;">Nota</th></tr></thead><tbody>';
                 attempts.forEach(function(a) {
-                    var passColor = a.passed ? '#16a34a' : '#dc2626';
-                    html += '<tr style="border-top:1px solid #f1f5f9;">' +
-                        '<td style="padding:.55rem .85rem;font-weight:600;">#' + a.attempt + '</td>' +
-                        '<td style="padding:.55rem .85rem;">' + fmtTs(a.timestart) + '</td>' +
-                        '<td style="padding:.55rem .85rem;">' + fmtTs(a.timefinish) + '</td>' +
-                        '<td style="padding:.55rem .85rem;text-align:right;font-weight:700;color:' + passColor + ';">' +
-                        (a.grade !== null ? a.grade + ' pts' : '—') + '</td></tr>';
+                    var gradeDisplay = a.grade !== null
+                        ? '<span style="font-weight:800;color:#0f172a;">' + a.grade + '</span> <span style="color:#94a3b8;font-weight:400;">pts</span>'
+                        : '<span style="color:#94a3b8;">—</span>';
+                    html += '<tr style="border-top:1px solid #f1f5f9;transition:background .12s;" onmouseenter="this.style.background=\'#fafbfc\'" onmouseleave="this.style.background=\'\'">' +
+                        '<td style="padding:.65rem .9rem;font-weight:700;color:#0f172a;">#' + a.attempt + '</td>' +
+                        '<td style="padding:.65rem .9rem;color:#475569;">' + fmtTs(a.timestart) + '</td>' +
+                        '<td style="padding:.65rem .9rem;color:#475569;">' + fmtTs(a.timefinish) + '</td>' +
+                        '<td style="padding:.65rem .9rem;text-align:right;">' + gradeDisplay + '</td></tr>';
                 });
                 html += '</tbody></table></div></div>';
             } else {
-                html += '<div style="text-align:center;padding:1.5rem;background:#f8fafc;border-radius:12px;margin-bottom:1.25rem;color:#64748b;font-size:.85rem;">' +
-                    '<i class="ri-information-line" style="font-size:1.5rem;display:block;margin-bottom:.4rem;color:#94a3b8;"></i>' +
-                    'Aún no has realizado ningún intento.</div>';
+                html += '<div style="text-align:center;padding:2rem 1.5rem;background:linear-gradient(135deg,#f8fafc,#f1f5f9);border-radius:14px;margin-bottom:1.25rem;border:1px dashed #d1d5db;">' +
+                    '<div style="font-size:2rem;color:#cbd5e1;margin-bottom:.6rem;"><i class="ri-question-answer-line"></i></div>' +
+                    '<div style="font-weight:600;color:#475569;font-size:.9rem;margin-bottom:.2rem;">Sin intentos aún</div>' +
+                    '<div style="font-size:.8rem;color:#94a3b8;">Aún no has realizado ningún intento en este cuestionario.</div></div>';
             }
 
             if (inProgress) {
-                html += '<div style="background:#fef9c3;border-radius:10px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:.85rem;color:#92400e;font-weight:500;display:flex;align-items:center;gap:.5rem;">' +
-                    '<i class="ri-alert-line"></i> Tienes un intento en progreso.' +
-                    '<button onclick="cargarQuizActivo(' + cmid + ',' + moduloId + ')" style="background:#fc7b04;color:#fff;border:none;border-radius:6px;padding:.25rem .75rem;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;">Continuar aquí</button></div>';
+                html += '<div style="background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1px solid #fde68a;border-radius:12px;padding:.8rem 1rem;margin-bottom:.85rem;font-size:.85rem;color:#92400e;font-weight:500;display:flex;align-items:center;gap:.6rem;box-shadow:0 1px 4px rgba(0,0,0,.03);">' +
+                    '<i class="ri-timer-flash-line" style="font-size:1.2rem;color:#d97706;flex-shrink:0;"></i>' +
+                    '<span style="flex:1;">Tienes un intento en progreso.</span>' +
+                    '<button onclick="cargarQuizActivo(' + cmid + ',' + moduloId + ')" style="background:#fc7b04;color:#fff;border:none;border-radius:8px;padding:.35rem .85rem;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;">Continuar aquí</button></div>';
             }
 
             if (!maxReached) {
                 var btnFn = inProgress ? 'cargarQuizActivo' : 'iniciarQuiz';
-                html += '<div style="text-align:center;margin-top:1rem;">' +
+                html += '<div style="text-align:center;margin-top:.75rem;">' +
                     '<button onclick="' + btnFn + '(' + cmid + ',' + moduloId + ')" ' +
-                    'style="background:linear-gradient(135deg,#fc7b04,#e06a00);color:#fff;border:none;border-radius:12px;padding:.85rem 2.5rem;font-size:.9rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.6rem;box-shadow:0 4px 15px rgba(252,123,4,.3);transition:transform .15s,box-shadow .15s;">' +
-                    '<i class="ri-play-circle-line" style="font-size:1.1rem;"></i> ' + (inProgress ? 'Continuar intento' : 'Comenzar cuestionario') + '</button></div>';
+                    'style="background:linear-gradient(135deg,#fc7b04,#e06a00);color:#fff;border:none;border-radius:14px;padding:.9rem 2.75rem;font-size:.95rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:.65rem;box-shadow:0 6px 20px rgba(252,123,4,.35);transition:transform .15s,box-shadow .15s;" ' +
+                    'onmouseenter="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 8px 28px rgba(252,123,4,.4)\'" ' +
+                    'onmouseleave="this.style.transform=\'\';this.style.boxShadow=\'0 6px 20px rgba(252,123,4,.35)\'">' +
+                    '<i class="ri-play-circle-line" style="font-size:1.15rem;"></i> ' + (inProgress ? 'Continuar intento' : 'Comenzar cuestionario') + '</button></div>';
             } else {
-                html += '<div style="text-align:center;margin-top:1rem;padding:.85rem;background:#f8fafc;border-radius:10px;color:#64748b;font-size:.85rem;">' +
-                    '<i class="ri-information-line" style="margin-right:.3rem;"></i> Has alcanzado el número máximo de intentos.</div>';
+                html += '<div style="text-align:center;margin-top:.75rem;padding:1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;color:#991b1b;font-size:.85rem;font-weight:500;display:flex;align-items:center;justify-content:center;gap:.5rem;">' +
+                    '<i class="ri-error-warning-line" style="font-size:1.1rem;"></i> Has alcanzado el número máximo de intentos.</div>';
             }
 
             actSetBody(html);
@@ -4598,7 +4700,16 @@
                     $.get('/virtual/modulo/' + moduloId + '/actividad/quiz/' + cmid + '/attempt/' + aid)
                     .done(function(resp) {
                         if (!resp.success) { actSetBody(actErrHtml(resp.message)); return; }
-                        var ts = (resp.attempt && resp.attempt.timestart) ? resp.attempt.timestart : Math.floor(Date.now() / 1000);
+                        // Preferir SIEMPRE el timestart del servidor — así el cronómetro continúa
+                        // desde el momento real en que se inició el intento (no se reinicia al regresar).
+                        var ts = (resp.attempt && resp.attempt.timestart) ? parseInt(resp.attempt.timestart) : 0;
+                        if (!ts) {
+                            actSetBody(actErrHtml('No se pudo determinar la hora de inicio del intento.'));
+                            return;
+                        }
+                        if (resp.attempt && resp.attempt.timelimit) {
+                            _quizTimer.timelimit = parseInt(resp.attempt.timelimit);
+                        }
                         renderQuizPreguntas(resp.questions, aid, cmid, moduloId, ts);
                     })
                     .fail(function() { actSetBody(actErrHtml('No se pudieron cargar las preguntas.')); });
@@ -4610,7 +4721,14 @@
             $.get('/virtual/modulo/' + moduloId + '/actividad/quiz/' + cmid + '/attempt/' + attemptId)
             .done(function(r) {
                 if (!r.success) { actSetBody(actErrHtml(r.message)); return; }
-                var ts = timestart || (r.attempt && r.attempt.timestart) || Math.floor(Date.now() / 1000);
+                // Preferencia: timestart del servidor sobre el pasado por parámetro o ahora,
+                // para que el cronómetro continúe desde el inicio real del intento.
+                var ts = (r.attempt && r.attempt.timestart)
+                    ? parseInt(r.attempt.timestart)
+                    : (timestart ? parseInt(timestart) : Math.floor(Date.now() / 1000));
+                if (r.attempt && r.attempt.timelimit) {
+                    _quizTimer.timelimit = parseInt(r.attempt.timelimit);
+                }
                 renderQuizPreguntas(r.questions, attemptId, cmid, moduloId, ts);
             })
             .fail(function() { actSetBody(actErrHtml('No se pudieron cargar las preguntas.')); });
@@ -4620,21 +4738,65 @@
             if (!html) return '';
             var el = document.createElement('div');
             el.innerHTML = html;
-            // Remove flag/mark question elements
-            el.querySelectorAll('.questionflag, .questionflagimage, .flag, .flagtrips, [aria-label*="Marcar"], [aria-label*="Flag"], a[href*="flagquestion"]').forEach(function(e) { e.remove(); });
-            // Remove status/grade badges
-            el.querySelectorAll('.state, .questionstatus, .status, .grade, .grading, .outcome, .questionstatusspan').forEach(function(e) { e.remove(); });
-            // Remove elements whose text is purely "Sin responder" / "Not answered" / empty (but keep inputs/labels)
-            el.querySelectorAll('span, div, small, td').forEach(function(e) {
-                var txt = (e.textContent || '').trim().toLowerCase();
-                if (['sin responder', 'not answered', 'marcar pregunta', 'flag question', '', 'respondido'].indexOf(txt) !== -1) {
-                    if (!e.querySelector('input, select, textarea, label, img, a')) e.remove();
-                }
-                // Also remove elements with just an icon and no useful text
-                if (e.children.length === 1 && e.children[0].tagName === 'I' && (!e.textContent.trim() || e.textContent.trim().length < 3)) {
-                    e.remove();
-                }
+
+            // Remove Moodle cruft: flag, redundant header info
+            el.querySelectorAll('.questionflag, .questionflagimage, [aria-label*="Marcar"], [aria-label*="Flag"], a[href*="flagquestion"]').forEach(function(e) { e.remove(); });
+            el.querySelectorAll('.info > .state, .info > .grade, .info .grade, .info .state').forEach(function(e) { e.remove(); });
+            el.querySelectorAll('.questionflag, .formulation .clearer, .accesshide, .qreviewcorrect').forEach(function(e) { e.remove(); });
+
+            // Remove entire .info row if it only has the question number left
+            el.querySelectorAll('.info').forEach(function(e) {
+                if (e.children.length <= 1) e.remove();
             });
+
+            // Fix input/radio/checkbox styling
+            el.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(function(inp) {
+                inp.style.position = 'static';
+                inp.style.opacity = '1';
+                inp.style.width = '1.1em';
+                inp.style.height = '1.1em';
+                inp.style.margin = '0 .45rem 0 0';
+                inp.style.accentColor = '#fc7b04';
+                inp.style.cursor = 'pointer';
+            });
+            el.querySelectorAll('.custom-control, .custom-radio, .custom-checkbox').forEach(function(c) {
+                c.style.paddingLeft = '0';
+                c.style.position = 'static';
+                c.style.display = 'flex';
+                c.style.alignItems = 'center';
+                c.style.gap = '.5rem';
+                c.style.margin = '.4rem 0';
+            });
+            el.querySelectorAll('label.custom-control-label, .custom-control-label, label').forEach(function(l) {
+                l.style.cursor = 'pointer';
+                l.style.fontSize = '.85rem';
+                l.style.color = '#1e293b';
+                l.style.fontWeight = '500';
+            });
+            el.querySelectorAll('.answer > div, .answer .r0, .answer .r1, .answer .r2, .answer .r3, .answer .r4, .answer .r5, .answer .r6, .answer .r7, .answer .r8, .answer .r9').forEach(function(r) {
+                r.style.display = 'flex';
+                r.style.alignItems = 'flex-start';
+                r.style.gap = '.5rem';
+                r.style.margin = '.4rem 0';
+                r.style.padding = '.5rem .7rem';
+                r.style.background = '#f8fafc';
+                r.style.border = '1px solid #eef2f6';
+                r.style.borderRadius = '10px';
+                r.style.transition = 'all .12s';
+            });
+            el.querySelectorAll('.prompt').forEach(function(p) {
+                p.style.fontWeight = '600';
+                p.style.fontSize = '.8rem';
+                p.style.color = '#475569';
+                p.style.margin = '.55rem 0 .4rem';
+            });
+
+            // Clean .formulation spacing
+            el.querySelectorAll('.formulation').forEach(function(f) {
+                f.style.margin = '0';
+                f.style.padding = '0';
+            });
+
             return el.innerHTML;
         }
 
@@ -4647,18 +4809,18 @@
                 _quizTimer.end = timestart + _quizTimer.timelimit;
                 var now = Math.floor(Date.now() / 1000);
                 var remaining = Math.max(0, _quizTimer.end - now);
-                html += '<div id="quiz-timer-bar" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;background:linear-gradient(135deg,#1e293b,#334155);border-radius:12px;padding:.65rem 1rem;margin-bottom:1rem;color:#fff;">' +
-                    '<div style="display:flex;align-items:center;gap:.5rem;">' +
-                    '<i class="ri-timer-line" style="font-size:1.1rem;"></i>' +
-                    '<span style="font-size:.82rem;font-weight:600;">Tiempo restante:</span>' +
+                html += '<div id="quiz-timer-bar" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;background:linear-gradient(135deg,#1e293b,#2d3a4f);border-radius:14px;padding:.7rem 1.15rem;margin-bottom:1rem;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.15);">' +
+                    '<div style="display:flex;align-items:center;gap:.55rem;">' +
+                    '<i class="ri-timer-line" style="font-size:1.15rem;color:#fbbf24;"></i>' +
+                    '<span style="font-size:.82rem;font-weight:500;color:#cbd5e1;">Tiempo restante:</span>' +
                     '</div>' +
-                    '<div id="quiz-timer-display" style="font-size:1.15rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px;font-family:monospace;">' + fmtCountdown(remaining) + '</div>' +
+                    '<div id="quiz-timer-display" style="font-size:1.2rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px;font-family:monospace;color:#fbbf24;">' + fmtCountdown(remaining) + '</div>' +
                     '</div>';
             }
 
-            html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">' +
-                '<span style="font-size:.82rem;color:#64748b;font-weight:500;"><i class="ri-list-check"></i> ' + totalQ + ' preguntas</span>' +
-                '<span id="quiz-progress-text" style="font-size:.78rem;color:#94a3b8;font-weight:500;">0/' + totalQ + ' respondidas</span>' +
+            html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;background:#f8fafc;border-radius:10px;padding:.55rem .85rem;border:1px solid #e2e8f0;">' +
+                '<span style="font-size:.8rem;color:#475569;font-weight:600;display:flex;align-items:center;gap:.4rem;"><i class="ri-list-check" style="color:#fc7b04;"></i> ' + totalQ + ' preguntas</span>' +
+                '<span id="quiz-progress-text" style="font-size:.75rem;color:#64748b;font-weight:600;display:flex;align-items:center;gap:.3rem;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a34a;"></span>0/' + totalQ + ' respondidas</span>' +
                 '</div>';
 
             html += '<div id="quiz-preguntas-wrap">';
@@ -4667,12 +4829,12 @@
                 var num = idx + 1;
                 var maxMark = q.maxmark || 0;
 
-                html += '<div class="quiz-pregunta" data-qidx="' + idx + '" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:1.15rem 1.25rem;margin-bottom:.9rem;transition:border-color .2s,box-shadow .2s;">' +
-                    '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.6rem;">' +
-                    '<div style="font-weight:700;font-size:.85rem;color:#0f172a;display:flex;align-items:center;gap:.5rem;line-height:1.3;">' +
-                    '<span class="quiz-numero" style="background:#fc7b04;color:#fff;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;">' + num + '</span>' +
+                html += '<div class="quiz-pregunta" data-qidx="' + idx + '" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:1.2rem 1.3rem;margin-bottom:.9rem;border-left:4px solid #fc7b04;box-shadow:0 1px 4px rgba(0,0,0,.03);">' +
+                    '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.65rem;">' +
+                    '<div style="font-weight:700;font-size:.88rem;color:#0f172a;display:flex;align-items:center;gap:.55rem;line-height:1.35;">' +
+                    '<span class="quiz-numero" style="background:linear-gradient(135deg,#fc7b04,#e06a00);color:#fff;border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0;box-shadow:0 2px 6px rgba(252,123,4,.3);">' + num + '</span>' +
                     escHtml(q.questionname || 'Pregunta ' + num) + '</div>' +
-                    (maxMark > 0 ? '<span style="font-size:.7rem;color:#94a3b8;white-space:nowrap;font-weight:600;background:#f1f5f9;padding:.15rem .55rem;border-radius:6px;">' + maxMark + ' pts</span>' : '') +
+                    (maxMark > 0 ? '<span style="font-size:.68rem;color:#64748b;white-space:nowrap;font-weight:600;background:#f1f5f9;padding:.2rem .6rem;border-radius:20px;border:1px solid #e2e8f0;"><i class="ri-star-s-line" style="font-size:.65rem;"></i> ' + maxMark + ' pts</span>' : '') +
                     '</div>';
 
                 if (q.html) {
@@ -4687,12 +4849,15 @@
 
             html += '<div id="quiz-msg" style="margin-bottom:.75rem;"></div>';
 
-            html += '<div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;border-top:1px solid #e2e8f0;padding-top:1.15rem;margin-top:.5rem;">' +
+            html += '<div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;border-top:1px solid #e2e8f0;padding-top:1.2rem;margin-top:.6rem;">' +
                 '<button onclick="guardarQuiz(' + attemptId + ',' + cmid + ',' + moduloId + ',false)" ' +
-                'style="background:#f1f5f9;color:#334155;border:1.5px solid #cbd5e1;border-radius:10px;padding:.65rem 1.35rem;font-size:.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.45rem;transition:background .15s;">' +
+                'style="background:#fff;color:#334155;border:1.5px solid #cbd5e1;border-radius:10px;padding:.7rem 1.5rem;font-size:.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04);" ' +
+                'onmouseenter="this.style.borderColor=\'#fc7b04\';this.style.color=\'#fc7b04\'" onmouseleave="this.style.borderColor=\'#cbd5e1\';this.style.color=\'#334155\'">' +
                 '<i class="ri-save-line" style="font-size:1rem;"></i> Guardar respuestas</button>' +
                 '<button onclick="guardarQuiz(' + attemptId + ',' + cmid + ',' + moduloId + ',true)" ' +
-                'style="background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:10px;padding:.65rem 1.35rem;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.45rem;box-shadow:0 3px 10px rgba(22,163,74,.25);transition:transform .15s,box-shadow .15s;">' +
+                'style="background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:10px;padding:.7rem 1.5rem;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.5rem;box-shadow:0 4px 14px rgba(22,163,74,.3);transition:transform .15s,box-shadow .15s;" ' +
+                'onmouseenter="this.style.transform=\'translateY(-1px)\';this.style.boxShadow=\'0 6px 20px rgba(22,163,74,.35)\'" ' +
+                'onmouseleave="this.style.transform=\'\';this.style.boxShadow=\'0 4px 14px rgba(22,163,74,.3)\'">' +
                 '<i class="ri-check-double-line" style="font-size:1rem;"></i> Finalizar intento</button>' +
                 '</div>';
 
@@ -4747,7 +4912,7 @@
                     if ($bar.length) {
                         $bar.html('<div style="display:flex;align-items:center;gap:.5rem;color:#fff;"><i class="ri-timer-flash-line" style="font-size:1.1rem;"></i><span style="font-weight:700;">Tiempo agotado — finalizando intento…</span></div>');
                     }
-                    guardarQuiz(attemptId, cmid, moduloId, true);
+                    guardarQuiz(attemptId, cmid, moduloId, true, true);
                 }
             }, 1000);
         }
@@ -4773,8 +4938,30 @@
             if ($txt.length) $txt.text(respondidas + '/' + total + ' respondidas');
         }
 
-        function guardarQuiz(attemptId, cmid, moduloId, finish) {
-            if (finish && !confirm('¿Estás seguro de finalizar el intento? No podrás modificar las respuestas después.')) return;
+        function mostrarConfirmacionFinalizar(attemptId, cmid, moduloId) {
+            var overlay = document.createElement('div');
+            overlay.id = 'quiz-confirm-overlay';
+            overlay.style.cssText = 'position:absolute;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+            overlay.innerHTML =
+                '<div style="background:#fff;border-radius:16px;max-width:400px;width:100%;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.2);text-align:center;">' +
+                '<div style="width:52px;height:52px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .85rem;"><i class="ri-alert-line" style="font-size:1.5rem;color:#dc2626;"></i></div>' +
+                '<div style="font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:.3rem;">Finalizar intento</div>' +
+                '<div style="font-size:.82rem;color:#64748b;margin-bottom:1.25rem;line-height:1.5;">¿Estás seguro de finalizar el intento?<br>No podrás modificar las respuestas después.</div>' +
+                '<div style="display:flex;gap:.65rem;justify-content:center;">' +
+                '<button onclick="this.closest(\'#quiz-confirm-overlay\').remove()" style="background:#f1f5f9;color:#334155;border:1.5px solid #cbd5e1;border-radius:10px;padding:.55rem 1.25rem;font-size:.82rem;font-weight:600;cursor:pointer;transition:background .15s;">Cancelar</button>' +
+                '<button onclick="ejecutarFinalizarQuiz(' + attemptId + ',' + cmid + ',' + moduloId + ')" style="background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;border-radius:10px;padding:.55rem 1.25rem;font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;box-shadow:0 4px 12px rgba(220,38,38,.3);">' +
+                '<i class="ri-check-double-line"></i> Sí, finalizar</button></div></div>';
+            document.getElementById('modal-act-body').appendChild(overlay);
+        }
+
+        function ejecutarFinalizarQuiz(attemptId, cmid, moduloId) {
+            var o = document.getElementById('quiz-confirm-overlay');
+            if (o) o.remove();
+            guardarQuiz(attemptId, cmid, moduloId, true, true);
+        }
+
+        function guardarQuiz(attemptId, cmid, moduloId, finish, confirmed) {
+            if (finish && !confirmed) { mostrarConfirmacionFinalizar(attemptId, cmid, moduloId); return; }
 
             detenerTimer();
             var $wrap = $('#quiz-preguntas-wrap');
@@ -4840,9 +5027,9 @@
             var totalScore = 0;
             var totalMax = 0;
 
-            var html = '<div style="text-align:center;padding:1rem 0;">' +
-                '<div style="font-size:2.5rem;color:#16a34a;margin-bottom:.5rem;"><i class="ri-checkbox-circle-fill"></i></div>' +
-                '<div style="font-size:1.1rem;font-weight:700;color:#0f172a;margin-bottom:.25rem;">Intento finalizado</div>' +
+            var html = '<div style="text-align:center;padding:1.5rem 0 .5rem;">' +
+                '<div style="width:64px;height:64px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;"><i class="ri-checkbox-circle-fill" style="font-size:2rem;color:#16a34a;"></i></div>' +
+                '<div style="font-size:1.2rem;font-weight:800;color:#0f172a;margin-bottom:.2rem;">Intento finalizado</div>' +
                 '<div style="font-size:.85rem;color:#64748b;margin-bottom:1.5rem;">Tus respuestas han sido registradas correctamente.</div>';
 
             if (attemptData && attemptData.length) {
@@ -4856,45 +5043,46 @@
                 });
 
                 // Score summary
-                var pct = totalMax > 0 ? Math.round(totalScore / totalMax * 100) : 0;
-                var passed = pct >= 51;
-                html += '<div style="background:' + (passed ? '#f0fdf4' : '#fef2f2') + ';border:1.5px solid ' + (passed ? '#86efac' : '#fca5a5') + ';border-radius:12px;padding:1rem;margin-bottom:1.25rem;text-align:center;">' +
-                    '<div style="font-size:1.4rem;font-weight:800;color:' + (passed ? '#16a34a' : '#dc2626') + ';">' + totalScore.toFixed(2) + ' / ' + totalMax + '</div>' +
-                    '<div style="font-size:.78rem;color:' + (passed ? '#15803d' : '#991b1b') + ';font-weight:600;margin-top:.2rem;">' +
-                    (passed ? '&#10003; Aprobado' : '&#10007; Reprobado') + ' (' + pct + '%)</div></div>';
+                html += '<div style="background:linear-gradient(135deg,#f8fafc,#f1f5f9);border:1.5px solid #e2e8f0;border-radius:16px;padding:1.5rem 1rem;margin-bottom:1.25rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04);">' +
+                    '<div style="display:flex;align-items:baseline;justify-content:center;gap:.35rem;">' +
+                    '<span style="font-size:2.2rem;font-weight:800;color:#0f172a;">' + totalScore.toFixed(2) + '</span>' +
+                    '<span style="font-size:1.2rem;color:#64748b;font-weight:600;">/ ' + totalMax + '</span>' +
+                    '</div></div>';
 
                 // Per-question results
-                html += '<div style="text-align:left;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:1rem;">';
+                html += '<div style="text-align:left;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.03);">';
+                html += '<div style="background:#f8fafc;padding:.55rem .85rem;border-bottom:1px solid #e2e8f0;font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Detalle de preguntas</div>';
                 attemptData.forEach(function(q, idx) {
                     var mark = q.mark;
                     var maxMark = q.maxmark || 0;
                     var numMark = (mark !== null && mark !== '-') ? parseFloat(mark) : null;
-                    var isCorrect = numMark !== null && numMark > 0;
                     var statusColor = numMark !== null ? (numMark >= maxMark * 0.51 ? '#16a34a' : '#dc2626') : '#94a3b8';
                     var statusIcon = numMark !== null ? (numMark >= maxMark * 0.51 ? 'ri-checkbox-circle-fill' : 'ri-close-circle-fill') : 'ri-hourglass-line';
                     var bgColor = idx % 2 === 0 ? '#fff' : '#f8fafc';
 
-                    html += '<div style="display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;border-bottom:1px solid #f1f5f9;background:' + bgColor + ';">' +
+                    html += '<div style="display:flex;align-items:center;gap:.7rem;padding:.65rem .85rem;border-bottom:1px solid #f1f5f9;background:' + bgColor + ';transition:background .12s;">' +
                         '<span style="color:' + statusColor + ';font-size:1.1rem;flex-shrink:0;"><i class="' + statusIcon + '"></i></span>' +
-                        '<div style="flex:1;text-align:left;font-size:.82rem;font-weight:600;color:#0f172a;">' + escHtml(q.questionname || 'Pregunta ' + (idx + 1)) + '</div>' +
-                        '<span style="font-size:.75rem;font-weight:700;color:' + statusColor + ';white-space:nowrap;">' + (mark !== null && mark !== '-' ? mark : '—') + ' / ' + maxMark + '</span>' +
+                        '<div style="flex:1;text-align:left;font-size:.8rem;font-weight:600;color:#0f172a;line-height:1.3;">' + escHtml(q.questionname || 'Pregunta ' + (idx + 1)) + '</div>' +
+                        '<span style="font-size:.75rem;font-weight:800;color:' + statusColor + ';white-space:nowrap;background:' + (numMark !== null ? (numMark >= maxMark * 0.51 ? '#f0fdf4' : '#fef2f2') : '#f8fafc') + ';padding:.15rem .55rem;border-radius:8px;">' + (mark !== null && mark !== '-' ? mark : '—') + ' / ' + maxMark + '</span>' +
                         '</div>';
                 });
                 html += '</div>';
             }
 
-            html += '<button onclick="cargarQuiz(' + cmid + ',' + moduloId + ')" ' +
-                'style="background:#f1f5f9;color:#334155;border:1.5px solid #cbd5e1;border-radius:10px;padding:.6rem 1.5rem;font-size:.85rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;">' +
+            html += '<div style="text-align:center;margin-top:.5rem;">' +
+                '<button onclick="cargarQuiz(' + cmid + ',' + moduloId + ')" ' +
+                'style="background:#fff;color:#334155;border:1.5px solid #cbd5e1;border-radius:10px;padding:.65rem 1.65rem;font-size:.85rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04);" ' +
+                'onmouseenter="this.style.borderColor=\'#fc7b04\';this.style.color=\'#fc7b04\'" onmouseleave="this.style.borderColor=\'#cbd5e1\';this.style.color=\'#334155\'">' +
                 '<i class="ri-arrow-left-line"></i> Volver al cuestionario</button></div>';
 
             actSetBody(html);
         }
 
-        function infoCard(icon, label, value) {
-            return '<div style="background:#f8f9fa;border-radius:8px;padding:.75rem;text-align:center;">' +
-                '<div style="font-size:1.1rem;color:#6c757d;margin-bottom:.2rem;">' + icon + '</div>' +
-                '<div style="font-size:.72rem;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;">' + label + '</div>' +
-                '<div style="font-size:.88rem;font-weight:700;color:#2c3e50;">' + value + '</div></div>';
+        function infoCard(iconClass, label, value) {
+            return '<div style="background:linear-gradient(135deg,#fff,#f8fafc);border:1px solid #e2e8f0;border-radius:12px;padding:.9rem .55rem;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04);">' +
+                '<div style="width:36px;height:36px;background:linear-gradient(135deg,#fef3c7,#ffedd5);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto .4rem;"><i class="' + iconClass + '" style="font-size:1rem;color:#d97706;"></i></div>' +
+                '<div style="font-size:.65rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:.15rem;">' + label + '</div>' +
+                '<div style="font-size:.85rem;font-weight:800;color:#0f172a;">' + value + '</div></div>';
         }
 
         @if ($esDocente && $perfilActivo === 'docente')

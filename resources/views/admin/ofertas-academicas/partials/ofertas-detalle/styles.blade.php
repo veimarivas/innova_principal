@@ -1601,28 +1601,35 @@
         font-size: 0.77rem !important;
         font-weight: 700 !important;
         padding: 0.42rem 0.85rem !important;
-        border: 1px solid var(--d-card-border) !important;
-        background: var(--d-card) !important;
-        color: var(--d-body) !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+        border: 1px solid var(--brand-color) !important;
+        background: var(--brand-color) !important;
+        color: #fff !important;
+        box-shadow: 0 2px 6px rgba(var(--brand-color-rgb), 0.2) !important;
         transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
         text-transform: capitalize !important;
         letter-spacing: 0.01em;
     }
 
-    .calendar-container .fc-button:hover {
-        background: rgba(var(--brand-color-rgb), 0.07) !important;
-        color: var(--brand-color) !important;
-        border-color: rgba(var(--brand-color-rgb), 0.3) !important;
-        box-shadow: 0 3px 8px rgba(var(--brand-color-rgb), 0.1) !important;
-    }
-
-    .calendar-container .fc-button-active,
-    .calendar-container .fc-button-primary:not(:disabled).fc-button-active {
+    .calendar-container .fc .fc-toolbar-chunk .fc-today-button {
         background: var(--brand-color) !important;
         border-color: var(--brand-color) !important;
-        color: var(--brand-contrast-color) !important;
-        box-shadow: 0 4px 12px rgba(var(--brand-color-rgb), 0.25) !important;
+        color: #fff !important;
+        box-shadow: 0 2px 6px rgba(var(--brand-color-rgb), 0.2) !important;
+    }
+
+    .calendar-container .fc-button:hover {
+        background: color-mix(in srgb, var(--brand-color) 85%, #000) !important;
+        border-color: color-mix(in srgb, var(--brand-color) 85%, #000) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 12px rgba(var(--brand-color-rgb), 0.3) !important;
+    }
+
+    .calendar-container .fc .fc-button-primary:not(:disabled).fc-button-active,
+    .calendar-container .fc .fc-button-primary:not(:disabled):active {
+        background: color-mix(in srgb, var(--brand-color) 55%, #3a1f0a) !important;
+        border-color: color-mix(in srgb, var(--brand-color) 55%, #3a1f0a) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 12px rgba(var(--brand-color-rgb), 0.3) !important;
     }
 
     /* Números de día */
@@ -2201,8 +2208,8 @@
     }
 
     .contable-plan-type-label.normal {
-        color: #6366f1;
-        background: rgba(99, 102, 241, 0.1);
+        color: var(--brand-color);
+        background: rgba(var(--brand-color-rgb), 0.1);
     }
 
     .contable-plan-total {
@@ -2217,9 +2224,9 @@
         gap: 0.35rem;
         padding: 0.35rem 0.75rem;
         border-radius: 8px;
-        border: 1px solid rgba(99, 102, 241, 0.3);
-        background: rgba(99, 102, 241, 0.1);
-        color: #6366f1;
+        border: 1px solid rgba(var(--brand-color-rgb), 0.3);
+        background: rgba(var(--brand-color-rgb), 0.1);
+        color: var(--brand-color);
         font-size: 0.75rem;
         font-weight: 600;
         cursor: pointer;
@@ -2227,8 +2234,8 @@
     }
 
     .btn-contable-edit-plan:hover {
-        background: rgba(99, 102, 241, 0.2);
-        border-color: rgba(99, 102, 241, 0.5);
+        background: rgba(var(--brand-color-rgb), 0.2);
+        border-color: rgba(var(--brand-color-rgb), 0.5);
         transform: scale(1.03);
     }
 
@@ -2270,8 +2277,8 @@
         display: inline-block;
         padding: 0.2rem 0.6rem;
         border-radius: 6px;
-        background: rgba(99, 102, 241, 0.12);
-        color: #6366f1;
+        background: rgba(var(--brand-color-rgb), 0.12);
+        color: var(--brand-color);
         font-weight: 700;
         font-size: 0.75rem;
     }
@@ -2291,12 +2298,12 @@
     }
 
     .btn-contable-edit {
-        background: rgba(99, 102, 241, 0.12);
-        color: #6366f1;
+        background: rgba(var(--brand-color-rgb), 0.12);
+        color: var(--brand-color);
     }
 
     .btn-contable-edit:hover {
-        background: rgba(99, 102, 241, 0.25);
+        background: rgba(var(--brand-color-rgb), 0.25);
         transform: scale(1.05);
     }
 
@@ -2637,8 +2644,8 @@
         flex-shrink: 0;
     }
 
-    .mod-icon-color { background: linear-gradient(135deg,#7c3aed,#a855f7); box-shadow:0 4px 12px rgba(124,58,237,.25); }
-    .con-icon-color { background: linear-gradient(135deg,#4f46e5,#6366f1); box-shadow:0 4px 12px rgba(79,70,229,.25); }
+    .mod-icon-color { background: linear-gradient(135deg,var(--brand-color),color-mix(in srgb,var(--brand-color) 75%,#fff)); box-shadow:0 4px 12px color-mix(in srgb,var(--brand-color) 25%,transparent); }
+    .con-icon-color { background: linear-gradient(135deg,var(--brand-color),color-mix(in srgb,var(--brand-color) 75%,#fff)); box-shadow:0 4px 12px color-mix(in srgb,var(--brand-color) 25%,transparent); }
     .fin-icon-color { background: linear-gradient(135deg,#0891b2,#06b6d4); box-shadow:0 4px 12px rgba(8,145,178,.25); }
 
     .tab-section-title {
@@ -2693,18 +2700,18 @@
         padding: .45rem 1rem;
         font-size: .8rem;
         font-weight: 600;
-        border: 1px solid rgba(99,102,241,.3);
+        border: 1px solid rgba(var(--brand-color-rgb),.3);
         border-radius: 20px;
-        background: rgba(99,102,241,.08);
-        color: #4f46e5;
+        background: rgba(var(--brand-color-rgb),.08);
+        color: var(--brand-color);
         cursor: pointer;
         transition: all .2s;
     }
 
     .tab-section-action-btn:hover {
-        background: #4f46e5;
+        background: var(--brand-color);
         color: white;
-        border-color: #4f46e5;
+        border-color: var(--brand-color);
     }
 
     /* =========================================================

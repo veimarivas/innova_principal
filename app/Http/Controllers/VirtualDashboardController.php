@@ -291,6 +291,9 @@ class VirtualDashboardController extends Controller
             $tareas        = $this->moodle->getAssignments($matricula->moodle_course_id);
             $cuestionarios = $this->moodle->getQuizzes($matricula->moodle_course_id);
             $foros         = $this->moodle->getForums($matricula->moodle_course_id);
+            if (empty($foros)) {
+                $foros = $this->moodle->getForumsFromDb($matricula->moodle_course_id);
+            }
             $tareasFechas  = $this->moodle->getAssignDatesByCourseDirect($matricula->moodle_course_id);
 
             // Fallback si la BD directa no devuelve fechas
@@ -317,6 +320,104 @@ class VirtualDashboardController extends Controller
             $forosParticipacion = !empty($forumCms)
                 ? $this->moodle->getForumParticipationMap($forumCms, $matricula->moodle_user_id)
                 : [];
+
+            // ── Aumentar datos de intro y adjuntos directamente desde la BD de Moodle ──
+            // (el WS a veces no devuelve `intro`/`introfiles` consistentemente)
+            $db = DB::connection('moodle');
+            $courseId = (int) $matricula->moodle_course_id;
+
+            // 1) Recolectar cmids de assigns/forums/urls del contenido
+            $assignCmids = [];
+            $forumCmids  = [];
+            $urlCmids    = [];
+            foreach ($contenidos as $sec) {
+                foreach ($sec['modules'] ?? [] as $m) {
+                    if (($m['modname'] ?? '') === 'assign' && !empty($m['id'])) $assignCmids[] = (int)$m['id'];
+                    if (($m['modname'] ?? '') === 'forum'  && !empty($m['id'])) $forumCmids[]  = (int)$m['id'];
+                    if (($m['modname'] ?? '') === 'url'    && !empty($m['id'])) $urlCmids[]    = (int)$m['id'];
+                }
+            }
+
+            // 2) Mapas cmid → intro (HTML) y has_file
+            $assignIntroByCmid = [];
+            $forumIntroByCmid  = [];
+
+            if (!empty($assignCmids)) {
+                $assignCmRows = $db->table('course_modules')->whereIn('id', $assignCmids)->get(['id as cmid', 'instance']);
+                $assignInstances = $assignCmRows->pluck('instance')->all();
+                $assignIntros = $db->table('assign')->whereIn('id', $assignInstances)->pluck('intro', 'id')->all();
+                $assignContexts = $db->table('context')->where('contextlevel', 70)->whereIn('instanceid', $assignCmids)->pluck('id', 'instanceid')->all();
+                $assignFileCtx = empty($assignContexts) ? [] : $db->table('files')
+                    ->whereIn('contextid', array_values($assignContexts))
+                    ->where('component', 'mod_assign')
+                    ->where('filearea', 'introattachment')
+                    ->where('itemid', 0)
+                    ->where('filename', '<>', '.')
+                    ->pluck('contextid')->unique()->all();
+                $assignFileCtxSet = array_flip($assignFileCtx);
+                foreach ($assignCmRows as $cm) {
+                    $cid = $assignContexts[$cm->cmid] ?? null;
+                    $assignIntroByCmid[(int)$cm->cmid] = [
+                        'intro'    => (string) ($assignIntros[$cm->instance] ?? ''),
+                        'has_file' => $cid !== null && isset($assignFileCtxSet[$cid]),
+                    ];
+                }
+            }
+
+            if (!empty($forumCmids)) {
+                $forumCmRows = $db->table('course_modules')->whereIn('id', $forumCmids)->get(['id as cmid', 'instance']);
+                $forumInstances = $forumCmRows->pluck('instance')->all();
+                $forumIntros = $db->table('forum')->whereIn('id', $forumInstances)->pluck('intro', 'id')->all();
+                $forumContexts = $db->table('context')->where('contextlevel', 70)->whereIn('instanceid', $forumCmids)->pluck('id', 'instanceid')->all();
+                $forumFileCtx = empty($forumContexts) ? [] : $db->table('files')
+                    ->whereIn('contextid', array_values($forumContexts))
+                    ->where('component', 'mod_forum')
+                    ->where('filearea', 'intro')
+                    ->where('itemid', 0)
+                    ->where('filename', '<>', '.')
+                    ->pluck('contextid')->unique()->all();
+                $forumFileCtxSet = array_flip($forumFileCtx);
+                foreach ($forumCmRows as $cm) {
+                    $cid = $forumContexts[$cm->cmid] ?? null;
+                    $forumIntroByCmid[(int)$cm->cmid] = [
+                        'intro'    => (string) ($forumIntros[$cm->instance] ?? ''),
+                        'has_file' => $cid !== null && isset($forumFileCtxSet[$cid]),
+                    ];
+                }
+            }
+
+            // 3) Mapa externalurl para módulos URL directamente desde la BD
+            $urlExternalByCmid = [];
+            if (!empty($urlCmids)) {
+                $urlCmRows = $db->table('course_modules')->whereIn('id', $urlCmids)->get(['id as cmid', 'instance']);
+                $urlInstances = $urlCmRows->pluck('instance')->all();
+                $urlExtUrls = $db->table('url')->whereIn('id', $urlInstances)->pluck('externalurl', 'id')->all();
+                foreach ($urlCmRows as $cm) {
+                    $urlExternalByCmid[(int)$cm->cmid] = (string) ($urlExtUrls[$cm->instance] ?? '');
+                }
+            }
+
+            // 4) Fusionar intro, has_file y externalurl en los módulos de contenidos (fallback)
+            foreach ($contenidos as &$sec) {
+                foreach ($sec['modules'] ?? [] as &$m) {
+                    $cmid = (int)($m['id'] ?? 0);
+                    if (($m['modname'] ?? '') === 'assign' && isset($assignIntroByCmid[$cmid])) {
+                        if (empty($m['description']) && !empty($assignIntroByCmid[$cmid]['intro'])) {
+                            $m['description'] = $assignIntroByCmid[$cmid]['intro'];
+                        }
+                        $m['has_intro_file'] = $assignIntroByCmid[$cmid]['has_file'];
+                    } elseif (($m['modname'] ?? '') === 'forum' && isset($forumIntroByCmid[$cmid])) {
+                        if (empty($m['description']) && !empty($forumIntroByCmid[$cmid]['intro'])) {
+                            $m['description'] = $forumIntroByCmid[$cmid]['intro'];
+                        }
+                        $m['has_intro_file'] = $forumIntroByCmid[$cmid]['has_file'];
+                    } elseif (($m['modname'] ?? '') === 'url') {
+                        $m['externalurl'] = $urlExternalByCmid[$cmid] ?? ($m['externalurl'] ?? '');
+                    }
+                }
+                unset($m);
+            }
+            unset($sec);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -334,6 +435,7 @@ class VirtualDashboardController extends Controller
             'tareas_fechas'       => $tareasFechas,
             'cuestionarios'       => $cuestionarios,
             'foros'               => $foros,
+            'urls_by_cmid'        => $urlExternalByCmid,
         ]);
     }
 

@@ -71,6 +71,7 @@ Route::prefix('virtual')->name('virtual.')->middleware(['auth', 'isMoodle'])->gr
         Route::delete('/secciones/{sectionNumber}',                  [ActividadesEditorController::class, 'eliminarSeccion']);
         Route::get('/actividades/{cmid}/datos',                      [ActividadesEditorController::class, 'datosActividad']);
         Route::get('/actividades/{cmid}/recurso',                    [ActividadesEditorController::class, 'verArchivoRecurso']);
+        Route::get('/actividades/{cmid}/adjunto-intro',              [ActividadesEditorController::class, 'verArchivoTareaIntro']);
         Route::post('/actividades/{cmid}/adjunto',                   [ActividadesEditorController::class, 'subirAdjuntoTarea']);
         Route::post('/actividades/guardar',                          [ActividadesEditorController::class, 'guardarActividad']);
         Route::delete('/actividades/{cmid}',                         [ActividadesEditorController::class, 'eliminarActividad']);
@@ -110,6 +111,10 @@ Route::prefix('virtual')->name('virtual.')->middleware(['auth', 'isMoodle'])->gr
 
     // ── Actividades del estudiante ────────────────────────────────────────────
     Route::prefix('modulo/{moduloId}/actividad')->name('est.')->group(function () {
+        // Recursos / adjuntos (visualizar / descargar) — reutilizan los métodos del editor (solo lectura)
+        Route::get('/recurso/{cmid}',           [ActividadesEditorController::class, 'verArchivoRecurso'])->name('recurso.archivo');
+        Route::get('/tarea/{cmid}/adjunto',     [ActividadesEditorController::class, 'verArchivoTareaIntro'])->name('tarea.adjunto');
+        Route::get('/foro/{cmid}/adjunto',      [ActividadesEditorController::class, 'verArchivoForoIntro'])->name('foro.adjunto');
         // Tarea
         Route::get('/tarea/{cmid}',              [VirtualEstudianteController::class, 'getTarea'])->name('tarea.get');
         Route::post('/tarea/{cmid}/submit',      [VirtualEstudianteController::class, 'submitTarea'])->name('tarea.submit');
@@ -295,6 +300,7 @@ Route::prefix('admin/posgrads')->name('admin.posgrads.')->middleware(['auth', 'i
         Route::delete('secciones/{sectionNumber}', [ActividadesEditorController::class, 'eliminarSeccion'])->name('secciones.eliminar');
         Route::get('actividades/{cmid}/datos',    [ActividadesEditorController::class, 'datosActividad'])->name('actividades.datos');
         Route::get('actividades/{cmid}/recurso',  [ActividadesEditorController::class, 'verArchivoRecurso'])->name('actividades.recurso');
+        Route::get('actividades/{cmid}/adjunto-intro', [ActividadesEditorController::class, 'verArchivoTareaIntro'])->name('actividades.adjunto-intro');
         Route::post('actividades/{cmid}/adjunto', [ActividadesEditorController::class, 'subirAdjuntoTarea'])->name('actividades.adjunto');
         Route::post('actividades/guardar',        [ActividadesEditorController::class, 'guardarActividad'])->name('actividades.guardar');
         Route::delete('actividades/{cmid}',  [ActividadesEditorController::class, 'eliminarActividad'])->name('actividades.eliminar');

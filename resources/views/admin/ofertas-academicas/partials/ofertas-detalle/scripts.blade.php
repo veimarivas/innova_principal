@@ -2947,12 +2947,44 @@
             conceptosData = [],
             tienePlanPrincipal = false;
 
+        function getConceptosSeleccionados(excluirFilaIdx) {
+            const seleccionados = new Set();
+            $('#filasConceptosBody .fila-concepto').each(function() {
+                const filaIdx = $(this).data('fila-idx');
+                if (excluirFilaIdx !== undefined && filaIdx == excluirFilaIdx) return;
+                const val = $(this).find('.select-concepto').val();
+                if (val) seleccionados.add(String(val));
+            });
+            return seleccionados;
+        }
+
+        function actualizarSelectsConceptos() {
+            $('#filasConceptosBody .fila-concepto').each(function() {
+                const $fila = $(this);
+                const filaIdx = $fila.data('fila-idx');
+                const $select = $fila.find('.select-concepto');
+                const valorActual = $select.val();
+                const usados = getConceptosSeleccionados(filaIdx);
+                let opts = '<option value="">— Seleccionar —</option>';
+                conceptosData.forEach(function(c) {
+                    const cId = String(c.id);
+                    if (usados.has(cId)) return;
+                    const selected = cId == valorActual ? 'selected' : '';
+                    opts += '<option value="' + c.id + '" ' + selected + '>' + escHtml(c.nombre) + '</option>';
+                });
+                $select.html(opts);
+            });
+        }
+
         function renderFilaConcepto(conceptoId, nCuotas, precioRegular, descuentoBs) {
             filaConceptoCount++;
             const idx = filaConceptoCount;
             const esPromocion = $('#planesPagoCrear').find('option:selected').data('promocion') == '1';
+            const usados = getConceptosSeleccionados();
             let conceptosOpts = '<option value="">— Seleccionar —</option>';
             conceptosData.forEach(function(c) {
+                const cId = String(c.id);
+                if (usados.has(cId) && cId != String(conceptoId)) return;
                 const selected = c.id == conceptoId ? 'selected' : '';
                 conceptosOpts += '<option value="' + c.id + '" ' + selected + '>' + escHtml(c.nombre) +
                     '</option>';
@@ -3127,6 +3159,7 @@
         $(document).on('change', '.select-concepto', function() {
             const filaIdx = $(this).data('fila');
             autoCompletarPrecio(filaIdx);
+            actualizarSelectsConceptos();
             validarFormularioCrear();
         });
         $(document).on('input', '.input-precio, .input-descuento', function() {
@@ -3141,6 +3174,7 @@
             if (totalFilas <= 1) return;
             $(this).closest('.fila-concepto').remove();
             actualizarBotonesEliminar();
+            actualizarSelectsConceptos();
             calcularTotalGeneral();
         });
         $('#btnGuardarPc').on('click', function() {
