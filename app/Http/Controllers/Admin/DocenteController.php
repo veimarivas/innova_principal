@@ -170,6 +170,12 @@ class DocenteController extends Controller
             'persona_id' => $request->persona_id,
         ]);
 
+        // Si la persona ya tiene un User en el sistema, otorgarle acceso virtual.
+        $user = User::where('persona_id', $request->persona_id)->first();
+        if ($user && !$user->acceso_virtual) {
+            $user->update(['acceso_virtual' => true]);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Docente registrado correctamente.',
@@ -214,6 +220,8 @@ class DocenteController extends Controller
                 'password'        => $password,
                 'moodle_password' => $password,
                 'role'            => 'moodle',
+                'acceso_admin'    => false,
+                'acceso_virtual'  => true,
                 'estado'          => 'Activo',
                 'persona_id'      => $persona->id,
             ]);

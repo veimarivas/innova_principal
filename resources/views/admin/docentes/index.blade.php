@@ -114,6 +114,58 @@ h1,h2,h3,h4,h5,h6,.doc-title,.doc-stat-num,.doc-section-label,.modal-title { fon
 .doc-ya-docente i { color: var(--doc-success); font-size: 1.05rem; }
 .doc-ya-docente span { font-size: 0.8rem; font-weight: 600; color: var(--doc-success); }
 
+/* ── Hint de búsqueda y validación ── */
+.search-validation-hint { font-size: 0.72rem; color: #6b7280; margin-top: 4px; display: flex; align-items: center; gap: 5px; min-height: 18px; }
+.search-validation-hint i { font-size: 0.85rem; color: #fc7b04; }
+.search-validation-hint.success { color: #16a34a; }
+.search-validation-hint.success i { color: #16a34a; }
+.search-validation-hint.error { color: #dc2626; }
+.search-validation-hint.error i { color: #dc2626; }
+.form-control.is-valid#searchCarnet { border-color: #16a34a !important; }
+.form-control.is-invalid#searchCarnet { border-color: #dc2626 !important; }
+
+/* ── Botones deshabilitados ── */
+.doc-btn[disabled], .doc-btn:disabled {
+    opacity: 0.45 !important; cursor: not-allowed !important;
+    background: #d1d5db !important; color: #6b7280 !important;
+    box-shadow: none !important; animation: none !important; transform: none !important;
+}
+
+/* ── Caja "no es docente todavía" ── */
+.doc-no-docente {
+    margin-top: 0.85rem; padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(252,123,4,0.07) 0%, rgba(252,123,4,0.02) 100%);
+    border: 1.5px dashed rgba(252,123,4,0.35);
+    border-radius: 12px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.doc-no-doc-icon {
+    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, #fc7b04, #b85500); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    box-shadow: 0 4px 12px rgba(252,123,4,0.30);
+}
+.doc-no-doc-text { flex: 1; min-width: 200px; font-size: 0.86rem; color: #475569; }
+.doc-no-doc-text strong { color: #b85500; font-size: 0.95rem; display: block; margin-bottom: 2px; }
+.doc-no-doc-text div { font-size: 0.78rem; color: #6b7280; }
+.doc-btn-confirm {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #fff;
+    border: none; padding: 0.65rem 1.2rem; border-radius: 10px;
+    font-weight: 600; font-size: 0.85rem; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    box-shadow: 0 3px 10px rgba(22,163,74,0.25); transition: all .15s;
+}
+.doc-btn-confirm:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(22,163,74,0.40); }
+
+/* ── Modal de confirmación ── */
+.confirm-icon-ring {
+    width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 12px;
+    background: linear-gradient(135deg, rgba(252,123,4,0.12), rgba(252,123,4,0.05));
+    color: #fc7b04; font-size: 1.9rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 0 2px rgba(252,123,4,0.15);
+}
+
 .doc-section-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--doc-text-secondary); border-bottom: 1.5px solid var(--doc-border); padding-bottom: 0.3rem; margin: 1.2rem 0 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
 .doc-section-label:first-child { margin-top: 0; }
 .doc-section-label i { font-size: 0.82rem; color: var(--doc-primary); }
@@ -153,16 +205,20 @@ h1,h2,h3,h4,h5,h6,.doc-title,.doc-stat-num,.doc-section-label,.modal-title { fon
 .doc-cel-cell { display: flex; align-items: center; gap: 0.35rem; font-size: 0.83rem; color: var(--doc-text); white-space: nowrap; }
 .doc-cel-cell i { color: var(--doc-primary); font-size: 0.85rem; flex-shrink: 0; }
 
-.doc-action-cell { display: flex; align-items: center; justify-content: center; gap: 0.28rem; }
-.doc-btn-action { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; border: none; transition: all 0.2s; background: transparent; color: var(--doc-text-muted); cursor: pointer; }
+.doc-action-cell { display: flex; align-items: center; justify-content: center; gap: 0.28rem; flex-wrap: wrap; }
+.doc-btn-action { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; border: none; transition: all 0.2s; cursor: pointer; }
 .doc-btn-action i { font-size: 0.92rem; }
-.doc-btn-action:hover { background: var(--doc-border-light); }
-.doc-btn-action-view:hover { background: rgba(252,123,4,0.08); color: var(--doc-primary); }
-.doc-btn-action-edit:hover { background: rgba(252,123,4,0.08); color: var(--doc-primary); }
-.doc-btn-action-cuenta { background: var(--doc-purple-bg); color: var(--doc-purple); border: 1px solid var(--doc-purple-border); }
-.doc-btn-action-cuenta:hover { background: rgba(124,58,237,0.14); color: #5b21b6; }
-.doc-btn-action-whatsapp { background: var(--doc-whatsapp-bg); color: var(--doc-whatsapp); border: 1px solid var(--doc-whatsapp-border); }
-.doc-btn-action-whatsapp:hover { background: rgba(37,211,102,0.14); color: #128C7E; }
+.doc-btn-action[disabled] { opacity: 0.35; cursor: not-allowed; }
+.doc-btn-action.doc-btn-action-view { background: rgba(59,130,246,0.08); color: #3b82f6; border: 1px solid rgba(59,130,246,0.22); }
+.doc-btn-action.doc-btn-action-view:hover:not([disabled]) { background: rgba(59,130,246,0.18); color: #2563eb; }
+.doc-btn-action.doc-btn-action-edit { background: rgba(252,123,4,0.08); color: var(--doc-primary); border: 1px solid rgba(252,123,4,0.22); }
+.doc-btn-action.doc-btn-action-edit:hover:not([disabled]) { background: rgba(252,123,4,0.18); color: #d46604; }
+.doc-btn-action.doc-btn-action-cuenta { background: var(--doc-purple-bg); color: var(--doc-purple); border: 1px solid var(--doc-purple-border); }
+.doc-btn-action.doc-btn-action-cuenta:hover:not([disabled]) { background: rgba(124,58,237,0.18); color: #5b21b6; }
+.doc-btn-action.doc-btn-action-whatsapp { background: var(--doc-whatsapp-bg); color: var(--doc-whatsapp); border: 1px solid var(--doc-whatsapp-border); }
+.doc-btn-action.doc-btn-action-whatsapp:hover:not([disabled]) { background: rgba(37,211,102,0.18); color: #128C7E; }
+.doc-btn-action.doc-btn-action-delete { background: rgba(220,38,38,0.06); color: #dc2626; border: 1px solid rgba(220,38,38,0.18); }
+.doc-btn-action.doc-btn-action-delete:hover:not([disabled]) { background: rgba(220,38,38,0.15); color: #b91c1c; }
 
 /* ── Modal WhatsApp Accesos ── */
 .wa-modal-content { background:white;border:none;border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.18); }
@@ -198,7 +254,7 @@ h1,h2,h3,h4,h5,h6,.doc-title,.doc-stat-num,.doc-section-label,.modal-title { fon
 .wa-btn-reset:hover { border-color:#94a3b8;color:#334155; }
 .wa-btn-send { display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1.2rem;background:linear-gradient(135deg,#25d366,#128c7e);border:none;border-radius:8px;color:white;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);transition:all .2s;font-family:inherit; }
 .wa-btn-send:hover { background:linear-gradient(135deg,#1da851,#0d6e60);transform:translateY(-1px);box-shadow:0 6px 16px rgba(37,211,102,.35); }
-.doc-btn-action-delete:hover { background: var(--doc-danger-bg); color: var(--doc-danger); }
+
 
 .modal-content { border: none; border-radius: 16px; box-shadow: var(--doc-shadow-lg); overflow: hidden; }
 .modal-header { padding: 1rem 1.3rem 0.8rem; border-bottom: 1px solid var(--doc-border-light); background: linear-gradient(135deg, #ffffff, #fdf8f2); }
@@ -386,12 +442,17 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
         <div class="doc-search-row">
             <div class="doc-search-field">
                 <label><i class="ri-id-card-line"></i> Buscar por Carnet</label>
-                <input type="text" class="form-control" id="searchCarnet" placeholder="Ingrese el número de carnet…" maxlength="20" autocomplete="off">
+                <input type="text" class="form-control" id="searchCarnet" inputmode="numeric"
+                       placeholder="Solo dígitos (7 a 11)" maxlength="11" autocomplete="off">
+                <div class="search-validation-hint" id="searchHint">
+                    <i class="ri-information-line"></i> Ingrese entre 7 y 11 dígitos numéricos.
+                </div>
             </div>
-            <button type="button" class="doc-btn doc-btn-search" id="btnBuscar">
+            <button type="button" class="doc-btn doc-btn-search" id="btnBuscar" disabled>
                 <i class="ri-search-line"></i> Buscar
             </button>
-            <button type="button" class="doc-btn doc-btn-register" id="btnAbrirRegistro">
+            <button type="button" class="doc-btn doc-btn-register" id="btnAbrirRegistro" disabled
+                    title="Primero realice una búsqueda. Si la persona no existe, podrá registrarla.">
                 <i class="ri-teacher-line"></i> Registrar Docente
             </button>
             <button type="button" class="doc-btn-cancel" id="btnLimpiarBusqueda" style="display:none;">
@@ -420,6 +481,45 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
             <div id="yaDocenteBox" class="doc-ya-docente" style="display:none;">
                 <i class="ri-checkbox-circle-fill"></i>
                 <span>Esta persona ya está registrada como docente.</span>
+            </div>
+
+            <div id="noEsDocenteBox" class="doc-no-docente" style="display:none;">
+                <div class="doc-no-doc-icon"><i class="ri-information-line"></i></div>
+                <div class="doc-no-doc-text">
+                    <strong>Esta persona aún no es docente.</strong>
+                    <div>¿Desea registrarla como docente en el sistema?</div>
+                </div>
+                <button type="button" class="doc-btn doc-btn-confirm" id="btnRegistrarPersonaExistente">
+                    <i class="ri-user-add-line"></i> Sí, registrar como Docente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- ═══ MODAL CONFIRMACIÓN REGISTRO ═══ --}}
+    <div class="modal fade" id="modalConfirmarRegistro" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-user-add-line"></i> Confirmar registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center px-4 py-3">
+                    <div class="confirm-icon-ring"><i class="ri-teacher-line"></i></div>
+                    <p class="mb-1" style="font-size:1rem;font-weight:600;">¿Registrar a esta persona como Docente?</p>
+                    <p class="mb-0" style="color:#6b7280;font-size:.88rem;">
+                        <strong id="cfNombreCompleto">—</strong><br>
+                        <span style="font-size:.78rem;">Carnet: <strong id="cfCarnet">—</strong></span>
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-center gap-3">
+                    <button type="button" class="btn btn-modal-cancel px-4" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-modal-submit px-4" id="btnConfirmarRegistroExistente">
+                        <i class="ri-check-line"></i> Sí, registrar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -459,157 +559,197 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
 </div>
 
 {{-- ════════════════ MODAL REGISTRAR DOCENTE ════════════════ --}}
-<div class="modal fade doc-modal-form" id="modalRegistro" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalRegistroTitle"><i class="ri-teacher-line"></i> Registrar Docente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+<div class="modal fade" id="modalRegistro" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="border:none;border-radius:18px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.2);">
+            <div class="modal-header" style="background:linear-gradient(135deg,#391b04,#7c3c00,#c96004);color:white;padding:1.25rem 1.5rem;border:none;">
+                <div class="d-flex align-items-center gap-3 flex-grow-1">
+                    <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="ri-teacher-line" style="font-size:1.35rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;color:#fff;" id="modalRegistroTitle">Registrar Docente</h5>
+                        <div style="font-size:.73rem;opacity:.8;margin-top:.15rem;">Completa los datos para registrar al docente en el sistema</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <form id="formRegistro" novalidate autocomplete="off" enctype="multipart/form-data">
-                <div class="modal-body">
-                    <div id="registroYaDocente" class="doc-ya-docente" style="display:none;">
+            <div class="modal-body" style="padding:0;background:#fff;">
+                <form id="formRegistro" novalidate autocomplete="off" enctype="multipart/form-data">
+                    <div id="registroYaDocente" class="doc-ya-docente" style="display:none;margin:1.2rem 1.5rem 0;">
                         <i class="ri-checkbox-circle-fill"></i>
                         <span>Esta persona ya está registrada como docente.</span>
                     </div>
 
                     {{-- Photo --}}
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="doc-photo-wrap">
-                                <div class="doc-photo-circle" onclick="document.getElementById('fotografiaRegistro').click()">
-                                    <img id="previewFotografiaRegistro" src="{{ URL::asset('build/images/users/avatar-1.jpg') }}" alt="Foto">
-                                    <div class="doc-photo-overlay"><i class="ri-camera-line"></i></div>
-                                    <input type="file" id="fotografiaRegistro" name="fotografia" accept="image/*" style="display:none;" onchange="previewImage(this, 'previewFotografiaRegistro')">
-                                </div>
-                                <span class="doc-photo-hint">Click para cambiar foto</span>
+                    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #f1f5f9;display:flex;justify-content:center;">
+                        <div class="doc-photo-wrap">
+                            <div class="doc-photo-circle" onclick="document.getElementById('fotografiaRegistro').click()">
+                                <img id="previewFotografiaRegistro" src="{{ URL::asset('build/images/users/avatar-1.jpg') }}" alt="Foto">
+                                <div class="doc-photo-overlay"><i class="ri-camera-line"></i></div>
+                                <input type="file" id="fotografiaRegistro" name="fotografia" accept="image/*" style="display:none;" onchange="previewImage(this, 'previewFotografiaRegistro')">
                             </div>
+                            <span class="doc-photo-hint">Click para cambiar foto</span>
                         </div>
                     </div>
 
                     {{-- Identity Section --}}
-                    <div class="doc-modal-section-header"><i class="ri-id-card-line"></i><span>Datos de Identidad</span></div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="doc-label">Carnet <span class="doc-req">*</span></label>
-                            <div class="doc-field" style="position:relative;">
-                                <input type="text" class="form-control" id="rCarnet" placeholder="Ej: 12345678" maxlength="20" autocomplete="off">
-                                <span class="doc-validation-icon" id="iconRCarnet"></span>
+                    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #f1f5f9;">
+                        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.85rem;">
+                            <div style="width:26px;height:26px;border-radius:7px;background:rgba(154,73,4,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="ri-fingerprint-line" style="color:#9a4904;font-size:.85rem;"></i>
                             </div>
-                            <div class="doc-feedback" id="fbRCarnet"></div>
+                            <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#9a4904;">Datos de Identidad</span>
                         </div>
-                        <div class="col-md-3">
-                            <label class="doc-label">Expedido</label>
-                            <input type="text" class="form-control" id="rExpedido" placeholder="Ej: LP" maxlength="10" autocomplete="off">
-                        </div>
-                        <div class="col-md-5">
-                            <label class="doc-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="rFechaNacimiento">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="doc-label">Nombres <span class="doc-req">*</span></label>
-                            <div class="doc-field" style="position:relative;">
-                                <input type="text" class="form-control" id="rNombres" placeholder="Ej: Juan Carlos" maxlength="100" autocomplete="off">
-                                <span class="doc-validation-icon" id="iconRNombres"></span>
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Carnet <span class="text-danger">*</span></label>
+                                <div class="doc-field" style="position:relative;">
+                                    <input type="text" class="form-control form-control-sm" id="rCarnet" placeholder="Ej: 12345678" maxlength="20" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                                    <span class="doc-validation-icon" id="iconRCarnet"></span>
+                                </div>
+                                <div class="doc-feedback" id="fbRCarnet"></div>
                             </div>
-                            <div class="doc-feedback" id="fbRNombres"></div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="doc-label">Ap. Paterno</label>
-                            <div class="doc-field">
-                                <input type="text" class="form-control" id="rApPaterno" placeholder="García" maxlength="80" autocomplete="off">
+                            <div class="col-md-2">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Expedido</label>
+                                <input type="text" class="form-control form-control-sm" id="rExpedido" placeholder="Ej: LP" maxlength="10" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="doc-label">Ap. Materno</label>
-                            <div class="doc-field">
-                                <input type="text" class="form-control" id="rApMaterno" placeholder="López" maxlength="80" autocomplete="off">
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control form-control-sm" id="rFechaNacimiento" style="font-size:0.85rem;border-radius:9px;">
                             </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="doc-feedback" id="fbRApellidos"></div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="doc-label">Sexo <span class="doc-req">*</span></label>
-                            <select class="form-select" id="rSexo">
-                                <option value="">— Seleccione —</option>
-                                <option value="M">Masculino</option>
-                                <option value="F">Femenino</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="doc-label">Estado Civil <span class="doc-req">*</span></label>
-                            <select class="form-select" id="rEstadoCivil">
-                                <option value="">— Seleccione —</option>
-                                <option value="Soltero/a">Soltero/a</option>
-                                <option value="Casado/a">Casado/a</option>
-                                <option value="Divorciado/a">Divorciado/a</option>
-                                <option value="Viudo/a">Viudo/a</option>
-                                <option value="Unión Libre">Unión Libre</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-5">
-                            <label class="doc-label">Departamento</label>
-                            <select class="form-select" id="rDepto">
-                                <option value="">— Seleccione —</option>
-                            </select>
-                        </div>
-                        <div class="col-md-5">
-                            <label class="doc-label">Ciudad <span class="doc-req">*</span></label>
-                            <select class="form-select" id="rCiudad" disabled>
-                                <option value="">— Seleccione depto. —</option>
-                            </select>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Nombres <span class="text-danger">*</span></label>
+                                <div class="doc-field" style="position:relative;">
+                                    <input type="text" class="form-control form-control-sm" id="rNombres" placeholder="Ej: Juan Carlos" maxlength="100" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                                    <span class="doc-validation-icon" id="iconRNombres"></span>
+                                </div>
+                                <div class="doc-feedback" id="fbRNombres"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Ap. Paterno</label>
+                                <input type="text" class="form-control form-control-sm" id="rApPaterno" placeholder="García" maxlength="80" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Ap. Materno</label>
+                                <input type="text" class="form-control form-control-sm" id="rApMaterno" placeholder="López" maxlength="80" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Sexo <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="rSexo" style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">— Seleccione —</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Estado Civil <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="rEstadoCivil" style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">— Seleccione —</option>
+                                    <option value="Soltero/a">Soltero/a</option>
+                                    <option value="Casado/a">Casado/a</option>
+                                    <option value="Divorciado/a">Divorciado/a</option>
+                                    <option value="Viudo/a">Viudo/a</option>
+                                    <option value="Unión Libre">Unión Libre</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <div class="doc-feedback" id="fbRApellidos"></div>
+                            </div>
                         </div>
                     </div>
 
                     {{-- Contact Section --}}
-                    <div class="doc-modal-section-header mt-4"><i class="ri-phone-line"></i><span>Datos de Contacto</span></div>
-                    <div class="row g-3">
-                        <div class="col-md-5">
-                            <label class="doc-label">Correo Electrónico <span class="doc-req">*</span></label>
-                            <div class="doc-field" style="position:relative;">
-                                <input type="email" class="form-control" id="rCorreo" placeholder="correo@dominio.com" maxlength="150" autocomplete="off">
-                                <span class="doc-validation-icon" id="iconRCorreo"></span>
+                    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #f1f5f9;background:rgba(252,123,4,.02);">
+                        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.85rem;">
+                            <div style="width:26px;height:26px;border-radius:7px;background:rgba(252,123,4,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="ri-contacts-line" style="color:#fc7b04;font-size:.85rem;"></i>
                             </div>
-                            <div class="doc-feedback" id="fbRCorreo"></div>
+                            <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#c96004;">Contacto y Ubicación</span>
                         </div>
-                        <div class="col-md-3">
-                            <label class="doc-label">Celular <span class="doc-req">*</span></label>
-                            <input type="text" class="form-control" id="rCelular" placeholder="70000000" maxlength="20" autocomplete="off">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="doc-label">Teléfono</label>
-                            <input type="text" class="form-control" id="rTelefono" placeholder="2000000" maxlength="20" autocomplete="off">
-                        </div>
-                        <div class="col-12">
-                            <label class="doc-label">Dirección</label>
-                            <input type="text" class="form-control" id="rDireccion" placeholder="Av. 6 de Agosto N° 123" maxlength="200" autocomplete="off">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Correo Electrónico <span class="text-danger">*</span></label>
+                                <div style="position:relative;">
+                                    <i class="ri-mail-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="email" class="form-control form-control-sm" id="rCorreo" placeholder="correo@dominio.com" maxlength="150" autocomplete="off" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                                <div class="doc-feedback" id="fbRCorreo"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Celular <span class="text-danger">*</span></label>
+                                <div style="position:relative;">
+                                    <i class="ri-smartphone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="text" class="form-control form-control-sm" id="rCelular" inputmode="numeric" placeholder="70000000" maxlength="8" autocomplete="off" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                                <div class="doc-feedback" id="fbRCelular"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Teléfono</label>
+                                <div style="position:relative;">
+                                    <i class="ri-phone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="text" class="form-control form-control-sm" id="rTelefono" placeholder="2000000" maxlength="20" autocomplete="off" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;">
+                                    <i class="ri-map-pin-line" style="color:#fc7b04;font-size:.8rem;"></i> Departamento
+                                </label>
+                                <select class="form-select form-select-sm" id="rDepto" style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">— Seleccione —</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;">
+                                    <i class="ri-building-line" style="color:#fc7b04;font-size:.8rem;"></i> Ciudad <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select form-select-sm" id="rCiudad" disabled style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">— Seleccione depto. —</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Dirección</label>
+                                <input type="text" class="form-control form-control-sm" id="rDireccion" placeholder="Av. 6 de Agosto N° 123" maxlength="200" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
                         </div>
                     </div>
 
                     {{-- Studies Section --}}
-                    <div class="doc-modal-section-header mt-4"><i class="ri-graduation-cap-line"></i><span>Estudios Académicos</span></div>
-                    <div id="registroEstudiosContainer">
-                        <div id="registroEstudiosEmpty" style="text-align:center;padding:1.2rem 1rem;border:2px dashed rgba(252,123,4,.2);border-radius:12px;background:rgba(252,123,4,.02);margin-bottom:.5rem;">
-                            <div style="width:40px;height:40px;border-radius:12px;background:rgba(252,123,4,.08);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
-                                <i class="ri-graduation-cap-line" style="font-size:1.2rem;color:rgba(252,123,4,.5);"></i>
+                    <div style="padding:1.2rem 1.5rem;background:rgba(99,102,241,.02);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;">
+                            <div style="display:flex;align-items:center;gap:.5rem;">
+                                <div style="width:26px;height:26px;border-radius:7px;background:rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="ri-graduation-cap-line" style="color:#6366f1;font-size:.85rem;"></i>
+                                </div>
+                                <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#6366f1;">Estudios Académicos</span>
+                                <span style="font-size:.68rem;color:#94a3b8;">(opcional)</span>
                             </div>
-                            <div style="font-size:.8rem;font-weight:600;color:#64748b;margin-bottom:.2rem;">Sin estudios agregados</div>
-                            <div style="font-size:.72rem;color:#94a3b8;">Presiona <strong style="color:var(--doc-primary);">Agregar Estudio</strong> para incluir formación académica</div>
+                            <button type="button" id="btnAddRegistroEstudio"
+                                style="padding:.35rem .85rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);border-radius:8px;color:#6366f1;font-size:.78rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;transition:all .15s;">
+                                <i class="ri-add-circle-line"></i> Agregar Estudio
+                            </button>
                         </div>
-                        <div id="registroEstudiosList" style="display:flex;flex-direction:column;gap:.5rem;"></div>
-                        <button type="button" id="btnAddRegistroEstudio"
-                            style="margin-top:.65rem;display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:600;color:var(--doc-primary);background:rgba(252,123,4,.06);border:1px dashed rgba(252,123,4,.3);border-radius:8px;padding:.4rem .85rem;cursor:pointer;transition:all .2s;">
-                            <i class="ri-add-line"></i> Agregar Estudio
-                        </button>
+                        <div id="registroEstudiosContainer">
+                            <div id="registroEstudiosEmpty" style="text-align:center;padding:1.2rem 1rem;border:2px dashed rgba(252,123,4,.2);border-radius:12px;background:rgba(252,123,4,.02);margin-bottom:.5rem;">
+                                <div style="width:40px;height:40px;border-radius:12px;background:rgba(252,123,4,.08);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+                                    <i class="ri-graduation-cap-line" style="font-size:1.2rem;color:rgba(252,123,4,.5);"></i>
+                                </div>
+                                <div style="font-size:.8rem;font-weight:600;color:#64748b;margin-bottom:.2rem;">Sin estudios agregados</div>
+                                <div style="font-size:.72rem;color:#94a3b8;">Presiona <strong style="color:var(--doc-primary);">Agregar Estudio</strong> para incluir formación académica</div>
+                            </div>
+                            <div id="registroEstudiosList" style="display:flex;flex-direction:column;gap:.5rem;"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="doc-btn-cancel" data-bs-dismiss="modal"><i class="ri-close-line me-1"></i>Cancelar</button>
-                    <button type="submit" class="doc-btn-submit" id="btnGuardarDocente"><i class="ri-save-line"></i> Registrar Docente</button>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;gap:.5rem;">
+                <button type="button" class="doc-btn-cancel" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+                <button type="submit" form="formRegistro" class="doc-btn-submit" id="btnGuardarDocente">
+                    <i class="ri-save-line"></i> Registrar Docente
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -617,170 +757,209 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
 {{-- ════════════════ MODAL EDITAR ════════════════ --}}
 <div class="modal fade doc-modal-form" id="modalEditar" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="ri-pencil-line"></i> Editar Docente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <div class="modal-content" style="border:none;border-radius:18px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.2);">
+            <div class="modal-header" style="background:linear-gradient(135deg,#391b04,#7c3c00,#c96004);color:white;padding:1.25rem 1.5rem;border:none;">
+                <div class="d-flex align-items-center gap-3 flex-grow-1">
+                    <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="ri-pencil-fill" style="font-size:1.35rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;color:#fff;">Editar Docente</h5>
+                        <div style="font-size:.73rem;opacity:.8;margin-top:.15rem;">Actualiza los datos del docente en el sistema</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <form id="formEditar" novalidate autocomplete="off" enctype="multipart/form-data">
                 <input type="hidden" id="editId">
-                <div class="modal-body">
+                <div class="modal-body" style="padding:0;background:#fff;">
                     {{-- Photo --}}
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="doc-photo-wrap">
-                                <div class="doc-photo-circle" onclick="document.getElementById('fotografiaEditar').click()">
-                                    <img id="previewFotografiaEditar" src="{{ URL::asset('build/images/users/avatar-1.jpg') }}" alt="Foto">
-                                    <div class="doc-photo-overlay"><i class="ri-camera-line"></i></div>
-                                    <input type="file" id="fotografiaEditar" name="fotografia" accept="image/*" style="display:none;" onchange="previewImage(this, 'previewFotografiaEditar')">
-                                </div>
-                                <span class="doc-photo-hint">Click para cambiar foto</span>
+                    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #f1f5f9;display:flex;justify-content:center;">
+                        <div class="doc-photo-wrap">
+                            <div class="doc-photo-circle" onclick="document.getElementById('fotografiaEditar').click()">
+                                <img id="previewFotografiaEditar" src="{{ URL::asset('build/images/users/avatar-1.jpg') }}" alt="Foto">
+                                <div class="doc-photo-overlay"><i class="ri-camera-line"></i></div>
+                                <input type="file" id="fotografiaEditar" name="fotografia" accept="image/*" style="display:none;" onchange="previewImage(this, 'previewFotografiaEditar')">
                             </div>
+                            <span class="doc-photo-hint">Click para cambiar foto</span>
                         </div>
                     </div>
 
                     {{-- Identity Section --}}
-                    <div class="doc-modal-section-header"><i class="ri-id-card-line"></i><span>Datos de Identidad</span></div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="doc-label">Carnet <span class="doc-req">*</span></label>
-                            <div class="doc-field" style="position:relative;">
-                                <input type="text" class="form-control" id="editCarnet" maxlength="20" autocomplete="off">
-                                <span class="doc-validation-icon" id="iconECarnet"></span>
+                    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #f1f5f9;">
+                        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.85rem;">
+                            <div style="width:26px;height:26px;border-radius:7px;background:rgba(154,73,4,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="ri-fingerprint-line" style="color:#9a4904;font-size:.85rem;"></i>
                             </div>
-                            <div class="doc-feedback" id="fbECarnet"></div>
+                            <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#9a4904;">Datos de Identidad</span>
                         </div>
-                        <div class="col-md-3">
-                            <label class="doc-label">Expedido</label>
-                            <input type="text" class="form-control" id="editExpedido" maxlength="10" autocomplete="off">
-                        </div>
-                        <div class="col-md-5">
-                            <label class="doc-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="editFechaNacimiento">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="doc-label">Nombres <span class="doc-req">*</span></label>
-                            <div class="doc-field" style="position:relative;">
-                                <input type="text" class="form-control" id="editNombres" maxlength="100" autocomplete="off">
-                                <span class="doc-validation-icon" id="iconENombres"></span>
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Carnet <span class="text-danger">*</span></label>
+                                <div class="doc-field" style="position:relative;">
+                                    <input type="text" class="form-control form-control-sm" id="editCarnet" maxlength="20" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                                    <span class="doc-validation-icon" id="iconECarnet"></span>
+                                </div>
+                                <div class="doc-feedback" id="fbECarnet"></div>
                             </div>
-                            <div class="doc-feedback" id="fbENombres"></div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="doc-label">Ap. Paterno</label>
-                            <input type="text" class="form-control" id="editApPaterno" maxlength="80" autocomplete="off">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="doc-label">Ap. Materno</label>
-                            <input type="text" class="form-control" id="editApMaterno" maxlength="80" autocomplete="off">
-                        </div>
-                        <div class="col-12">
-                            <div class="doc-feedback" id="fbEApellidos"></div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="doc-label">Sexo <span class="doc-req">*</span></label>
-                            <select class="form-select" id="editSexo">
-                                <option value="">— Seleccione —</option>
-                                <option value="M">Masculino</option>
-                                <option value="F">Femenino</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="doc-label">Estado Civil <span class="doc-req">*</span></label>
-                            <select class="form-select" id="editEstadoCivil">
-                                <option value="">— Seleccione —</option>
-                                <option value="Soltero/a">Soltero/a</option>
-                                <option value="Casado/a">Casado/a</option>
-                                <option value="Divorciado/a">Divorciado/a</option>
-                                <option value="Viudo/a">Viudo/a</option>
-                                <option value="Unión Libre">Unión Libre</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-5">
-                            <label class="doc-label">Departamento</label>
-                            <select class="form-select" id="editDepto">
-                                <option value="">— Seleccione —</option>
-                            </select>
-                        </div>
-                        <div class="col-md-5">
-                            <label class="doc-label">Ciudad <span class="doc-req">*</span></label>
-                            <select class="form-select" id="editCiudad" disabled>
-                                <option value="">— Seleccione depto. —</option>
-                            </select>
+                            <div class="col-md-2">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Expedido</label>
+                                <input type="text" class="form-control form-control-sm" id="editExpedido" placeholder="Ej: LP" maxlength="10" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control form-control-sm" id="editFechaNacimiento" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Nombres <span class="text-danger">*</span></label>
+                                <div class="doc-field" style="position:relative;">
+                                    <input type="text" class="form-control form-control-sm" id="editNombres" placeholder="Ej: Juan Carlos" maxlength="100" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                                    <span class="doc-validation-icon" id="iconENombres"></span>
+                                </div>
+                                <div class="doc-feedback" id="fbENombres"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Ap. Paterno</label>
+                                <input type="text" class="form-control form-control-sm" id="editApPaterno" placeholder="García" maxlength="80" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Ap. Materno</label>
+                                <input type="text" class="form-control form-control-sm" id="editApMaterno" placeholder="López" maxlength="80" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Sexo <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="editSexo" style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">— Seleccione —</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Estado Civil <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="editEstadoCivil" style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">— Seleccione —</option>
+                                    <option value="Soltero/a">Soltero/a</option>
+                                    <option value="Casado/a">Casado/a</option>
+                                    <option value="Divorciado/a">Divorciado/a</option>
+                                    <option value="Viudo/a">Viudo/a</option>
+                                    <option value="Unión Libre">Unión Libre</option>
+                                </select>
+                            </div>
+                            <div class="col-12"><div class="doc-feedback" id="fbEApellidos"></div></div>
                         </div>
                     </div>
 
                     {{-- Contact Section --}}
-                    <div class="doc-modal-section-header mt-4"><i class="ri-phone-line"></i><span>Datos de Contacto</span></div>
-                    <div class="row g-3">
-                        <div class="col-md-5">
-                            <label class="doc-label">Correo Electrónico <span class="doc-req">*</span></label>
-                            <div class="doc-field" style="position:relative;">
-                                <input type="email" class="form-control" id="editCorreo" maxlength="150" autocomplete="off">
-                                <span class="doc-validation-icon" id="iconECorreo"></span>
+                    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #f1f5f9;background:rgba(252,123,4,.02);">
+                        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.85rem;">
+                            <div style="width:26px;height:26px;border-radius:7px;background:rgba(252,123,4,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="ri-contacts-line" style="color:#fc7b04;font-size:.85rem;"></i>
                             </div>
-                            <div class="doc-feedback" id="fbECorreo"></div>
+                            <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#c96004;">Contacto y Ubicación</span>
                         </div>
-                        <div class="col-md-3">
-                            <label class="doc-label">Celular <span class="doc-req">*</span></label>
-                            <input type="text" class="form-control" id="editCelular" maxlength="20" autocomplete="off">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="doc-label">Teléfono</label>
-                            <input type="text" class="form-control" id="editTelefono" maxlength="20" autocomplete="off">
-                        </div>
-                        <div class="col-12">
-                            <label class="doc-label">Dirección</label>
-                            <input type="text" class="form-control" id="editDireccion" maxlength="200" autocomplete="off">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Correo Electrónico <span class="text-danger">*</span></label>
+                                <div style="position:relative;">
+                                    <i class="ri-mail-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="email" class="form-control form-control-sm" id="editCorreo" placeholder="correo@dominio.com" maxlength="150" autocomplete="off" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                                <div class="doc-feedback" id="fbECorreo"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Celular <span class="text-danger">*</span></label>
+                                <div style="position:relative;">
+                                    <i class="ri-smartphone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="text" class="form-control form-control-sm" id="editCelular" inputmode="numeric" placeholder="70000000" maxlength="8" autocomplete="off" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                                <div class="doc-feedback" id="fbECelular"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Teléfono</label>
+                                <div style="position:relative;">
+                                    <i class="ri-phone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="text" class="form-control form-control-sm" id="editTelefono" placeholder="2000000" maxlength="20" autocomplete="off" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;">
+                                    <i class="ri-map-pin-line" style="color:#fc7b04;font-size:.8rem;"></i> Departamento
+                                </label>
+                                <select class="form-select form-select-sm" id="editDepto" style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">— Seleccione —</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;">
+                                    <i class="ri-building-line" style="color:#fc7b04;font-size:.8rem;"></i> Ciudad <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select form-select-sm" id="editCiudad" disabled style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">— Seleccione depto. —</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Dirección</label>
+                                <input type="text" class="form-control form-control-sm" id="editDireccion" placeholder="Av. 6 de Agosto N° 123" maxlength="200" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
                         </div>
                     </div>
 
                     {{-- Studies Section --}}
-                    <div class="doc-modal-section-header mt-4"><i class="ri-graduation-cap-line"></i><span>Estudios Académicos</span></div>
-                    <div id="editEstudiosContainer">
-                        <div id="editEstudiosLoading" class="text-center py-2" style="display:none;">
-                            <span class="spinner-border spinner-border-sm" style="color:var(--doc-primary);"></span>
-                            <span class="ms-2" style="font-size:.8rem;color:var(--doc-text-muted);">Cargando estudios...</span>
+                    <div style="padding:1.2rem 1.5rem;background:rgba(99,102,241,.02);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;">
+                            <div style="display:flex;align-items:center;gap:.5rem;">
+                                <div style="width:26px;height:26px;border-radius:7px;background:rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="ri-graduation-cap-line" style="color:#6366f1;font-size:.85rem;"></i>
+                                </div>
+                                <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#6366f1;">Estudios Académicos</span>
+                                <span style="font-size:.68rem;color:#94a3b8;">(opcional)</span>
+                            </div>
+                            <button type="button" id="btnAddEstudio"
+                                style="padding:.35rem .85rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);border-radius:8px;color:#6366f1;font-size:.78rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;transition:all .15s;">
+                                <i class="ri-add-circle-line"></i> Agregar Estudio
+                            </button>
                         </div>
-                        <div id="editEstudiosList"></div>
-                        <div id="editEstudioFormWrap" style="display:none;margin-top:.75rem;padding:1rem;background:#faf8f5;border:1px solid var(--doc-border);border-radius:12px;">
-                            <div class="row g-2">
-                                <div class="col-md-4">
-                                    <label class="doc-label" style="font-size:.75rem;">Grado Académico <span class="doc-req">*</span></label>
-                                    <select class="form-select form-select-sm" id="newEstGrado"></select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="doc-label" style="font-size:.75rem;">Profesión</label>
-                                    <select class="form-select form-select-sm" id="newEstProfesion"></select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="doc-label" style="font-size:.75rem;">Universidad</label>
-                                    <select class="form-select form-select-sm" id="newEstUniversidad"></select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="doc-label" style="font-size:.75rem;">Estado</label>
-                                    <select class="form-select form-select-sm" id="newEstEstado">
-                                        <option value="Concluido">Concluido</option>
-                                        <option value="En Desarrollo">En Desarrollo</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-9 d-flex align-items-end gap-2">
-                                    <button type="button" class="doc-btn-submit btn-sm" id="btnGuardarNuevoEstudio" style="padding:.4rem 1rem;font-size:.82rem;">
-                                        <i class="ri-check-line"></i> Agregar
-                                    </button>
-                                    <button type="button" class="doc-btn-cancel btn-sm" id="btnCancelarNuevoEstudio" style="padding:.4rem .75rem;font-size:.82rem;">
-                                        <i class="ri-close-line"></i>
-                                    </button>
+                        <div id="editEstudiosContainer">
+                            <div id="editEstudiosLoading" class="text-center py-2" style="display:none;">
+                                <span class="spinner-border spinner-border-sm" style="color:var(--doc-primary);"></span>
+                                <span class="ms-2" style="font-size:.8rem;color:var(--doc-text-muted);">Cargando estudios...</span>
+                            </div>
+                            <div id="editEstudiosList"></div>
+                            <div id="editEstudioFormWrap" style="display:none;margin-top:.75rem;padding:1rem;background:#faf8f5;border:1px solid var(--doc-border);border-radius:12px;">
+                                <div class="row g-2">
+                                    <div class="col-md-4">
+                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Grado Académico <span class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm" id="newEstGrado"></select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Profesión</label>
+                                        <select class="form-select form-select-sm" id="newEstProfesion"></select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Universidad</label>
+                                        <select class="form-select form-select-sm" id="newEstUniversidad"></select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Estado</label>
+                                        <select class="form-select form-select-sm" id="newEstEstado">
+                                            <option value="Concluido">Concluido</option>
+                                            <option value="En Desarrollo">En Desarrollo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-9 d-flex align-items-end gap-2">
+                                        <button type="button" class="doc-btn-submit btn-sm" id="btnGuardarNuevoEstudio" style="padding:.4rem 1rem;font-size:.82rem;">
+                                            <i class="ri-check-line"></i> Agregar
+                                        </button>
+                                        <button type="button" class="doc-btn-cancel btn-sm" id="btnCancelarNuevoEstudio" style="padding:.4rem .75rem;font-size:.82rem;">
+                                            <i class="ri-close-line"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <button type="button" id="btnAddEstudio" style="margin-top:.75rem;display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:600;color:var(--doc-primary);background:rgba(252,123,4,.06);border:1px dashed rgba(252,123,4,.3);border-radius:8px;padding:.4rem .85rem;cursor:pointer;transition:all .2s;">
-                            <i class="ri-add-line"></i> Agregar Estudio
-                        </button>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;gap:.5rem;">
                     <button type="button" class="doc-btn-cancel" data-bs-dismiss="modal"><i class="ri-close-line me-1"></i>Cancelar</button>
                     <button type="submit" class="doc-btn-submit" id="btnGuardarEdicion"><i class="ri-save-line"></i> Guardar Cambios</button>
                 </div>
@@ -1147,14 +1326,14 @@ function previewImage(input, previewId) {
                         const password = generarPassword(carnet);
 
                         let btns = '<div class="doc-action-cell">'
-                            + '<a class="btn doc-btn-action doc-btn-action-view" href="/admin/docentes/' + d.id + '/detalle" title="Ver docente"><i class="ri-eye-line"></i></a>'
-                            + '<button class="btn doc-btn-action doc-btn-action-edit btn-accion-editar" data-id="' + d.id + '" title="Editar docente"><i class="ri-pencil-fill"></i></button>';
+                            + '<a class="doc-btn-action doc-btn-action-view" href="/admin/docentes/' + d.id + '/detalle" title="Ver docente"><i class="ri-eye-line"></i></a>'
+                            + '<button type="button" class="doc-btn-action doc-btn-action-edit btn-accion-editar" data-id="' + d.id + '" title="Editar docente"><i class="ri-pencil-fill"></i></button>';
                         if (!tieneCuenta || !tieneMoodle) {
                             const titulo = tieneCuenta ? 'Crear cuenta Moodle' : (tieneMoodle ? 'Crear cuenta sistema' : 'Crear cuentas (sistema + Moodle)');
-                            btns += '<button class="btn doc-btn-action doc-btn-action-cuenta btn-crear-cuentas" data-id="' + d.id + '" title="' + titulo + '"><i class="ri-user-add-line"></i></button>';
+                            btns += '<button type="button" class="doc-btn-action doc-btn-action-cuenta btn-crear-cuentas" data-id="' + d.id + '" title="' + titulo + '"><i class="ri-user-add-line"></i></button>';
                         }
                         if (celularLimpio.length >= 8 && tieneCuenta && username) {
-                            btns += '<button class="btn doc-btn-action doc-btn-action-whatsapp btn-whatsapp-cuenta" '
+                            btns += '<button type="button" class="doc-btn-action doc-btn-action-whatsapp btn-whatsapp-cuenta" '
                                 + 'data-celular="' + celularLimpio + '" '
                                 + 'data-nombre="' + nombre + '" '
                                 + 'data-username="' + username + '" '
@@ -1162,11 +1341,11 @@ function previewImage(input, previewId) {
                                 + 'data-docente-id="' + d.id + '" '
                                 + 'title="Enviar accesos por WhatsApp"><i class="ri-whatsapp-line"></i></button>';
                         } else if (celularLimpio.length >= 8 && tieneCuenta && !username) {
-                            btns += '<button class="btn doc-btn-action" title="Sin usuario" disabled style="opacity:0.3;cursor:not-allowed;"><i class="ri-whatsapp-line"></i></button>';
+                            btns += '<button type="button" class="doc-btn-action" title="Sin usuario" disabled style="opacity:0.3;cursor:not-allowed;"><i class="ri-whatsapp-line"></i></button>';
                         } else {
-                            btns += '<button class="btn doc-btn-action" title="Sin cuenta" disabled style="opacity:0.3;cursor:not-allowed;"><i class="ri-whatsapp-line"></i></button>';
+                            btns += '<button type="button" class="doc-btn-action" title="Sin cuenta" disabled style="opacity:0.3;cursor:not-allowed;"><i class="ri-whatsapp-line"></i></button>';
                         }
-                        btns += '<button class="btn doc-btn-action doc-btn-action-delete btn-accion-eliminar" data-id="' + d.id + '" data-nombre="' + nombre + '" title="Eliminar docente"><i class="ri-delete-bin-fill"></i></button>'
+                        btns += '<button type="button" class="doc-btn-action doc-btn-action-delete btn-accion-eliminar" data-id="' + d.id + '" data-nombre="' + nombre + '" title="Eliminar docente"><i class="ri-delete-bin-fill"></i></button>'
                             + '</div>';
                         return btns;
                     }
@@ -1187,11 +1366,43 @@ function previewImage(input, previewId) {
     }
 
     function bindEvents() {
-        $('#btnBuscar').on('click', buscarPersona);
-        $('#searchCarnet').on('keypress', function (e) { if (e.which === 13) buscarPersona(); });
+        // ─── Validación en tiempo real del carnet de búsqueda ───
+        $('#searchCarnet').on('input', function () {
+            const val = $(this).val().replace(/\D/g, '');
+            $(this).val(val);
+            validarCarnetBusqueda(val);
+            if (personaEncontrada || $('#personaFound').is(':visible')) {
+                $('#personaFound').slideUp(150);
+                personaEncontrada = null;
+            }
+            $('#btnAbrirRegistro').prop('disabled', true).attr('title', 'Primero realice una búsqueda. Si la persona no existe, podrá registrarla.');
+        });
+        $('#searchCarnet').on('keypress', function (e) {
+            if (e.which === 13 && !$('#btnBuscar').prop('disabled')) buscarPersona();
+        });
 
+        $('#btnBuscar').on('click', buscarPersona);
         $('#btnAbrirRegistro').on('click', abrirModalRegistro);
         $('#btnLimpiarBusqueda').on('click', function () { limpiarBusqueda(); resetFormRegistro(); });
+
+        // Confirmar registro de persona existente como docente
+        $('#btnRegistrarPersonaExistente').on('click', function () {
+            if (!personaEncontrada) return;
+            const p = personaEncontrada;
+            const nombre = [p.nombres, p.apellido_paterno, p.apellido_materno].filter(Boolean).join(' ');
+            $('#cfNombreCompleto').text(nombre || '—');
+            $('#cfCarnet').text(p.carnet || '—');
+            openModal('modalConfirmarRegistro');
+        });
+        $('#btnConfirmarRegistroExistente').on('click', function () {
+            if (!personaEncontrada || !personaEncontrada.id) return;
+            const $btn = $(this);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Registrando…');
+            registrarComoDocente(personaEncontrada.id, function () {
+                closeModal('modalConfirmarRegistro');
+                $btn.prop('disabled', false).html('<i class="ri-check-line"></i> Sí, registrar');
+            });
+        });
 
         $('#formRegistro').on('submit', function (e) { e.preventDefault(); guardarDocente(); });
         $('#formEditar').on('submit', function (e) { e.preventDefault(); guardarEdicion(); });
@@ -1228,6 +1439,16 @@ function previewImage(input, previewId) {
             if (!isEmail(val)) { return setError('rCorreo','iconRCorreo','fbRCorreo','Formato de correo inválido.'); }
             setChecking('rCorreo','iconRCorreo','fbRCorreo');
             correoTimer = setTimeout(function () { verificarCorreoRegistro(val); }, 400);
+        });
+
+        /* Validación celular en tiempo real (registro y edición) */
+        $('#rCelular').on('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 8);
+            validarCelular('rCelular','iconRCelular','fbRCelular');
+        });
+        $('#editCelular').on('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 8);
+            validarCelular('editCelular','iconECelular','fbECelular');
         });
 
         $(document).on('click', '.btn-accion-eliminar', function () {
@@ -1347,10 +1568,46 @@ function previewImage(input, previewId) {
         });
     }
 
+    /* ── VALIDACIÓN EN TIEMPO REAL DEL CARNET DE BÚSQUEDA ── */
+    function validarCarnetBusqueda(val) {
+        const $input = $('#searchCarnet');
+        const $hint  = $('#searchHint');
+        const $btn   = $('#btnBuscar');
+
+        if (val.length === 0) {
+            $input.removeClass('is-valid is-invalid');
+            $hint.removeClass('success error').html('<i class="ri-information-line"></i> Ingrese entre 7 y 11 dígitos numéricos.');
+            $btn.prop('disabled', true);
+            return false;
+        }
+        if (!/^\d+$/.test(val)) {
+            $input.removeClass('is-valid').addClass('is-invalid');
+            $hint.removeClass('success').addClass('error').html('<i class="ri-close-circle-fill"></i> Solo se permiten números.');
+            $btn.prop('disabled', true);
+            return false;
+        }
+        if (val.length < 7) {
+            $input.removeClass('is-valid').addClass('is-invalid');
+            $hint.removeClass('success').addClass('error').html('<i class="ri-close-circle-fill"></i> Faltan ' + (7 - val.length) + ' dígitos (mínimo 7).');
+            $btn.prop('disabled', true);
+            return false;
+        }
+        if (val.length > 11) {
+            $input.removeClass('is-valid').addClass('is-invalid');
+            $hint.removeClass('success').addClass('error').html('<i class="ri-close-circle-fill"></i> Máximo 11 dígitos.');
+            $btn.prop('disabled', true);
+            return false;
+        }
+        $input.removeClass('is-invalid').addClass('is-valid');
+        $hint.removeClass('error').addClass('success').html('<i class="ri-checkbox-circle-fill"></i> Carnet válido (' + val.length + ' dígitos). Presione buscar.');
+        $btn.prop('disabled', false);
+        return true;
+    }
+
     function buscarPersona() {
         const carnet = $('#searchCarnet').val().trim();
-        if (!carnet) {
-            toast('warning', 'Ingrese un número de carnet para buscar.');
+        if (!validarCarnetBusqueda(carnet)) {
+            toast('warning', 'Ingrese un carnet válido (7 a 11 dígitos).');
             return;
         }
 
@@ -1360,9 +1617,13 @@ function previewImage(input, previewId) {
                 if (r.encontrado) {
                     personaEncontrada = r.persona;
                     mostrarPersonaEncontrada(r.persona, r.ya_docente);
+                    $('#btnAbrirRegistro').prop('disabled', true).attr('title', 'La persona ya existe. Use el botón "Registrar como Docente" en el panel inferior.');
                 } else {
                     $('#personaFound').slideUp(200);
-                    toast('warning', 'No se encontró ninguna persona con el carnet: ' + carnet);
+                    personaEncontrada = null;
+                    $('#btnAbrirRegistro').prop('disabled', false).removeAttr('title');
+                    $('#btnLimpiarBusqueda').show();
+                    toast('info', 'No se encontró ninguna persona con ese carnet. Puede registrarla como nueva.');
                 }
             })
             .fail(function () { toast('error', 'Error al buscar. Intente nuevamente.'); })
@@ -1382,8 +1643,10 @@ function previewImage(input, previewId) {
 
         if (yaDocente) {
             $('#yaDocenteBox').show();
+            $('#noEsDocenteBox').hide();
         } else {
             $('#yaDocenteBox').hide();
+            $('#noEsDocenteBox').css('display','flex').hide().slideDown(220);
         }
 
         $('#personaFound').slideDown(300);
@@ -1442,7 +1705,15 @@ function previewImage(input, previewId) {
 
             $('#modalRegistroTitle').html('<i class="ri-user-check-line"></i> Registrar como Docente — ' + esc(p.carnet));
         } else {
-            $('#modalRegistroTitle').html('<i class="ri-teacher-line"></i> Registrar Docente');
+            // Pre-llenar carnet desde búsqueda y bloquearlo
+            const carnetBuscado = $('#searchCarnet').val().trim();
+            if (carnetBuscado) {
+                $('#rCarnet').val(carnetBuscado).prop('readonly', true);
+                const input = document.getElementById('rCarnet');
+                if (input) { input.classList.remove('is-invalid'); input.classList.add('is-valid'); }
+                $('#fbRCarnet').removeClass('error').addClass('success').html('<i class="ri-checkbox-circle-fill"></i> Carnet desde la búsqueda (no editable).');
+            }
+            $('#modalRegistroTitle').html('<i class="ri-teacher-line"></i> Registrar Nuevo Docente' + (carnetBuscado ? ' — ' + esc(carnetBuscado) : ''));
         }
 
         openModal('modalRegistro');
@@ -1459,7 +1730,8 @@ function previewImage(input, previewId) {
         const okC = validarCarnetSync('rCarnet','iconRCarnet','fbRCarnet');
         const okN = validarNombres('rNombres','iconRNombres','fbRNombres');
         const okAp = validarApellidos();
-        if (!okC || !okN || !okAp) {
+        const okCel = validarCelular('rCelular','iconRCelular','fbRCelular');
+        if (!okC || !okN || !okAp || !okCel) {
             setBtnLoading('#btnGuardarDocente', false, '<i class="ri-save-line"></i> Registrar Docente');
             return;
         }
@@ -1509,6 +1781,7 @@ function previewImage(input, previewId) {
                 if (errs.carnet)  setError('rCarnet','iconRCarnet','fbRCarnet', errs.carnet[0]);
                 if (errs.nombres) setError('rNombres','iconRNombres','fbRNombres', errs.nombres[0]);
                 if (errs.correo)  setError('rCorreo','iconRCorreo','fbRCorreo', errs.correo[0]);
+                if (errs.celular) setError('rCelular','iconRCelular','fbRCelular', errs.celular[0]);
                 if (errs.apellidos) {
                     $('#fbRApellidos').addClass('error').html('<i class="ri-error-warning-line"></i>' + errs.apellidos[0]);
                 }
@@ -1519,12 +1792,13 @@ function previewImage(input, previewId) {
         });
     }
 
-    function registrarComoDocente(personaId) {
+    function registrarComoDocente(personaId, onDone) {
         $.post('{{ route("admin.docentes.registrar") }}', {
             _token: CSRF,
             persona_id: personaId
         })
         .done(function (r2) {
+            if (typeof onDone === 'function') onDone();
             var $rows = $('#registroEstudiosList .registro-estudio-row');
             var estudiosPromesas = [];
             $rows.each(function() {
@@ -1553,6 +1827,7 @@ function previewImage(input, previewId) {
         .fail(function (xhr) {
             const msg = xhr.responseJSON?.message || 'Error al registrar como docente.';
             toast('error', msg);
+            if (typeof onDone === 'function') onDone();
         })
         .always(function () {
             setBtnLoading('#btnGuardarDocente', false, '<i class="ri-save-line"></i> Registrar Docente');
@@ -1574,6 +1849,7 @@ function previewImage(input, previewId) {
                 $('#editFechaNacimiento').val(p ? p.fecha_nacimiento || '' : '');
                 $('#editCorreo').val(p && p.correo ? p.correo : '');
                 $('#editCelular').val(p && p.celular ? p.celular : '');
+                if ($('#editCelular').val()) validarCelular('editCelular','iconECelular','fbECelular');
                 $('#editTelefono').val(p && p.telefono ? p.telefono : '');
                 $('#editDireccion').val(p && p.direccion ? p.direccion : '');
 
@@ -1611,6 +1887,9 @@ function previewImage(input, previewId) {
         const id = $('#formEditar').data('docente-id');
         const personaId = $('#formEditar').data('persona-id');
         if (!id || !personaId) return;
+
+        const okCel = validarCelular('editCelular','iconECelular','fbECelular');
+        if (!okCel) return;
 
         setBtnLoading('#btnGuardarEdicion', true, 'Guardando…');
 
@@ -1654,6 +1933,8 @@ function previewImage(input, previewId) {
                 if (errs.carnet) toast('error', errs.carnet[0]);
                 else if (errs.nombres) toast('error', errs.nombres[0]);
                 else if (errs.correo) toast('error', errs.correo[0]);
+                else if (errs.celular) toast('error', errs.celular[0]);
+                if (errs.celular) setError('editCelular','iconECelular','fbECelular', errs.celular[0]);
             } else {
                 toast('error', 'Error al actualizar. Intente nuevamente.');
             }
@@ -1682,9 +1963,14 @@ function previewImage(input, previewId) {
     }
 
     function limpiarBusqueda() {
-        $('#searchCarnet').val('');
+        $('#searchCarnet').val('').removeClass('is-valid is-invalid');
+        $('#searchHint').removeClass('success error').html('<i class="ri-information-line"></i> Ingrese entre 7 y 11 dígitos numéricos.');
         $('#personaFound').slideUp(200);
         $('#btnLimpiarBusqueda').hide();
+        $('#btnBuscar').prop('disabled', true);
+        $('#btnAbrirRegistro').prop('disabled', true).attr('title', 'Primero realice una búsqueda. Si la persona no existe, podrá registrarla.');
+        $('#yaDocenteBox').hide();
+        $('#noEsDocenteBox').hide();
         personaEncontrada = null;
     }
 
@@ -2022,6 +2308,14 @@ function previewImage(input, previewId) {
         if (!val) return setError(inputId, iconId, fbId, 'El nombre es obligatorio.');
         if (val.length < 2) return setError(inputId, iconId, fbId, 'Debe tener al menos 2 caracteres.');
         return setOk(inputId, iconId, fbId, 'Nombre válido');
+    }
+
+    function validarCelular(inputId, iconId, fbId) {
+        const val = document.getElementById(inputId).value.trim();
+        if (val.length === 0) return setError(inputId, iconId, fbId, 'El celular es obligatorio.');
+        if (!/^\d+$/.test(val)) return setError(inputId, iconId, fbId, 'Solo se permiten números.');
+        if (val.length !== 8) return setError(inputId, iconId, fbId, 'El celular debe tener exactamente 8 dígitos (' + val.length + '/8).');
+        return setOk(inputId, iconId, fbId, 'Celular válido');
     }
 
     function validarApellidos() {

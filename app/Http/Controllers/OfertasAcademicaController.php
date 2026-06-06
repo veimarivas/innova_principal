@@ -1853,6 +1853,8 @@ class OfertasAcademicaController extends Controller
                             'password'        => $password,
                             'moodle_password' => $password,
                             'role'            => 'moodle',
+                            'acceso_admin'    => false,
+                            'acceso_virtual'  => true,
                             'estado'          => 'Activo',
                             'persona_id'      => $persona->id,
                         ]);

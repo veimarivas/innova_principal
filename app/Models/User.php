@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     protected $table = 'users';
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -25,6 +26,8 @@ class User extends Authenticatable
         'password',
         'moodle_password',
         'role',
+        'acceso_admin',
+        'acceso_virtual',
         'estado',
         'persona_id'
     ];
@@ -49,11 +52,42 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'acceso_admin' => 'boolean',
+            'acceso_virtual' => 'boolean',
         ];
     }
 
     public function persona()
     {
         return $this->belongsTo(Persona::class, 'persona_id');
+    }
+
+    public function puedeAdmin(): bool
+    {
+        return (bool) $this->acceso_admin;
+    }
+
+    public function puedeVirtual(): bool
+    {
+        return (bool) $this->acceso_virtual;
+    }
+
+    public function tieneAmbosAccesos(): bool
+    {
+        return $this->puedeAdmin() && $this->puedeVirtual();
+    }
+
+    public function urlInicio(): string
+    {
+        if ($this->tieneAmbosAccesos()) {
+            return route('seleccionar-acceso');
+        }
+        if ($this->puedeAdmin()) {
+            return '/admin/dashboard';
+        }
+        if ($this->puedeVirtual()) {
+            return '/virtual/dashboard';
+        }
+        return '/login';
     }
 }

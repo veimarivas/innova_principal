@@ -26,17 +26,34 @@ class LoginController extends Controller
         return [$field => $login, 'password' => $request->input('password')];
     }
 
+    protected function authenticated(Request $request, $user)
+    {
+        session()->forget('modo_acceso');
+
+        if ($user->tieneAmbosAccesos()) {
+            return redirect()->route('seleccionar-acceso');
+        }
+        if ($user->puedeAdmin()) {
+            return redirect('/admin/dashboard');
+        }
+        if ($user->puedeVirtual()) {
+            return redirect('/virtual/dashboard');
+        }
+
+        Auth::logout();
+        return redirect('/login')->with('error', 'Su cuenta no tiene accesos asignados. Contacte al administrador.');
+    }
+
     public function redirectPath()
     {
         $user = $this->guard()->user();
-        if ($user && $user->role === 'moodle') {
-            return '/virtual/dashboard';
-        }
-        return '/admin/dashboard';
+        if (!$user) return '/login';
+        return $user->urlInicio();
     }
 
     protected function loggedOut(Request $request)
     {
+        session()->forget('modo_acceso');
         return redirect()->route('login');
     }
 }

@@ -341,6 +341,15 @@
                         <span class="est-nav-tud-icon"><i class="ri-home-4-line"></i></span>
                         <span>Mi Portal</span>
                     </a>
+                    @if(auth()->check() && auth()->user()->tieneAmbosAccesos())
+                        <a class="est-nav-tud-item" href="{{ route('acceso.cambiar') }}"
+                           style="color:#b85500;font-weight:600;">
+                            <span class="est-nav-tud-icon" style="background:#fff4e6;color:#fc7b04;">
+                                <i class="ri-swap-line"></i>
+                            </span>
+                            <span>Cambiar de modo</span>
+                        </a>
+                    @endif
                     <div class="est-nav-tud-divider"></div>
                     <a class="est-nav-tud-item est-nav-tud-danger" href="javascript:void(0);"
                        onclick="event.preventDefault(); document.getElementById('virt-logout-form').submit();">

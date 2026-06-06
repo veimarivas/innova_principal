@@ -57,6 +57,85 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
 .search-feedback.error { color: var(--d-invalid-color); }
 .search-feedback.success { color: var(--d-valid-color); }
 .search-feedback i { font-size: 0.85rem; }
+
+/* ── Tabs de tipo de usuario ── */
+.tipo-usuario-tabs {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+@media (max-width: 700px) { .tipo-usuario-tabs { grid-template-columns: 1fr; } }
+.tipo-tab {
+    background: #fff; border: 2px solid #e9ecef; border-radius: 14px;
+    padding: 14px 18px; display: flex; align-items: center; gap: 14px;
+    cursor: pointer; transition: all .2s; text-align: left;
+    position: relative; overflow: hidden;
+}
+.tipo-tab::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(252,123,4,0) 0%, rgba(252,123,4,.05) 100%);
+    opacity: 0; transition: opacity .2s;
+}
+.tipo-tab:hover { border-color: #fed7aa; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+.tipo-tab.active {
+    border-color: #fc7b04;
+    background: linear-gradient(135deg, #fff8f0 0%, #fff 100%);
+    box-shadow: 0 6px 18px rgba(252,123,4,.18);
+}
+.tipo-tab.active::before { opacity: 1; }
+.tipo-tab-icon {
+    width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, #fc7b04, #b85500); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.35rem; box-shadow: 0 4px 12px rgba(252,123,4,.30);
+    position: relative; z-index: 1;
+}
+.tipo-tab-icon.tipo-virtual { background: linear-gradient(135deg, #2c5fb7, #1e3a8a); box-shadow: 0 4px 12px rgba(44,95,183,.30); }
+.tipo-tab-info { flex: 1; position: relative; z-index: 1; }
+.tipo-tab-label { font-weight: 700; font-size: 1rem; color: #1f2937; }
+.tipo-tab-desc { font-size: .78rem; color: #6b7280; margin-top: 2px; }
+.tipo-tab-count {
+    font-weight: 800; font-size: 1.4rem; color: #b85500;
+    min-width: 40px; text-align: right; position: relative; z-index: 1;
+}
+.tipo-tab:not(.active) .tipo-tab-count { color: #9ca3af; }
+
+/* ── Access options en modal crear ── */
+.access-options { display: grid; gap: 8px; }
+.access-option {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border: 2px solid #e9ecef; border-radius: 12px;
+    cursor: pointer; transition: all .15s; background: #fff;
+    position: relative;
+}
+.access-option:hover { border-color: #fed7aa; }
+.access-option input[type=checkbox] { display: none; }
+.access-option .check-icon {
+    color: #16a34a; font-size: 1.3rem; opacity: 0; transition: opacity .15s;
+    margin-left: auto;
+}
+.access-option:has(input:checked) {
+    border-color: #fc7b04; background: linear-gradient(135deg, #fff8f0, #fff);
+}
+.access-option:has(input:checked) .check-icon { opacity: 1; }
+.access-option .access-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, #fc7b04, #b85500); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+}
+.access-option .access-icon.access-virtual { background: linear-gradient(135deg, #2c5fb7, #1e3a8a); }
+.access-option .access-title { font-weight: 700; font-size: .9rem; color: #1f2937; }
+.access-option .access-desc { font-size: .75rem; color: #6b7280; margin-top: 1px; }
+
+/* ── Badges de acceso en tabla ── */
+.access-badges { display: inline-flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
+.access-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 12px;
+    font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .02em;
+}
+.access-badge.admin { background: rgba(252,123,4,.12); color: #b85500; border: 1px solid rgba(252,123,4,.30); }
+.access-badge.virtual { background: rgba(44,95,183,.10); color: #1e3a8a; border: 1px solid rgba(44,95,183,.25); }
+.access-badge i { font-size: .78rem; }
 </style>
 @endsection
 
@@ -91,6 +170,26 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
 </div>
 
 <div class="container-fluid py-4">
+    <!-- Tabs de tipo de usuario -->
+    <div class="tipo-usuario-tabs mb-3">
+        <button type="button" class="tipo-tab active" data-tipo="admin">
+            <div class="tipo-tab-icon"><i class="ri-shield-user-line"></i></div>
+            <div class="tipo-tab-info">
+                <div class="tipo-tab-label">Administradores</div>
+                <div class="tipo-tab-desc">Trabajadores con acceso al sistema</div>
+            </div>
+            <div class="tipo-tab-count" id="cnt-admin">0</div>
+        </button>
+        <button type="button" class="tipo-tab" data-tipo="virtual">
+            <div class="tipo-tab-icon tipo-virtual"><i class="ri-presentation-line"></i></div>
+            <div class="tipo-tab-info">
+                <div class="tipo-tab-label">Portal Virtual</div>
+                <div class="tipo-tab-desc">Docentes y estudiantes</div>
+            </div>
+            <div class="tipo-tab-count" id="cnt-virtual">0</div>
+        </button>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <div class="dept-card">
@@ -100,8 +199,8 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
                             <i class="ri-table-line"></i>
                         </div>
                         <div>
-                            <h5 class="dept-title">Listado de Usuarios</h5>
-                            <p class="dept-subtitle">Consulta y gestiona las cuentas de usuario existentes</p>
+                            <h5 class="dept-title" id="tabla-titulo">Usuarios Administradores</h5>
+                            <p class="dept-subtitle" id="tabla-subtitulo">Cuentas con acceso al panel administrativo</p>
                         </div>
                     </div>
                 </div>
@@ -112,7 +211,7 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
                                 <th>Usuario</th>
                                 <th>Correo</th>
                                 <th>Persona</th>
-                                <th>Rol</th>
+                                <th class="text-center">Accesos</th>
                                 <th class="text-center">Cuentas</th>
                                 <th class="text-center" style="width:200px;">Acciones</th>
                             </tr>
@@ -201,10 +300,31 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
                     <div class="mb-1">
                         <label class="form-label">
                             <i class="ri-shield-line" style="color:#fc7b04;"></i>
-                            Rol
+                            Tipo de Acceso <span class="req">*</span>
                         </label>
-                        <input type="text" class="form-control" value="admin" disabled
-                               style="opacity:0.7;cursor:not-allowed;">
+                        <div class="access-options">
+                            <label class="access-option" data-acceso="admin">
+                                <input type="checkbox" id="accesoAdminChk" checked>
+                                <div class="access-icon"><i class="ri-shield-user-line"></i></div>
+                                <div class="access-info">
+                                    <div class="access-title">Panel Administrativo</div>
+                                    <div class="access-desc">Gestión del sistema</div>
+                                </div>
+                                <i class="ri-checkbox-circle-fill check-icon"></i>
+                            </label>
+                            <label class="access-option" data-acceso="virtual">
+                                <input type="checkbox" id="accesoVirtualChk">
+                                <div class="access-icon access-virtual"><i class="ri-presentation-line"></i></div>
+                                <div class="access-info">
+                                    <div class="access-title">Portal Virtual</div>
+                                    <div class="access-desc">Como docente o estudiante</div>
+                                </div>
+                                <i class="ri-checkbox-circle-fill check-icon"></i>
+                            </label>
+                        </div>
+                        <div class="form-text mt-2" style="font-size:.76rem;">
+                            <i class="ri-information-line"></i> Puede seleccionar uno o ambos. Si selecciona ambos, el usuario podrá elegir el modo al iniciar sesión.
+                        </div>
                     </div>
                 </form>
             </div>
@@ -339,6 +459,27 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
     </div>
 </div>
 
+<!-- Modal Asignar Roles -->
+<div class="modal fade" id="modalAsignarRoles" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:520px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-shield-user-line"></i> Asignar roles a: <span id="ar-nombre" style="color:#b85500;font-weight:700;"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="ar-id">
+                <p class="text-muted small mb-3">Seleccione uno o más roles. Al usuario se le asignarán exclusivamente los roles marcados.</p>
+                <div id="ar-roles-container" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-modal-submit" id="btnGuardarRoles"><i class="ri-save-line"></i> Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="toastContainer" class="toast-container"></div>
 @endsection
 
@@ -358,9 +499,15 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
         bindEvents();
     }
 
+    let tipoActual = 'admin';
+
     function initDataTable() {
         tabla = $('#tabla-users').DataTable({
-            ajax: { url: '{{ route("admin.users.listar") }}', dataSrc: 'data' },
+            ajax: {
+                url: '{{ route("admin.users.listar") }}',
+                data: function (d) { d.tipo = tipoActual; },
+                dataSrc: 'data'
+            },
             ordering: true,
             paging: true,
             info: true,
@@ -386,12 +533,14 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
                     }
                 },
                 {
-                    data: 'role',
-                    render: r => {
-                        if (r === 'admin') {
-                            return '<span class="badge-role badge-admin"><i class="ri-shield-check-line"></i> Admin</span>';
-                        }
-                        return '<span class="badge-role badge-user"><i class="ri-user-line"></i> User</span>';
+                    data: null, className: 'text-center',
+                    render: d => {
+                        let html = '<div class="access-badges">';
+                        if (d.acceso_admin) html += '<span class="access-badge admin"><i class="ri-shield-user-line"></i> Admin</span>';
+                        if (d.acceso_virtual) html += '<span class="access-badge virtual"><i class="ri-presentation-line"></i> Virtual</span>';
+                        if (!d.acceso_admin && !d.acceso_virtual) html += '<span class="text-muted small">—</span>';
+                        html += '</div>';
+                        return html;
                     }
                 },
                 {
@@ -449,7 +598,13 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
                                   + 'title="Habilitar cuenta"><i class="ri-shield-check-line"></i></button>';
                         }
 
-                        // 4) Eliminar
+                        // 4) Asignar Roles (Spatie)
+                        btns += '<button type="button" class="user-btn-action user-btn-reset btn-asignar-roles" '
+                              + 'data-id="' + d.id + '" data-nombre="' + nombre + '" '
+                              + 'style="background:#fff4e6;color:#b85500;" '
+                              + 'title="Asignar roles"><i class="ri-shield-user-line"></i></button>';
+
+                        // 5) Eliminar
                         btns += '<button type="button" class="user-btn-action user-btn-delete btn-accion-eliminar" '
                               + 'data-id="' + d.id + '" data-nombre="' + escHtml(d.name) + '" '
                               + 'title="Eliminar usuario"><i class="ri-delete-bin-fill"></i></button>';
@@ -485,9 +640,21 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
             pageLength: 10,
             drawCallback: function () {
                 const api = this.api();
-                $('#stat-total').text(api.rows().data().length);
+                const total = api.rows().data().length;
+                $('#stat-total').text(total);
+                $('#cnt-' + tipoActual).text(total);
             }
         });
+
+        // Cargar contador del otro tipo de forma asíncrona
+        actualizarContadorOtroTipo();
+    }
+
+    function actualizarContadorOtroTipo() {
+        const otroTipo = tipoActual === 'admin' ? 'virtual' : 'admin';
+        $.get('{{ route("admin.users.listar") }}', { tipo: otroTipo })
+            .done(r => $('#cnt-' + otroTipo).text((r.data || []).length))
+            .fail(() => {});
     }
 
     let idReiniciar = null;
@@ -501,6 +668,23 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
     window.generarPasswordDefault = generarPasswordDefault;
 
     function bindEvents() {
+        // === Cambio de tab (Administradores / Virtual) ===
+        $('.tipo-tab').on('click', function () {
+            const t = $(this).data('tipo');
+            if (t === tipoActual) return;
+            tipoActual = t;
+            $('.tipo-tab').removeClass('active');
+            $(this).addClass('active');
+            if (t === 'admin') {
+                $('#tabla-titulo').text('Usuarios Administradores');
+                $('#tabla-subtitulo').text('Cuentas con acceso al panel administrativo');
+            } else {
+                $('#tabla-titulo').text('Usuarios del Portal Virtual');
+                $('#tabla-subtitulo').text('Docentes y estudiantes con acceso a la plataforma');
+            }
+            tabla.ajax.reload();
+        });
+
         $('#btn-nuevo').on('click', () => {
             resetCreateModal();
             openModal('modalCrear');
@@ -635,6 +819,52 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
             openModal('modalEliminar');
         });
 
+        // Asignar Roles (Spatie)
+        $(document).on('click', '.btn-asignar-roles', function () {
+            const id = $(this).data('id');
+            const nombre = $(this).data('nombre');
+            $('#ar-id').val(id);
+            $('#ar-nombre').text(nombre);
+            $('#ar-roles-container').html('<div class="text-center py-3"><span class="spinner-border spinner-border-sm"></span></div>');
+            openModal('modalAsignarRoles');
+            $.get('/admin/users/' + id + '/roles').done(function (r) {
+                if (!r.success) { toast('error', r.message || 'Error'); return; }
+                if (!r.roles || r.roles.length === 0) {
+                    $('#ar-roles-container').html('<p class="text-muted">No hay roles registrados. Cree roles desde el módulo Roles.</p>');
+                    return;
+                }
+                let html = '';
+                r.roles.forEach(function (rol) {
+                    html += '<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #e9ecef;border-radius:10px;cursor:pointer;background:'+(rol.asignado?'#fff4e6':'#fff')+';">';
+                    html += '<input type="checkbox" class="ar-role-cb" value="'+rol.id+'" '+(rol.asignado?'checked':'')+'>';
+                    html += '<span style="font-weight:600;text-transform:uppercase;">'+rol.name+'</span>';
+                    html += '</label>';
+                });
+                $('#ar-roles-container').html(html);
+            }).fail(function () {
+                $('#ar-roles-container').html('<p class="text-danger">Error al cargar roles.</p>');
+            });
+        });
+
+        $('#btnGuardarRoles').on('click', function () {
+            const id = $('#ar-id').val();
+            const ids = $('#ar-roles-container input.ar-role-cb:checked').map(function(){return this.value;}).get();
+            const $btn = $(this);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Guardando…');
+            $.post('/admin/users/'+id+'/roles', { _token: '{{ csrf_token() }}', roles: ids })
+                .done(function (r) {
+                    closeModal('modalAsignarRoles');
+                    tabla.ajax.reload(null, false);
+                    toast('success', r.message || 'Roles actualizados.');
+                })
+                .fail(function (xhr) {
+                    toast('error', xhr.responseJSON?.message || 'Error al guardar roles.');
+                })
+                .always(function () {
+                    $btn.prop('disabled', false).html('<i class="ri-save-line"></i> Guardar');
+                });
+        });
+
         $('#btnConfirmarEliminar').on('click', function () {
             if (!idEliminar) return;
             eliminar(idEliminar);
@@ -653,6 +883,9 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
         $('#passwordPreview').val('');
         $('#personaInfoCard').removeClass('show');
         $('#btnGuardar').prop('disabled', true);
+        // Preset según el tab actual
+        $('#accesoAdminChk').prop('checked', tipoActual === 'admin');
+        $('#accesoVirtualChk').prop('checked', tipoActual === 'virtual');
         resetField('nameCrear', 'iconCrear', 'fbCrear', 'hintCrear');
         document.getElementById('iconBuscar').className = 'validation-icon';
         document.getElementById('iconBuscar').innerHTML = '';
@@ -756,15 +989,25 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
             return;
         }
 
+        const accesoAdmin = $('#accesoAdminChk').is(':checked');
+        const accesoVirtual = $('#accesoVirtualChk').is(':checked');
+        if (!accesoAdmin && !accesoVirtual) {
+            toast('error', 'Debe seleccionar al menos un tipo de acceso.');
+            return;
+        }
+
         setBtnLoading('#btnGuardar', true, 'Creando…');
         $.post('{{ route("admin.users.guardar") }}', {
             _token: CSRF,
             persona_id: personaId,
-            name: $('#nameCrear').val().trim()
+            name: $('#nameCrear').val().trim(),
+            acceso_admin: accesoAdmin ? 1 : 0,
+            acceso_virtual: accesoVirtual ? 1 : 0
         })
         .done(r => {
             closeModal('modalCrear');
             tabla.ajax.reload();
+            actualizarContadorOtroTipo();
             toast('success', r.message || 'Cuenta creada correctamente.');
         })
         .fail(xhr => {

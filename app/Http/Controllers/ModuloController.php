@@ -367,13 +367,15 @@ class ModuloController extends Controller
 
         if (!$existingUser && $persona->correo) {
             User::create([
-                'name'       => $nombreCompleto,
-                'username'   => $username,
-                'email'      => $persona->correo,
-                'password'   => $password,
-                'role'       => 'moodle',
-                'estado'     => 'Activo',
-                'persona_id' => $persona->id,
+                'name'           => $nombreCompleto,
+                'username'       => $username,
+                'email'          => $persona->correo,
+                'password'       => $password,
+                'role'           => 'moodle',
+                'acceso_admin'   => false,
+                'acceso_virtual' => true,
+                'estado'         => 'Activo',
+                'persona_id'     => $persona->id,
             ]);
             $result['sistema'] = true;
         }

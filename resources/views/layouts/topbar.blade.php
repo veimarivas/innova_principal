@@ -203,6 +203,12 @@
                                     <span class="tud-item-icon"><i class="ri-user-line"></i></span>
                                     <span>Mi Perfil</span>
                                 </a>
+                                @if(auth()->user()->tieneAmbosAccesos())
+                                    <a class="tud-item" href="{{ route('acceso.cambiar') }}" style="color:#b85500;font-weight:600;">
+                                        <span class="tud-item-icon" style="background:#fff4e6;color:#fc7b04;"><i class="ri-swap-line"></i></span>
+                                        <span>Cambiar de modo</span>
+                                    </a>
+                                @endif
                                 <div class="tud-divider"></div>
                                 <a class="tud-item tud-item-danger" href="javascript:void(0);"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

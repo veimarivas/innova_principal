@@ -86,6 +86,59 @@ h1,h2,h3,h4,h5,h6,.modal-title,.est-card-title,.est-stat-num,.est-section-title 
 .est-ya-estudiante i { color: var(--est-green); font-size: 1.1rem; }
 .est-ya-estudiante span { font-size: 0.82rem; font-weight: 600; color: var(--est-green); }
 
+/* ── Hint de búsqueda y validación ── */
+.search-validation-hint { font-size: 0.72rem; color: #6b7280; margin-top: 4px; display: flex; align-items: center; gap: 5px; min-height: 18px; }
+.search-validation-hint i { font-size: 0.85rem; color: #fc7b04; }
+.search-validation-hint.success { color: #16a34a; }
+.search-validation-hint.success i { color: #16a34a; }
+.search-validation-hint.error { color: #dc2626; }
+.search-validation-hint.error i { color: #dc2626; }
+.form-control.is-valid#searchCarnet, .form-control.is-valid[id="searchCarnet"] { border-color: #16a34a !important; }
+.form-control.is-invalid#searchCarnet { border-color: #dc2626 !important; }
+
+/* ── Botones deshabilitados (estado más obvio) ── */
+.est-btn[disabled], .est-btn:disabled {
+    opacity: 0.45 !important; cursor: not-allowed !important;
+    background: #d1d5db !important; color: #6b7280 !important;
+    box-shadow: none !important; animation: none !important; transform: none !important;
+}
+.est-btn[disabled]:hover, .est-btn:disabled:hover { transform: none !important; }
+
+/* ── Caja "no es estudiante todavía" ── */
+.est-no-estudiante {
+    margin-top: 0.85rem; padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(252,123,4,0.07) 0%, rgba(252,123,4,0.02) 100%);
+    border: 1.5px dashed rgba(252,123,4,0.35);
+    border-radius: 12px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.est-no-est-icon {
+    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, #fc7b04, #b85500); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    box-shadow: 0 4px 12px rgba(252,123,4,0.30);
+}
+.est-no-est-text { flex: 1; min-width: 200px; font-size: 0.86rem; color: #475569; }
+.est-no-est-text strong { color: #b85500; font-size: 0.95rem; display: block; margin-bottom: 2px; }
+.est-no-est-text div { font-size: 0.78rem; color: #6b7280; }
+.est-btn-confirm {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #fff;
+    border: none; padding: 0.65rem 1.2rem; border-radius: 10px;
+    font-weight: 600; font-size: 0.85rem; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    box-shadow: 0 3px 10px rgba(22,163,74,0.25); transition: all .15s;
+}
+.est-btn-confirm:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(22,163,74,0.40); }
+
+/* ── Modal de confirmación ── */
+.confirm-icon-ring {
+    width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 12px;
+    background: linear-gradient(135deg, rgba(252,123,4,0.12), rgba(252,123,4,0.05));
+    color: #fc7b04; font-size: 1.9rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 0 2px rgba(252,123,4,0.15);
+}
+
 .est-section-title { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; color: var(--est-text-muted); border-bottom: 1px solid var(--est-border); padding-bottom: 0.35rem; margin: 1.25rem 0 1rem; display: flex; align-items: center; gap: 0.4rem; }
 .est-section-title:first-child { margin-top: 0; }
 .est-section-title i { font-size: 0.85rem; color: var(--est-primary); }
@@ -126,14 +179,20 @@ h1,h2,h3,h4,h5,h6,.modal-title,.est-card-title,.est-stat-num,.est-section-title 
 .est-cel-cell { display: flex; align-items: center; gap: 0.35rem; font-size: 0.83rem; color: var(--est-text); white-space: nowrap; }
 .est-cel-cell i { color: var(--est-primary); font-size: 0.85rem; flex-shrink: 0; }
 
-.est-action-cell { display: flex; align-items: center; justify-content: center; gap: 0.3rem; }
-.est-btn-action { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; border: none; transition: all 0.2s; background: transparent; color: var(--est-text-muted); cursor: pointer; }
-.est-btn-action i { font-size: 0.95rem; }
-.est-btn-action:hover { background: var(--est-border-light); }
-.est-btn-cuenta { background: rgba(124,58,237,0.08); color: #7c3aed; border: 1px solid rgba(124,58,237,0.2); }
-.est-btn-cuenta:hover { background: rgba(124,58,237,0.15); color: #5b21b6; }
-.est-btn-whatsapp { background: rgba(37,211,102,0.08); color: #25D366; border: 1px solid rgba(37,211,102,0.2); }
-.est-btn-whatsapp:hover { background: rgba(37,211,102,0.15); color: #128C7E; }
+.est-action-cell { display: flex; align-items: center; justify-content: center; gap: 0.28rem; flex-wrap: wrap; }
+.est-btn-action { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; border: none; transition: all 0.2s; cursor: pointer; }
+.est-btn-action i { font-size: 0.92rem; }
+.est-btn-action[disabled] { opacity: 0.35; cursor: not-allowed; }
+.est-btn-action.est-btn-view { background: rgba(59,130,246,0.08); color: #3b82f6; border: 1px solid rgba(59,130,246,0.22); }
+.est-btn-action.est-btn-view:hover:not([disabled]) { background: rgba(59,130,246,0.18); color: #2563eb; }
+.est-btn-action.est-btn-edit { background: rgba(252,123,4,0.08); color: var(--est-primary); border: 1px solid rgba(252,123,4,0.22); }
+.est-btn-action.est-btn-edit:hover:not([disabled]) { background: rgba(252,123,4,0.18); color: #d46604; }
+.est-btn-action.est-btn-cuenta { background: rgba(124,58,237,0.08); color: #7c3aed; border: 1px solid rgba(124,58,237,0.22); }
+.est-btn-action.est-btn-cuenta:hover:not([disabled]) { background: rgba(124,58,237,0.18); color: #5b21b6; }
+.est-btn-action.est-btn-whatsapp { background: rgba(37,211,102,0.08); color: #25D366; border: 1px solid rgba(37,211,102,0.22); }
+.est-btn-action.est-btn-whatsapp:hover:not([disabled]) { background: rgba(37,211,102,0.18); color: #128C7E; }
+.est-btn-action.est-btn-delete { background: rgba(220,38,38,0.06); color: #dc2626; border: 1px solid rgba(220,38,38,0.18); }
+.est-btn-action.est-btn-delete:hover:not([disabled]) { background: rgba(220,38,38,0.15); color: #b91c1c; }
 
 /* ── Modal WhatsApp Accesos ── */
 .wa-modal-content {
@@ -390,9 +449,6 @@ h1,h2,h3,h4,h5,h6,.modal-title,.est-card-title,.est-stat-num,.est-section-title 
     box-shadow: 0 6px 16px rgba(37,211,102,.35);
 }
 
-.est-btn-edit:hover { background: rgba(252,123,4,0.1); color: var(--est-primary); }
-.est-btn-delete:hover { background: rgba(224,80,80,0.08); color: var(--est-danger); }
-
 .est-label { font-size: 0.82rem; font-weight: 600; color: var(--est-text); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.35rem; }
 .est-label i { color: var(--est-primary); font-size: 0.9rem; }
 .req { color: var(--est-danger); font-weight: 700; }
@@ -547,7 +603,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
     .est-btn-search, .est-btn-register { width: 100%; justify-content: center; }
     .est-modal-form .modal-body-inner { padding: 1rem; }
     .est-stu-avatar { width: 32px; height: 32px; font-size: 0.68rem; }
-    .est-action-cell { gap: 0.15rem; }
+    .est-action-cell { gap: 0.2rem; }
     .est-btn-action { width: 30px; height: 30px; }
     .est-card .dataTables_wrapper .dataTables_filter input { min-width: 100px; }
 }
@@ -611,12 +667,17 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
         <div class="est-search-row">
             <div class="est-search-input">
                 <label><i class="ri-id-card-line"></i> Buscar por Carnet</label>
-                <input type="text" class="form-control" id="searchCarnet" placeholder="Ingrese el número de carnet…" maxlength="20" autocomplete="off">
+                <input type="text" class="form-control" id="searchCarnet" inputmode="numeric"
+                       placeholder="Solo dígitos (7 a 11)" maxlength="11" autocomplete="off">
+                <div class="search-validation-hint" id="searchHint">
+                    <i class="ri-information-line"></i> Ingrese entre 7 y 11 dígitos numéricos.
+                </div>
             </div>
-            <button type="button" class="est-btn est-btn-search" id="btnBuscar">
+            <button type="button" class="est-btn est-btn-search" id="btnBuscar" disabled>
                 <i class="ri-search-line"></i> Buscar
             </button>
-            <button type="button" class="est-btn est-btn-register" id="btnAbrirRegistro">
+            <button type="button" class="est-btn est-btn-register" id="btnAbrirRegistro" disabled
+                    title="Primero realice una búsqueda. Si la persona no existe, podrá registrarla.">
                 <i class="ri-graduation-cap-line"></i> Registrar Estudiante
             </button>
             <button type="button" class="est-btn-cancel" id="btnLimpiarBusqueda" style="display:none;">
@@ -642,9 +703,49 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
                 <div class="est-pf-item"><label>Celular</label><span id="pfCelular"></span></div>
                 <div class="est-pf-item"><label>Ciudad</label><span id="pfCiudad"></span></div>
             </div>
+
             <div id="yaEstudianteBox" class="est-ya-estudiante" style="display:none;">
                 <i class="ri-checkbox-circle-fill"></i>
                 <span>Esta persona ya está registrada como estudiante.</span>
+            </div>
+
+            <div id="noEsEstudianteBox" class="est-no-estudiante" style="display:none;">
+                <div class="est-no-est-icon"><i class="ri-information-line"></i></div>
+                <div class="est-no-est-text">
+                    <strong>Esta persona aún no es estudiante.</strong>
+                    <div>¿Desea registrarla como estudiante en el sistema?</div>
+                </div>
+                <button type="button" class="est-btn est-btn-confirm" id="btnRegistrarPersonaExistente">
+                    <i class="ri-user-add-line"></i> Sí, registrar como Estudiante
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- ═══ MODAL CONFIRMACIÓN REGISTRO ═══ --}}
+    <div class="modal fade" id="modalConfirmarRegistro" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-user-add-line"></i> Confirmar registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center px-4 py-3">
+                    <div class="confirm-icon-ring"><i class="ri-graduation-cap-line"></i></div>
+                    <p class="mb-1" style="font-size:1rem;font-weight:600;">¿Registrar a esta persona como Estudiante?</p>
+                    <p class="mb-0" style="color:#6b7280;font-size:.88rem;">
+                        <strong id="cfNombreCompleto">—</strong><br>
+                        <span style="font-size:.78rem;">Carnet: <strong id="cfCarnet">—</strong></span>
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-center gap-3">
+                    <button type="button" class="btn btn-modal-cancel px-4" data-bs-dismiss="modal">
+                        <i class="ri-close-line me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-modal-submit px-4" id="btnConfirmarRegistroExistente">
+                        <i class="ri-check-line"></i> Sí, registrar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -684,333 +785,388 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
 </div>
 
 {{-- ════════════════ MODAL REGISTRAR ESTUDIANTE ════════════════ --}}
-<div class="modal fade est-modal-form" id="modalRegistro" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalRegistroTitle"><i class="ri-graduation-cap-line"></i> Registrar Estudiante</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+<div class="modal fade" id="modalRegistro" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content"
+            style="border:none;border-radius:18px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.2);">
+            <div class="modal-header" style="background:linear-gradient(135deg,#391b04,#7c3c00,#c96004);color:white;padding:1.25rem 1.5rem;border:none;">
+                <div class="d-flex align-items-center gap-3 flex-grow-1">
+                    <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="ri-graduation-cap-line" style="font-size:1.35rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;color:#fff;">Registrar Nuevo Estudiante</h5>
+                        <div style="font-size:.73rem;opacity:.8;margin-top:.15rem;">Completa los datos para registrar al estudiante en el sistema</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <form id="formRegistro" novalidate autocomplete="off" enctype="multipart/form-data">
-                <div class="modal-body">
-                    <div id="registroYaEstudiante" class="est-ya-estudiante" style="display:none;">
-                        <i class="ri-checkbox-circle-fill"></i>
-                        <span>Esta persona ya está registrada como estudiante.</span>
+            <div class="modal-body" style="padding:0;background:#fff;">
+                <div id="registroYaEstudiante" style="display:none;padding:1.2rem 1.5rem 0;">
+                    <div style="background:rgba(90,138,48,0.08);border:1px solid rgba(90,138,48,0.2);border-radius:10px;padding:0.7rem 1rem;display:flex;align-items:center;gap:0.5rem;">
+                        <i class="ri-checkbox-circle-fill" style="color:var(--est-green);font-size:1.1rem;"></i>
+                        <span style="font-size:0.82rem;font-weight:600;color:var(--est-green);">Esta persona ya está registrada como estudiante.</span>
+                    </div>
+                </div>
+                <form id="formRegistrarPersona">
+                    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #f1f5f9;">
+                        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.85rem;">
+                            <div style="width:26px;height:26px;border-radius:7px;background:rgba(154,73,4,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="ri-fingerprint-line" style="color:#9a4904;font-size:.85rem;"></i>
+                            </div>
+                            <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#9a4904;">Identidad</span>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Carnet <span class="text-danger">*</span></label>
+                                <input type="text" id="inputCarnetPersona" name="carnet"
+                                    class="form-control form-control-sm" required maxlength="20" readonly
+                                    style="background:#f1f5f9;cursor:not-allowed;font-size:0.85rem;border-radius:9px;">
+                                <input type="hidden" name="expedido" value="">
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Nombres <span class="text-danger">*</span></label>
+                                <input type="text" name="nombres" class="form-control form-control-sm"
+                                    required maxlength="100" style="font-size:0.85rem;border-radius:9px;">
+                                <div class="invalid-feedback-custom" id="fbNombres" style="display:none;"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Apellido Paterno <span class="text-danger" title="Al menos un apellido es requerido">*</span></label>
+                                <input type="text" name="apellido_paterno" class="form-control form-control-sm"
+                                    maxlength="80" style="font-size:0.85rem;border-radius:9px;">
+                                <div class="invalid-feedback-custom" id="fbApellidoPaterno" style="display:none;"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Apellido Materno <span class="text-danger" title="Al menos un apellido es requerido">*</span></label>
+                                <input type="text" name="apellido_materno" class="form-control form-control-sm"
+                                    maxlength="80" style="font-size:0.85rem;border-radius:9px;">
+                                <div class="invalid-feedback-custom" id="fbApellidoMaterno" style="display:none;"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Sexo <span class="text-danger">*</span></label>
+                                <select name="sexo" class="form-select form-select-sm" required style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                                <div class="invalid-feedback-custom" id="fbSexo" style="display:none;"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Fecha Nacimiento</label>
+                                <input type="date" name="fecha_nacimiento" class="form-control form-control-sm"
+                                    style="font-size:0.85rem;border-radius:9px;">
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Estado Civil <span class="text-danger">*</span></label>
+                                <select name="estado_civil" class="form-select form-select-sm" required style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Soltero/a">Soltero/a</option>
+                                    <option value="Casado/a">Casado/a</option>
+                                    <option value="Divorciado/a">Divorciado/a</option>
+                                    <option value="Viudo/a">Viudo/a</option>
+                                    <option value="Unión Libre">Unión Libre</option>
+                                </select>
+                                <div class="invalid-feedback-custom" id="fbEstadoCivil" style="display:none;"></div>
+                            </div>
+                        </div>
                     </div>
 
-                    {{-- Photo --}}
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="est-photo-wrap">
-                                <div class="est-photo-circle" onclick="document.getElementById('fotografiaRegistro').click()">
-                                    <img id="previewFotografiaRegistro" src="{{ URL::asset('build/images/users/avatar-1.jpg') }}" alt="Foto">
-                                    <div class="est-photo-overlay"><i class="ri-camera-line"></i></div>
-                                    <input type="file" id="fotografiaRegistro" name="fotografia" accept="image/*" style="display:none;" onchange="previewImage(this, 'previewFotografiaRegistro')">
+                    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #f1f5f9;background:rgba(252,123,4,.02);">
+                        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.85rem;">
+                            <div style="width:26px;height:26px;border-radius:7px;background:rgba(252,123,4,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="ri-contacts-line" style="color:#fc7b04;font-size:.85rem;"></i>
+                            </div>
+                            <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#c96004;">Contacto y Ubicación</span>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Correo <span class="text-danger">*</span></label>
+                                <div style="position:relative;">
+                                    <i class="ri-mail-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="email" name="correo" class="form-control form-control-sm"
+                                        maxlength="150" placeholder="correo@ejemplo.com" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
                                 </div>
-                                <span class="est-photo-hint">Click para cambiar foto</span>
+                                <div class="invalid-feedback-custom" id="fbCorreo" style="display:none;"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Celular <span class="text-danger">*</span></label>
+                                <div style="position:relative;">
+                                    <i class="ri-smartphone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="text" name="celular" class="form-control form-control-sm"
+                                        maxlength="8" inputmode="numeric" placeholder="70000000" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                                <div class="invalid-feedback-custom" id="fbCelular" style="display:none;"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Teléfono</label>
+                                <div style="position:relative;">
+                                    <i class="ri-phone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="text" name="telefono" class="form-control form-control-sm"
+                                        maxlength="20" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;">
+                                    <i class="ri-map-pin-line" style="color:#fc7b04;font-size:.8rem;"></i> Departamento
+                                </label>
+                                <select name="departamento_id" class="form-select form-select-sm"
+                                    id="inputDepartamentoRegistro" style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;">
+                                    <i class="ri-building-line" style="color:#fc7b04;font-size:.8rem;"></i> Ciudad <span class="text-danger">*</span>
+                                </label>
+                                <select name="ciudade_id" class="form-select form-select-sm" id="inputCiudadRegistro" required
+                                    disabled style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">Seleccione departamento primero</option>
+                                </select>
+                                <div class="invalid-feedback-custom" id="fbCiudadeId" style="display:none;"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Dirección</label>
+                                <input type="text" name="direccion" class="form-control form-control-sm"
+                                    maxlength="200" style="font-size:0.85rem;border-radius:9px;">
                             </div>
                         </div>
                     </div>
 
-                    {{-- Identity Section --}}
-                    <div class="est-modal-section-header"><i class="ri-id-card-line"></i><span>Datos de Identidad</span></div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="est-label">Carnet <span class="req">*</span></label>
-                            <div class="est-field">
-                                <input type="text" class="form-control" id="rCarnet" placeholder="Ej: 12345678" maxlength="20" autocomplete="off">
-                                <span class="est-validation-icon" id="iconRCarnet"></span>
+                    <div style="padding:1.2rem 1.5rem;background:rgba(99,102,241,.02);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;">
+                            <div style="display:flex;align-items:center;gap:.5rem;">
+                                <div style="width:26px;height:26px;border-radius:7px;background:rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="ri-graduation-cap-line" style="color:#6366f1;font-size:.85rem;"></i>
+                                </div>
+                                <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#6366f1;">Estudios Académicos</span>
+                                <span style="font-size:.68rem;color:#94a3b8;">(opcional)</span>
                             </div>
-                            <div class="est-feedback" id="fbRCarnet"></div>
+                            <button type="button" id="btnAgregarEstudioRegistro"
+                                style="padding:.35rem .85rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);border-radius:8px;color:#6366f1;font-size:.78rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;transition:all .15s;">
+                                <i class="ri-add-circle-line"></i> Agregar Estudio
+                            </button>
                         </div>
-                        <div class="col-md-3">
-                            <label class="est-label">Expedido</label>
-                            <input type="text" class="form-control" id="rExpedido" placeholder="Ej: LP" maxlength="10" autocomplete="off">
-                        </div>
-                        <div class="col-md-5">
-                            <label class="est-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="rFechaNacimiento">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="est-label">Nombres <span class="req">*</span></label>
-                            <div class="est-field">
-                                <input type="text" class="form-control" id="rNombres" placeholder="Ej: Juan Carlos" maxlength="100" autocomplete="off">
-                                <span class="est-validation-icon" id="iconRNombres"></span>
-                            </div>
-                            <div class="est-feedback" id="fbRNombres"></div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="est-label">Ap. Paterno</label>
-                            <div class="est-field">
-                                <input type="text" class="form-control" id="rApPaterno" placeholder="García" maxlength="80" autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="est-label">Ap. Materno</label>
-                            <div class="est-field">
-                                <input type="text" class="form-control" id="rApMaterno" placeholder="López" maxlength="80" autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="est-feedback" id="fbRApellidos"></div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="est-label">Sexo <span class="req">*</span></label>
-                            <select class="form-select" id="rSexo">
-                                <option value="">— Seleccione —</option>
-                                <option value="M">Masculino</option>
-                                <option value="F">Femenino</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="est-label">Estado Civil <span class="req">*</span></label>
-                            <select class="form-select" id="rEstadoCivil">
-                                <option value="">— Seleccione —</option>
-                                <option value="Soltero/a">Soltero/a</option>
-                                <option value="Casado/a">Casado/a</option>
-                                <option value="Divorciado/a">Divorciado/a</option>
-                                <option value="Viudo/a">Viudo/a</option>
-                                <option value="Unión Libre">Unión Libre</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-5">
-                            <label class="est-label">Departamento</label>
-                            <select class="form-select" id="rDepto">
-                                <option value="">— Seleccione —</option>
-                            </select>
-                        </div>
-                        <div class="col-md-5">
-                            <label class="est-label">Ciudad <span class="req">*</span></label>
-                            <select class="form-select" id="rCiudad" disabled>
-                                <option value="">— Seleccione depto. —</option>
-                            </select>
-                        </div>
+                        <div id="estudiosListaRegistro"></div>
                     </div>
-
-                    {{-- Contact Section --}}
-                    <div class="est-modal-section-header mt-4"><i class="ri-phone-line"></i><span>Datos de Contacto</span></div>
-                    <div class="row g-3">
-                        <div class="col-md-5">
-                            <label class="est-label">Correo Electrónico <span class="req">*</span></label>
-                            <div class="est-field">
-                                <input type="email" class="form-control" id="rCorreo" placeholder="correo@dominio.com" maxlength="150" autocomplete="off">
-                                <span class="est-validation-icon" id="iconRCorreo"></span>
-                            </div>
-                            <div class="est-feedback" id="fbRCorreo"></div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="est-label">Celular <span class="req">*</span></label>
-                            <input type="text" class="form-control" id="rCelular" placeholder="70000000" maxlength="20" autocomplete="off">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="est-label">Teléfono</label>
-                            <input type="text" class="form-control" id="rTelefono" placeholder="2000000" maxlength="20" autocomplete="off">
-                        </div>
-                        <div class="col-12">
-                            <label class="est-label">Dirección</label>
-                            <input type="text" class="form-control" id="rDireccion" placeholder="Av. 6 de Agosto N° 123" maxlength="200" autocomplete="off">
-                        </div>
-                    </div>
-
-                    {{-- Studies Section --}}
-                    <div class="est-modal-section-header mt-4"><i class="ri-graduation-cap-line"></i><span>Estudios Académicos</span></div>
-                    <div id="registroEstudiosContainer">
-                        <div id="registroEstudiosEmpty" style="text-align:center;padding:1.2rem 1rem;border:2px dashed rgba(252,123,4,.2);border-radius:12px;background:rgba(252,123,4,.02);margin-bottom:.5rem;">
-                            <div style="width:40px;height:40px;border-radius:12px;background:rgba(252,123,4,.08);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
-                                <i class="ri-graduation-cap-line" style="font-size:1.2rem;color:rgba(252,123,4,.5);"></i>
-                            </div>
-                            <div style="font-size:.8rem;font-weight:600;color:#64748b;margin-bottom:.2rem;">Sin estudios agregados</div>
-                            <div style="font-size:.72rem;color:#94a3b8;">Presiona <strong style="color:var(--est-primary);">Agregar Estudio</strong> para incluir formación académica</div>
-                        </div>
-                        <div id="registroEstudiosList" style="display:flex;flex-direction:column;gap:.5rem;"></div>
-                        <button type="button" id="btnAddRegistroEstudio"
-                            style="margin-top:.65rem;display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:600;color:var(--est-primary);background:rgba(252,123,4,.06);border:1px dashed rgba(252,123,4,.3);border-radius:8px;padding:.4rem .85rem;cursor:pointer;transition:all .2s;">
-                            <i class="ri-add-line"></i> Agregar Estudio
-                        </button>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="est-btn-cancel" data-bs-dismiss="modal"><i class="ri-close-line me-1"></i>Cancelar</button>
-                    <button type="submit" class="est-btn-submit" id="btnGuardarEstudiante"><i class="ri-save-line"></i> Registrar Estudiante</button>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;gap:.5rem;">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" style="border-radius:8px;font-size:.82rem;padding:.4rem 1rem;">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+                <button type="button" id="btnConfirmarRegistrarPersona" disabled
+                    style="padding:.4rem 1.15rem;background:linear-gradient(135deg,#391b04,#c96004);border:none;border-radius:8px;color:#fff;font-size:.82rem;font-weight:700;cursor:not-allowed;display:inline-flex;align-items:center;gap:.4rem;box-shadow:0 4px 12px rgba(252,123,4,.3);transition:all .2s;opacity:.55;">
+                    <i class="ri-graduation-cap-line"></i> Registrar Estudiante
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 {{-- ════════════════ MODAL EDITAR ════════════════ --}}
-<div class="modal fade est-modal-form" id="modalEditar" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="ri-pencil-line"></i> Editar Estudiante</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <form id="formEditar" novalidate autocomplete="off" enctype="multipart/form-data">
-                <input type="hidden" id="editId">
-                <div class="modal-body">
-                    {{-- Photo --}}
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="est-photo-wrap">
-                                <div class="est-photo-circle" onclick="document.getElementById('fotografiaEditar').click()">
-                                    <img id="previewFotografiaEditar" src="{{ URL::asset('build/images/users/avatar-1.jpg') }}" alt="Foto">
-                                    <div class="est-photo-overlay"><i class="ri-camera-line"></i></div>
-                                    <input type="file" id="fotografiaEditar" name="fotografia" accept="image/*" style="display:none;" onchange="previewImage(this, 'previewFotografiaEditar')">
-                                </div>
-                                <span class="est-photo-hint">Click para cambiar foto</span>
-                            </div>
-                        </div>
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content"
+            style="border:none;border-radius:18px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.2);">
+            <div class="modal-header" style="background:linear-gradient(135deg,#391b04,#7c3c00,#c96004);color:white;padding:1.25rem 1.5rem;border:none;border-radius:18px 18px 0 0;">
+                <div class="d-flex align-items-center gap-3 flex-grow-1">
+                    <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="ri-pencil-line" style="font-size:1.35rem;"></i>
                     </div>
-
+                    <div>
+                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;color:#fff;">Editar Estudiante</h5>
+                        <div style="font-size:.73rem;opacity:.8;margin-top:.15rem;">Modifica los datos del estudiante en el sistema</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body" style="padding:0;background:#fff;">
+                <form id="formEditar" novalidate autocomplete="off" enctype="multipart/form-data">
+                    <input type="hidden" id="editId">
                     {{-- Identity Section --}}
-                    <div class="est-modal-section-header"><i class="ri-id-card-line"></i><span>Datos de Identidad</span></div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="est-label">Carnet <span class="req">*</span></label>
-                            <div class="est-field">
-                                <input type="text" class="form-control" id="editCarnet" maxlength="20" autocomplete="off">
-                                <span class="est-validation-icon" id="iconECarnet"></span>
+                    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #f1f5f9;">
+                        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.85rem;">
+                            <div style="width:26px;height:26px;border-radius:7px;background:rgba(154,73,4,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="ri-fingerprint-line" style="color:#9a4904;font-size:.85rem;"></i>
                             </div>
-                            <div class="est-feedback" id="fbECarnet"></div>
+                            <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#9a4904;">Identidad</span>
                         </div>
-                        <div class="col-md-3">
-                            <label class="est-label">Expedido</label>
-                            <input type="text" class="form-control" id="editExpedido" maxlength="10" autocomplete="off">
-                        </div>
-                        <div class="col-md-5">
-                            <label class="est-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="editFechaNacimiento">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="est-label">Nombres <span class="req">*</span></label>
-                            <div class="est-field">
-                                <input type="text" class="form-control" id="editNombres" maxlength="100" autocomplete="off">
-                                <span class="est-validation-icon" id="iconENombres"></span>
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Carnet <span class="text-danger">*</span></label>
+                                <input type="hidden" id="editExpedido" value="">
+                                <div class="est-field">
+                                    <input type="text" class="form-control" id="editCarnet" maxlength="20" autocomplete="off">
+                                    <span class="est-validation-icon" id="iconECarnet"></span>
+                                </div>
+                                <div class="est-feedback" id="fbECarnet"></div>
                             </div>
-                            <div class="est-feedback" id="fbENombres"></div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="est-label">Ap. Paterno</label>
-                            <input type="text" class="form-control" id="editApPaterno" maxlength="80" autocomplete="off">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="est-label">Ap. Materno</label>
-                            <input type="text" class="form-control" id="editApMaterno" maxlength="80" autocomplete="off">
-                        </div>
-                        <div class="col-12">
-                            <div class="est-feedback" id="fbEApellidos"></div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="est-label">Sexo <span class="req">*</span></label>
-                            <select class="form-select" id="editSexo">
-                                <option value="">— Seleccione —</option>
-                                <option value="M">Masculino</option>
-                                <option value="F">Femenino</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="est-label">Estado Civil <span class="req">*</span></label>
-                            <select class="form-select" id="editEstadoCivil">
-                                <option value="">— Seleccione —</option>
-                                <option value="Soltero/a">Soltero/a</option>
-                                <option value="Casado/a">Casado/a</option>
-                                <option value="Divorciado/a">Divorciado/a</option>
-                                <option value="Viudo/a">Viudo/a</option>
-                                <option value="Unión Libre">Unión Libre</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-5">
-                            <label class="est-label">Departamento</label>
-                            <select class="form-select" id="editDepto">
-                                <option value="">— Seleccione —</option>
-                            </select>
-                        </div>
-                        <div class="col-md-5">
-                            <label class="est-label">Ciudad <span class="req">*</span></label>
-                            <select class="form-select" id="editCiudad" disabled>
-                                <option value="">— Seleccione depto. —</option>
-                            </select>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Nombres <span class="text-danger">*</span></label>
+                                <div class="est-field">
+                                    <input type="text" class="form-control" id="editNombres" maxlength="100" autocomplete="off">
+                                    <span class="est-validation-icon" id="iconENombres"></span>
+                                </div>
+                                <div class="est-feedback" id="fbENombres"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Apellido Paterno <span class="text-danger" title="Al menos un apellido es requerido">*</span></label>
+                                <input type="text" class="form-control" id="editApPaterno" maxlength="80" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
+                            <div class="col-md-3">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Apellido Materno <span class="text-danger" title="Al menos un apellido es requerido">*</span></label>
+                                <input type="text" class="form-control" id="editApMaterno" maxlength="80" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
+                            <div class="col-12">
+                                <div class="est-feedback" id="fbEApellidos"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Sexo <span class="text-danger">*</span></label>
+                                <select class="form-select" id="editSexo" style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Fecha Nacimiento</label>
+                                <input type="date" class="form-control" id="editFechaNacimiento" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Estado Civil <span class="text-danger">*</span></label>
+                                <select class="form-select" id="editEstadoCivil" style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Soltero/a">Soltero/a</option>
+                                    <option value="Casado/a">Casado/a</option>
+                                    <option value="Divorciado/a">Divorciado/a</option>
+                                    <option value="Viudo/a">Viudo/a</option>
+                                    <option value="Unión Libre">Unión Libre</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
                     {{-- Contact Section --}}
-                    <div class="est-modal-section-header mt-4"><i class="ri-phone-line"></i><span>Datos de Contacto</span></div>
-                    <div class="row g-3">
-                        <div class="col-md-5">
-                            <label class="est-label">Correo Electrónico <span class="req">*</span></label>
-                            <div class="est-field">
-                                <input type="email" class="form-control" id="editCorreo" maxlength="150" autocomplete="off">
-                                <span class="est-validation-icon" id="iconECorreo"></span>
+                    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid #f1f5f9;background:rgba(252,123,4,.02);">
+                        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.85rem;">
+                            <div style="width:26px;height:26px;border-radius:7px;background:rgba(252,123,4,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="ri-contacts-line" style="color:#fc7b04;font-size:.85rem;"></i>
                             </div>
-                            <div class="est-feedback" id="fbECorreo"></div>
+                            <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#c96004;">Contacto y Ubicación</span>
                         </div>
-                        <div class="col-md-3">
-                            <label class="est-label">Celular <span class="req">*</span></label>
-                            <input type="text" class="form-control" id="editCelular" maxlength="20" autocomplete="off">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="est-label">Teléfono</label>
-                            <input type="text" class="form-control" id="editTelefono" maxlength="20" autocomplete="off">
-                        </div>
-                        <div class="col-12">
-                            <label class="est-label">Dirección</label>
-                            <input type="text" class="form-control" id="editDireccion" maxlength="200" autocomplete="off">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Correo <span class="text-danger">*</span></label>
+                                <div style="position:relative;">
+                                    <i class="ri-mail-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="email" class="form-control" id="editCorreo" maxlength="150" autocomplete="off" placeholder="correo@ejemplo.com" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                                <div class="est-feedback" id="fbECorreo"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Celular <span class="text-danger">*</span></label>
+                                <div style="position:relative;">
+                                    <i class="ri-smartphone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="text" class="form-control" id="editCelular" inputmode="numeric" maxlength="8" placeholder="70000000" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                                <div class="est-feedback" id="fbECelular"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Teléfono</label>
+                                <div style="position:relative;">
+                                    <i class="ri-phone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
+                                    <input type="text" class="form-control" id="editTelefono" maxlength="20" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;">
+                                    <i class="ri-map-pin-line" style="color:#fc7b04;font-size:.8rem;"></i> Departamento
+                                </label>
+                                <select class="form-select" id="editDepto" style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;">
+                                    <i class="ri-building-line" style="color:#fc7b04;font-size:.8rem;"></i> Ciudad <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="editCiudad" disabled style="font-size:0.85rem;border-radius:9px;">
+                                    <option value="">Seleccione departamento primero</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Dirección</label>
+                                <input type="text" class="form-control" id="editDireccion" maxlength="200" autocomplete="off" style="font-size:0.85rem;border-radius:9px;">
+                            </div>
                         </div>
                     </div>
 
                     {{-- Studies Section --}}
-                    <div class="est-modal-section-header mt-4"><i class="ri-graduation-cap-line"></i><span>Estudios Académicos</span></div>
-                    <div id="editEstudiosContainer">
-                        <div id="editEstudiosLoading" class="text-center py-2" style="display:none;">
-                            <span class="spinner-border spinner-border-sm" style="color:var(--est-primary);"></span>
-                            <span class="ms-2" style="font-size:.8rem;color:var(--est-text-muted);">Cargando estudios...</span>
+                    <div style="padding:1.2rem 1.5rem;background:rgba(99,102,241,.02);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;">
+                            <div style="display:flex;align-items:center;gap:.5rem;">
+                                <div style="width:26px;height:26px;border-radius:7px;background:rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="ri-graduation-cap-line" style="color:#6366f1;font-size:.85rem;"></i>
+                                </div>
+                                <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#6366f1;">Estudios Académicos</span>
+                                <span style="font-size:.68rem;color:#94a3b8;">(opcional)</span>
+                            </div>
+                            <button type="button" id="btnAddEstudio"
+                                style="padding:.35rem .85rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);border-radius:8px;color:#6366f1;font-size:.78rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;transition:all .15s;">
+                                <i class="ri-add-circle-line"></i> Agregar Estudio
+                            </button>
                         </div>
-                        <div id="editEstudiosList"></div>
-                        {{-- Form: add new study --}}
-                        <div id="editEstudioFormWrap" style="display:none;margin-top:.75rem;padding:1rem;background:#faf8f5;border:1px solid var(--est-border);border-radius:12px;">
-                            <div class="row g-2">
-                                <div class="col-md-4">
-                                    <label class="est-label" style="font-size:.75rem;">Grado Académico <span class="req">*</span></label>
-                                    <select class="form-select form-select-sm" id="newEstGrado"></select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="est-label" style="font-size:.75rem;">Profesión</label>
-                                    <select class="form-select form-select-sm" id="newEstProfesion"></select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="est-label" style="font-size:.75rem;">Universidad</label>
-                                    <select class="form-select form-select-sm" id="newEstUniversidad"></select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="est-label" style="font-size:.75rem;">Estado</label>
-                                    <select class="form-select form-select-sm" id="newEstEstado">
-                                        <option value="Concluido">Concluido</option>
-                                        <option value="En Desarrollo">En Desarrollo</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-9 d-flex align-items-end gap-2">
-                                    <button type="button" class="est-btn-submit btn-sm" id="btnGuardarNuevoEstudio" style="padding:.4rem 1rem;font-size:.82rem;">
-                                        <i class="ri-check-line"></i> Agregar
-                                    </button>
-                                    <button type="button" class="est-btn-cancel btn-sm" id="btnCancelarNuevoEstudio" style="padding:.4rem .75rem;font-size:.82rem;">
-                                        <i class="ri-close-line"></i>
-                                    </button>
+                        <div id="editEstudiosContainer">
+                            <div id="editEstudiosLoading" class="text-center py-2" style="display:none;">
+                                <span class="spinner-border spinner-border-sm" style="color:var(--est-primary);"></span>
+                                <span class="ms-2" style="font-size:.8rem;color:var(--est-text-muted);">Cargando estudios...</span>
+                            </div>
+                            <div id="editEstudiosList"></div>
+                            {{-- Form: add new study --}}
+                            <div id="editEstudioFormWrap" style="display:none;margin-top:.75rem;padding:1rem;background:#faf8f5;border:1px solid var(--est-border);border-radius:12px;">
+                                <div class="row g-2">
+                                    <div class="col-md-4">
+                                        <label class="est-label" style="font-size:.75rem;">Grado Académico <span class="req">*</span></label>
+                                        <select class="form-select form-select-sm" id="newEstGrado"></select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="est-label" style="font-size:.75rem;">Profesión</label>
+                                        <select class="form-select form-select-sm" id="newEstProfesion"></select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="est-label" style="font-size:.75rem;">Universidad</label>
+                                        <select class="form-select form-select-sm" id="newEstUniversidad"></select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="est-label" style="font-size:.75rem;">Estado</label>
+                                        <select class="form-select form-select-sm" id="newEstEstado">
+                                            <option value="Concluido">Concluido</option>
+                                            <option value="En Desarrollo">En Desarrollo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-9 d-flex align-items-end gap-2">
+                                        <button type="button" class="est-btn-submit btn-sm" id="btnGuardarNuevoEstudio" style="padding:.4rem 1rem;font-size:.82rem;">
+                                            <i class="ri-check-line"></i> Agregar
+                                        </button>
+                                        <button type="button" class="est-btn-cancel btn-sm" id="btnCancelarNuevoEstudio" style="padding:.4rem .75rem;font-size:.82rem;">
+                                            <i class="ri-close-line"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <button type="button" id="btnAddEstudio" style="margin-top:.75rem;display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:600;color:var(--est-primary);background:rgba(252,123,4,.06);border:1px dashed rgba(252,123,4,.3);border-radius:8px;padding:.4rem .85rem;cursor:pointer;transition:all .2s;">
-                            <i class="ri-add-line"></i> Agregar Estudio
-                        </button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="est-btn-cancel" data-bs-dismiss="modal"><i class="ri-close-line me-1"></i>Cancelar</button>
-                    <button type="submit" class="est-btn-submit" id="btnGuardarEdicion"><i class="ri-save-line"></i> Guardar Cambios</button>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;gap:.5rem;">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" style="border-radius:8px;font-size:.82rem;padding:.4rem 1rem;">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+                <button type="submit" form="formEditar" id="btnGuardarEdicion"
+                    style="padding:.4rem 1.15rem;background:linear-gradient(135deg,#391b04,#c96004);border:none;border-radius:8px;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;box-shadow:0 4px 12px rgba(252,123,4,.3);transition:all .2s;">
+                    <i class="ri-save-line"></i> Guardar Cambios
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1256,7 +1412,6 @@ function previewImage(input, previewId) {
     let personaEncontrada = null;
     let todasCiudades = [];
     let carnetTimer = null, correoTimer = null;
-    let registroEstudioCount = 0;
     const CSRF = '{{ csrf_token() }}';
 
     function init() {
@@ -1268,7 +1423,6 @@ function previewImage(input, previewId) {
     function cargarSelectores() {
         $.getJSON('{{ route("admin.estudiantes.listarDepartamentos") }}', function (r) {
             const opts = r.data.map(d => '<option value="' + d.id + '">' + esc(d.nombre) + '</option>').join('');
-            $('#rDepto').append(opts);
             $('#editDepto').append(opts);
         });
         $.getJSON('{{ route("admin.estudiantes.listarCiudades") }}', function (r) {
@@ -1289,19 +1443,6 @@ function previewImage(input, previewId) {
             $('#newEstUniversidad').html(opts);
             window._universidadesOpts = opts;
         });
-    }
-
-    function filtrarCiudades() {
-        const deptoId = $('#rDepto').val();
-        const $ciudad = $('#rCiudad');
-        $ciudad.find('option:not(:first)').remove();
-        if (!deptoId) {
-            $ciudad.prop('disabled', true).find('option:first').text('— Seleccione depto. —');
-            return;
-        }
-        const filtradas = todasCiudades.filter(function (c) { return c.departamento_id == deptoId; });
-        $ciudad.append(filtradas.map(c => '<option value="' + c.id + '">' + esc(c.nombre) + '</option>').join(''));
-        $ciudad.prop('disabled', false).find('option:first').text('— Seleccione ciudad —');
     }
 
     function initDataTable() {
@@ -1374,14 +1515,14 @@ function previewImage(input, previewId) {
                         const password = d.usuario_moodle_password || generarPassword(carnet);
 
                         let btns = '<div class="est-action-cell">'
-                            + '<a class="btn est-btn-action" href="/admin/estudiantes/' + d.id + '/detalle" title="Ver estudiante"><i class="ri-eye-line"></i></a>'
-                            + '<button class="btn est-btn-action est-btn-edit btn-accion-editar" data-id="' + d.id + '" title="Editar estudiante"><i class="ri-pencil-fill"></i></button>';
+                            + '<a class="est-btn-action est-btn-view" href="/admin/estudiantes/' + d.id + '/detalle" title="Ver estudiante"><i class="ri-eye-line"></i></a>'
+                            + '<button type="button" class="est-btn-action est-btn-edit btn-accion-editar" data-id="' + d.id + '" title="Editar estudiante"><i class="ri-pencil-fill"></i></button>';
                         if (!d.tiene_cuenta_sistema || !d.tiene_cuenta_moodle) {
                             const titulo = d.tiene_cuenta_sistema ? 'Crear cuenta Moodle' : (d.tiene_cuenta_moodle ? 'Crear cuenta sistema' : 'Crear cuentas (sistema + Moodle)');
-                            btns += '<button class="btn est-btn-action est-btn-cuenta btn-crear-cuentas" data-id="' + d.id + '" title="' + titulo + '"><i class="ri-user-add-line"></i></button>';
+                            btns += '<button type="button" class="est-btn-action est-btn-cuenta btn-crear-cuentas" data-id="' + d.id + '" title="' + titulo + '"><i class="ri-user-add-line"></i></button>';
                         }
                         if (celularLimpio.length >= 8 && tieneMoodle && username) {
-                            btns += '<button class="btn est-btn-action est-btn-whatsapp" '
+                            btns += '<button type="button" class="est-btn-action est-btn-whatsapp" '
                                 + 'data-celular="' + celularLimpio + '" '
                                 + 'data-nombre="' + nombre + '" '
                                 + 'data-username="' + username + '" '
@@ -1389,11 +1530,11 @@ function previewImage(input, previewId) {
                                 + 'data-estudiante-id="' + d.id + '" '
                                 + 'title="Enviar accesos por WhatsApp"><i class="ri-whatsapp-line"></i></button>';
                         } else if (celularLimpio.length >= 8 && tieneMoodle && !username) {
-                            btns += '<button class="btn est-btn-action" title="Sin usuario" disabled style="opacity:0.3;cursor:not-allowed;"><i class="ri-whatsapp-line"></i></button>';
+                            btns += '<button type="button" class="est-btn-action" title="Sin usuario" disabled style="opacity:0.3;cursor:not-allowed;"><i class="ri-whatsapp-line"></i></button>';
                         } else {
-                            btns += '<button class="btn est-btn-action" title="Sin cuenta Moodle" disabled style="opacity:0.3;cursor:not-allowed;"><i class="ri-whatsapp-line"></i></button>';
+                            btns += '<button type="button" class="est-btn-action" title="Sin cuenta Moodle" disabled style="opacity:0.3;cursor:not-allowed;"><i class="ri-whatsapp-line"></i></button>';
                         }
-                        btns += '<button class="btn est-btn-action est-btn-delete btn-accion-eliminar" data-id="' + d.id + '" data-nombre="' + nombre + '" title="Eliminar estudiante"><i class="ri-delete-bin-fill"></i></button>'
+                        btns += '<button type="button" class="est-btn-action est-btn-delete btn-accion-eliminar" data-id="' + d.id + '" data-nombre="' + nombre + '" title="Eliminar estudiante"><i class="ri-delete-bin-fill"></i></button>'
                             + '</div>';
                         return btns;
                     }
@@ -1414,15 +1555,46 @@ function previewImage(input, previewId) {
     }
 
     function bindEvents() {
-        $('#btnBuscar').on('click', buscarPersona);
-        $('#searchCarnet').on('keypress', function (e) { if (e.which === 13) buscarPersona(); });
+        // ─── Validación en tiempo real del carnet de búsqueda ───
+        $('#searchCarnet').on('input', function () {
+            const val = $(this).val().replace(/\D/g, '');
+            $(this).val(val);
+            validarCarnetBusqueda(val);
+            // si el usuario edita después de una búsqueda, reset todo
+            if (personaEncontrada || $('#personaFound').is(':visible')) {
+                $('#personaFound').slideUp(150);
+                personaEncontrada = null;
+            }
+            $('#btnAbrirRegistro').prop('disabled', true).attr('title', 'Primero realice una búsqueda. Si la persona no existe, podrá registrarla.');
+        });
+        $('#searchCarnet').on('keypress', function (e) {
+            if (e.which === 13 && !$('#btnBuscar').prop('disabled')) buscarPersona();
+        });
 
+        $('#btnBuscar').on('click', buscarPersona);
         $('#btnAbrirRegistro').on('click', abrirModalRegistro);
         $('#btnLimpiarBusqueda').on('click', function () { limpiarBusqueda(); resetFormRegistro(); });
 
-        $('#formRegistro').on('submit', function (e) { e.preventDefault(); guardarEstudiante(); });
+        // Confirmar registro de persona existente como estudiante
+        $('#btnRegistrarPersonaExistente').on('click', function () {
+            if (!personaEncontrada) return;
+            const p = personaEncontrada;
+            const nombre = [p.nombres, p.apellido_paterno, p.apellido_materno].filter(Boolean).join(' ');
+            $('#cfNombreCompleto').text(nombre || '—');
+            $('#cfCarnet').text(p.carnet || '—');
+            openModal('modalConfirmarRegistro');
+        });
+        $('#btnConfirmarRegistroExistente').on('click', function () {
+            if (!personaEncontrada || !personaEncontrada.id) return;
+            const $btn = $(this);
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Registrando…');
+            registrarComoEstudiante(personaEncontrada.id, function () {
+                closeModal('modalConfirmarRegistro');
+                $btn.prop('disabled', false).html('<i class="ri-check-line"></i> Sí, registrar');
+            });
+        });
+
         $('#formEditar').on('submit', function (e) { e.preventDefault(); guardarEdicion(); });
-        $('#rDepto').on('change', filtrarCiudades);
         $('#editDepto').on('change', function () {
             const deptoId = $(this).val();
             const $ciudad = $('#editCiudad');
@@ -1436,25 +1608,9 @@ function previewImage(input, previewId) {
             $ciudad.prop('disabled', false).find('option:first').text('— Seleccione ciudad —');
         });
 
-        $('#rCarnet').on('input', function () {
-            clearTimeout(carnetTimer);
-            const val = this.value.trim();
-            if (!val) { return setError('rCarnet','iconRCarnet','fbRCarnet','El carnet es obligatorio.'); }
-            if (val.length < 3) { return setError('rCarnet','iconRCarnet','fbRCarnet','Debe tener al menos 3 caracteres.'); }
-            setChecking('rCarnet','iconRCarnet','fbRCarnet');
-            carnetTimer = setTimeout(function () { verificarCarnetRegistro(val); }, 400);
-        });
-
-        $('#rNombres').on('input', function () { validarNombres('rNombres','iconRNombres','fbRNombres'); });
-        $('#rApPaterno, #rApMaterno').on('input', validarApellidos);
-
-        $('#rCorreo').on('input', function () {
-            clearTimeout(correoTimer);
-            const val = this.value.trim();
-            if (!val) { return resetField('rCorreo','iconRCorreo','fbRCorreo'); }
-            if (!isEmail(val)) { return setError('rCorreo','iconRCorreo','fbRCorreo','Formato de correo inválido.'); }
-            setChecking('rCorreo','iconRCorreo','fbRCorreo');
-            correoTimer = setTimeout(function () { verificarCorreoRegistro(val); }, 400);
+        $('#editCelular').on('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 8);
+            validarCelular('editCelular','iconECelular','fbECelular');
         });
 
         $(document).on('click', '.btn-accion-eliminar', function () {
@@ -1472,16 +1628,6 @@ function previewImage(input, previewId) {
 
         $(document).on('click', '.btn-crear-cuentas', function () {
             crearCuentas($(this).data('id'));
-        });
-
-        $('#btnAddRegistroEstudio').on('click', function() {
-            addRegistroEstudioRow();
-            syncRegistroEstudiosEmpty();
-        });
-
-        $(document).on('click', '.btn-remove-registro-estudio', function() {
-            $(this).closest('.registro-estudio-row').remove();
-            syncRegistroEstudiosEmpty();
         });
 
         document.getElementById('modalRegistro').addEventListener('hidden.bs.modal', resetFormRegistro);
@@ -1570,13 +1716,127 @@ function previewImage(input, previewId) {
                 })
                 .fail(function() { toast('error', 'Error al obtener datos.'); $btn.prop('disabled', false); });
         });
+
+        /* ── MODAL REGISTRO: event bindings ── */
+        $(document).on('input', '#inputCarnetPersona, input[name="correo"]', function() {
+            clearTimeout(validarTimeoutReg);
+            var isCorreo = $(this).is('[name="correo"]');
+            if (isCorreo) {
+                var formatoOk = validarCorreoFormato();
+                actualizarBotonRegistrar();
+                if (!formatoOk) return;
+            }
+            var carnet = $('#inputCarnetPersona').val().trim();
+            var correo = $('input[name="correo"]').val().trim();
+            if (carnet.length >= 3 || correo.length >= 3) {
+                validarTimeoutReg = setTimeout(function() { validarCampo(carnet, correo); }, 350);
+            }
+        });
+
+        $(document).on('change', 'select[name="sexo"]', function() {
+            validarSelectRequerido('sexo', 'Seleccione el sexo.');
+            actualizarBotonRegistrar();
+        });
+        $(document).on('change', 'select[name="estado_civil"]', function() {
+            validarSelectRequerido('estado_civil', 'Seleccione el estado civil.');
+            actualizarBotonRegistrar();
+        });
+        $(document).on('change', 'select[name="ciudade_id"]', function() {
+            validarSelectRequerido('ciudade_id', 'Seleccione la ciudad.');
+            actualizarBotonRegistrar();
+        });
+        $(document).on('input', '[name="nombres"]', function() {
+            validarNombresPersona();
+            actualizarBotonRegistrar();
+        });
+        $(document).on('input', '[name="apellido_paterno"], [name="apellido_materno"]', function() {
+            validarApellidosPersona();
+            actualizarBotonRegistrar();
+        });
+        $(document).on('input', '[name="celular"]', function() {
+            validarCelularPersona();
+            actualizarBotonRegistrar();
+        });
+
+        $(document).on('change', '#inputDepartamentoRegistro', function() {
+            var deptId = $(this).val();
+            if (!deptId) {
+                $('#inputCiudadRegistro').html('<option value="">Seleccione departamento primero</option>').prop('disabled', true);
+                return;
+            }
+            $.ajax({
+                url: '/admin/departamentos/' + deptId + '/ciudades/listar', type: 'GET',
+                success: function(data) {
+                    var opts = '<option value="">Seleccionar...</option>';
+                    data.forEach(function(c) { opts += '<option value="' + c.id + '">' + c.nombre + '</option>'; });
+                    $('#inputCiudadRegistro').html(opts).prop('disabled', false);
+                }
+            });
+            actualizarBotonRegistrar();
+        });
+
+        $(document).on('click', '#btnAgregarEstudioRegistro', function() {
+            estudiosLista.push({ grados_academico_id: '', universidade_id: '', profesione_id: '' });
+            renderEstudiosRegistro();
+        });
+
+        $(document).on('click', '.btn-del-est', function() {
+            estudiosLista.splice(parseInt($(this).data('idx')), 1);
+            renderEstudiosRegistro();
+        });
+
+        $(document).on('change', '.est-grado', function() {
+            estudiosLista[parseInt($(this).data('idx'))].grados_academico_id = $(this).val();
+        });
+        $(document).on('change', '.est-univ', function() {
+            estudiosLista[parseInt($(this).data('idx'))].universidade_id = $(this).val();
+        });
+        $(document).on('change', '.est-prof', function() {
+            estudiosLista[parseInt($(this).data('idx'))].profesione_id = $(this).val();
+        });
+    }
+
+    /* ── VALIDACIÓN EN TIEMPO REAL DEL CARNET DE BÚSQUEDA ── */
+    function validarCarnetBusqueda(val) {
+        const $input = $('#searchCarnet');
+        const $hint  = $('#searchHint');
+        const $btn   = $('#btnBuscar');
+
+        if (val.length === 0) {
+            $input.removeClass('is-valid is-invalid');
+            $hint.removeClass('success error').html('<i class="ri-information-line"></i> Ingrese entre 7 y 11 dígitos numéricos.');
+            $btn.prop('disabled', true);
+            return false;
+        }
+        if (!/^\d+$/.test(val)) {
+            $input.removeClass('is-valid').addClass('is-invalid');
+            $hint.removeClass('success').addClass('error').html('<i class="ri-close-circle-fill"></i> Solo se permiten números.');
+            $btn.prop('disabled', true);
+            return false;
+        }
+        if (val.length < 7) {
+            $input.removeClass('is-valid').addClass('is-invalid');
+            $hint.removeClass('success').addClass('error').html('<i class="ri-close-circle-fill"></i> Faltan ' + (7 - val.length) + ' dígitos (mínimo 7).');
+            $btn.prop('disabled', true);
+            return false;
+        }
+        if (val.length > 11) {
+            $input.removeClass('is-valid').addClass('is-invalid');
+            $hint.removeClass('success').addClass('error').html('<i class="ri-close-circle-fill"></i> Máximo 11 dígitos.');
+            $btn.prop('disabled', true);
+            return false;
+        }
+        $input.removeClass('is-invalid').addClass('is-valid');
+        $hint.removeClass('error').addClass('success').html('<i class="ri-checkbox-circle-fill"></i> Carnet válido (' + val.length + ' dígitos). Presione buscar.');
+        $btn.prop('disabled', false);
+        return true;
     }
 
     /* ── BUSCAR PERSONA ── */
     function buscarPersona() {
         const carnet = $('#searchCarnet').val().trim();
-        if (!carnet) {
-            toast('warning', 'Ingrese un número de carnet para buscar.');
+        if (!validarCarnetBusqueda(carnet)) {
+            toast('warning', 'Ingrese un carnet válido (7 a 11 dígitos).');
             return;
         }
 
@@ -1586,9 +1846,15 @@ function previewImage(input, previewId) {
                 if (r.encontrado) {
                     personaEncontrada = r.persona;
                     mostrarPersonaEncontrada(r.persona, r.ya_estudiante);
+                    // No habilitar el botón de "registrar nuevo" porque ya existe la persona
+                    $('#btnAbrirRegistro').prop('disabled', true).attr('title', 'La persona ya existe. Use el botón "Registrar como Estudiante" en el panel inferior.');
                 } else {
                     $('#personaFound').slideUp(200);
-                    toast('warning', 'No se encontró ninguna persona con el carnet: ' + carnet);
+                    personaEncontrada = null;
+                    // Habilitar el botón de registrar nuevo, ya que no existe
+                    $('#btnAbrirRegistro').prop('disabled', false).removeAttr('title');
+                    $('#btnLimpiarBusqueda').show();
+                    toast('info', 'No se encontró ninguna persona con ese carnet. Puede registrarla como nueva.');
                 }
             })
             .fail(function () { toast('error', 'Error al buscar. Intente nuevamente.'); })
@@ -1608,8 +1874,10 @@ function previewImage(input, previewId) {
 
         if (yaEstudiante) {
             $('#yaEstudianteBox').show();
+            $('#noEsEstudianteBox').hide();
         } else {
             $('#yaEstudianteBox').hide();
+            $('#noEsEstudianteBox').css('display','flex').hide().slideDown(220);
         }
 
         $('#personaFound').slideDown(300);
@@ -1619,179 +1887,74 @@ function previewImage(input, previewId) {
     /* ── ABRIR MODAL REGISTRO ── */
     function abrirModalRegistro() {
         resetFormRegistro();
+        const carnetBuscado = $('#searchCarnet').val().trim();
+        $('#inputCarnetPersona').val(carnetBuscado);
 
-        /* Si hay persona buscada, pre-llenar el formulario */
-        if (personaEncontrada) {
-            const p = personaEncontrada;
-            $('#rCarnet').val(p.carnet).prop('readonly', true);
-            $('#rNombres').val(p.nombres || '').prop('readonly', true);
-            $('#rApPaterno').val(p.apellido_paterno || '').prop('readonly', true);
-            $('#rApMaterno').val(p.apellido_materno || '').prop('readonly', true);
-            $('#rCorreo').val(p.correo || '').prop('readonly', true);
-            $('#rCelular').val(p.celular || '').prop('readonly', true);
-            $('#rTelefono').val(p.telefono || '').prop('readonly', true);
-            $('#rDireccion').val(p.direccion || '').prop('readonly', true);
-            $('#rExpedido').val(p.expedido || '').prop('readonly', true);
-            $('#rFechaNacimiento').val(p.fecha_nacimiento || '').prop('readonly', true);
-            $('#rSexo').val(p.sexo || '').prop('disabled', true);
-            $('#rEstadoCivil').val(p.estado_civil || '').prop('disabled', true);
+        catalogsCargadosReg = false;
+        cargarCatalogosRegistro();
+        cargarDepartamentosRegistro();
 
-            if (p.ciudad) {
-                $('#rDepto').val(p.ciudad.departamento_id).trigger('change');
-                setTimeout(function () {
-                    $('#rCiudad').val(p.ciudad.id).prop('disabled', true);
-                }, 200);
-            }
-
-            /* Marcar campos como válidos */
-            ['rCarnet','rNombres'].forEach(function (id) {
-                const input = document.getElementById(id);
-                if (input) { input.classList.remove('is-invalid'); input.classList.add('is-valid'); }
-            });
-
-            if (p.correo) {
-                const input = document.getElementById('rCorreo');
-                if (input) { input.classList.remove('is-invalid'); input.classList.add('is-valid'); }
-            }
-
-            /* Pre-poblar estudios de la persona */
-            if (p.estudios && p.estudios.length) {
-                prePopularRegistroEstudios(p.estudios);
-            }
-
-            /* Verificar si ya es estudiante */
-            $.post('{{ route("admin.estudiantes.buscarCarnet") }}', { _token: CSRF, carnet: p.carnet })
-                .done(function (r) {
-                    if (r.ya_estudiante) {
-                        $('#registroYaEstudiante').show();
-                        $('#btnGuardarEstudiante').prop('disabled', true).html('<i class="ri-error-warning-line"></i> Ya es estudiante');
-                    } else {
-                        $('#registroYaEstudiante').hide();
-                        $('#btnGuardarEstudiante').prop('disabled', false).html('<i class="ri-save-line"></i> Registrar Estudiante');
-                    }
-                });
-
-            $('#modalRegistroTitle').html('<i class="ri-user-check-line"></i> Registrar como Estudiante — ' + esc(p.carnet));
-        } else {
-            $('#modalRegistroTitle').html('<i class="ri-graduation-cap-line"></i> Registrar Estudiante');
+        if (carnetBuscado) {
+            validarCampo(carnetBuscado, '');
         }
+
+        setTimeout(function () {
+            actualizarBotonRegistrar();
+        }, 100);
 
         openModal('modalRegistro');
     }
 
-    /* ── GUARDAR ESTUDIANTE ── */
-    function guardarEstudiante() {
-        setBtnLoading('#btnGuardarEstudiante', true, 'Guardando…');
+    /* ── Guardar Persona + Registrar como Estudiante ── */
+    $('#btnConfirmarRegistrarPersona').on('click', function() {
+        const $btn = $(this);
 
-        /* Si la persona ya existe, registrarla directamente como estudiante sin re-crear */
-        if (personaEncontrada && personaEncontrada.id) {
-            registrarComoEstudiante(personaEncontrada.id);
+        if (!validarNombresPersona() || !validarApellidosPersona() ||
+            !validarSelectRequerido('sexo', 'Seleccione el sexo.') ||
+            !validarSelectRequerido('estado_civil', 'Seleccione el estado civil.') ||
+            !validarSelectRequerido('ciudade_id', 'Seleccione la ciudad.') ||
+            !validarCelularPersona() || !validarCorreoFormato()) {
+            toast('error', 'Corrija los campos marcados antes de continuar.');
+            return;
+        }
+        if (!validaciones.correo.verificado || !validaciones.correo.valido) {
+            toast('error', 'El correo no ha sido verificado o ya está registrado.');
             return;
         }
 
-        /* Nueva persona: validar antes de crear */
-        const okC = validarCarnetSync('rCarnet','iconRCarnet','fbRCarnet');
-        const okN = validarNombres('rNombres','iconRNombres','fbRNombres');
-        const okAp = validarApellidos();
-        if (!okC || !okN || !okAp) {
-            setBtnLoading('#btnGuardarEstudiante', false, '<i class="ri-save-line"></i> Registrar Estudiante');
-            return;
-        }
-        if (document.getElementById('rCarnet').classList.contains('is-invalid')) {
-            setBtnLoading('#btnGuardarEstudiante', false, '<i class="ri-save-line"></i> Registrar Estudiante');
-            return;
-        }
-        if (document.getElementById('rCorreo').classList.contains('is-invalid')) {
-            setBtnLoading('#btnGuardarEstudiante', false, '<i class="ri-save-line"></i> Registrar Estudiante');
-            return;
-        }
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Guardando...');
 
-        var formData = new FormData();
-        formData.append('_token', CSRF);
-        formData.append('carnet', $('#rCarnet').val().trim());
-        formData.append('expedido', $('#rExpedido').val().trim());
-        formData.append('nombres', $('#rNombres').val().trim());
-        formData.append('apellido_paterno', $('#rApPaterno').val().trim());
-        formData.append('apellido_materno', $('#rApMaterno').val().trim());
-        formData.append('sexo', $('#rSexo').val());
-        formData.append('estado_civil', $('#rEstadoCivil').val());
-        formData.append('fecha_nacimiento', $('#rFechaNacimiento').val() || '');
-        formData.append('correo', $('#rCorreo').val().trim());
-        formData.append('direccion', $('#rDireccion').val().trim());
-        formData.append('celular', $('#rCelular').val().trim());
-        formData.append('telefono', $('#rTelefono').val().trim());
-        formData.append('ciudade_id', $('#rCiudad').val() || '');
-
-        var fotoInput = document.getElementById('fotografiaRegistro');
-        if (fotoInput && fotoInput.files && fotoInput.files[0]) {
-            formData.append('fotografia', fotoInput.files[0]);
-        }
+        const estudiosValidos = estudiosLista.filter(function(e) { return e.grados_academico_id; });
 
         $.ajax({
             url: '{{ route("admin.estudiantes.guardarPersona") }}',
             type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false
-        })
-        .done(function (r) {
-            registrarComoEstudiante(r.data.id);
-        })
-        .fail(function (xhr) {
-            if (xhr.status === 422) {
-                const errs = xhr.responseJSON.errors || {};
-                if (errs.carnet)  setError('rCarnet','iconRCarnet','fbRCarnet', errs.carnet[0]);
-                if (errs.nombres) setError('rNombres','iconRNombres','fbRNombres', errs.nombres[0]);
-                if (errs.correo)  setError('rCorreo','iconRCorreo','fbRCorreo', errs.correo[0]);
-                if (errs.apellidos) {
-                    $('#fbRApellidos').addClass('error').html('<i class="ri-error-warning-line"></i>' + errs.apellidos[0]);
-                }
-            } else {
-                toast('error', 'Error al registrar. Intente nuevamente.');
-            }
-            setBtnLoading('#btnGuardarEstudiante', false, '<i class="ri-save-line"></i> Registrar Estudiante');
-        });
-    }
-
-    function registrarComoEstudiante(personaId) {
-        $.post('{{ route("admin.estudiantes.registrar") }}', {
-            _token: CSRF,
-            persona_id: personaId
-        })
-        .done(function (r2) {
-            /* Guardar estudios nuevos (solo los que el usuario agregó manualmente en el formulario) */
-            var $rows = $('#registroEstudiosList .registro-estudio-row');
-            /* Filtrar solo filas que NO correspondan a estudios pre-existentes (sin data-existente) */
-            var estudiosPromesas = [];
-            $rows.each(function() {
-                if ($(this).data('existente')) return; /* skip estudios ya guardados en BD */
-                const gradoId = $(this).find('.reg-est-grado').val();
-                if (!gradoId) return;
-                estudiosPromesas.push($.post('/admin/personas/' + personaId + '/estudios', {
+            data: $('#formRegistrarPersona').serialize() +
+                '&_token={{ csrf_token() }}&estudios_json=' + encodeURIComponent(JSON.stringify(estudiosValidos)),
+            success: function(response) {
+                var personaId = response.data.id;
+                $.post('{{ route("admin.estudiantes.registrar") }}', {
                     _token: CSRF,
-                    grados_academico_id: gradoId,
-                    profesione_id: $(this).find('.reg-est-profesion').val() || '',
-                    universidade_id: $(this).find('.reg-est-universidad').val() || '',
-                    estado: $(this).find('.reg-est-estado').val(),
-                    principal: $(this).find('.reg-est-principal').is(':checked') ? 1 : 0
-                }));
-            });
-            $.when.apply($, estudiosPromesas.length ? estudiosPromesas : [$.when()])
-                .always(function() {
-                    toast('success', r2.message);
+                    persona_id: personaId
+                })
+                .done(function(r2) {
+                    toast('success', r2.message || 'Estudiante registrado correctamente.');
                     closeModal('modalRegistro');
                     tabla.ajax.reload(null, false);
                     limpiarBusqueda();
+                })
+                .fail(function(xhr) {
+                    toast('error', xhr.responseJSON?.message || 'Error al registrar como estudiante.');
                 });
-        })
-        .fail(function (xhr) {
-            const msg = xhr.responseJSON?.message || 'Error al registrar como estudiante.';
-            toast('error', msg);
-        })
-        .always(function () {
-            setBtnLoading('#btnGuardarEstudiante', false, '<i class="ri-save-line"></i> Registrar Estudiante');
+            },
+            error: function(xhr) {
+                toast('error', 'Error al registrar persona: ' + (xhr.responseJSON?.message || 'Error desconocido'));
+            },
+            complete: function() {
+                $btn.prop('disabled', false).html('<i class="ri-graduation-cap-line"></i> Registrar Estudiante');
+            }
         });
-    }
+    });
 
     /* ── EDITAR ESTUDIANTE ── */
     function editarEstudiante(id) {
@@ -1809,16 +1972,9 @@ function previewImage(input, previewId) {
                 $('#editFechaNacimiento').val(p ? p.fecha_nacimiento || '' : '');
                 $('#editCorreo').val(p && p.correo ? p.correo : '');
                 $('#editCelular').val(p && p.celular ? p.celular : '');
+                if ($('#editCelular').val()) validarCelular('editCelular','iconECelular','fbECelular');
                 $('#editTelefono').val(p && p.telefono ? p.telefono : '');
                 $('#editDireccion').val(p && p.direccion ? p.direccion : '');
-
-                /* Fotografía */
-                if (p && p.fotografia) {
-                    var fotoUrl = '{{ url("images/personas") }}/' + p.fotografia;
-                    $('#previewFotografiaEditar').attr('src', fotoUrl);
-                } else {
-                    $('#previewFotografiaEditar').attr('src', '{{ URL::asset("build/images/users/avatar-1.jpg") }}');
-                }
 
                 if (p && p.ciudad) {
                     $('#editDepto').val(p.ciudad.departamento_id).trigger('change');
@@ -1861,7 +2017,8 @@ function previewImage(input, previewId) {
         const okC = validarCarnetSync('editCarnet','iconECarnet','fbECarnet');
         const okN = validarNombres('editNombres','iconENombres','fbENombres');
         const okAp = validarApellidosEdit();
-        if (!okC || !okN || !okAp) return;
+        const okCel = validarCelular('editCelular','iconECelular','fbECelular');
+        if (!okC || !okN || !okAp || !okCel) return;
         if (document.getElementById('editCarnet').classList.contains('is-invalid')) return;
         if (document.getElementById('editCorreo').classList.contains('is-invalid')) return;
 
@@ -1884,11 +2041,6 @@ function previewImage(input, previewId) {
         formData.append('telefono', $('#editTelefono').val().trim());
         formData.append('ciudade_id', $('#editCiudad').val() || '');
 
-        var fotoInput = document.getElementById('fotografiaEditar');
-        if (fotoInput && fotoInput.files && fotoInput.files[0]) {
-            formData.append('fotografia', fotoInput.files[0]);
-        }
-
         $.ajax({
             url: '/admin/personas/' + personaId,
             type: 'POST',
@@ -1907,6 +2059,7 @@ function previewImage(input, previewId) {
                 if (errs.carnet) setError('editCarnet','iconECarnet','fbECarnet', errs.carnet[0]);
                 if (errs.nombres) setError('editNombres','iconENombres','fbENombres', errs.nombres[0]);
                 if (errs.correo) setError('editCorreo','iconECorreo','fbECorreo', errs.correo[0]);
+                if (errs.celular) setError('editCelular','iconECelular','fbECelular', errs.celular[0]);
             } else {
                 toast('error', 'Error al actualizar. Intente nuevamente.');
             }
@@ -1968,96 +2121,221 @@ function previewImage(input, previewId) {
     }
 
     /* ── ESTUDIOS REGISTRO ── */
-    function addRegistroEstudioRow(data) {
-        registroEstudioCount++;
-        const idx = registroEstudioCount;
-        const gradosOpts = window._gradosOpts || '<option value="">— Grado —</option>';
-        const profOpts   = window._profesionesOpts || '<option value="">— Profesión —</option>';
-        const univOpts   = window._universidadesOpts || '<option value="">— Universidad —</option>';
-        const esExistente = !!(data && data.grado_academico_id);
-        const badgeExistente = esExistente
-            ? '<span style="font-size:.65rem;font-weight:600;background:rgba(46,154,110,.1);color:var(--est-success);border:1px solid rgba(46,154,110,.2);border-radius:20px;padding:.1rem .5rem;margin-left:.4rem;">Registrado</span>'
-            : '';
-        const btnEliminar = esExistente
-            ? ''
-            : '<button type="button" class="btn-remove-registro-estudio" style="background:rgba(224,80,80,.08);border:none;border-radius:6px;padding:.2rem .5rem;color:var(--est-danger);cursor:pointer;font-size:.8rem;"><i class="ri-close-line"></i></button>';
-        const html = '<div class="registro-estudio-row"' + (esExistente ? ' data-existente="1"' : '') + ' style="display:flex;flex-direction:column;gap:.5rem;padding:.85rem 1rem;background:' + (esExistente ? 'rgba(46,154,110,.03)' : '#fff') + ';border:1px solid ' + (esExistente ? 'rgba(46,154,110,.2)' : 'var(--est-border)') + ';border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.05);">'
-            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">'
-            + '<span style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--est-primary);">Estudio #' + idx + badgeExistente + '</span>'
-            + btnEliminar
-            + '</div>'
-            + '<div class="row g-2">'
-            + '<div class="col-md-4"><label style="font-size:.7rem;font-weight:700;color:var(--est-text-muted);display:block;margin-bottom:.3rem;">Grado Académico <span class="req">*</span></label><select class="form-select form-select-sm reg-est-grado">' + gradosOpts + '</select></div>'
-            + '<div class="col-md-4"><label style="font-size:.7rem;font-weight:700;color:var(--est-text-muted);display:block;margin-bottom:.3rem;">Profesión</label><select class="form-select form-select-sm reg-est-profesion">' + profOpts + '</select></div>'
-            + '<div class="col-md-4"><label style="font-size:.7rem;font-weight:700;color:var(--est-text-muted);display:block;margin-bottom:.3rem;">Universidad</label><select class="form-select form-select-sm reg-est-universidad">' + univOpts + '</select></div>'
-            + '<div class="col-md-4"><label style="font-size:.7rem;font-weight:700;color:var(--est-text-muted);display:block;margin-bottom:.3rem;">Estado</label><select class="form-select form-select-sm reg-est-estado"><option value="Concluido">Concluido</option><option value="En Desarrollo">En Desarrollo</option></select></div>'
-            + '<div class="col-md-4 d-flex align-items-end"><div class="form-check mb-1"><input class="form-check-input reg-est-principal" type="checkbox" id="regEstPrincipal' + idx + '"' + (idx === 1 ? ' checked' : '') + '><label class="form-check-label" for="regEstPrincipal' + idx + '" style="font-size:.78rem;font-weight:600;">Principal</label></div></div>'
-            + '</div></div>';
-        $('#registroEstudiosList').append(html);
-        if (data) {
-            const $row = $('#registroEstudiosList .registro-estudio-row').last();
-            if (data.grado_academico_id) $row.find('.reg-est-grado').val(data.grado_academico_id);
-            if (data.profesion_id)       $row.find('.reg-est-profesion').val(data.profesion_id);
-            if (data.universidad_id)     $row.find('.reg-est-universidad').val(data.universidad_id);
-            if (data.estado)             $row.find('.reg-est-estado').val(data.estado);
-            if (data.principal)          $row.find('.reg-est-principal').prop('checked', true);
-            if (esExistente) {
-                $row.find('select, input').prop('disabled', true);
-            }
-        }
-    }
 
-    function syncRegistroEstudiosEmpty() {
-        const count = $('#registroEstudiosList .registro-estudio-row').length;
-        $('#registroEstudiosEmpty').toggle(count === 0);
-    }
-
-    function prePopularRegistroEstudios(estudios) {
-        $('#registroEstudiosList').empty();
-        registroEstudioCount = 0;
-        (estudios || []).forEach(function(est) {
-            addRegistroEstudioRow(est);
-        });
-        syncRegistroEstudiosEmpty();
-    }
 
     /* ── LIMPIAR BÚSQUEDA ── */
     function limpiarBusqueda() {
-        $('#searchCarnet').val('');
+        $('#searchCarnet').val('').removeClass('is-valid is-invalid');
+        $('#searchHint').removeClass('success error').html('<i class="ri-information-line"></i> Ingrese entre 7 y 11 dígitos numéricos.');
         $('#personaFound').slideUp(200);
         $('#btnLimpiarBusqueda').hide();
+        $('#btnBuscar').prop('disabled', true);
+        $('#btnAbrirRegistro').prop('disabled', true).attr('title', 'Primero realice una búsqueda. Si la persona no existe, podrá registrarla.');
+        $('#yaEstudianteBox').hide();
+        $('#noEsEstudianteBox').hide();
         personaEncontrada = null;
     }
 
     /* ── RESET FORM REGISTRO ── */
     function resetFormRegistro() {
-        $('#formRegistro')[0].reset();
-        resetField('rCarnet', 'iconRCarnet', 'fbRCarnet');
-        resetField('rNombres', 'iconRNombres', 'fbRNombres');
-        resetField('rCorreo', 'iconRCorreo', 'fbRCorreo');
-        $('#fbRApellidos').removeClass('error success').html('');
-        $('#rDepto').val('');
-        $('#rCiudad').find('option:not(:first)').remove().end().prop('disabled', true).find('option:first').text('— Seleccione depto. —');
-        
-        /* Reset fotografía */
-        $('#previewFotografiaRegistro').attr('src', '{{ URL::asset("build/images/users/avatar-1.jpg") }}');
-
-        /* Reset readonly/disabled */
-        ['rCarnet','rNombres','rApPaterno','rApMaterno','rCorreo','rCelular','rTelefono','rDireccion','rExpedido','rFechaNacimiento'].forEach(function (id) {
-            $('#' + id).prop('readonly', false);
-        });
-        ['rSexo','rEstadoCivil','rCiudad'].forEach(function (id) {
-            $('#' + id).prop('disabled', false);
-        });
-
+        $('#formRegistrarPersona')[0].reset();
+        $('#inputCarnetPersona').val($('#searchCarnet').val().trim());
+        $('#inputDepartamentoRegistro').val('');
+        $('#inputCiudadRegistro').find('option:not(:first)').remove().end().prop('disabled', true).find('option:first').text('Seleccione departamento primero');
+        $('.validacion-feedback').remove();
+        $('#formRegistrarPersona .form-control, #formRegistrarPersona .form-select').removeClass('is-invalid-custom is-valid-custom');
+        $('#formRegistrarPersona .invalid-feedback-custom').text('').hide();
         $('#registroYaEstudiante').hide();
-        $('#btnGuardarEstudiante').prop('disabled', false).html('<i class="ri-save-line"></i> Registrar Estudiante');
-        $('#modalRegistroTitle').html('<i class="ri-graduation-cap-line"></i> Registrar Estudiante');
+        $('#btnConfirmarRegistrarPersona').prop('disabled', true).css({'opacity': '0.55', 'cursor': 'not-allowed'});
+        estudiosLista = [];
+        renderEstudiosRegistro();
+        validaciones = { carnet: { valido: true, verificado: false }, correo: { valido: false, verificado: false }, sexo: { valido: false } };
+    }
 
-        /* Reset estudios */
-        $('#registroEstudiosList').empty();
-        registroEstudioCount = 0;
-        syncRegistroEstudiosEmpty();
+    /* ════════════════════ MODAL REGISTRO: CATÁLOGOS Y VALIDACIÓN ════════════════════ */
+
+    let estudiosLista = [];
+    let gradosOptsReg = '';
+    let univsOptsReg = '';
+    let profesOptsReg = '';
+    let catalogsCargadosReg = false;
+    let validarTimeoutReg;
+
+    var validaciones = {
+        carnet: { valido: true, verificado: false },
+        correo: { valido: false, verificado: false },
+        sexo: { valido: false }
+    };
+
+    function cargarCatalogosRegistro(callback) {
+        if (catalogsCargadosReg) { if (callback) callback(); return; }
+        Promise.all([
+            $.ajax({ url: '/admin/personas/listar-grados', type: 'GET' }),
+            $.ajax({ url: '/admin/personas/listar-universidades', type: 'GET' }),
+            $.ajax({ url: '/admin/personas/listar-profesiones', type: 'GET' }),
+        ]).then(function([grados, univs, profes]) {
+            gradosOptsReg = '<option value="">— Grado académico —</option>';
+            (grados.data || []).forEach(function(g) {
+                gradosOptsReg += '<option value="' + g.id + '">' + esc(g.nombre) + '</option>';
+            });
+            univsOptsReg = '<option value="">— Universidad —</option>';
+            (univs.data || []).forEach(function(u) {
+                univsOptsReg += '<option value="' + u.id + '">' + esc(u.nombre) + (u.sigla ? ' (' + esc(u.sigla) + ')' : '') + '</option>';
+            });
+            profesOptsReg = '<option value="">— Profesión —</option>';
+            (profes.data || []).forEach(function(p) {
+                profesOptsReg += '<option value="' + p.id + '">' + esc(p.nombre) + '</option>';
+            });
+            catalogsCargadosReg = true;
+            if (callback) callback();
+        }).catch(function() { catalogsCargadosReg = true; if (callback) callback(); });
+    }
+
+    function cargarDepartamentosRegistro() {
+        if ($('#inputDepartamentoRegistro option').length > 1) return;
+        $.ajax({
+            url: '{{ route("admin.departamentos.listar") }}', type: 'GET',
+            success: function(response) {
+                var opts = '<option value="">Seleccionar...</option>';
+                (response.data || response || []).forEach(function(d) {
+                    opts += '<option value="' + d.id + '">' + esc(d.nombre) + '</option>';
+                });
+                $('#inputDepartamentoRegistro').html(opts);
+            }
+        });
+    }
+
+    function renderEstudiosRegistro() {
+        var html = '';
+        estudiosLista.forEach(function(est, idx) {
+            var isPrincipal = idx === 0;
+            html += '<div class="estudio-row' + (isPrincipal ? ' principal-row' : '') + '" data-idx="' + idx + '">';
+            if (isPrincipal) {
+                html += '<span class="est-tag-principal"><i class="ri-star-fill"></i> Principal</span>';
+            }
+            html += '<select class="form-select form-select-sm est-select est-grado" data-idx="' + idx + '">' + gradosOptsReg + '</select>';
+            html += '<select class="form-select form-select-sm est-select est-univ" data-idx="' + idx + '">' + univsOptsReg + '</select>';
+            html += '<select class="form-select form-select-sm est-select est-prof" data-idx="' + idx + '">' + profesOptsReg + '</select>';
+            html += '<button type="button" class="btn-del-est" data-idx="' + idx + '" title="Eliminar"><i class="ri-delete-bin-line"></i></button>';
+            html += '</div>';
+        });
+        $('#estudiosListaRegistro').html(html);
+        estudiosLista.forEach(function(est, idx) {
+            if (est.grados_academico_id) $('.est-grado[data-idx="' + idx + '"]').val(est.grados_academico_id);
+            if (est.universidade_id) $('.est-univ[data-idx="' + idx + '"]').val(est.universidade_id);
+            if (est.profesione_id) $('.est-prof[data-idx="' + idx + '"]').val(est.profesione_id);
+        });
+    }
+
+    /* ── Helpers de validación visual ── */
+    function fbShow($el, ok, msg) {
+        if (!msg) { $el.text('').hide(); return; }
+        $el.text(msg).css('color', ok ? '#10b981' : '#ef4444').show();
+    }
+    function markField(name, ok, msg) {
+        var $el = $('[name="' + name + '"]').first();
+        $el.removeClass('is-invalid-custom is-valid-custom');
+        if (msg !== undefined) $el.addClass(ok ? 'is-valid-custom' : 'is-invalid-custom');
+        var fbId = 'fb' + name.replace(/(^|_)(\w)/g, function(m, _, c) { return c.toUpperCase(); });
+        var $fb = $('#' + fbId);
+        if ($fb.length) fbShow($fb, ok, msg);
+    }
+
+    function validarApellidosPersona() {
+        var ap = ($('[name="apellido_paterno"]').val() || '').trim();
+        var am = ($('[name="apellido_materno"]').val() || '').trim();
+        $('[name="apellido_paterno"], [name="apellido_materno"]').removeClass('is-invalid-custom is-valid-custom');
+        $('#fbApellidoPaterno, #fbApellidoMaterno').text('').hide();
+        if (!ap && !am) {
+            $('[name="apellido_paterno"], [name="apellido_materno"]').addClass('is-invalid-custom');
+            fbShow($('#fbApellidoPaterno'), false, 'Ingrese al menos un apellido (paterno o materno).');
+            fbShow($('#fbApellidoMaterno'), false, 'Ingrese al menos un apellido (paterno o materno).');
+            return false;
+        }
+        if (ap) $('[name="apellido_paterno"]').addClass('is-valid-custom');
+        if (am) $('[name="apellido_materno"]').addClass('is-valid-custom');
+        return true;
+    }
+
+    function validarCelularPersona() {
+        var $input = $('[name="celular"]');
+        var cleaned = ($input.val() || '').replace(/\D/g, '').slice(0, 8);
+        if (cleaned !== $input.val()) $input.val(cleaned);
+        $input.removeClass('is-invalid-custom is-valid-custom');
+        if (!cleaned) { $input.addClass('is-invalid-custom'); fbShow($('#fbCelular'), false, 'El celular es requerido.'); return false; }
+        if (cleaned.length !== 8) { $input.addClass('is-invalid-custom'); fbShow($('#fbCelular'), false, 'Debe tener exactamente 8 dígitos.'); return false; }
+        $input.addClass('is-valid-custom'); fbShow($('#fbCelular'), true, 'Celular válido.'); return true;
+    }
+
+    function validarSelectRequerido(name, msg) {
+        var $el = $('[name="' + name + '"]').first();
+        var val = $el.val();
+        $el.removeClass('is-invalid-custom is-valid-custom');
+        var fbId = '#fb' + name.replace(/(^|_)(\w)/g, function(m, _, c) { return c.toUpperCase(); });
+        var $fb = $(fbId);
+        if (!val) { $el.addClass('is-invalid-custom'); fbShow($fb, false, msg); return false; }
+        $el.addClass('is-valid-custom'); fbShow($fb, true, ''); return true;
+    }
+
+    function validarNombresPersona() {
+        var $el = $('[name="nombres"]');
+        var val = ($el.val() || '').trim();
+        $el.removeClass('is-invalid-custom is-valid-custom');
+        if (!val) { $el.addClass('is-invalid-custom'); fbShow($('#fbNombres'), false, 'Los nombres son requeridos.'); return false; }
+        $el.addClass('is-valid-custom'); fbShow($('#fbNombres'), true, ''); return true;
+    }
+
+    function validarCorreoFormato() {
+        var $el = $('[name="correo"]');
+        var val = ($el.val() || '').trim();
+        $el.removeClass('is-invalid-custom is-valid-custom');
+        if (!val) { $el.addClass('is-invalid-custom'); fbShow($('#fbCorreo'), false, 'El correo es requerido.'); validaciones.correo.valido = false; validaciones.correo.verificado = false; return false; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { $el.addClass('is-invalid-custom'); fbShow($('#fbCorreo'), false, 'Ingrese un correo válido (ejemplo@dominio.com).'); validaciones.correo.valido = false; validaciones.correo.verificado = false; return false; }
+        $el.addClass('is-valid-custom'); return true;
+    }
+
+    function actualizarBotonRegistrar() {
+        var btn = $('#btnConfirmarRegistrarPersona');
+        var sexoOk = ($('select[name="sexo"]').val() || '') !== '';
+        var ecOk = ($('select[name="estado_civil"]').val() || '') !== '';
+        var ciudadOk = ($('select[name="ciudade_id"]').val() || '') !== '';
+        var nombresOk = (($('[name="nombres"]').val() || '').trim()) !== '';
+        var apOk = (($('[name="apellido_paterno"]').val() || '').trim()) !== '' || (($('[name="apellido_materno"]').val() || '').trim()) !== '';
+        var cel = (($('[name="celular"]').val() || '').replace(/\D/g, ''));
+        var celOk = cel.length === 8;
+        validaciones.sexo.valido = sexoOk;
+        var habilitar = validaciones.carnet.valido && validaciones.carnet.verificado && validaciones.correo.valido && validaciones.correo.verificado && sexoOk && ecOk && ciudadOk && nombresOk && apOk && celOk;
+        btn.prop('disabled', !habilitar);
+        btn.css({ 'opacity': habilitar ? '1' : '0.55', 'cursor': habilitar ? 'pointer' : 'not-allowed' });
+    }
+
+    function validarCampo(carnet, correo) {
+        $('#btnConfirmarRegistrarPersona').prop('disabled', true);
+        $.ajax({
+            url: '{{ route("admin.estudiantes.validarCampos") }}', type: 'POST',
+            data: { _token: '{{ csrf_token() }}', carnet: carnet, correo: correo },
+            success: function(response) {
+                if (carnet && carnet.length >= 3) {
+                    validaciones.carnet.verificado = true;
+                    validaciones.carnet.valido = response.disponible.carnet;
+                    $('#inputCarnetPersona').next('.validacion-feedback').remove();
+                    $('#inputCarnetPersona').after('<div class="validacion-feedback small">' + (response.disponible.carnet ? '<span class="text-success"><i class="ri-check-circle-fill"></i> ' + response.mensajes.carnet + '</span>' : '<span class="text-danger"><i class="ri-close-circle-fill"></i> ' + response.mensajes.carnet + '</span>') + '</div>');
+                }
+                if (correo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+                    validaciones.correo.valido = response.disponible.correo;
+                    validaciones.correo.verificado = true;
+                    var $correo = $('input[name="correo"]');
+                    $correo.removeClass('is-invalid-custom is-valid-custom');
+                    if (response.disponible.correo) { $correo.addClass('is-valid-custom'); $('#fbCorreo').text('Correo disponible.').css('color', '#10b981').show(); }
+                    else { $correo.addClass('is-invalid-custom'); $('#fbCorreo').text(response.mensajes.correo || 'Este correo ya está registrado.').css('color', '#ef4444').show(); }
+                }
+                actualizarBotonRegistrar();
+            },
+            error: function() {
+                $('#inputCarnetPersona').after('<div class="validacion-feedback small text-danger"><i class="ri-error-warning-fill"></i> Error al validar</div>');
+                $('#btnConfirmarRegistrarPersona').prop('disabled', true);
+            }
+        });
     }
 
     /* ════════════════════ VALIDACIÓN ════════════════════ */
@@ -2102,20 +2380,6 @@ function previewImage(input, previewId) {
 
     function isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
 
-    function verificarCarnetRegistro(val) {
-        $.post('{{ route("admin.estudiantes.verificarCarnetPersona") }}', { _token: CSRF, carnet: val }, function (r) {
-            if (r.existe) setError('rCarnet','iconRCarnet','fbRCarnet','Este carnet ya está registrado.');
-            else setOk('rCarnet','iconRCarnet','fbRCarnet','Carnet disponible');
-        }).fail(function () { resetField('rCarnet','iconRCarnet','fbRCarnet'); });
-    }
-
-    function verificarCorreoRegistro(val) {
-        $.post('{{ route("admin.estudiantes.verificarCorreoPersona") }}', { _token: CSRF, correo: val }, function (r) {
-            if (r.existe) setError('rCorreo','iconRCorreo','fbRCorreo','Este correo ya está registrado.');
-            else setOk('rCorreo','iconRCorreo','fbRCorreo','Correo disponible');
-        }).fail(function () { resetField('rCorreo','iconRCorreo','fbRCorreo'); });
-    }
-
     function validarCarnetSync(inputId, iconId, fbId) {
         const val = document.getElementById(inputId).value.trim();
         if (!val) return setError(inputId, iconId, fbId, 'El carnet es obligatorio.');
@@ -2130,18 +2394,12 @@ function previewImage(input, previewId) {
         return setOk(inputId, iconId, fbId, 'Nombre válido');
     }
 
-    function validarApellidos() {
-        const p = $('#rApPaterno').val().trim();
-        const m = $('#rApMaterno').val().trim();
-        const fb = document.getElementById('fbRApellidos');
-        if (!p && !m) {
-            fb.className = 'est-feedback error';
-            fb.innerHTML = '<i class="ri-error-warning-line"></i>Debe registrar al menos un apellido (paterno o materno).';
-            return false;
-        }
-        fb.className = 'est-feedback success';
-        fb.innerHTML = '<i class="ri-check-line"></i>Apellido(s) válido(s)';
-        return true;
+    function validarCelular(inputId, iconId, fbId) {
+        const val = document.getElementById(inputId).value.trim();
+        if (val.length === 0) return setError(inputId, iconId, fbId, 'El celular es obligatorio.');
+        if (!/^\d+$/.test(val)) return setError(inputId, iconId, fbId, 'Solo se permiten números.');
+        if (val.length !== 8) return setError(inputId, iconId, fbId, 'El celular debe tener exactamente 8 dígitos (' + val.length + '/8).');
+        return setOk(inputId, iconId, fbId, 'Celular válido');
     }
 
     /* ════════════════════ CUENTAS (BATCH) ════════════════════ */

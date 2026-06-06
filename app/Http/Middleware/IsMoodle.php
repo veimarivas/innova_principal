@@ -16,12 +16,15 @@ class IsMoodle
             return redirect('/login')->with('error', 'Debes iniciar sesión.');
         }
 
-        if ($user->role === 'admin') {
-            return redirect('/admin/dashboard');
+        if (!$user->puedeVirtual()) {
+            if ($user->puedeAdmin()) {
+                return redirect('/admin/dashboard');
+            }
+            return redirect('/')->with('error', 'No tienes acceso a esta sección.');
         }
 
-        if ($user->role !== 'moodle') {
-            return redirect('/')->with('error', 'No tienes acceso a esta sección.');
+        if ($user->tieneAmbosAccesos() && !session('modo_acceso')) {
+            return redirect()->route('seleccionar-acceso');
         }
 
         return $next($request);

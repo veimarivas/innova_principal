@@ -11,13 +11,17 @@ class IsAdmin
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-        
+
         if (!$user) {
             return redirect('/login')->with('error', 'Debes iniciar sesión.');
         }
 
-        if ($user->role !== 'admin') {
+        if (!$user->puedeAdmin()) {
             return redirect('/')->with('error', 'No tienes acceso a esta sección.');
+        }
+
+        if ($user->tieneAmbosAccesos() && !session('modo_acceso')) {
+            return redirect()->route('seleccionar-acceso');
         }
 
         return $next($request);

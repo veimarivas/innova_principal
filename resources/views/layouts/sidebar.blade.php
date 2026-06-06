@@ -526,13 +526,13 @@
                 <li class="menu-title mt-3"><i class="ri-team-line"></i> <span>Recursos Humanos</span></li>
 
                 <li class="nav-item">
-                    <a class="nav-link menu-link {{ isMenuOpen(['admin.estudiantes.', 'admin.docentes.', 'admin.trabajadores.', 'admin.personas.', 'admin.cargos.', 'admin.users.']) ? 'active' : '' }}"
+                    <a class="nav-link menu-link {{ isMenuOpen(['admin.estudiantes.', 'admin.docentes.', 'admin.trabajadores.', 'admin.personas.', 'admin.cargos.']) ? 'active' : '' }}"
                         href="#sidebarRRHH" data-bs-toggle="collapse" role="button"
-                        aria-expanded="{{ isMenuOpen(['admin.estudiantes.', 'admin.docentes.', 'admin.trabajadores.', 'admin.personas.', 'admin.cargos.', 'admin.users.']) ? 'true' : 'false' }}"
+                        aria-expanded="{{ isMenuOpen(['admin.estudiantes.', 'admin.docentes.', 'admin.trabajadores.', 'admin.personas.', 'admin.cargos.']) ? 'true' : 'false' }}"
                         aria-controls="sidebarRRHH">
                         <i class="ri-user-settings-line"></i> <span>Gestión de Personas</span>
                     </a>
-                    <div class="collapse menu-dropdown {{ isMenuOpen(['admin.estudiantes.', 'admin.docentes.', 'admin.trabajadores.', 'admin.personas.', 'admin.cargos.', 'admin.users.']) ? 'show' : '' }}"
+                    <div class="collapse menu-dropdown {{ isMenuOpen(['admin.estudiantes.', 'admin.docentes.', 'admin.trabajadores.', 'admin.personas.', 'admin.cargos.']) ? 'show' : '' }}"
                         id="sidebarRRHH">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
@@ -555,9 +555,34 @@
                                 <a href="{{ route('admin.cargos.index') }}" title="Cargos"
                                     class="nav-link {{ Route::currentRouteName() === 'admin.cargos.index' ? 'active' : '' }}">Cargos</a>
                             </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- ========== ADMINISTRACION ========== -->
+                <li class="menu-title mt-3"><i class="ri-settings-3-line"></i> <span>Administración</span></li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link {{ isMenuOpen(['admin.users.', 'admin.roles.', 'admin.permisos.']) ? 'active' : '' }}"
+                        href="#sidebarAdmin" data-bs-toggle="collapse" role="button"
+                        aria-expanded="{{ isMenuOpen(['admin.users.', 'admin.roles.', 'admin.permisos.']) ? 'true' : 'false' }}"
+                        aria-controls="sidebarAdmin">
+                        <i class="ri-shield-user-line"></i> <span>Seguridad</span>
+                    </a>
+                    <div class="collapse menu-dropdown {{ isMenuOpen(['admin.users.', 'admin.roles.', 'admin.permisos.']) ? 'show' : '' }}"
+                        id="sidebarAdmin">
+                        <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a href="{{ route('admin.users.index') }}" title="Usuarios"
                                     class="nav-link {{ Route::currentRouteName() === 'admin.users.index' ? 'active' : '' }}">Usuarios</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.roles.index') }}" title="Roles"
+                                    class="nav-link {{ Route::currentRouteName() === 'admin.roles.index' ? 'active' : '' }}">Roles</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.permisos.index') }}" title="Permisos"
+                                    class="nav-link {{ Route::currentRouteName() === 'admin.permisos.index' ? 'active' : '' }}">Permisos</a>
                             </li>
                         </ul>
                     </div>

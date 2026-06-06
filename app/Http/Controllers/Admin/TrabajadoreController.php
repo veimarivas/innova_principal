@@ -11,7 +11,10 @@ use App\Models\Sede;
 use App\Models\Sucursale;
 use App\Models\Trabajadore;
 use App\Models\TrabajadoresCargo;
+use App\Models\User;
+use App\Services\MoodleService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class TrabajadoreController extends Controller
@@ -24,7 +27,8 @@ class TrabajadoreController extends Controller
     public function listar(Request $request)
     {
         $query = Trabajadore::with([
-            'persona',
+            'persona.usuario',
+            'persona.ciudad',
             'trabajadores_cargos.cargo',
             'trabajadores_cargos.sucursale.sede'
         ]);
@@ -37,7 +41,21 @@ class TrabajadoreController extends Controller
 
         $trabajadores = $query->orderBy('id', 'desc')->get();
 
-        return response()->json(['data' => $trabajadores]);
+        $data = $trabajadores->map(function ($t) {
+            $arr = $t->toArray();
+            $persona = $t->persona;
+            $usuario = $persona?->usuario;
+            $arr['tiene_cuenta_sistema'] = $usuario !== null && (bool) $usuario->acceso_admin;
+            $arr['tiene_cuenta_moodle']  = $usuario !== null && (bool) $usuario->acceso_virtual;
+            $arr['tiene_usuario']        = $usuario !== null;
+            $arr['acceso_admin']         = (bool) ($usuario?->acceso_admin);
+            $arr['acceso_virtual']       = (bool) ($usuario?->acceso_virtual);
+            $arr['usuario_username']     = $usuario?->username;
+            $arr['usuario_moodle_password'] = $usuario?->moodle_password;
+            return $arr;
+        });
+
+        return response()->json(['data' => $data]);
     }
 
     public function buscarCarnet(Request $request)
@@ -409,5 +427,154 @@ class TrabajadoreController extends Controller
                 'message' => 'Error interno: ' . (app()->environment('local') ? $e->getMessage() : 'Contacte al administrador')
             ], 500);
         }
+    }
+
+    public function crearCuentas(Request $request, $id)
+    {
+        $trabajador = Trabajadore::with(['persona.usuario'])->findOrFail($id);
+        $persona    = $trabajador->persona;
+
+        if (!$persona) {
+            return response()->json(['success' => false, 'message' => 'Persona no encontrada.'], 404);
+        }
+
+        if (!$persona->correo) {
+            return response()->json(['success' => false, 'message' => 'El trabajador no tiene correo electrónico registrado. Agréguelo primero.'], 422);
+        }
+
+        $password = $this->generarPasswordSistema($persona->carnet);
+        $username = $this->generarUsernameMoodle(
+            $persona->nombres ?? '',
+            $persona->apellido_paterno ?? '',
+            $persona->apellido_materno ?? ''
+        );
+        $nombre   = trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''));
+
+        if ($persona->usuario) {
+            $persona->usuario->update([
+                'password'        => $password,
+                'moodle_password' => $password,
+                'estado'          => 'Activo',
+            ]);
+            $resultado = ['sistema' => [
+                'email'    => $persona->correo,
+                'username' => $persona->usuario->username,
+                'password' => $password,
+                'nota'     => 'Cuenta ya existía, se restableció la contraseña.',
+            ]];
+        } else {
+            $emailUsuario = User::where('email', $persona->correo)->where('persona_id', '!=', $persona->id)->first();
+            if ($emailUsuario) {
+                return response()->json(['success' => false, 'message' => 'El correo ya está en uso por otro usuario del sistema.'], 422);
+            }
+
+            User::create([
+                'name'            => $nombre,
+                'username'        => $username,
+                'email'           => $persona->correo,
+                'password'        => $password,
+                'moodle_password' => $password,
+                'role'            => 'moodle',
+                'acceso_admin'    => true,
+                'acceso_virtual'  => true,
+                'estado'          => 'Activo',
+                'persona_id'      => $persona->id,
+            ]);
+
+            $resultado = ['sistema' => [
+                'email'    => $persona->correo,
+                'username' => $username,
+                'password' => $password,
+            ]];
+        }
+
+        try {
+            $moodle = app(MoodleService::class);
+
+            $existingMoodleUser = $moodle->getUserByField('username', $username);
+            $moodleUserId       = $existingMoodleUser ? (int) $existingMoodleUser['id'] : null;
+
+            if (!$moodleUserId && $persona->correo) {
+                $byEmail      = $moodle->getUserByField('email', $persona->correo);
+                $moodleUserId = $byEmail ? (int) $byEmail['id'] : null;
+            }
+
+            if ($moodleUserId) {
+                $moodle->updateUserPassword($moodleUserId, $password);
+                $resultado['moodle'] = [
+                    'username' => $username,
+                    'email'    => $persona->correo,
+                    'nota'     => 'Usuario ya existía en Moodle, se actualizó la contraseña.',
+                ];
+            } else {
+                $firstname    = trim($persona->nombres ?? '') ?: 'Trabajador';
+                $lastname     = trim(($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '')) ?: 'Sin Apellido';
+                $email        = $persona->correo ?: "{$username}@innova.edu.bo";
+                $moodleUserId = $moodle->createUser($username, $password, $firstname, $lastname, $email);
+
+                if ($moodleUserId) {
+                    $resultado['moodle'] = ['username' => $username, 'password' => $password, 'email' => $email];
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('Error creating Moodle user for trabajador: ' . $e->getMessage());
+        }
+
+        $partes = array_keys($resultado);
+        $msg = in_array('moodle', $partes)
+            ? 'Cuentas del sistema y Moodle creadas con las mismas credenciales.'
+            : 'Cuenta del sistema creada (Moodle no disponible).';
+
+        return response()->json(['success' => true, 'message' => $msg, 'data' => $resultado]);
+    }
+
+    public function resetPasswordMoodle(Request $request, $id)
+    {
+        $trabajador = Trabajadore::with(['persona.usuario'])->findOrFail($id);
+        $persona    = $trabajador->persona;
+
+        if (!$persona || !$persona->usuario) {
+            return response()->json(['success' => false, 'message' => 'El trabajador no tiene cuenta de usuario.'], 404);
+        }
+
+        $username = $persona->usuario->username;
+        $password = $this->generarPasswordSistema($persona->carnet);
+        $moodle   = app(MoodleService::class);
+
+        $existingMoodleUser = $moodle->getUserByField('username', $username);
+        $moodleUserId       = $existingMoodleUser ? (int) $existingMoodleUser['id'] : null;
+
+        if (!$moodleUserId) {
+            return response()->json(['success' => false, 'message' => 'No se encontró cuenta de Moodle para este trabajador.'], 404);
+        }
+
+        if (!$moodle->updateUserPassword($moodleUserId, $password)) {
+            return response()->json(['success' => false, 'message' => 'Error al actualizar la contraseña en Moodle.'], 500);
+        }
+
+        $persona->usuario->update(['moodle_password' => $password]);
+
+        return response()->json(['success' => true, 'password' => $password]);
+    }
+
+    private function generarPasswordSistema(?string $carnet): string
+    {
+        $digits = preg_replace('/[^0-9]/', '', $carnet ?: '');
+        return strlen($digits) >= 7 ? $digits : 'innova' . $digits;
+    }
+
+    private function generarUsernameMoodle(string $nombres, string $apPaterno, string $apMaterno): string
+    {
+        $reemplazos = ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ü'=>'u','ñ'=>'n'];
+        $palabras = preg_split('/\s+/', trim($nombres));
+        $primerNombre = $palabras[0] ?? '';
+
+        $ap = strtr(preg_replace('/[^a-záéíóúüñ]/u', '', mb_strtolower($apPaterno)), $reemplazos);
+        $am = strtr(preg_replace('/[^a-záéíóúüñ]/u', '', mb_strtolower($apMaterno)), $reemplazos);
+        $inicial = mb_strtolower(mb_substr($primerNombre, 0, 1));
+        $inicial = strtr($inicial, $reemplazos);
+
+        $username = substr($inicial . $ap . $am, 0, 20);
+        return $username ?: ('usuario' . abs(crc32($nombres . $apPaterno)));
     }
 }

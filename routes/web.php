@@ -44,6 +44,13 @@ use App\Http\Controllers\PreInscripcionController;
 
 Auth::routes();
 
+// ── Selector de modo de acceso ────────────────────────────────────────────
+Route::middleware(['auth'])->group(function () {
+    Route::get('/seleccionar-acceso', [\App\Http\Controllers\AccesoController::class, 'seleccionar'])->name('seleccionar-acceso');
+    Route::get('/acceso/entrar/{modo}', [\App\Http\Controllers\AccesoController::class, 'entrar'])->name('acceso.entrar')->where('modo', 'admin|virtual');
+    Route::get('/acceso/cambiar', [\App\Http\Controllers\AccesoController::class, 'cambiar'])->name('acceso.cambiar');
+});
+
 // ── Portal Virtual ────────────────────────────────────────────────────────
 Route::prefix('virtual')->name('virtual.')->middleware(['auth', 'isMoodle'])->group(function () {
     Route::get('/dashboard', [VirtualDashboardController::class, 'index'])->name('dashboard');
@@ -513,6 +520,32 @@ Route::prefix('admin/users')->middleware(['auth', 'isAdmin'])->name('admin.users
     Route::delete('/{id}', [UserController::class, 'eliminar'])->name('eliminar');
     Route::post('/{id}/reiniciar-password', [UserController::class, 'reiniciarPassword'])->name('reiniciarPassword');
     Route::post('/{id}/toggle-estado',     [UserController::class, 'toggleEstado'])->name('toggleEstado');
+    Route::post('/{id}/toggle-acceso-admin',   [UserController::class, 'toggleAccesoAdmin'])->name('toggleAccesoAdmin');
+    Route::post('/{id}/toggle-acceso-virtual', [UserController::class, 'toggleAccesoVirtual'])->name('toggleAccesoVirtual');
+    Route::get('/{id}/roles',   [UserController::class, 'obtenerRoles'])->name('obtenerRoles');
+    Route::post('/{id}/roles',  [UserController::class, 'asignarRoles'])->name('asignarRoles');
+});
+
+// Roles (Spatie)
+Route::prefix('admin/roles')->middleware(['auth', 'isAdmin'])->name('admin.roles.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\RoleController::class, 'index'])->name('index');
+    Route::get('/listar', [\App\Http\Controllers\Admin\RoleController::class, 'listar'])->name('listar');
+    Route::post('/verificar', [\App\Http\Controllers\Admin\RoleController::class, 'verificarNombre'])->name('verificar');
+    Route::get('/{id}/permisos', [\App\Http\Controllers\Admin\RoleController::class, 'permisos'])->name('permisos');
+    Route::post('/{id}/permisos', [\App\Http\Controllers\Admin\RoleController::class, 'sincronizarPermisos'])->name('sincronizarPermisos');
+    Route::post('/', [\App\Http\Controllers\Admin\RoleController::class, 'guardar'])->name('guardar');
+    Route::put('/{id}', [\App\Http\Controllers\Admin\RoleController::class, 'actualizar'])->name('actualizar');
+    Route::delete('/{id}', [\App\Http\Controllers\Admin\RoleController::class, 'eliminar'])->name('eliminar');
+});
+
+// Permisos (Spatie)
+Route::prefix('admin/permisos')->middleware(['auth', 'isAdmin'])->name('admin.permisos.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\PermissionController::class, 'index'])->name('index');
+    Route::get('/listar', [\App\Http\Controllers\Admin\PermissionController::class, 'listar'])->name('listar');
+    Route::post('/verificar', [\App\Http\Controllers\Admin\PermissionController::class, 'verificarNombre'])->name('verificar');
+    Route::post('/', [\App\Http\Controllers\Admin\PermissionController::class, 'guardar'])->name('guardar');
+    Route::put('/{id}', [\App\Http\Controllers\Admin\PermissionController::class, 'actualizar'])->name('actualizar');
+    Route::delete('/{id}', [\App\Http\Controllers\Admin\PermissionController::class, 'eliminar'])->name('eliminar');
 });
 
 // Cargos
@@ -595,6 +628,8 @@ Route::prefix('admin/trabajadores')->middleware(['auth', 'isAdmin'])->name('admi
     Route::post('/asignar', [TrabajadoreController::class, 'asignarTrabajador'])->name('asignar');
     Route::get('/{id}', [TrabajadoreController::class, 'obtenerTrabajador'])->name('obtener');
     Route::post('/actualizar-cargos', [TrabajadoreController::class, 'actualizarCargos'])->name('actualizarCargos');
+    Route::post('/{id}/crear-cuentas', [TrabajadoreController::class, 'crearCuentas'])->name('crearCuentas');
+    Route::post('/{id}/reset-password-moodle', [TrabajadoreController::class, 'resetPasswordMoodle'])->name('resetPasswordMoodle');
     Route::delete('/{id}', [TrabajadoreController::class, 'eliminar'])->name('eliminar');
     Route::delete('/{trabajadorId}/cargos/{cargoId}', [TrabajadoreController::class, 'eliminarCargo'])->name('eliminarCargo');
 });
