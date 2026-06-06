@@ -1980,6 +1980,23 @@
         background-position: right calc(0.375em + 0.1875rem) center;
         background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
     }
+    .form-control.is-valid-custom,
+    .form-select.is-valid-custom {
+        border-color: #10b981;
+    }
+    /* Force invalid-feedback to render when populated (overrides Bootstrap's display:none) */
+    .invalid-feedback:not(:empty) {
+        display: block;
+        color: #ef4444;
+        font-size: 0.72rem;
+        margin-top: 0.25rem;
+    }
+    .valid-feedback-custom {
+        display: block;
+        color: #10b981;
+        font-size: 0.72rem;
+        margin-top: 0.25rem;
+    }
 
     .horario-detail-field {
         display: flex;
@@ -4217,5 +4234,1259 @@
     .plt-btn-habilitar:hover {
         background: #059669;
         color: white;
+    }
+
+    /* ==========================================================
+       TAB ÁREA ACADÉMICA — ESTILOS
+       ========================================================== */
+    .oferta-details-theme-wrapper #tab-area-academica .tab-section-header {
+        background: linear-gradient(135deg, #ffffff 0%, #fbf9f5 60%, rgba(var(--brand-color-rgb), 0.06) 100%);
+        border-bottom: 1px solid rgba(var(--brand-color-rgb), 0.10);
+        padding: 1.25rem 1.5rem;
+    }
+    .oferta-details-theme-wrapper .aa-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(var(--brand-color-rgb), 0.1);
+        color: var(--brand-color);
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 0.4rem 0.85rem;
+        border-radius: 999px;
+        border: 1px solid rgba(var(--brand-color-rgb), 0.2);
+    }
+    .oferta-details-theme-wrapper .aa-btn-refresh {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #fff;
+        color: var(--brand-color);
+        border: 1px solid rgba(var(--brand-color-rgb), 0.28);
+        border-radius: 10px;
+        padding: 0.45rem 0.95rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .oferta-details-theme-wrapper .aa-btn-refresh:hover {
+        background: var(--brand-color);
+        color: var(--brand-contrast-color, #fff);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(var(--brand-color-rgb), 0.28);
+    }
+    .oferta-details-theme-wrapper .aa-btn-refresh.is-loading i {
+        animation: aaSpin 1s linear infinite;
+    }
+    @keyframes aaSpin {
+        from { transform: rotate(0); }
+        to   { transform: rotate(360deg); }
+    }
+
+    .oferta-details-theme-wrapper .aa-table-wrap {
+        margin: 1.25rem 1.5rem 0;
+        background: #fff;
+        border: 1px solid var(--d-card-border);
+        border-radius: 14px;
+        overflow: auto;
+        max-height: 70vh;
+        box-shadow: 0 2px 8px rgba(15, 10, 5, 0.04);
+    }
+    .oferta-details-theme-wrapper .aa-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.82rem;
+    }
+    .oferta-details-theme-wrapper .aa-table thead th {
+        background: linear-gradient(180deg, #fbfaf7 0%, #f5f2ec 100%);
+        color: var(--d-title);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.75rem 0.85rem;
+        border-bottom: 2px solid var(--d-card-border);
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        white-space: nowrap;
+    }
+    .oferta-details-theme-wrapper .aa-table tbody td {
+        padding: 0.7rem 0.85rem;
+        border-bottom: 1px solid #f4efe7;
+        color: var(--d-body);
+        vertical-align: middle;
+    }
+    .oferta-details-theme-wrapper .aa-table tbody tr:hover td {
+        background: rgba(var(--brand-color-rgb), 0.025);
+    }
+    .oferta-details-theme-wrapper .aa-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Sticky columns — # + Carnet + Estudiante */
+    .oferta-details-theme-wrapper .aa-table .aa-sticky-col {
+        position: sticky;
+        background: #fff;
+        z-index: 1;
+    }
+    .oferta-details-theme-wrapper .aa-table thead th.aa-sticky-col {
+        background: linear-gradient(180deg, #fbfaf7 0%, #f5f2ec 100%);
+        z-index: 3;
+    }
+    .oferta-details-theme-wrapper .aa-table .aa-stk-1 { left: 0;     min-width: 50px;  width: 50px; }
+    .oferta-details-theme-wrapper .aa-table .aa-stk-2 { left: 50px;  min-width: 110px; width: 110px; }
+    .oferta-details-theme-wrapper .aa-table .aa-stk-3 { left: 160px; min-width: 260px; max-width: 320px;
+        box-shadow: inset -1px 0 0 #ede5d5, 4px 0 8px -4px rgba(15, 10, 5, 0.08); }
+    .oferta-details-theme-wrapper .aa-table tbody tr:hover .aa-sticky-col {
+        background: #fffaf3;
+    }
+    .oferta-details-theme-wrapper .aa-table .aa-cell-num {
+        font-weight: 700;
+        color: var(--brand-color);
+        text-align: center;
+        font-size: 0.78rem;
+    }
+    .oferta-details-theme-wrapper .aa-cell-estudiante .aa-est-nombre {
+        font-weight: 700;
+        color: var(--d-title);
+        font-size: 0.83rem;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+
+    /* Info compactas (ubicación / personales) */
+    .oferta-details-theme-wrapper .aa-info-line {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.78rem;
+        color: var(--d-body);
+        line-height: 1.35;
+    }
+    .oferta-details-theme-wrapper .aa-info-line i {
+        color: var(--brand-color);
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+    .oferta-details-theme-wrapper .aa-info-sub {
+        color: var(--d-muted);
+        font-size: 0.74rem;
+        margin-top: 0.18rem;
+    }
+    .oferta-details-theme-wrapper .aa-info-sub i {
+        color: var(--d-muted);
+    }
+    .oferta-details-theme-wrapper .aa-personal-row {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+    }
+    .oferta-details-theme-wrapper .aa-personal-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.76rem;
+        color: var(--d-body);
+    }
+    .oferta-details-theme-wrapper .aa-personal-item i {
+        color: var(--brand-color);
+        font-size: 0.8rem;
+    }
+    .oferta-details-theme-wrapper .aa-personal-sep {
+        color: var(--d-card-border);
+    }
+
+    /* Botón Ver estudios */
+    .oferta-details-theme-wrapper .aa-btn-estudios {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(99, 102, 241, 0.04));
+        color: #4f46e5;
+        border: 1px solid rgba(99, 102, 241, 0.22);
+        border-radius: 9px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.76rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .oferta-details-theme-wrapper .aa-btn-estudios:hover {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.08));
+        border-color: rgba(99, 102, 241, 0.4);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.18);
+    }
+    .oferta-details-theme-wrapper .aa-btn-estudios i {
+        font-size: 0.9rem;
+    }
+    .oferta-details-theme-wrapper .aa-ci-chip {
+        display: inline-block;
+        font-family: 'Lexend', sans-serif;
+        font-weight: 700;
+        font-size: 0.8rem;
+        background: rgba(var(--brand-color-rgb), 0.1);
+        color: var(--brand-color);
+        padding: 0.2rem 0.55rem;
+        border-radius: 8px;
+        border: 1px solid rgba(var(--brand-color-rgb), 0.18);
+        white-space: nowrap;
+    }
+    .oferta-details-theme-wrapper .aa-cell-correo {
+        font-size: 0.78rem;
+        color: #4f46e5;
+    }
+
+    /* Columna Contacto (Celular + Correo) */
+    .oferta-details-theme-wrapper .aa-cell-contacto {
+        max-width: 280px;
+    }
+    .oferta-details-theme-wrapper .aa-contact-line {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        color: var(--d-body);
+        line-height: 1.3;
+    }
+    .oferta-details-theme-wrapper .aa-contact-line + .aa-contact-line {
+        margin-top: 0.25rem;
+    }
+    .oferta-details-theme-wrapper .aa-contact-line i {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.85rem;
+        background: rgba(var(--brand-color-rgb), 0.1);
+        color: var(--brand-color);
+    }
+    .oferta-details-theme-wrapper .aa-contact-correo i {
+        background: rgba(79, 70, 229, 0.1);
+        color: #4f46e5;
+    }
+    .oferta-details-theme-wrapper .aa-contact-correo span {
+        color: #4f46e5;
+        font-weight: 500;
+        word-break: break-all;
+    }
+    .oferta-details-theme-wrapper .aa-contact-line span {
+        flex: 1;
+        min-width: 0;
+        word-break: break-word;
+    }
+
+    .oferta-details-theme-wrapper .aa-cell-personal .aa-personal-row {
+        gap: 0.45rem;
+    }
+
+    .oferta-details-theme-wrapper .aa-sexo-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+    }
+    .oferta-details-theme-wrapper .aa-sexo-m {
+        background: rgba(59, 130, 246, 0.12);
+        color: #2563eb;
+        border: 1px solid rgba(59, 130, 246, 0.22);
+    }
+    .oferta-details-theme-wrapper .aa-sexo-f {
+        background: rgba(236, 72, 153, 0.12);
+        color: #be185d;
+        border: 1px solid rgba(236, 72, 153, 0.22);
+    }
+
+    /* Estudios pills */
+    .oferta-details-theme-wrapper .aa-estudios-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+    .oferta-details-theme-wrapper .aa-estudio-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.74rem;
+        background: #f5f0e9;
+        color: #44403a;
+        padding: 0.22rem 0.6rem;
+        border-radius: 7px;
+        border: 1px solid #ece5da;
+        line-height: 1.3;
+    }
+    .oferta-details-theme-wrapper .aa-estudio-principal {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.04));
+        border-color: rgba(245, 158, 11, 0.3);
+        color: #92400e;
+        font-weight: 600;
+    }
+    .oferta-details-theme-wrapper .aa-estudio-principal i {
+        color: #f59e0b;
+        font-size: 0.78rem;
+    }
+    .oferta-details-theme-wrapper .aa-estudio-estado {
+        font-size: 0.66rem;
+        background: rgba(99, 102, 241, 0.12);
+        color: #4f46e5;
+        padding: 0.05rem 0.4rem;
+        border-radius: 999px;
+        font-weight: 600;
+        margin-left: 0.2rem;
+    }
+
+    /* Module columns */
+    .oferta-details-theme-wrapper .aa-table thead th.aa-mod-col {
+        text-align: center;
+        background: linear-gradient(180deg, #f5f0fa 0%, #ede5f4 100%);
+        color: #4c1d95;
+        vertical-align: middle;
+        min-width: 200px;
+        padding: 0.65rem 0.65rem;
+    }
+    .oferta-details-theme-wrapper .aa-mod-col-name {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 0.3rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1.25;
+        white-space: normal;
+        word-break: break-word;
+        text-align: center;
+        max-width: 220px;
+        margin: 0 auto;
+    }
+    .oferta-details-theme-wrapper .aa-mod-col-name i {
+        color: #7c3aed;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+        margin-top: 0.1rem;
+    }
+    .oferta-details-theme-wrapper .aa-mod-col-name span {
+        text-transform: none;
+        letter-spacing: 0;
+    }
+    .oferta-details-theme-wrapper .aa-mod-col-estado {
+        margin-top: 0.45rem;
+        display: flex;
+        justify-content: center;
+    }
+    .oferta-details-theme-wrapper .aa-mod-estado-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+    }
+    .oferta-details-theme-wrapper .aa-mod-estado-chip i {
+        font-size: 0.7rem;
+    }
+    .oferta-details-theme-wrapper .aa-mod-col-sub {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 0.45rem;
+        gap: 0.4rem;
+    }
+    .oferta-details-theme-wrapper .aa-mod-col-sub-label {
+        font-size: 0.6rem;
+        font-weight: 600;
+        color: #7c6695;
+        background: rgba(255, 255, 255, 0.6);
+        padding: 0.12rem 0.45rem;
+        border-radius: 4px;
+        text-transform: none;
+        letter-spacing: 0.02em;
+        text-align: center;
+        flex: 1;
+    }
+
+    .oferta-details-theme-wrapper .aa-mod-cell {
+        text-align: center;
+        background: rgba(124, 58, 237, 0.015);
+    }
+    .oferta-details-theme-wrapper .aa-table tbody tr:hover .aa-mod-cell {
+        background: rgba(124, 58, 237, 0.05);
+    }
+    .oferta-details-theme-wrapper .aa-mod-cell-blocked {
+        background: repeating-linear-gradient(
+            45deg,
+            rgba(148, 163, 184, 0.04),
+            rgba(148, 163, 184, 0.04) 8px,
+            rgba(148, 163, 184, 0.09) 8px,
+            rgba(148, 163, 184, 0.09) 16px
+        ) !important;
+    }
+    .oferta-details-theme-wrapper .aa-nota.aa-nota-blocked {
+        background: transparent;
+        color: #cbc6bd;
+        border-color: transparent;
+        font-weight: 500;
+        cursor: not-allowed;
+    }
+    .oferta-details-theme-wrapper .aa-notas-pair {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-family: 'Lexend', sans-serif;
+        font-size: 0.85rem;
+    }
+    .oferta-details-theme-wrapper .aa-nota {
+        display: inline-block;
+        min-width: 30px;
+        text-align: center;
+        padding: 0.18rem 0.5rem;
+        border-radius: 7px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        background: #f3f1ec;
+        color: #6b7280;
+        border: 1px solid #e8e2d6;
+    }
+    .oferta-details-theme-wrapper .aa-nota.loaded.ok {
+        background: rgba(34, 197, 94, 0.12);
+        color: #15803d;
+        border-color: rgba(34, 197, 94, 0.25);
+    }
+    .oferta-details-theme-wrapper .aa-nota.loaded.fail {
+        background: rgba(239, 68, 68, 0.1);
+        color: #b91c1c;
+        border-color: rgba(239, 68, 68, 0.25);
+    }
+    .oferta-details-theme-wrapper .aa-nota.loading {
+        opacity: 0.55;
+        animation: aaPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes aaPulse {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.8; }
+    }
+    .oferta-details-theme-wrapper .aa-nota-sep {
+        color: #cbc6bd;
+        font-weight: 400;
+    }
+
+    .oferta-details-theme-wrapper .aa-legend {
+        margin: 0.75rem 1.5rem 1.5rem;
+        font-size: 0.74rem;
+        color: var(--d-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .oferta-details-theme-wrapper .aa-legend i {
+        color: var(--brand-color);
+    }
+
+    /* Modal de estudios */
+    .oferta-details-theme-wrapper #modalEstudiosEstudiante .aa-modal-estudiante-info {
+        background: linear-gradient(135deg, rgba(var(--brand-color-rgb), 0.08), rgba(var(--brand-color-rgb), 0.02));
+        border: 1px solid rgba(var(--brand-color-rgb), 0.18);
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 1rem;
+    }
+    .oferta-details-theme-wrapper #modalEstudiosEstudiante .aa-modal-est-name {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--d-title);
+        margin-bottom: 0.2rem;
+    }
+    .oferta-details-theme-wrapper #modalEstudiosEstudiante .aa-modal-est-ci {
+        font-size: 0.78rem;
+        color: var(--d-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    .oferta-details-theme-wrapper #modalEstudiosEstudiante .aa-modal-est-ci i {
+        color: var(--brand-color);
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudios-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        padding: 0.7rem 0.85rem;
+        background: #fff;
+        border: 1px solid #ede8e2;
+        border-radius: 11px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-item:hover {
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.06);
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-item.principal {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.07), rgba(245, 158, 11, 0.01));
+        border-color: rgba(245, 158, 11, 0.3);
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6366f1, #818cf8);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-item.principal .aa-modal-estudio-num {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-body {
+        flex: 1;
+        min-width: 0;
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-grado {
+        font-weight: 700;
+        color: var(--d-title);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-grado .aa-principal-star {
+        color: #f59e0b;
+        font-size: 0.8rem;
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-meta {
+        margin-top: 0.25rem;
+        font-size: 0.76rem;
+        color: var(--d-body);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem 0.75rem;
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-meta-item i {
+        color: var(--brand-color);
+        font-size: 0.8rem;
+    }
+    .oferta-details-theme-wrapper .aa-modal-estudio-estado {
+        margin-top: 0.4rem;
+        display: inline-block;
+        font-size: 0.66rem;
+        font-weight: 700;
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(99, 102, 241, 0.12);
+        color: #4f46e5;
+        letter-spacing: 0.04em;
+    }
+
+    /* Scroll */
+    .oferta-details-theme-wrapper .aa-table-wrap::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    .oferta-details-theme-wrapper .aa-table-wrap::-webkit-scrollbar-thumb {
+        background: rgba(var(--brand-color-rgb), 0.25);
+        border-radius: 4px;
+    }
+    .oferta-details-theme-wrapper .aa-table-wrap::-webkit-scrollbar-thumb:hover {
+        background: rgba(var(--brand-color-rgb), 0.45);
+    }
+
+    /* ==========================================================
+       ÁREA CONTABLE — REDISEÑO ELEGANTE
+       ========================================================== */
+    .oferta-details-theme-wrapper #tab-contable .tab-section-header {
+        background:
+            linear-gradient(135deg, #ffffff 0%, #fbf9f5 60%, rgba(var(--brand-color-rgb), 0.06) 100%);
+        border-bottom: 1px solid rgba(var(--brand-color-rgb), 0.10);
+        padding: 1.35rem 1.6rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .oferta-details-theme-wrapper #tab-contable .tab-section-header::after {
+        content: '';
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(var(--brand-color-rgb), 0.08) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .oferta-details-theme-wrapper #tab-contable .tab-section-icon.con-icon-color {
+        width: 46px;
+        height: 46px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, var(--brand-color), rgba(var(--brand-color-rgb), 0.78));
+        box-shadow:
+            0 6px 18px rgba(var(--brand-color-rgb), 0.32),
+            inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        color: var(--brand-contrast-color, #fff);
+        font-size: 1.2rem;
+    }
+    .oferta-details-theme-wrapper #tab-contable .tab-section-title {
+        font-size: 1rem;
+        letter-spacing: -0.01em;
+    }
+    .oferta-details-theme-wrapper #tab-contable .tab-section-sub {
+        font-size: 0.76rem;
+    }
+    .oferta-details-theme-wrapper #tab-contable .tab-section-action-btn {
+        padding: 0.55rem 1.15rem;
+        border-radius: 11px;
+        background: linear-gradient(135deg, var(--brand-color), rgba(var(--brand-color-rgb), 0.85));
+        color: var(--brand-contrast-color, #fff);
+        border: none;
+        font-size: 0.82rem;
+        box-shadow: 0 4px 14px rgba(var(--brand-color-rgb), 0.28);
+        position: relative;
+        z-index: 1;
+    }
+    .oferta-details-theme-wrapper #tab-contable .tab-section-action-btn:hover {
+        box-shadow: 0 8px 22px rgba(var(--brand-color-rgb), 0.42);
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, var(--brand-color), rgba(var(--brand-color-rgb), 0.95));
+        color: var(--brand-contrast-color, #fff);
+    }
+    .oferta-details-theme-wrapper #tab-contable .tab-section-action-btn i {
+        font-size: 1rem;
+    }
+
+    .oferta-details-theme-wrapper .contable-cards-wrapper {
+        padding: 1.5rem 1.6rem 2rem;
+        gap: 1.25rem;
+    }
+
+    /* Plan card refined */
+    .oferta-details-theme-wrapper .contable-plan-card {
+        background: #fff;
+        border: 1px solid var(--d-card-border);
+        border-radius: 16px;
+        box-shadow: 0 2px 6px rgba(15, 10, 5, 0.04), 0 1px 2px rgba(15, 10, 5, 0.03);
+        transition: box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s, border-color 0.2s;
+        position: relative;
+        overflow: hidden;
+    }
+    .oferta-details-theme-wrapper .contable-plan-card:hover {
+        box-shadow:
+            0 18px 40px rgba(15, 10, 5, 0.08),
+            0 6px 14px rgba(15, 10, 5, 0.05);
+        transform: translateY(-2px);
+        border-color: rgba(var(--brand-color-rgb), 0.18);
+    }
+    .oferta-details-theme-wrapper .contable-plan-card.contable-plan-promo {
+        background:
+            linear-gradient(135deg, #fffaf3 0%, #fff 35%, #fff 65%, #fff5e6 100%);
+        border-color: rgba(252, 123, 4, 0.22);
+        box-shadow: 0 4px 14px rgba(252, 123, 4, 0.06), 0 1px 3px rgba(252, 123, 4, 0.04);
+    }
+    .oferta-details-theme-wrapper .contable-plan-card.contable-plan-promo:hover {
+        border-color: rgba(252, 123, 4, 0.4);
+        box-shadow:
+            0 20px 44px rgba(252, 123, 4, 0.12),
+            0 6px 16px rgba(252, 123, 4, 0.08);
+    }
+    .oferta-details-theme-wrapper .contable-accent-bar {
+        height: 5px;
+        background: linear-gradient(90deg, var(--brand-color), rgba(var(--brand-color-rgb), 0.55));
+        position: relative;
+    }
+    .oferta-details-theme-wrapper .contable-plan-card.contable-plan-promo .contable-accent-bar {
+        background: linear-gradient(90deg, #f59e0b, #fc7b04, #f59e0b);
+        background-size: 200% 100%;
+        animation: promoShimmer 3s linear infinite;
+    }
+    @keyframes promoShimmer {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; }
+    }
+
+    /* Plan header */
+    .oferta-details-theme-wrapper .contable-plan-header,
+    .oferta-details-theme-wrapper .contable-plan-header-promo {
+        padding: 1.15rem 1.35rem 1rem;
+        border-bottom: 1px solid #f1ece5;
+        background: linear-gradient(180deg, #fcfaf6 0%, #fff 100%);
+    }
+    .oferta-details-theme-wrapper .contable-plan-card.contable-plan-promo .contable-plan-header,
+    .oferta-details-theme-wrapper .contable-plan-card.contable-plan-promo .contable-plan-header-promo {
+        background: linear-gradient(180deg, rgba(252, 123, 4, 0.06) 0%, transparent 100%);
+        border-bottom-color: rgba(252, 123, 4, 0.15);
+    }
+    .oferta-details-theme-wrapper .contable-plan-nombre {
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: var(--d-title);
+    }
+    .oferta-details-theme-wrapper .contable-promo-badge {
+        background: linear-gradient(135deg, #fc7b04, #f59e0b);
+        color: #fff;
+        border-radius: 999px;
+        padding: 0.25rem 0.7rem;
+        font-size: 0.66rem;
+        letter-spacing: 0.06em;
+        box-shadow: 0 3px 8px rgba(252, 123, 4, 0.3);
+        border: none;
+    }
+    .oferta-details-theme-wrapper .contable-promo-badge i {
+        font-size: 0.78rem;
+    }
+    .oferta-details-theme-wrapper .contable-plan-total {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--brand-color);
+        background: linear-gradient(135deg, rgba(var(--brand-color-rgb), 0.08), rgba(var(--brand-color-rgb), 0.03));
+        padding: 0.4rem 0.85rem;
+        border-radius: 10px;
+        border: 1px solid rgba(var(--brand-color-rgb), 0.15);
+        letter-spacing: -0.01em;
+        line-height: 1;
+    }
+    .oferta-details-theme-wrapper .contable-plan-card.contable-plan-promo .contable-plan-total {
+        color: #fc7b04;
+        background: linear-gradient(135deg, rgba(252, 123, 4, 0.1), rgba(252, 123, 4, 0.03));
+        border-color: rgba(252, 123, 4, 0.2);
+    }
+    .oferta-details-theme-wrapper .btn-contable-edit-plan {
+        padding: 0.45rem 0.9rem;
+        border-radius: 10px;
+        background: #fff;
+        border: 1px solid rgba(var(--brand-color-rgb), 0.28);
+        color: var(--brand-color);
+        font-size: 0.78rem;
+        font-weight: 600;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .oferta-details-theme-wrapper .btn-contable-edit-plan:hover {
+        background: var(--brand-color);
+        color: var(--brand-contrast-color, #fff);
+        border-color: var(--brand-color);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(var(--brand-color-rgb), 0.32);
+    }
+
+    /* Promo dates bar */
+    .oferta-details-theme-wrapper .contable-promo-dates-bar {
+        background: linear-gradient(90deg, rgba(252, 123, 4, 0.08), rgba(252, 123, 4, 0.02));
+        border-bottom: 1px solid rgba(252, 123, 4, 0.12);
+        padding: 0.55rem 1.35rem;
+        font-size: 0.78rem;
+        color: #c96004;
+        font-weight: 600;
+    }
+    .oferta-details-theme-wrapper .contable-promo-dates-bar i {
+        background: rgba(252, 123, 4, 0.18);
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        color: #fc7b04;
+        margin-right: 0.1rem;
+    }
+
+    /* Plan type row */
+    .oferta-details-theme-wrapper .contable-plan-type-row {
+        padding: 0.55rem 1.35rem;
+        border-bottom: 1px solid #f5f1ea;
+        background: #fdfcfa;
+    }
+    .oferta-details-theme-wrapper .contable-plan-type-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 0.22rem 0.65rem;
+        border-radius: 999px;
+        letter-spacing: 0.08em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    .oferta-details-theme-wrapper .contable-plan-type-label.promo {
+        background: rgba(252, 123, 4, 0.12);
+        color: #c96004;
+        border: 1px solid rgba(252, 123, 4, 0.2);
+    }
+    .oferta-details-theme-wrapper .contable-plan-type-label.promo::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #fc7b04;
+        box-shadow: 0 0 0 3px rgba(252, 123, 4, 0.2);
+    }
+    .oferta-details-theme-wrapper .contable-plan-type-label.normal {
+        background: rgba(var(--brand-color-rgb), 0.1);
+        color: var(--brand-color);
+        border: 1px solid rgba(var(--brand-color-rgb), 0.2);
+    }
+    .oferta-details-theme-wrapper .contable-plan-type-label.normal::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--brand-color);
+        box-shadow: 0 0 0 3px rgba(var(--brand-color-rgb), 0.2);
+    }
+
+    /* Conceptos table refined */
+    .oferta-details-theme-wrapper .contable-conceptos-list {
+        padding: 0.25rem 0 0.5rem;
+    }
+    .oferta-details-theme-wrapper .contable-conceptos-table thead th {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        font-weight: 700;
+        color: #94908a;
+        padding: 0.65rem 1.35rem;
+        background: transparent;
+        border-bottom: 1px solid #f1ece5;
+    }
+    .oferta-details-theme-wrapper .contable-conceptos-table tbody td {
+        padding: 0.75rem 1.35rem;
+        font-size: 0.875rem;
+        color: var(--d-body);
+        border-bottom: 1px solid #faf6f0;
+        transition: background 0.2s;
+    }
+    .oferta-details-theme-wrapper .contable-conceptos-table tbody tr:hover td {
+        background: rgba(var(--brand-color-rgb), 0.025);
+    }
+    .oferta-details-theme-wrapper .contable-plan-card.contable-plan-promo .contable-conceptos-table tbody tr:hover td {
+        background: rgba(252, 123, 4, 0.035);
+    }
+    .oferta-details-theme-wrapper .contable-cuotas-badge {
+        background: linear-gradient(135deg, rgba(var(--brand-color-rgb), 0.18), rgba(var(--brand-color-rgb), 0.08));
+        color: var(--brand-color);
+        font-weight: 700;
+        font-size: 0.78rem;
+        padding: 0.25rem 0.7rem;
+        border-radius: 999px;
+        border: 1px solid rgba(var(--brand-color-rgb), 0.2);
+        min-width: 32px;
+    }
+    .oferta-details-theme-wrapper .contable-plan-card.contable-plan-promo .contable-cuotas-badge {
+        background: linear-gradient(135deg, rgba(252, 123, 4, 0.18), rgba(252, 123, 4, 0.08));
+        color: #c96004;
+        border-color: rgba(252, 123, 4, 0.22);
+    }
+
+    /* Action buttons in conceptos table */
+    .oferta-details-theme-wrapper .btn-contable-edit,
+    .oferta-details-theme-wrapper .btn-contable-delete {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        border: 1px solid transparent;
+        font-size: 0.88rem;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .oferta-details-theme-wrapper .btn-contable-edit {
+        background: rgba(var(--brand-color-rgb), 0.1);
+        color: var(--brand-color);
+        border-color: rgba(var(--brand-color-rgb), 0.18);
+    }
+    .oferta-details-theme-wrapper .btn-contable-edit:hover {
+        background: var(--brand-color);
+        color: var(--brand-contrast-color, #fff);
+        border-color: var(--brand-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(var(--brand-color-rgb), 0.32);
+    }
+    .oferta-details-theme-wrapper .btn-contable-delete {
+        background: rgba(224, 80, 80, 0.08);
+        color: #e05050;
+        border-color: rgba(224, 80, 80, 0.18);
+    }
+    .oferta-details-theme-wrapper .btn-contable-delete:hover {
+        background: #e05050;
+        color: #fff;
+        border-color: #e05050;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(224, 80, 80, 0.32);
+    }
+
+    /* Empty state in contable */
+    .oferta-details-theme-wrapper #tab-contable #contableEmptyState {
+        margin: 2.5rem auto;
+        max-width: 460px;
+        text-align: center;
+        padding: 2.5rem 1.5rem;
+        background: linear-gradient(180deg, #fff, #fbf9f5);
+        border: 1px dashed rgba(var(--brand-color-rgb), 0.25);
+        border-radius: 16px;
+    }
+    .oferta-details-theme-wrapper #tab-contable #contableEmptyState .ins-empty-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        box-shadow: 0 8px 20px rgba(var(--brand-color-rgb), 0.15);
+    }
+
+    @media (max-width: 768px) {
+        .oferta-details-theme-wrapper .contable-cards-wrapper { padding: 1rem; gap: 1rem; }
+        .oferta-details-theme-wrapper .contable-plan-header,
+        .oferta-details-theme-wrapper .contable-plan-header-promo { padding: 0.9rem 1rem; }
+        .oferta-details-theme-wrapper .contable-conceptos-table thead th,
+        .oferta-details-theme-wrapper .contable-conceptos-table tbody td { padding-left: 1rem; padding-right: 1rem; }
+    }
+
+    /* ==========================================================
+       ELEGANT MODAL THEME — brand-aware, professional & friendly
+       ========================================================== */
+    .oferta-details-theme-wrapper .modal-content {
+        border: none !important;
+        border-radius: 18px !important;
+        overflow: hidden;
+        box-shadow:
+            0 30px 80px rgba(15, 10, 5, 0.18),
+            0 12px 32px rgba(15, 10, 5, 0.10),
+            0 0 0 1px rgba(var(--brand-color-rgb), 0.06) !important;
+        background: var(--d-card);
+    }
+
+    /* Backdrop refinement */
+    .oferta-details-theme-wrapper + .modal-backdrop,
+    body > .modal-backdrop.show {
+        background: rgba(20, 14, 8, 0.55);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    /* Animated entrance */
+    .oferta-details-theme-wrapper .modal.fade .modal-dialog {
+        transform: scale(0.96) translateY(-8px);
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    }
+    .oferta-details-theme-wrapper .modal.show .modal-dialog {
+        transform: scale(1) translateY(0);
+    }
+
+    /* ----- Header: brand-aware gradient ----- */
+    .oferta-details-theme-wrapper .modal-header-gradient,
+    body .modal-header-gradient {
+        background:
+            linear-gradient(135deg,
+                rgba(20, 12, 4, 0.95) 0%,
+                rgba(var(--brand-color-rgb, 252, 123, 4), 0.55) 55%,
+                rgba(var(--brand-color-rgb, 252, 123, 4), 0.95) 100%) !important;
+        border-bottom: none !important;
+        padding: 1.1rem 1.5rem !important;
+        position: relative;
+        overflow: hidden;
+    }
+    .oferta-details-theme-wrapper .modal-header-gradient::before,
+    body .modal-header-gradient::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at top right, rgba(255, 255, 255, 0.18) 0%, transparent 60%),
+            radial-gradient(circle at bottom left, rgba(0, 0, 0, 0.18) 0%, transparent 65%);
+        pointer-events: none;
+    }
+    .oferta-details-theme-wrapper .modal-header-gradient .modal-title,
+    body .modal-header-gradient .modal-title {
+        color: #fff !important;
+        font-weight: 700;
+        font-size: 1.05rem;
+        letter-spacing: 0.01em;
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    .oferta-details-theme-wrapper .modal-header-gradient .modal-title i,
+    body .modal-header-gradient .modal-title i {
+        font-size: 1.3rem;
+        background: rgba(255, 255, 255, 0.18);
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(3px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .oferta-details-theme-wrapper .modal-header-gradient .btn-close,
+    body .modal-header-gradient .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.85;
+        transition: opacity 0.2s, transform 0.2s;
+        position: relative;
+        z-index: 1;
+    }
+    .oferta-details-theme-wrapper .modal-header-gradient .btn-close:hover,
+    body .modal-header-gradient .btn-close:hover {
+        opacity: 1;
+        transform: rotate(90deg);
+    }
+
+    /* ----- Body ----- */
+    .oferta-details-theme-wrapper .modal-body {
+        padding: 1.35rem 1.5rem;
+        background: var(--d-card);
+        color: var(--d-body);
+    }
+    .oferta-details-theme-wrapper .modal-body .form-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--d-title);
+        letter-spacing: 0.02em;
+        margin-bottom: 0.35rem;
+        text-transform: none;
+    }
+    .oferta-details-theme-wrapper .modal-body .form-control,
+    .oferta-details-theme-wrapper .modal-body .form-select {
+        border: 1px solid var(--d-card-border);
+        border-radius: 10px;
+        background: #fbfbfd;
+        font-size: 0.875rem;
+        color: var(--d-title);
+        padding: 0.5rem 0.85rem;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .oferta-details-theme-wrapper .modal-body .form-control:focus,
+    .oferta-details-theme-wrapper .modal-body .form-select:focus {
+        border-color: var(--brand-color);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(var(--brand-color-rgb), 0.12);
+        outline: none;
+    }
+    .oferta-details-theme-wrapper .modal-body .form-control[readonly] {
+        background: var(--d-bg);
+        color: var(--d-muted);
+        cursor: not-allowed;
+    }
+    .oferta-details-theme-wrapper .modal-body .form-control::placeholder {
+        color: #b5b0a8;
+    }
+
+    /* Table inside modals */
+    .oferta-details-theme-wrapper .modal-body table.table thead th {
+        background: linear-gradient(180deg, #fbfaf7 0%, #f5f2ec 100%);
+        color: var(--d-title);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-bottom: 2px solid var(--d-card-border);
+        padding: 0.7rem 0.75rem;
+    }
+    .oferta-details-theme-wrapper .modal-body table.table tbody td {
+        font-size: 0.85rem;
+        color: var(--d-body);
+        vertical-align: middle;
+        border-color: var(--d-card-border);
+    }
+    .oferta-details-theme-wrapper .modal-body table.table tbody tr:hover td {
+        background: rgba(var(--brand-color-rgb), 0.025);
+    }
+
+    /* ----- Footer ----- */
+    .oferta-details-theme-wrapper .modal-footer {
+        padding: 0.9rem 1.5rem;
+        background: linear-gradient(180deg, #fbfaf7 0%, #f7f4ee 100%);
+        border-top: 1px solid var(--d-card-border);
+        gap: 0.5rem;
+    }
+    .oferta-details-theme-wrapper .modal-footer .btn {
+        border-radius: 10px;
+        padding: 0.5rem 1.1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: box-shadow 0.2s, transform 0.15s, background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .oferta-details-theme-wrapper .modal-footer .btn-secondary,
+    .oferta-details-theme-wrapper .modal-footer .btn-modal-cancel {
+        background: #ece8e2 !important;
+        color: var(--d-title) !important;
+        border: none !important;
+    }
+    .oferta-details-theme-wrapper .modal-footer .btn-secondary:hover,
+    .oferta-details-theme-wrapper .modal-footer .btn-modal-cancel:hover {
+        background: #ddd6cc !important;
+        color: var(--d-title) !important;
+        transform: translateY(-1px);
+    }
+    .oferta-details-theme-wrapper .modal-footer .btn-success,
+    .oferta-details-theme-wrapper .modal-footer .btn-primary {
+        background: linear-gradient(135deg, var(--brand-color), rgba(var(--brand-color-rgb), 0.85)) !important;
+        color: var(--brand-contrast-color, #fff) !important;
+        border: none !important;
+    }
+    .oferta-details-theme-wrapper .modal-footer .btn-success:hover,
+    .oferta-details-theme-wrapper .modal-footer .btn-primary:hover {
+        box-shadow: 0 8px 22px rgba(var(--brand-color-rgb), 0.32);
+        transform: translateY(-1px);
+        color: var(--brand-contrast-color, #fff) !important;
+    }
+    .oferta-details-theme-wrapper .modal-footer .btn-danger,
+    .oferta-details-theme-wrapper .modal-footer .btn-danger-modal {
+        background: linear-gradient(135deg, #e05050, #c83838) !important;
+        color: #fff !important;
+        border: none !important;
+    }
+    .oferta-details-theme-wrapper .modal-footer .btn-danger:hover,
+    .oferta-details-theme-wrapper .modal-footer .btn-danger-modal:hover {
+        box-shadow: 0 8px 22px rgba(224, 80, 80, 0.32);
+        transform: translateY(-1px);
+        color: #fff !important;
+    }
+    .oferta-details-theme-wrapper .modal-footer .btn-outline-primary {
+        border: 1px solid rgba(var(--brand-color-rgb), 0.35) !important;
+        color: var(--brand-color) !important;
+        background: transparent !important;
+    }
+    .oferta-details-theme-wrapper .modal-footer .btn-outline-primary:hover {
+        background: rgba(var(--brand-color-rgb), 0.08) !important;
+        border-color: var(--brand-color) !important;
+    }
+
+    /* "Agregar Concepto" and other inline outline buttons inside modal body */
+    .oferta-details-theme-wrapper .modal-body .btn-outline-primary {
+        border: 1px solid rgba(var(--brand-color-rgb), 0.35);
+        color: var(--brand-color);
+        background: transparent;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        transition: all 0.2s;
+    }
+    .oferta-details-theme-wrapper .modal-body .btn-outline-primary:hover {
+        background: rgba(var(--brand-color-rgb), 0.08);
+        border-color: var(--brand-color);
+        color: var(--brand-color);
+        transform: translateY(-1px);
+    }
+
+    /* ----- Delete confirmation box ----- */
+    .oferta-details-theme-wrapper .delete-warning-box {
+        text-align: center;
+        padding: 0.5rem 0 0.25rem;
+    }
+    .oferta-details-theme-wrapper .delete-icon-ring {
+        width: 78px;
+        height: 78px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, rgba(224, 80, 80, 0.18), rgba(224, 80, 80, 0.06) 60%, transparent 100%);
+        border: 2px solid rgba(224, 80, 80, 0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.1rem;
+        animation: deletePulse 2s ease-in-out infinite;
+    }
+    .oferta-details-theme-wrapper .delete-icon-ring i {
+        font-size: 2.1rem;
+        color: #e05050;
+    }
+    @keyframes deletePulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(224, 80, 80, 0.18); }
+        50% { box-shadow: 0 0 0 10px rgba(224, 80, 80, 0); }
+    }
+    .oferta-details-theme-wrapper .delete-msg-primary {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--d-title);
+        margin-bottom: 0.35rem;
+    }
+    .oferta-details-theme-wrapper .delete-msg-name {
+        font-size: 0.92rem;
+        color: var(--d-body);
+        margin-bottom: 0.65rem;
+    }
+    .oferta-details-theme-wrapper .delete-msg-name strong {
+        color: var(--brand-color);
+        font-weight: 700;
+    }
+    .oferta-details-theme-wrapper .delete-msg-warn {
+        font-size: 0.78rem;
+        color: var(--d-muted);
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    .oferta-details-theme-wrapper .delete-msg-warn i {
+        color: #f0a030;
+    }
+
+    /* ----- Inputs inline (number/date) get a subtle brand accent ----- */
+    .oferta-details-theme-wrapper .modal-body input[type="number"],
+    .oferta-details-theme-wrapper .modal-body input[type="date"],
+    .oferta-details-theme-wrapper .modal-body input[type="text"],
+    .oferta-details-theme-wrapper .modal-body select,
+    .oferta-details-theme-wrapper .modal-body textarea {
+        font-family: inherit;
+    }
+
+    /* Required asterisk */
+    .oferta-details-theme-wrapper .modal-body .form-label span[style*="color:#ef4444"],
+    .oferta-details-theme-wrapper .modal-body .form-label span[style*="color: #ef4444"] {
+        color: #e05050 !important;
+        font-weight: 700;
+        margin-left: 2px;
+    }
+
+    /* ----- Scrollbar inside scrollable modals ----- */
+    .oferta-details-theme-wrapper .modal-dialog-scrollable .modal-body::-webkit-scrollbar,
+    .oferta-details-theme-wrapper .modal-body .table-responsive::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+    }
+    .oferta-details-theme-wrapper .modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb,
+    .oferta-details-theme-wrapper .modal-body .table-responsive::-webkit-scrollbar-thumb {
+        background: rgba(var(--brand-color-rgb), 0.25);
+        border-radius: 4px;
+    }
+    .oferta-details-theme-wrapper .modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb:hover,
+    .oferta-details-theme-wrapper .modal-body .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: rgba(var(--brand-color-rgb), 0.45);
+    }
+
+    /* Promo / info accent boxes — already use brand color; polish edges */
+    .oferta-details-theme-wrapper .modal-body [style*="background:rgba(252,123,4"],
+    .oferta-details-theme-wrapper .modal-body [style*="background: rgba(252,123,4"] {
+        border-radius: 12px;
     }
 </style>

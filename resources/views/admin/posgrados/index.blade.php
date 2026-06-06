@@ -912,8 +912,8 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
                             <div>
                                 <label for="ofertaNotaMinima" class="posg-label"><i class="ri-star-line"
                                         ></i> Nota Mínima</label>
-                                <input type="number" class="form-control" id="ofertaNotaMinima" placeholder="61"
-                                    min="0" max="100" value="61">
+                                <input type="number" class="form-control" id="ofertaNotaMinima" placeholder="71"
+                                    min="0" max="100" value="71">
                                 <div class="posg-feedback" id="fbOfertaNotaMinima"></div>
                             </div>
                             <div>
@@ -1524,13 +1524,45 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
                         }, 400);
                     }
 
+                    let codigoManual = false;
+
+                    function generarCodigoOferta() {
+                        const programa = $('#ofertaProgramaText').val().trim();
+                        if (!programa) return '';
+                        const noAcc = programa.normalize('NFD').replace(/[̀-ͯ]/g, '');
+                        const m = noAcc.match(/^(.*?)(?:\s+(\d{4}))?\s+V(\d+)\s+G(\d+)\s*$/i);
+                        let body, year, version, grupo;
+                        if (m) {
+                            body = m[1].trim();
+                            year = m[2] || $('#ofertaGestion').val() || new Date().getFullYear();
+                            version = m[3];
+                            grupo = m[4];
+                        } else {
+                            body = noAcc;
+                            year = $('#ofertaGestion').val() || new Date().getFullYear();
+                            version = $('#ofertaVersion').val() || 1;
+                            grupo = $('#ofertaGrupo').val() || 1;
+                        }
+                        const stop = new Set(['EN','DE','DEL','LA','EL','POR','PARA','Y','A','AL','CON','LOS','LAS','UN','UNA','O','U','E','SOBRE','SU','SUS']);
+                        const words = body.toUpperCase().split(/\s+/).filter(w => w && /[A-Z0-9]/.test(w));
+                        if (words.length === 0) return '';
+                        const first = words[0];
+                        const prefix = first.charAt(0).toUpperCase() + (first.charAt(1) || '').toLowerCase();
+                        const rest = words.slice(1).filter(w => !stop.has(w));
+                        const initials = rest.map(w => w.charAt(0)).join('').toUpperCase();
+                        const parts = [prefix];
+                        if (initials) parts.push(initials);
+                        parts.push(year, 'V' + version, 'G' + grupo);
+                        return parts.join('-');
+                    }
+
                     function generarNombrePrograma() {
                         let currentName = $('#ofertaProgramaText').val().trim();
                         const gestion = $('#ofertaGestion').val() || new Date().getFullYear();
                         const version = $('#ofertaVersion').val() || 1;
                         const grupo = $('#ofertaGrupo').val() || 1;
                         const suffix = ' ' + gestion + ' V' + version + ' G' + grupo;
-                        
+
                         if (currentName) {
                             let newName = currentName.replace(/( \d{4})? V\d+ G\d+$/, '');
                             $('#ofertaProgramaText').val(newName + suffix);
@@ -1538,6 +1570,13 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
                             const posgradoNombre = $('#ofertasPosgradoNombre').text().trim();
                             if (posgradoNombre) {
                                 $('#ofertaProgramaText').val(posgradoNombre + suffix);
+                            }
+                        }
+                        if (!codigoManual) {
+                            const auto = generarCodigoOferta();
+                            if (auto) {
+                                $('#ofertaCodigo').val(auto);
+                                setFieldFeedback('ofertaCodigo', 'fbOfertaCodigo', true, 'Código generado automáticamente.');
                             }
                         }
                         checkOfertaPrograma();
@@ -1654,7 +1693,8 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
                         $('#ofertaGestion').val(new Date().getFullYear());
                         $('#ofertaNModulos').val(1);
                         $('#ofertaCantSesiones').val(1);
-                        $('#ofertaNotaMinima').val(61);
+                        $('#ofertaNotaMinima').val(71);
+                        codigoManual = false;
                         $('#ofertaVersion').val(1);
                         $('#ofertaGrupo').val(1);
                         $('#ofertaColor').val('#fc7b04');
@@ -1711,6 +1751,7 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
                         $('#ofertaId').val(d.id);
                         $('#ofertaDuplicatedFrom').val('');
                         $('#ofertaPosgradoId').val(currentPosgradoOfertas);
+                        codigoManual = true;
                         $('#ofertaCodigo').val(d.codigo);
                         $('#ofertaProgramaText').val(d.programa_nombre || '');
                         $('#ofertaPrograma').val(d.programa_id || '');
@@ -1799,6 +1840,7 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
                         $('#ofertaId').val(d.id);
                         $('#ofertaDuplicatedFrom').val(btn.data('id'));
                         $('#ofertaPosgradoId').val(currentPosgradoOfertas);
+                        codigoManual = false;
                         $('#ofertaCodigo').val(d.codigo);
                         $('#ofertaProgramaText').val(d.programa_nombre || '');
                         $('#ofertaPrograma').val(d.programa_id || '');
@@ -2136,6 +2178,9 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
                                         '<button class="btn posg-btn-action btn-modulos-oferta" data-id="' + d.id +
                                         '" data-n-modulos="' + (d.n_modulos || 0) + '" data-codigo="' + escHtml(
                                             d.codigo) +
+                                        '" data-programa_nombre="' + escHtml(d.programa ? d.programa.nombre : '') +
+                                        '" data-fecha_inicio_programa="' + (d.fecha_inicio_programa || '') +
+                                        '" data-fecha_fin_programa="' + (d.fecha_fin_programa || '') +
                                         '" title="Gestionar Módulos" style="color:#6366f1;"><i class="ri-stack-line"></i></button>' +
                                         '<button class="btn posg-btn-action posg-btn-action-duplicate btn-duplicate-oferta" data-id="' +
                                         d.id + '" data-codigo="' + escHtml(d.codigo) + '" data-programa_id="' +
@@ -2228,6 +2273,7 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
                     }
 
                     $('#ofertaCodigo').on('input', function() {
+                        codigoManual = true;
                         const v = $(this).val().trim();
                         if (!v) setFieldFeedback('ofertaCodigo', 'fbOfertaCodigo', false,
                             'El código es obligatorio.');
@@ -2840,8 +2886,14 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width:1100px;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="ri-stack-line" style="color:#6366f1;"></i> Modulos - <span
-                            id="modulosOfertaCodigo"></span></h5>
+                    <h5 class="modal-title" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                        <i class="ri-stack-line" style="color:#6366f1;"></i>
+                        <span id="modulosOfertaPrograma" style="font-weight:600;"></span>
+                        <span style="color:var(--posg-text-muted);font-weight:400;">·</span>
+                        <span id="modulosOfertaCodigo" style="color:#6366f1;font-weight:600;"></span>
+                        <span style="color:var(--posg-text-muted);font-weight:400;">·</span>
+                        <span id="modulosOfertaFechas" style="font-size:0.85rem;color:var(--posg-text-muted);font-weight:400;"></span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
@@ -3202,10 +3254,25 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
                 }
             }
 
+            function formatFechaLarga(dateStr) {
+                if (!dateStr) return '';
+                const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                const parts = String(dateStr).split('T')[0].split('-');
+                if (parts.length !== 3) return dateStr;
+                const y = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10);
+                const d = parseInt(parts[2], 10);
+                if (!y || !m || !d || m < 1 || m > 12) return dateStr;
+                return d + ' de ' + meses[m - 1] + ' del ' + y;
+            }
+
             $(document).on('click', '.btn-modulos-oferta', function() {
                 currentOfertaModulos = $(this).data('id');
                 const nModulos = parseInt($(this).data('n-modulos')) || 0;
                 const codigo = $(this).data('codigo') || '';
+                const programa = $(this).data('programa_nombre') || '';
+                const fIni = $(this).data('fecha_inicio_programa') || '';
+                const fFin = $(this).data('fecha_fin_programa') || '';
                 if (nModulos < 1) {
                     toast('warning', 'La oferta no tiene módulos definidos.');
                     return;
@@ -3213,6 +3280,14 @@ h1, h2, h3, h4, h5, h6, .posg-title, .posg-card-title, .modal-title, .posg-stat-
                 $('#modulosOfertaId').val(currentOfertaModulos);
                 $('#modulosNModulos').val(nModulos);
                 $('#modulosOfertaCodigo').text(codigo);
+                $('#modulosOfertaPrograma').text(programa);
+                const ini = formatFechaLarga(fIni);
+                const fin = formatFechaLarga(fFin);
+                let fechasTxt = '';
+                if (ini && fin) fechasTxt = ini + ' — ' + fin;
+                else if (ini) fechasTxt = 'Inicio: ' + ini;
+                else if (fin) fechasTxt = 'Fin: ' + fin;
+                $('#modulosOfertaFechas').text(fechasTxt);
                 buildModulosTable(nModulos);
                 openModal('modalModulos');
             });

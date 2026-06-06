@@ -264,100 +264,162 @@
                         </div>
                     </div>
 
-                    <div class="academico-tbl-wrap">
-                        <table class="academico-tbl">
+                    @php
+                        $estMod = $modulo->estado ?: 'No Inició';
+                        $aaEstadoStyles = [
+                            'No Inició'     => ['bg' => 'rgba(100,116,139,.14)', 'color' => '#475569', 'icon' => 'ri-time-line'],
+                            'En Desarrollo' => ['bg' => 'rgba(34,197,94,.14)',   'color' => '#16a34a', 'icon' => 'ri-loader-3-line'],
+                            'Concluido'     => ['bg' => 'rgba(99,102,241,.14)',  'color' => '#4f46e5', 'icon' => 'ri-checkbox-circle-line'],
+                        ];
+                        $st = $aaEstadoStyles[$estMod] ?? $aaEstadoStyles['No Inició'];
+                        $modBloqueado = $estMod !== 'Concluido';
+                    @endphp
+
+                    <div class="md-aa-table-wrap">
+                        <table class="md-aa-table" id="modAcademicoTabla">
                             <thead>
                                 <tr>
-                                    <th style="width:40px;text-align:center;">#</th>
-                                    <th>Estudiante</th>
-                                    <th>Carnet</th>
-                                    <th>Contacto</th>
-                                    <th>Plan Pagos</th>
-                                    <th>Estudios</th>
-                                    <th style="text-align:center;width:90px;">Acción</th>
+                                    <th class="md-aa-sticky md-aa-stk-1">#</th>
+                                    <th class="md-aa-sticky md-aa-stk-2">Carnet</th>
+                                    <th class="md-aa-sticky md-aa-stk-3" style="min-width:260px;">Estudiante</th>
+                                    <th style="min-width:230px;">Contacto</th>
+                                    <th style="min-width:180px;">Ubicación</th>
+                                    <th style="min-width:230px;">Datos Personales</th>
+                                    <th style="min-width:140px;text-align:center;">Estudios</th>
+                                    <th style="min-width:150px;">Plan de Pagos</th>
+                                    <th class="md-aa-mod-col" data-modulo-estado="{{ $estMod }}" style="min-width:220px;">
+                                        <div class="md-aa-mod-col-name" title="{{ $modulo->nombre }}">
+                                            <i class="ri-book-2-line"></i>
+                                            <span>{{ $modulo->nombre }}</span>
+                                        </div>
+                                        <div class="md-aa-mod-col-estado">
+                                            <span class="md-aa-mod-estado-chip" style="background:{{ $st['bg'] }};color:{{ $st['color'] }};">
+                                                <i class="{{ $st['icon'] }}"></i> {{ $estMod }}
+                                            </span>
+                                        </div>
+                                        <div class="md-aa-mod-col-sub">
+                                            <span class="md-aa-mod-col-sub-label">Final</span>
+                                            <span class="md-aa-mod-col-sub-label">2da Inst.</span>
+                                        </div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($inscritos as $index => $inscrito)
-                                <tr>
-                                    <td style="text-align:center;color:#94a3b8;font-size:.78rem;">{{ $index + 1 }}</td>
-                                    <td>
-                                        <div class="academico-name">
-                                            <span class="academico-avatar">
-                                                {{ Str::upper(substr($inscrito['nombres'], 0, 1)) }}{{ Str::upper(substr($inscrito['apellido_paterno'], 0, 1)) }}
-                                            </span>
-                                            <div>
-                                                <div class="academico-name-text">
-                                                    {{ trim(($inscrito['apellido_paterno'] ?? '') . ' ' . ($inscrito['apellido_materno'] ?? '') . ' ' . ($inscrito['nombres'] ?? '')) ?: '—' }}
+                                    @php
+                                        $nombreCompleto = trim(($inscrito['apellido_paterno'] ?? '') . ' ' . ($inscrito['apellido_materno'] ?? '') . ' ' . ($inscrito['nombres'] ?? '')) ?: '—';
+                                    @endphp
+                                    <tr data-carnet="{{ $inscrito['estudiante_ci'] }}">
+                                        <td class="md-aa-sticky md-aa-stk-1 md-aa-cell-num">{{ $index + 1 }}</td>
+                                        <td class="md-aa-sticky md-aa-stk-2">
+                                            <span class="md-aa-ci-chip">{{ $inscrito['estudiante_ci'] }}</span>
+                                        </td>
+                                        <td class="md-aa-sticky md-aa-stk-3 md-aa-cell-estudiante">
+                                            <a href="{{ route('admin.estudiantes.verDetalle', $inscrito['estudiante_id']) }}"
+                                                class="md-aa-est-nombre md-aa-est-link" title="Ver detalle de {{ $nombreCompleto }}">
+                                                {{ $nombreCompleto }}
+                                            </a>
+                                        </td>
+                                        <td class="md-aa-cell-contacto">
+                                            <div class="md-aa-contact-line" title="{{ $inscrito['celular'] }}">
+                                                <i class="ri-phone-line"></i>
+                                                <span>{{ $inscrito['celular'] }}</span>
+                                            </div>
+                                            <div class="md-aa-contact-line md-aa-contact-correo" title="{{ $inscrito['correo'] }}">
+                                                <i class="ri-mail-line"></i>
+                                                <span>{{ $inscrito['correo'] }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="md-aa-info-line"><i class="ri-map-pin-line"></i> <span>{{ $inscrito['departamento'] }}</span></div>
+                                            <div class="md-aa-info-line md-aa-info-sub"><i class="ri-building-line"></i> <span>{{ $inscrito['ciudad'] }}</span></div>
+                                        </td>
+                                        <td>
+                                            <div class="md-aa-personal-row">
+                                                @if ($inscrito['sexo'] === 'M')
+                                                    <span class="md-aa-sexo-chip md-aa-sexo-m"><i class="ri-men-line"></i> M</span>
+                                                @elseif ($inscrito['sexo'] === 'F')
+                                                    <span class="md-aa-sexo-chip md-aa-sexo-f"><i class="ri-women-line"></i> F</span>
+                                                @else
+                                                    <span class="md-aa-sexo-chip md-aa-sexo-na">—</span>
+                                                @endif
+                                                <span class="md-aa-personal-item"><i class="ri-cake-2-line"></i> {{ $inscrito['fecha_nacimiento'] }}</span>
+                                            </div>
+                                            <div class="md-aa-info-line md-aa-info-sub">
+                                                <i class="ri-heart-line"></i> <span>{{ $inscrito['estado_civil'] }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            @if (empty($inscrito['estudios']))
+                                                <span style="color:#94a3b8;font-size:.72rem;">Sin estudios</span>
+                                            @else
+                                                <button type="button" class="md-aa-btn-estudios"
+                                                    data-estudios='@json($inscrito['estudios'])'
+                                                    data-estudiante="{{ $nombreCompleto }}"
+                                                    data-carnet="{{ $inscrito['estudiante_ci'] }}">
+                                                    <i class="ri-graduation-cap-line"></i>
+                                                    Ver ({{ count($inscrito['estudios']) }})
+                                                </button>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($inscrito['plan_pago'] !== '—')
+                                                <span class="md-aa-plan-chip"><i class="ri-funds-box-line"></i>{{ $inscrito['plan_pago'] }}</span>
+                                            @else
+                                                <span style="color:#94a3b8;">—</span>
+                                            @endif
+                                        </td>
+                                        <td class="md-aa-mod-cell {{ $modBloqueado ? 'md-aa-mod-cell-blocked' : '' }}"
+                                            data-modulo-estado="{{ $estMod }}"
+                                            data-carnet="{{ $inscrito['estudiante_ci'] }}">
+                                            @if ($modBloqueado)
+                                                <div class="md-aa-notas-pair">
+                                                    <span class="md-aa-nota md-aa-nota-blocked" title="Disponible cuando el módulo esté Concluido">—</span>
+                                                    <span class="md-aa-nota-sep">/</span>
+                                                    <span class="md-aa-nota md-aa-nota-blocked" title="Disponible cuando el módulo esté Concluido">—</span>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="academico-ci"><i class="ri-fingerprint-line"></i>{{ $inscrito['estudiante_ci'] }}</span></td>
-                                    <td>
-                                        <div class="academico-contact">
-                                            @if($inscrito['celular'] && $inscrito['celular'] !== '—')
-                                            <span class="academico-contact-item"><i class="ri-phone-line"></i>{{ $inscrito['celular'] }}</span>
+                                            @else
+                                                <div class="md-aa-notas-pair">
+                                                    <span class="md-aa-nota md-aa-nota-final" data-tipo="final" title="Nota Final">—</span>
+                                                    <span class="md-aa-nota-sep">/</span>
+                                                    <span class="md-aa-nota md-aa-nota-2da" data-tipo="2da" title="Nota 2da Instancia">—</span>
+                                                </div>
                                             @endif
-                                            @if($inscrito['correo'] && $inscrito['correo'] !== '—')
-                                            <span class="academico-contact-item"><i class="ri-mail-line"></i>{{ $inscrito['correo'] }}</span>
-                                            @endif
-                                            @if((!$inscrito['celular'] || $inscrito['celular'] === '—') && (!$inscrito['correo'] || $inscrito['correo'] === '—'))
-                                            <span style="color:#94a3b8;font-size:.78rem;">—</span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @if($inscrito['plan_pago'] !== '—')
-                                            <span class="academico-plan"><i class="ri-funds-box-line"></i>{{ $inscrito['plan_pago'] }}</span>
-                                        @else
-                                            <span style="color:#94a3b8;">—</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @php
-                                            $estudios = $inscrito['estudios'] ?? [];
-                                        @endphp
-                                        @if(count($estudios) > 0)
-                                            @php
-                                                $principal = collect($estudios)->firstWhere('principal', true) ?? $estudios[0];
-                                            @endphp
-                                            <div style="display:flex;flex-direction:column;gap:2px;font-size:.78rem;line-height:1.4;">
-                                                @if($principal['grado'])
-                                                <span style="display:inline-flex;align-items:center;gap:4px;color:#9a4904;font-weight:600;">
-                                                    <i class="ri-graduation-cap-line" style="font-size:.7rem;"></i>{{ $principal['grado'] }}
-                                                </span>
-                                                @endif
-                                                @if($principal['universidad'])
-                                                <span style="display:inline-flex;align-items:center;gap:4px;color:#64748b;">
-                                                    <i class="ri-building-line" style="font-size:.7rem;"></i>{{ $principal['universidad'] }}
-                                                </span>
-                                                @endif
-                                                @if($principal['profesion'])
-                                                <span style="display:inline-flex;align-items:center;gap:4px;color:#475569;font-weight:500;">
-                                                    <i class="ri-briefcase-line" style="font-size:.7rem;"></i>{{ $principal['profesion'] }}
-                                                </span>
-                                                @endif
-                                                @if(count($estudios) > 1)
-                                                <span style="margin-top:2px;background:#fc7b04;color:#fff;border-radius:10px;padding:0 7px;font-size:.65rem;font-weight:700;display:inline-flex;align-items:center;width:fit-content;height:18px;">
-                                                    +{{ count($estudios) - 1 }} más
-                                                </span>
-                                                @endif
-                                            </div>
-                                        @else
-                                            <span style="color:#94a3b8;font-size:.78rem;">Sin estudios</span>
-                                        @endif
-                                    </td>
-                                    <td style="text-align:center;">
-                                        <a href="{{ route('admin.estudiantes.verDetalle', $inscrito['estudiante_id']) }}"
-                                           class="academico-btn-ver" title="Ver detalle del estudiante">
-                                            <i class="ri-eye-line"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="md-aa-legend">
+                        <span><i class="ri-information-line"></i> Las notas (Final / 2da Instancia) sólo se cargan si el módulo está en estado <strong>Concluido</strong>. Las notas ≥ 71 se marcan en verde.</span>
+                    </div>
+
+                    {{-- Modal: Estudios académicos del estudiante --}}
+                    <div class="modal fade" id="modalEstudiosModulo" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" style="max-width:560px;">
+                            <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.18);">
+                                <div class="modal-header" style="background:linear-gradient(135deg,#2a1605 0%,#7a3b03 55%,#fc7b04 100%);color:#fff;padding:1.05rem 1.35rem;border:none;">
+                                    <h5 class="modal-title" style="font-weight:700;font-size:1rem;display:flex;align-items:center;gap:.5rem;color:#fff;">
+                                        <i class="ri-graduation-cap-line"></i> Estudios Académicos
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body" style="padding:1.25rem 1.35rem;">
+                                    <div class="md-aa-modal-est-header">
+                                        <div class="md-aa-modal-est-name" id="modalEstudiosNombreMD">—</div>
+                                        <div class="md-aa-modal-est-ci"><i class="ri-id-card-line"></i> <span id="modalEstudiosCarnetMD">—</span></div>
+                                    </div>
+                                    <div id="modalEstudiosListaMD" class="md-aa-modal-estudios-list"></div>
+                                </div>
+                                <div class="modal-footer" style="border-top:1px solid #ede8e2;padding:.85rem 1.35rem;background:#fbfaf7;">
+                                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" style="border-radius:9px;font-weight:600;">
+                                        <i class="ri-close-line me-1"></i> Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     @else
                     <div class="academico-empty">

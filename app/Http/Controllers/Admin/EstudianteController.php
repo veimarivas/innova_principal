@@ -58,9 +58,14 @@ class EstudianteController extends Controller
         $inscripciones = Inscripcione::where('estudiante_id', $id)
             ->with([
                 'ofertaAcademica.posgrado',
+                'ofertaAcademica.programa',
+                'ofertaAcademica.fase',
+                'ofertaAcademica.modalidad',
+                'ofertaAcademica.sucursal',
                 'planesPago',
                 'trabajador_cargo.cargo',
                 'trabajador_cargo.sucursale.sede',
+                'trabajador_cargo.trabajador.persona',
                 'cuotas.pagosCuota.pago.detalles',
                 'matriculaciones.modulo.docente.persona'
             ])

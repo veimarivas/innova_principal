@@ -426,12 +426,23 @@ class MoodleMatriculaController extends Controller
             $estudiantesData[] = [
                 'inscripcion_id'    => $inscripcion->id,
                 'nombre'            => $nombre,
+                'apellido_paterno'  => $persona->apellido_paterno ?? '',
+                'apellido_materno'  => $persona->apellido_materno ?? '',
+                'nombres'           => $persona->nombres ?? '',
                 'celular'           => $persona->celular ?? '',
                 'moodle_user_id'    => $moodleUserId,
                 'tiene_cuenta_moodle' => $moodleUserId !== null,
                 'modulos'           => $modulosData,
             ];
         }
+
+        // Ordenar A→Z por apellido paterno, materno, nombres
+        usort($estudiantesData, function ($a, $b) {
+            return strcmp(
+                mb_strtolower(($a['apellido_paterno'] ?? '') . ' ' . ($a['apellido_materno'] ?? '') . ' ' . ($a['nombres'] ?? '')),
+                mb_strtolower(($b['apellido_paterno'] ?? '') . ' ' . ($b['apellido_materno'] ?? '') . ' ' . ($b['nombres'] ?? ''))
+            );
+        });
 
         return response()->json([
             'success'     => true,

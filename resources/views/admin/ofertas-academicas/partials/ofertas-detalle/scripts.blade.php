@@ -156,7 +156,135 @@
                 }
                 if (target === 'inscripciones') cargarInscripciones();
                 if (target === 'plataforma') cargarControlAcceso(false);
+                if (target === 'area-academica') cargarAreaAcademicaNotas();
             });
+        });
+
+        // ===== ÁREA ACADÉMICA — carga notas por módulo desde Moodle =====
+        let aaNotasCargadas = false;
+        function cargarAreaAcademicaNotas(force) {
+            if (aaNotasCargadas && !force) return;
+            const $tabla = $('#tablaAreaAcademica');
+            if (!$tabla.length) return;
+            // Sólo módulos cuyo estado es "Concluido"
+            const moduloIds = [];
+            $tabla.find('thead th.aa-mod-col').each(function() {
+                const id = $(this).data('modulo-id');
+                const estado = $(this).data('modulo-estado');
+                if (id && estado === 'Concluido') moduloIds.push(id);
+            });
+            if (moduloIds.length === 0) {
+                aaNotasCargadas = true;
+                return;
+            }
+            // Marcar todas las celdas (no bloqueadas) como loading
+            $tabla.find('.aa-mod-cell:not(.aa-mod-cell-blocked) .aa-nota').addClass('loading').text('…');
+            $('#btnRefrescarNotasAA').addClass('is-loading').prop('disabled', true);
+
+            let pendientes = moduloIds.length;
+            moduloIds.forEach(function(mid) {
+                $.ajax({
+                    url: '/admin/posgrads/modulos/' + mid + '/academico/calificaciones',
+                    type: 'GET',
+                    timeout: 25000
+                }).done(function(r) {
+                    if (!r || r.success === false) {
+                        // Marcar todas las celdas de este módulo como sin datos
+                        $tabla.find('.aa-mod-cell[data-modulo-id="' + mid + '"] .aa-nota')
+                            .removeClass('loading').addClass('loaded').text('—');
+                        return;
+                    }
+                    const estudiantes = r.estudiantes || [];
+                    // Indexar por carnet (ci)
+                    const porCi = {};
+                    estudiantes.forEach(function(e) {
+                        if (e.ci) porCi[String(e.ci).trim()] = e;
+                    });
+                    $tabla.find('.aa-mod-cell[data-modulo-id="' + mid + '"]').each(function() {
+                        const ci = String($(this).data('carnet') || '').trim();
+                        const est = porCi[ci];
+                        const $final = $(this).find('.aa-nota-final');
+                        const $segunda = $(this).find('.aa-nota-2da');
+                        $final.removeClass('loading');
+                        $segunda.removeClass('loading');
+                        if (est && est.nota_final !== undefined && est.nota_final !== null) {
+                            const nf = parseFloat(est.nota_final);
+                            $final.text(isNaN(nf) ? '—' : nf.toFixed(2))
+                                .addClass('loaded')
+                                .toggleClass('ok', nf >= 71)
+                                .toggleClass('fail', !isNaN(nf) && nf < 71);
+                        } else {
+                            $final.addClass('loaded').text('—');
+                        }
+                        // Nota 2da instancia: si el endpoint la trae en algún día, leerla; por ahora "—"
+                        if (est && (est.nota_segunda !== undefined || est.nota_2da !== undefined)) {
+                            const ns = parseFloat(est.nota_segunda ?? est.nota_2da);
+                            $segunda.text(isNaN(ns) ? '—' : ns.toFixed(2))
+                                .addClass('loaded')
+                                .toggleClass('ok', ns >= 71)
+                                .toggleClass('fail', !isNaN(ns) && ns < 71);
+                        } else {
+                            $segunda.addClass('loaded').text('—');
+                        }
+                    });
+                }).fail(function() {
+                    $tabla.find('.aa-mod-cell[data-modulo-id="' + mid + '"] .aa-nota')
+                        .removeClass('loading').addClass('loaded').text('—');
+                }).always(function() {
+                    pendientes--;
+                    if (pendientes <= 0) {
+                        aaNotasCargadas = true;
+                        $('#btnRefrescarNotasAA').removeClass('is-loading').prop('disabled', false);
+                    }
+                });
+            });
+        }
+        $(document).on('click', '#btnRefrescarNotasAA', function() {
+            cargarAreaAcademicaNotas(true);
+        });
+
+        // ===== ÁREA ACADÉMICA — modal de estudios =====
+        $(document).on('click', '.aa-btn-estudios', function() {
+            const $btn = $(this);
+            let estudios = $btn.attr('data-estudios');
+            try { estudios = JSON.parse(estudios); } catch (e) { estudios = []; }
+            const nombre = $btn.data('estudiante') || '—';
+            const carnet = $btn.data('carnet') || '—';
+            $('#modalEstudiosNombre').text(nombre);
+            $('#modalEstudiosCarnet').text(carnet);
+            const $lista = $('#modalEstudiosLista');
+            $lista.empty();
+            if (!Array.isArray(estudios) || estudios.length === 0) {
+                $lista.html('<div class="text-muted" style="text-align:center;padding:1rem;font-size:0.85rem;">Sin estudios académicos registrados.</div>');
+            } else {
+                // Mostrar el principal primero
+                estudios.sort(function(a, b) {
+                    return (b.principal ? 1 : 0) - (a.principal ? 1 : 0);
+                });
+                estudios.forEach(function(est, idx) {
+                    const cls = est.principal ? 'aa-modal-estudio-item principal' : 'aa-modal-estudio-item';
+                    const grado = est.grado || est.texto || 'Estudio';
+                    const profesion = est.profesion || '';
+                    const universidad = est.universidad || '';
+                    const estado = est.estado || '';
+                    let metaHtml = '';
+                    if (profesion) metaHtml += '<span class="aa-modal-estudio-meta-item"><i class="ri-briefcase-line"></i>' + escHtml(profesion) + '</span>';
+                    if (universidad) metaHtml += '<span class="aa-modal-estudio-meta-item"><i class="ri-building-4-line"></i>' + escHtml(universidad) + '</span>';
+                    const starHtml = est.principal ? '<i class="ri-star-fill aa-principal-star" title="Estudio principal"></i>' : '';
+                    const estadoHtml = estado ? '<div class="aa-modal-estudio-estado">' + escHtml(estado) + '</div>' : '';
+                    const item =
+                        '<div class="' + cls + '">' +
+                            '<div class="aa-modal-estudio-num">' + (idx + 1) + '</div>' +
+                            '<div class="aa-modal-estudio-body">' +
+                                '<div class="aa-modal-estudio-grado">' + starHtml + escHtml(grado) + '</div>' +
+                                (metaHtml ? '<div class="aa-modal-estudio-meta">' + metaHtml + '</div>' : '') +
+                                estadoHtml +
+                            '</div>' +
+                        '</div>';
+                    $lista.append(item);
+                });
+            }
+            openModal('modalEstudiosEstudiante');
         });
 
         // ===== MÓDULOS & CALENDARIO =====
@@ -587,8 +715,16 @@
                 filtered = inscripciones.filter(i => i.estado === 'Pre-Inscrito');
             }
 
+            // Ordenar A→Z por apellido paterno, materno y nombres
+            function buildSortKey(i) {
+                return [
+                    (i.apellido_paterno || '').toLowerCase(),
+                    (i.apellido_materno || '').toLowerCase(),
+                    (i.nombres || '').toLowerCase()
+                ].join(' ').trim() || (i.estudiante_nombre || '').toLowerCase();
+            }
             filtered.sort(function(a, b) {
-                return (a.estudiante_nombre || '').toLowerCase().localeCompare((b.estudiante_nombre || '').toLowerCase());
+                return buildSortKey(a).localeCompare(buildSortKey(b), 'es', { sensitivity: 'base' });
             });
 
             const $wrap = $('#inscripcionesTableWrap');
@@ -610,7 +746,11 @@
 
             let html = '';
             filtered.forEach(function(ins, idx) {
-                const nombres   = (ins.estudiante_nombre || '').trim() || '—';
+                const ap        = (ins.apellido_paterno || '').trim();
+                const am        = (ins.apellido_materno || '').trim();
+                const nm        = (ins.nombres || '').trim();
+                const nombreOrdenado = (ap + ' ' + am + ' ' + nm).replace(/\s+/g, ' ').trim();
+                const nombres   = nombreOrdenado || (ins.estudiante_nombre || '').trim() || '—';
                 const ci        = ins.estudiante_ci || '—';
                 const celular   = ins.celular || '—';
                 const correo    = ins.correo || '—';
@@ -1259,7 +1399,8 @@
             $('#editModuloNombre').val(mod.nombre);
             $('#editModuloFechaInicio').val(mod.fecha_inicio ? mod.fecha_inicio.substring(0, 10) : '');
             $('#editModuloFechaFin').val(mod.fecha_fin ? mod.fecha_fin.substring(0, 10) : '');
-            $('#editModuloDocenteCarnet').val('');
+            $('#editModuloDocenteCarnet').val('').css('border-color', '');
+            $('#editModuloDocenteCarnetFeedback').html('').css('color', '');
             $('#editModuloDocenteId').val(mod.docente_id || '');
             $('#editModuloDocentePreview').hide();
             const color = mod.color || '#6366f1';
@@ -1286,15 +1427,23 @@
         $(document).on('click', '#btnLimpiarDocenteModulo', function() {
             $('#editModuloDocenteId').val('');
             $('#editModuloDocentePreview').hide();
-            $('#editModuloDocenteCarnet').val('').focus();
+            $('#editModuloDocenteCarnet').val('').css('border-color', '').focus();
+            $('#editModuloDocenteCarnetFeedback').html('').css('color', '');
         });
 
         $('#btnBuscarDocenteModulo').on('click', function() {
-            const carnet = $('#editModuloDocenteCarnet').val().trim();
-            if (!carnet) {
+            const v = validarCarnetBuscador();
+            if (v.empty) {
                 toast('warning', 'Ingrese un carnet.');
+                $('#editModuloDocenteCarnet').focus();
                 return;
             }
+            if (!v.ok) {
+                toast('warning', 'El carnet debe tener entre 7 y 11 dígitos numéricos.');
+                $('#editModuloDocenteCarnet').focus();
+                return;
+            }
+            const carnet = v.value;
             $.ajax({
                     url: '{{ route('admin.posgrads.modulos.buscar-docente') }}',
                     type: 'POST',
@@ -1485,9 +1634,9 @@
         });
 
         function clearValidationErrors() {
-            $('#registroDocenteCarnet, #registroDocenteNombres, #registroDocenteApellidoPaterno, #registroDocenteCorreo, #registroDocenteCelular')
-                .removeClass('is-invalid-custom');
-            $('#registroDocenteCarnetError, #registroDocenteNombresError, #registroDocenteApellidoPaternoError, #registroDocenteCorreoError, #registroDocenteCelularError')
+            $('#registroDocenteCarnet, #registroDocenteNombres, #registroDocenteApellidoPaterno, #registroDocenteApellidoMaterno, #registroDocenteCorreo, #registroDocenteCelular, #registroDocenteSexo, #registroDocenteEstadoCivil, #registroDocenteCiudad')
+                .removeClass('is-invalid-custom is-valid-custom');
+            $('#registroDocenteCarnetError, #registroDocenteNombresError, #registroDocenteApellidoPaternoError, #registroDocenteApellidoMaternoError, #registroDocenteCorreoError, #registroDocenteCelularError, #registroDocenteSexoError, #registroDocenteEstadoCivilError, #registroDocenteCiudadError')
                 .text('');
         }
 
@@ -1498,29 +1647,45 @@
 
         function validateField(fieldId, value, rules) {
             clearSingleFieldError(fieldId);
-            if (rules.required && !value.trim()) {
-                const label = $('#' + fieldId).prev('label').text().replace(' *', '').trim();
-                setFieldError(fieldId, fieldId + 'Error', label + ' es requerido.');
+            const val = (value || '').toString();
+            if (rules.required && !val.trim()) {
+                const label = $('#' + fieldId).closest('div').find('label').first().text().replace('*', '').trim();
+                setFieldError(fieldId, fieldId + 'Error', (label || 'Este campo') + ' es requerido.');
                 return false;
             }
-            if (rules.email && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            if (rules.email && val && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
                 setFieldError(fieldId, fieldId + 'Error', 'Ingrese un correo válido.');
                 return false;
             }
-            if (rules.maxlength && value.length > rules.maxlength) {
+            if (rules.maxlength && val.length > rules.maxlength) {
                 setFieldError(fieldId, fieldId + 'Error', 'Máximo ' + rules.maxlength + ' caracteres.');
                 return false;
             }
-            if (rules.pattern && value && !rules.pattern.test(value)) {
+            if (rules.digitsOnly && val && !/^\d+$/.test(val)) {
+                setFieldError(fieldId, fieldId + 'Error', 'Solo se permiten números.');
+                return false;
+            }
+            if (rules.exactDigits && val && !new RegExp('^\\d{' + rules.exactDigits + '}$').test(val)) {
+                setFieldError(fieldId, fieldId + 'Error', 'Debe tener exactamente ' + rules.exactDigits + ' dígitos.');
+                return false;
+            }
+            if (rules.minDigits && val && val.length < rules.minDigits) {
+                setFieldError(fieldId, fieldId + 'Error', 'Mínimo ' + rules.minDigits + ' dígitos.');
+                return false;
+            }
+            if (rules.pattern && val && !rules.pattern.test(val)) {
                 setFieldError(fieldId, fieldId + 'Error', rules.patternMsg || 'Formato inválido.');
                 return false;
+            }
+            if (val.trim() !== '') {
+                $('#' + fieldId).addClass('is-valid-custom');
             }
             return true;
         }
 
         function clearSingleFieldError(fieldId) {
-            $('#' + fieldId).removeClass('is-invalid-custom');
-            $('#' + fieldId + 'Error').text('');
+            $('#' + fieldId).removeClass('is-invalid-custom is-valid-custom');
+            $('#' + fieldId + 'Error').text('').removeClass('valid-feedback-custom');
         }
         $('#registroDocenteCarnet').on('input', function() {
             validateField('registroDocenteCarnet', $(this).val(), {
@@ -1534,24 +1699,134 @@
                 maxlength: 100
             });
         });
-        $('#registroDocenteApellidoPaterno').on('input', function() {
-            validateField('registroDocenteApellidoPaterno', $(this).val(), {
-                required: true,
-                maxlength: 100
-            });
+        function validarApellidos() {
+            const ap = $('#registroDocenteApellidoPaterno').val().trim();
+            const am = $('#registroDocenteApellidoMaterno').val().trim();
+            clearSingleFieldError('registroDocenteApellidoPaterno');
+            clearSingleFieldError('registroDocenteApellidoMaterno');
+            if (!ap && !am) {
+                setFieldError('registroDocenteApellidoPaterno', 'registroDocenteApellidoPaternoError',
+                    'Ingrese al menos un apellido (paterno o materno).');
+                setFieldError('registroDocenteApellidoMaterno', 'registroDocenteApellidoMaternoError',
+                    'Ingrese al menos un apellido (paterno o materno).');
+                return false;
+            }
+            if (ap.length > 100) {
+                setFieldError('registroDocenteApellidoPaterno', 'registroDocenteApellidoPaternoError', 'Máximo 100 caracteres.');
+                return false;
+            }
+            if (am.length > 100) {
+                setFieldError('registroDocenteApellidoMaterno', 'registroDocenteApellidoMaternoError', 'Máximo 100 caracteres.');
+                return false;
+            }
+            if (ap) $('#registroDocenteApellidoPaterno').addClass('is-valid-custom');
+            if (am) $('#registroDocenteApellidoMaterno').addClass('is-valid-custom');
+            return true;
+        }
+        $('#registroDocenteApellidoPaterno, #registroDocenteApellidoMaterno').on('input', function() {
+            validarApellidos();
         });
+
+        // Correo: validación de formato + verificación de unicidad en tiempo real (debounced)
+        let correoCheckTimer = null;
+        let correoCheckXhr = null;
         $('#registroDocenteCorreo').on('input', function() {
-            validateField('registroDocenteCorreo', $(this).val(), {
+            const $input = $(this);
+            const val = $input.val().trim();
+            const ok = validateField('registroDocenteCorreo', val, {
                 email: true,
                 maxlength: 150
             });
+            if (correoCheckTimer) clearTimeout(correoCheckTimer);
+            if (correoCheckXhr) { try { correoCheckXhr.abort(); } catch (e) {} }
+            if (!ok || !val) return;
+            correoCheckTimer = setTimeout(function() {
+                correoCheckXhr = $.ajax({
+                    url: '{{ route('admin.personas.verificarCorreo') }}',
+                    type: 'POST',
+                    data: {
+                        _token: CSRF,
+                        correo: val,
+                        id: $('#registroDocentePersonaId').val() || ''
+                    }
+                }).done(function(r) {
+                    if (r && r.existe) {
+                        setFieldError('registroDocenteCorreo', 'registroDocenteCorreoError',
+                            'Este correo ya está registrado.');
+                    } else {
+                        $('#registroDocenteCorreoError').text('Correo disponible.').addClass('valid-feedback-custom');
+                        $('#registroDocenteCorreo').addClass('is-valid-custom');
+                    }
+                });
+            }, 450);
         });
+
+        // Celular: solo números, exactamente 8 dígitos
         $('#registroDocenteCelular').on('input', function() {
-            validateField('registroDocenteCelular', $(this).val(), {
-                maxlength: 20,
-                pattern: /^[0-9+\-\s()]*$/,
-                patternMsg: 'Solo números, +, -, espacios y paréntesis.'
+            const cleaned = ($(this).val() || '').replace(/\D/g, '').slice(0, 8);
+            if (cleaned !== $(this).val()) $(this).val(cleaned);
+            validateField('registroDocenteCelular', cleaned, {
+                required: true,
+                digitsOnly: true,
+                exactDigits: 8
             });
+        });
+
+        // Sexo, Estado Civil, Ciudad: requeridos (validación en tiempo real al cambiar)
+        $('#registroDocenteSexo').on('change', function() {
+            validateField('registroDocenteSexo', $(this).val(), { required: true });
+        });
+        $('#registroDocenteEstadoCivil').on('change', function() {
+            validateField('registroDocenteEstadoCivil', $(this).val(), { required: true });
+        });
+        $('#registroDocenteCiudad').on('change', function() {
+            validateField('registroDocenteCiudad', $(this).val(), { required: true });
+        });
+
+        // Carnet del buscador de docente (en editar módulo): solo dígitos, 7-11
+        function setBuscarDocenteEnabled(enabled) {
+            const $btn = $('#btnBuscarDocenteModulo');
+            $btn.prop('disabled', !enabled).css({
+                'opacity': enabled ? '' : '0.5',
+                'cursor': enabled ? '' : 'not-allowed',
+                'pointer-events': enabled ? '' : 'none'
+            });
+        }
+        function validarCarnetBuscador() {
+            const $input = $('#editModuloDocenteCarnet');
+            const $fb = $('#editModuloDocenteCarnetFeedback');
+            const raw = $input.val() || '';
+            const cleaned = raw.replace(/\D/g, '').slice(0, 11);
+            if (cleaned !== raw) $input.val(cleaned);
+            $input.css('border-color', '');
+            if (!cleaned) {
+                $fb.html('').css('color', '');
+                setBuscarDocenteEnabled(false);
+                return { ok: false, value: cleaned, empty: true };
+            }
+            if (cleaned.length < 7) {
+                $fb.html('<i class="ri-error-warning-line"></i> El carnet debe tener entre 7 y 11 dígitos. Faltan ' + (7 - cleaned.length) + '.').css('color', '#ef4444');
+                $input.css('border-color', '#ef4444');
+                setBuscarDocenteEnabled(false);
+                return { ok: false, value: cleaned };
+            }
+            if (cleaned.length > 11) {
+                $fb.html('<i class="ri-error-warning-line"></i> Máximo 11 dígitos.').css('color', '#ef4444');
+                $input.css('border-color', '#ef4444');
+                setBuscarDocenteEnabled(false);
+                return { ok: false, value: cleaned };
+            }
+            $fb.html('<i class="ri-checkbox-circle-line"></i> Carnet válido (' + cleaned.length + ' dígitos).').css('color', '#10b981');
+            $input.css('border-color', '#10b981');
+            setBuscarDocenteEnabled(true);
+            return { ok: true, value: cleaned };
+        }
+        $(document).on('input', '#editModuloDocenteCarnet', function() {
+            validarCarnetBuscador();
+        });
+        // Estado inicial al abrir el modal Editar Módulo
+        $(document).on('shown.bs.modal', '#modalEditarModulo', function() {
+            validarCarnetBuscador();
         });
 
         let estudioRowCount = 0,
@@ -1710,7 +1985,7 @@
                                     '</div>' +
 
                                     /* Toggle principal */
-                                    '<div style="flex:1;display:flex;align-items:flex-end;padding-bottom:.05rem;">' +
+                                    '<div class="estudio-principal-wrap" style="flex:1;display:flex;align-items:flex-end;padding-bottom:.05rem;">' +
                                         '<label for="estudioPrincipal' + idx + '" ' +
                                             'style="display:inline-flex;align-items:center;gap:.5rem;' +
                                             'background:rgba(99,102,241,.05);border:1.5px solid rgba(99,102,241,.15);' +
@@ -1737,15 +2012,34 @@
                     '</div>' +
                 '</div>';
             $('#estudiosRowsContainer').append(html);
+            refreshPrincipalVisibility();
         }
         function syncEstudiosEmptyMsg() {
             const count = $('#estudiosRowsContainer .estudio-row').length;
             $('#estudiosEmptyMsg').toggle(count === 0);
         }
 
+        function refreshPrincipalVisibility() {
+            const $rows = $('#estudiosRowsContainer .estudio-row');
+            const $checked = $rows.find('.estudio-principal:checked');
+            if ($checked.length > 0) {
+                const $principalRow = $checked.closest('.estudio-row');
+                $rows.each(function() {
+                    const $wrap = $(this).find('.estudio-principal-wrap');
+                    if (this === $principalRow[0]) $wrap.show();
+                    else $wrap.hide();
+                });
+            } else {
+                $rows.find('.estudio-principal-wrap').show();
+            }
+        }
+
         $('#btnAddEstudioRow').on('click', function() {
             addEstudioRow();
             syncEstudiosEmptyMsg();
+        });
+        $(document).on('change', '.estudio-principal', function() {
+            refreshPrincipalVisibility();
         });
         $(document).on('click', '.btn-remove-estudio', function() {
             const $row = $(this).closest('.estudio-row');
@@ -1754,6 +2048,7 @@
                 $row.remove();
                 renumberEstudios();
                 syncEstudiosEmptyMsg();
+                refreshPrincipalVisibility();
             }, 180);
         });
         $(document).on('mouseenter', '#estudiosRowsContainer .estudio-row', function() {
@@ -1801,22 +2096,46 @@
                     required: true,
                     maxlength: 100
                 })) valid = false;
-            if (!validateField('registroDocenteApellidoPaterno', apellidoPaterno, {
+            if (!validarApellidos()) valid = false;
+            if (!validateField('registroDocenteSexo', sexo, { required: true })) valid = false;
+            if (!validateField('registroDocenteEstadoCivil', estadoCivil, { required: true })) valid = false;
+            if (!validateField('registroDocenteCiudad', ciudadId, { required: true })) valid = false;
+            if (!validateField('registroDocenteCelular', celular, {
                     required: true,
-                    maxlength: 100
+                    digitsOnly: true,
+                    exactDigits: 8
                 })) valid = false;
             if (correo && !validateField('registroDocenteCorreo', correo, {
                     email: true,
                     maxlength: 150
                 })) valid = false;
-            if (celular && !validateField('registroDocenteCelular', celular, {
-                    maxlength: 20,
-                    pattern: /^[0-9+\-\s()]*$/,
-                    patternMsg: 'Solo números y caracteres válidos.'
-                })) valid = false;
             if (!valid) {
                 toast('warning', 'Corrija los campos marcados.');
                 return;
+            }
+            // Verificación final de correo (anti race-condition con debounced check)
+            if (correo) {
+                setBtnLoading('#btnRegistrarYAsignarDocente', true, 'Verificando…');
+                $.ajax({
+                    url: '{{ route('admin.personas.verificarCorreo') }}',
+                    type: 'POST',
+                    async: false,
+                    data: {
+                        _token: CSRF,
+                        correo: correo,
+                        id: $('#registroDocentePersonaId').val() || ''
+                    }
+                }).done(function(r) {
+                    if (r && r.existe) {
+                        setFieldError('registroDocenteCorreo', 'registroDocenteCorreoError',
+                            'Este correo ya está registrado.');
+                        toast('warning', 'El correo ingresado ya está registrado.');
+                        valid = false;
+                    }
+                });
+                setBtnLoading('#btnRegistrarYAsignarDocente', false,
+                    '<i class="ri-check-line"></i> Registrar y Asignar');
+                if (!valid) return;
             }
             const estudiosRows = $('#estudiosRowsContainer .estudio-row'),
                 estudios = [];
@@ -1866,7 +2185,8 @@
                     $('#editModuloDocentePreview').show();
                     $('#editModuloDocenteNombre').text(nombreCompleto.trim() + ' (CI: ' + p.carnet +
                         ')');
-                    $('#editModuloDocenteCarnet').val('');
+                    $('#editModuloDocenteCarnet').val('').css('border-color', '');
+                    $('#editModuloDocenteCarnetFeedback').html('').css('color', '');
                     closeModal('modalRegistroDocente');
                     cargarModulosSidebar();
                     
@@ -1926,6 +2246,7 @@
                 }
             });
             syncEstudiosEmptyMsg();
+            refreshPrincipalVisibility();
         }
         $('#btnGuardarEditarModulo').on('click', function() {
             const id = $('#editModuloId').val(),
@@ -2006,12 +2327,68 @@
                 toast('error', 'Error al cargar trabajadores.');
             });
         }
+        function setBuscarTrabajadorEnabled(enabled) {
+            const $btn = $('#btnBuscarTrabajador');
+            $btn.prop('disabled', !enabled).css({
+                'opacity': enabled ? '' : '0.5',
+                'cursor': enabled ? '' : 'not-allowed',
+                'pointer-events': enabled ? '' : 'none'
+            });
+        }
+        function validarTrabajadorSearch() {
+            const $input = $('#asigTrabajadorSearch');
+            const $fb = $('#asigTrabajadorSearchFeedback');
+            const raw = ($input.val() || '').trim();
+            $input.css('border-color', '');
+            if (!raw) {
+                $fb.html('').css('color', '');
+                setBuscarTrabajadorEnabled(false);
+                return { ok: false, empty: true, value: '' };
+            }
+            // Si es completamente numérico, asumimos búsqueda por carnet → validar 7-11 dígitos
+            if (/^\d+$/.test(raw)) {
+                if (raw.length < 7) {
+                    $fb.html('<i class="ri-error-warning-line"></i> El carnet debe tener entre 7 y 11 dígitos. Faltan ' + (7 - raw.length) + '.').css('color', '#ef4444');
+                    $input.css('border-color', '#ef4444');
+                    setBuscarTrabajadorEnabled(false);
+                    return { ok: false, value: raw, isCarnet: true };
+                }
+                if (raw.length > 11) {
+                    $fb.html('<i class="ri-error-warning-line"></i> El carnet no puede tener más de 11 dígitos.').css('color', '#ef4444');
+                    $input.css('border-color', '#ef4444');
+                    setBuscarTrabajadorEnabled(false);
+                    return { ok: false, value: raw, isCarnet: true };
+                }
+                $fb.html('<i class="ri-checkbox-circle-line"></i> Carnet válido (' + raw.length + ' dígitos).').css('color', '#10b981');
+                $input.css('border-color', '#10b981');
+                setBuscarTrabajadorEnabled(true);
+                return { ok: true, value: raw, isCarnet: true };
+            }
+            // Si contiene letras es nombre → sin restricción de longitud
+            $fb.html('').css('color', '');
+            setBuscarTrabajadorEnabled(true);
+            return { ok: true, value: raw, isCarnet: false };
+        }
+        $(document).on('input', '#asigTrabajadorSearch', function() {
+            validarTrabajadorSearch();
+        });
+        $(document).on('shown.bs.modal', '#modalAsignarHorario', function() {
+            validarTrabajadorSearch();
+        });
+
         $('#btnBuscarTrabajador').on('click', function() {
-            const q = $('#asigTrabajadorSearch').val().trim().toLowerCase();
-            if (!q) {
+            const v = validarTrabajadorSearch();
+            if (v.empty) {
                 toast('warning', 'Ingrese un nombre o carnet.');
+                $('#asigTrabajadorSearch').focus();
                 return;
             }
+            if (!v.ok) {
+                toast('warning', 'El carnet debe tener entre 7 y 11 dígitos.');
+                $('#asigTrabajadorSearch').focus();
+                return;
+            }
+            const q = v.value.toLowerCase();
 
             function doSearch() {
                 const found = allTrabajadores.filter(function(t) {
@@ -2140,12 +2517,14 @@
                 $('#asigTrabajadorId').val('');
                 $('#asigTrabajadorPreview').html('').hide();
             }
+            $('#asigTrabajadorSearch').css('border-color', '');
+            $('#asigTrabajadorSearchFeedback').html('').css('color', '');
             for (let i = 0; i < window.CANTIDAD_SESIONES; i++) {
                 const h = horarios[i];
                 const horarioId = h ? h.id : null;
                 const fechaVal = h ? (h.fecha ? String(h.fecha).substring(0, 10) : '') : '';
-                const inicioVal = h ? (h.hora_inicio ? h.hora_inicio.substring(0, 5) : '') : '';
-                const finVal = h ? (h.hora_fin ? h.hora_fin.substring(0, 5) : '') : '';
+                const inicioVal = (h && h.hora_inicio) ? h.hora_inicio.substring(0, 5) : '19:00';
+                const finVal = (h && h.hora_fin) ? h.hora_fin.substring(0, 5) : '22:00';
                 const estadoVal = h ? (h.estado || 'Confirmado') : '';
                 addSesionRow(fechaVal, inicioVal, finVal, horarioId, estadoVal);
             }
@@ -2175,7 +2554,7 @@
             const esEdicion = !!enlaceId;
             $('#enlaceVidModuloId').val(moduloId);
             $('#enlaceVidEnlaceId').val(enlaceId || '');
-            $('#enlaceVidModuloNombre').text(moduloNombre || '');
+            $('#enlaceVidModuloNombre').text(moduloNombre || '').attr('title', moduloNombre || '');
             $('#enlaceVidTitulo').text(esEdicion ? 'Modificar Enlace Virtual' : 'Enlace de Sesión Virtual');
             $('#enlaceVidBtnText').text(esEdicion ? 'Guardar Cambios' : 'Registrar Enlace');
             $('#enlaceVidBtnIcon').attr('class', esEdicion ? 'ri-refresh-line' : 'ri-save-line');
@@ -2571,18 +2950,48 @@
         // ===== CAMBIAR ESTADO DE MÓDULO =====
         let currentModuloEstadoId = null;
 
+        const ESTADO_MODULO_STYLES = {
+            'No Inició':     { bg: 'rgba(100,116,139,.14)', color: '#475569', icon: 'ri-time-line' },
+            'En Desarrollo': { bg: 'rgba(34,197,94,.14)',   color: '#16a34a', icon: 'ri-loader-3-line' },
+            'Concluido':     { bg: 'rgba(99,102,241,.14)',  color: '#4f46e5', icon: 'ri-checkbox-circle-line' }
+        };
+        let estadoActualModulo = '';
+
+        function pintarBadgeEstadoActualModulo(estado) {
+            const st = ESTADO_MODULO_STYLES[estado] || ESTADO_MODULO_STYLES['No Inició'];
+            $('#cambiarEstadoModuloActualBadge').css({ background: st.bg, color: st.color });
+            $('#cambiarEstadoModuloActualIcon').attr('class', st.icon);
+            $('#cambiarEstadoModuloActualText').text(estado || 'No Inició');
+        }
+
+        function actualizarHintCambiarEstado() {
+            const seleccionado = $('#nuevoEstadoModulo').val();
+            $('#cambiarEstadoModuloHint').css('display', seleccionado === estadoActualModulo ? 'flex' : 'none');
+        }
+
         $(document).on('click', '.btn-cambiar-estado-modulo', function(e) {
             e.stopPropagation();
             currentModuloEstadoId = $(this).data('id');
-            const estadoActual = $(this).data('estado');
+            const estadoActual = $(this).data('estado') || 'No Inició';
             const nombre = $(this).data('nombre');
+            estadoActualModulo = estadoActual;
             $('#cambiarEstadoModuloNombre').text(nombre);
+            pintarBadgeEstadoActualModulo(estadoActual);
+            // Preseleccionar el estado actual como "Nuevo Estado" por defecto
             $('#nuevoEstadoModulo').val(estadoActual);
+            if (!$('#nuevoEstadoModulo').val()) $('#nuevoEstadoModulo').val('No Inició');
+            actualizarHintCambiarEstado();
             openModal('modalCambiarEstadoModulo');
         });
 
+        $(document).on('change', '#nuevoEstadoModulo', actualizarHintCambiarEstado);
+
         $('#btnConfirmarCambiarEstadoModulo').on('click', function() {
             const nuevoEstado = $('#nuevoEstadoModulo').val();
+            if (nuevoEstado === estadoActualModulo) {
+                toast('warning', 'El estado seleccionado es igual al actual. Elige uno diferente para actualizar.');
+                return;
+            }
             setBtnLoading('#btnConfirmarCambiarEstadoModulo', true, 'Confirmando…');
             $.ajax({
                 url: '/admin/posgrads/modulos/' + currentModuloEstadoId + '/estado',
@@ -2778,6 +3187,8 @@
             $('#descuentoBsEditar').val(parseFloat(row.descuento_bs || 0).toFixed(2));
             $('#pagoBsEditar').val(parseFloat(row.pago_bs || 0).toFixed(2));
             $('#labelPcEditar').text(row.plan_pago?.nombre + ' — ' + row.concepto?.nombre);
+            const _esPromoConcepto = row.plan_pago?.es_promocion || false;
+            $('#descuentoBsEditarWrap').toggle(_esPromoConcepto);
             openModal('modalEditarPc');
         });
         $(document).on('click', '.btn-accion-eliminar-pc', function() {
@@ -2807,13 +3218,11 @@
                 if (fechaInicio && fechaFin) rangoTexto = 'Vigencia: ' + formatDateLong(fechaInicio) +
                     ' al ' + formatDateLong(fechaFin);
                 $('#editRangoPromocion').text(rangoTexto);
-                $('#editPlanFechasBox').show();
                 $('#editPlanFechaInicio').val(fechaInicio || '');
                 $('#editPlanFechaFin').val(fechaFin || '');
                 $('.col-edit-descuento').show();
             } else {
                 $('#editBadgePromocion').hide();
-                $('#editPlanFechasBox').hide();
                 $('.col-edit-descuento').hide();
             }
             let rowsHtml = '',
@@ -3791,6 +4200,7 @@
                 if (r.moodle_course_nombre) {
                     if (cursoBadge) {
                         cursoBadge.textContent = r.moodle_course_nombre;
+                        cursoBadge.setAttribute('title', r.moodle_course_nombre);
                         cursoBadge.style.display = '';
                     }
                     if (cursoBody) {
@@ -4400,13 +4810,18 @@
             // Body
             let tb = '';
             estudiantes.forEach(function(est) {
-                const ini = _initials(est.nombre);
+                const ap = (est.apellido_paterno || '').trim();
+                const am = (est.apellido_materno || '').trim();
+                const nm = (est.nombres || '').trim();
+                const nombreOrdenado = (ap + ' ' + am + ' ' + nm).replace(/\s+/g, ' ').trim();
+                const nombreDisplay = nombreOrdenado || est.nombre || '—';
+                const ini = _initials(nombreDisplay);
                 tb += '<tr>';
                 tb += '<td>' +
                     '<div class="plt-student-cell">' +
                         '<div class="plt-avatar">' + ini + '</div>' +
                         '<div>' +
-                            '<div class="plt-student-name">' + escHtml(est.nombre) + '</div>' +
+                            '<div class="plt-student-name">' + escHtml(nombreDisplay) + '</div>' +
                             (!est.tiene_cuenta_moodle
                                 ? '<div class="plt-no-moodle"><i class="ri-user-x-line"></i> Sin cuenta Moodle</div>'
                                 : '') +

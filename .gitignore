@@ -19,8 +19,25 @@ storage/*.key
 storage/framework/views/*.php
 .env
 .claude/
+skills-lock.json
 nul
 Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
+
+# Debug / test / scratch files (root level)
+_debug_*.php
+check_*.php
+debug_*.php
+scratch_*
+test*.php
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

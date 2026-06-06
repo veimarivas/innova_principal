@@ -93,7 +93,7 @@
                     <div class="col-md-4"><label class="form-label" style="font-weight:600;">Precio Regular
                             (Bs)</label><input type="number" class="form-control" id="precioRegularEditar"
                             value="0.00" min="0" step="0.01"></div>
-                    <div class="col-md-4"><label class="form-label" style="font-weight:600;">Descuento
+                    <div class="col-md-4" id="descuentoBsEditarWrap"><label class="form-label" style="font-weight:600;">Descuento
                             (Bs)</label><input type="number" class="form-control" id="descuentoBsEditar"
                             value="0.00" min="0" step="0.01"></div>
                 </div>
@@ -165,16 +165,8 @@
                         </div>
                     </div>
                 </div>
-                <div id="editPlanFechasBox" style="display:none;">
-                    <div class="row g-3">
-                        <div class="col-md-6"><label class="form-label" style="font-weight:600;">Fecha Inicio
-                                Promoción</label><input type="date" class="form-control" id="editPlanFechaInicio">
-                        </div>
-                        <div class="col-md-6"><label class="form-label" style="font-weight:600;">Fecha Fin
-                                Promoción</label><input type="date" class="form-control" id="editPlanFechaFin">
-                        </div>
-                    </div>
-                </div>
+                <input type="hidden" id="editPlanFechaInicio">
+                <input type="hidden" id="editPlanFechaFin">
                 <div class="d-flex justify-content-between align-items-center mb-2"><label class="form-label mb-0"
                         style="font-weight:600;font-size:0.85rem;">Conceptos</label></div>
                 <div class="table-responsive" style="max-height:300px;overflow-y:auto;">
@@ -184,6 +176,7 @@
                                 <th style="min-width:150px;">Concepto</th>
                                 <th style="width:80px;" class="text-center">Cuotas</th>
                                 <th style="width:110px;" class="text-end">P. Regular (Bs)</th>
+                                <th style="width:110px;" class="text-end col-edit-descuento">Desc. Actual (Bs)</th>
                                 <th style="width:110px;" class="text-end col-edit-descuento">Descuento (Bs)</th>
                                 <th style="width:100px;" class="text-end">Pago (Bs)</th>
                             </tr>
@@ -509,6 +502,7 @@
                             </button>
                         </div>
                         <input type="hidden" id="asigTrabajadorId">
+                        <div id="asigTrabajadorSearchFeedback" style="margin-top:.35rem;font-size:.72rem;min-height:1rem;"></div>
                         <div id="asigTrabajadorPreview" style="display:none;margin-top:.6rem;padding:.55rem .8rem;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:9px;">
                             <small class="fw-semibold" id="asigTrabajadorNombre"></small>
                         </div>
@@ -627,8 +621,8 @@
                     <div style="display:flex;gap:.5rem;align-items:stretch;">
                         <div style="position:relative;flex:1;">
                             <i class="ri-id-card-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#a5b4fc;font-size:.9rem;pointer-events:none;"></i>
-                            <input type="text" id="editModuloDocenteCarnet" maxlength="20"
-                                placeholder="Ingresa el carnet de identidad..."
+                            <input type="text" id="editModuloDocenteCarnet" maxlength="11" inputmode="numeric"
+                                placeholder="Ingresa el carnet (7 a 11 dígitos)..."
                                 style="width:100%;padding:.5rem .75rem .5rem 2.1rem;border:1.5px solid rgba(99,102,241,.25);border-radius:10px;font-size:.85rem;color:#334155;background:#f8fafc;transition:border-color .2s;outline:none;"
                                 onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='rgba(99,102,241,.25)'">
                         </div>
@@ -637,7 +631,8 @@
                             <i class="ri-search-line"></i> Buscar
                         </button>
                     </div>
-                    <div style="margin-top:.5rem;font-size:.71rem;color:#94a3b8;display:flex;align-items:center;gap:.3rem;">
+                    <div id="editModuloDocenteCarnetFeedback" style="margin-top:.4rem;font-size:.72rem;min-height:1rem;"></div>
+                    <div style="margin-top:.2rem;font-size:.71rem;color:#94a3b8;display:flex;align-items:center;gap:.3rem;">
                         <i class="ri-information-line"></i> Si el docente no existe, podrás registrarlo inmediatamente.
                     </div>
                 </div>
@@ -750,24 +745,22 @@
                                 <i class="ri-lock-2-line" style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);color:#a5b4fc;font-size:.8rem;pointer-events:none;"></i>
                             </div>
                             <div class="invalid-feedback" id="registroDocenteCarnetError"></div>
-                        </div>
-                        <div class="col-md-2">
-                            <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Expedido</label>
-                            <input type="text" class="form-control" id="registroDocenteExpedido" maxlength="10" placeholder="LP" style="border-radius:9px;">
+                            <input type="hidden" id="registroDocenteExpedido">
                         </div>
                         <div class="col-md-3">
                             <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Nombres <span style="color:#ef4444;">*</span></label>
                             <input type="text" class="form-control" id="registroDocenteNombres" maxlength="100" placeholder="Nombres completos" style="border-radius:9px;">
                             <div class="invalid-feedback" id="registroDocenteNombresError"></div>
                         </div>
-                        <div class="col-md-2">
-                            <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Ap. Paterno <span style="color:#ef4444;">*</span></label>
+                        <div class="col-md-3">
+                            <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Ap. Paterno</label>
                             <input type="text" class="form-control" id="registroDocenteApellidoPaterno" maxlength="100" placeholder="Apellido paterno" style="border-radius:9px;">
                             <div class="invalid-feedback" id="registroDocenteApellidoPaternoError"></div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Ap. Materno</label>
                             <input type="text" class="form-control" id="registroDocenteApellidoMaterno" maxlength="100" placeholder="Apellido materno" style="border-radius:9px;">
+                            <div class="invalid-feedback" id="registroDocenteApellidoMaternoError"></div>
                         </div>
                     </div>
                 </div>
@@ -786,15 +779,16 @@
                             <input type="date" class="form-control" id="registroDocenteFechaNacimiento" style="border-radius:9px;">
                         </div>
                         <div class="col-md-4">
-                            <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Sexo</label>
+                            <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Sexo <span style="color:#ef4444;">*</span></label>
                             <select class="form-select" id="registroDocenteSexo" style="border-radius:9px;">
                                 <option value="">— Seleccionar —</option>
                                 <option value="M">Masculino</option>
                                 <option value="F">Femenino</option>
                             </select>
+                            <div class="invalid-feedback" id="registroDocenteSexoError"></div>
                         </div>
                         <div class="col-md-4">
-                            <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Estado Civil</label>
+                            <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Estado Civil <span style="color:#ef4444;">*</span></label>
                             <select class="form-select" id="registroDocenteEstadoCivil" style="border-radius:9px;">
                                 <option value="">— Seleccionar —</option>
                                 <option value="Soltero/a">Soltero/a</option>
@@ -803,6 +797,7 @@
                                 <option value="Viudo/a">Viudo/a</option>
                                 <option value="Unión Libre">Unión Libre</option>
                             </select>
+                            <div class="invalid-feedback" id="registroDocenteEstadoCivilError"></div>
                         </div>
                         <div class="col-md-6">
                             <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.35rem;margin-bottom:.4rem;">
@@ -814,11 +809,12 @@
                         </div>
                         <div class="col-md-6">
                             <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.35rem;margin-bottom:.4rem;">
-                                <i class="ri-building-line" style="color:#10b981;font-size:.8rem;"></i> Ciudad
+                                <i class="ri-building-line" style="color:#10b981;font-size:.8rem;"></i> Ciudad <span style="color:#ef4444;">*</span>
                             </label>
                             <select class="form-select" id="registroDocenteCiudad" style="border-radius:9px;" disabled>
                                 <option value="">— Primero elige departamento —</option>
                             </select>
+                            <div class="invalid-feedback" id="registroDocenteCiudadError"></div>
                         </div>
                     </div>
                 </div>
@@ -844,7 +840,7 @@
                             <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Celular</label>
                             <div style="position:relative;">
                                 <i class="ri-smartphone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
-                                <input type="text" class="form-control" id="registroDocenteCelular" maxlength="20" placeholder="+591 70000000" style="border-radius:9px;padding-left:2.1rem;">
+                                <input type="text" class="form-control" id="registroDocenteCelular" maxlength="8" inputmode="numeric" placeholder="70000000" style="border-radius:9px;padding-left:2.1rem;">
                             </div>
                             <div class="invalid-feedback" id="registroDocenteCelularError"></div>
                         </div>
@@ -977,6 +973,14 @@
                     <div style="font-size:.72rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.15rem;">Módulo</div>
                     <div id="cambiarEstadoModuloNombre" style="font-size:.88rem;font-weight:700;color:#1e293b;"></div>
                 </div>
+                <div class="mb-3 d-flex align-items-center gap-2" style="padding:.55rem .8rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
+                    <span style="font-size:.72rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em;">Estado actual:</span>
+                    <span id="cambiarEstadoModuloActualBadge"
+                        style="display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:700;padding:.22rem .6rem;border-radius:999px;">
+                        <i id="cambiarEstadoModuloActualIcon" class="ri-time-line"></i>
+                        <span id="cambiarEstadoModuloActualText"></span>
+                    </span>
+                </div>
                 <div class="mb-3">
                     <label class="form-label" style="font-weight:600;font-size:.82rem;">Nuevo Estado <span style="color:#ef4444;">*</span></label>
                     <select class="form-select" id="nuevoEstadoModulo" style="border-radius:10px;">
@@ -984,6 +988,10 @@
                         <option value="En Desarrollo">En Desarrollo</option>
                         <option value="Concluido">Concluido</option>
                     </select>
+                    <div id="cambiarEstadoModuloHint" style="margin-top:.4rem;font-size:.72rem;color:#64748b;display:none;align-items:center;gap:.3rem;">
+                        <i class="ri-information-line" style="color:#fc7b04;"></i>
+                        <span>El estado seleccionado es el actual. Cámbielo si desea actualizarlo.</span>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer" style="padding:.9rem 1.25rem;gap:.5rem;">
@@ -1207,13 +1215,11 @@
                     </div>
                     <div class="mdl-moodle-header-text">
                         <h5 class="mdl-moodle-title">Enviar Credenciales Moodle</h5>
-                        <div class="mdl-moodle-modulo-nombre">
-                            <i class="ri-book-2-line"></i>
-                            <span id="moodleModuloNombre">—</span>
-                        </div>
+                        <span id="moodleModuloNombre" style="display:none;"></span>
                     </div>
                     <span id="moodleCursoNombre"
-                        style="display:none;background:rgba(255,255,255,.2);font-size:.7rem;font-weight:600;padding:.25rem .8rem;border-radius:20px;border:1px solid rgba(255,255,255,.3);white-space:nowrap;flex-shrink:0;color:white;align-self:flex-start;margin-left:auto;">
+                        style="display:none;background:rgba(255,255,255,.2);font-size:.7rem;font-weight:600;padding:.3rem .75rem;border-radius:20px;border:1px solid rgba(255,255,255,.3);color:white;margin-left:auto;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;position:relative;z-index:1;"
+                        title="">
                     </span>
                 </div>
                 <button type="button" class="mdl-moodle-close" data-bs-dismiss="modal" aria-label="Cerrar">
@@ -1404,9 +1410,9 @@
 .mdl-moodle-header {
     position: relative;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
-    padding: 1.1rem 1.25rem;
+    padding: 1rem 1.25rem;
     background: linear-gradient(135deg, #391b04 0%, #7c3c00 50%, #c96004 100%);
     overflow: hidden;
 }
@@ -1422,7 +1428,7 @@
 
 .mdl-moodle-header-body {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
     flex: 1;
     min-width: 0;
@@ -1447,11 +1453,12 @@
 }
 
 .mdl-moodle-title {
-    font-size: .95rem;
+    font-size: 1rem;
     font-weight: 700;
     color: white;
-    margin: 0 0 4px;
-    line-height: 1.2;
+    margin: 0;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
 }
 
 .mdl-moodle-modulo-nombre {
@@ -1804,17 +1811,19 @@
         <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.18);">
 
             {{-- Header --}}
-            <div class="modal-header" style="background:linear-gradient(135deg,#391b04,#7c3c00,{{ $brandColor }});color:white;padding:1.25rem 1.5rem;border:none;">
-                <div class="d-flex align-items-center gap-3 flex-grow-1 min-width-0">
-                    <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="ri-video-chat-line" style="font-size:1.4rem;"></i>
+            <div class="modal-header" style="background:linear-gradient(135deg,#391b04,#7c3c00,{{ $brandColor }});color:white;padding:1.1rem 1.35rem;border:none;align-items:flex-start;">
+                <div class="d-flex align-items-start gap-3 flex-grow-1" style="min-width:0;">
+                    <div style="width:44px;height:44px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+                        <i class="ri-video-chat-line" style="font-size:1.3rem;"></i>
                     </div>
-                    <div style="min-width:0;">
-                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;color:#fff;" id="enlaceVidTitulo">Enlace de Sesión Virtual</h5>
-                        <div id="enlaceVidModuloNombre" style="font-size:.73rem;opacity:.8;margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+                    <div style="min-width:0;flex:1;">
+                        <h5 class="modal-title mb-1" style="font-size:1rem;font-weight:700;color:#fff;line-height:1.25;" id="enlaceVidTitulo">Enlace de Sesión Virtual</h5>
+                        <div id="enlaceVidModuloNombre"
+                            style="font-size:.76rem;opacity:.92;line-height:1.4;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"
+                            title=""></div>
                     </div>
                 </div>
-                <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="modal" aria-label="Cerrar" style="margin-top:6px;"></button>
             </div>
 
             {{-- Body --}}

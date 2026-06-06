@@ -1076,6 +1076,293 @@
             background: rgba(154, 73, 4, 0.09);
             border-color: rgba(154, 73, 4, 0.5);
         }
+
+        /* ==========================================================
+           MODAL PLANES DE PAGO — REDISEÑO ELEGANTE
+           ========================================================== */
+        #modalPlanesPago .modal-content {
+            border: none !important;
+            border-radius: 18px !important;
+            overflow: hidden;
+            box-shadow:
+                0 30px 80px rgba(15, 10, 5, 0.18),
+                0 12px 32px rgba(15, 10, 5, 0.10),
+                0 0 0 1px rgba(252, 123, 4, 0.06) !important;
+        }
+        #modalPlanesPago .modal-header.modal-header-gradient {
+            background:
+                linear-gradient(135deg, #2a1605 0%, #7a3b03 55%, #fc7b04 100%) !important;
+            padding: 1.1rem 1.5rem !important;
+            border-bottom: none !important;
+            position: relative;
+            overflow: hidden;
+        }
+        #modalPlanesPago .modal-header.modal-header-gradient::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at top right, rgba(255,255,255,.18) 0%, transparent 60%),
+                radial-gradient(circle at bottom left, rgba(0,0,0,.18) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        #modalPlanesPago .modal-header.modal-header-gradient .modal-title {
+            color: #fff !important;
+            font-weight: 700;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        #modalPlanesPago .modal-header.modal-header-gradient .modal-title i {
+            font-size: 1.3rem;
+            background: rgba(255,255,255,0.18);
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        #modalPlanesPago .modal-header.modal-header-gradient #planesOfertaCodigo {
+            font-weight: 600;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 0.18rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            letter-spacing: 0.02em;
+        }
+        #modalPlanesPago .modal-header.modal-header-gradient .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.85;
+            position: relative;
+            z-index: 1;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        #modalPlanesPago .modal-header.modal-header-gradient .btn-close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+        #modalPlanesPago .modal-body {
+            background: #faf7f4;
+            padding: 1.5rem;
+        }
+        #modalPlanesPago .modal-footer {
+            background: linear-gradient(180deg, #fbfaf7, #f7f4ee);
+            border-top: 1px solid #ede8e2;
+            padding: 0.9rem 1.5rem;
+        }
+        #modalPlanesPago .modal-footer .btn-secondary {
+            background: #ece8e2 !important;
+            color: #2d2924 !important;
+            border: none !important;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 0.5rem 1.1rem;
+            font-size: 0.85rem;
+        }
+        #modalPlanesPago .modal-footer .btn-secondary:hover {
+            background: #ddd6cc !important;
+            transform: translateY(-1px);
+        }
+
+        /* Cards de planes — refined within modal */
+        #modalPlanesPago .contable-plan-card {
+            background: #fff !important;
+            border: 1px solid #ede8e2 !important;
+            border-radius: 16px !important;
+            box-shadow: 0 2px 6px rgba(15,10,5,.04), 0 1px 2px rgba(15,10,5,.03) !important;
+            overflow: hidden;
+            transition: box-shadow .3s cubic-bezier(.16,1,.3,1), transform .2s, border-color .2s;
+            position: relative;
+        }
+        #modalPlanesPago .contable-plan-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #fc7b04, rgba(252,123,4,.55));
+        }
+        #modalPlanesPago .contable-plan-card.contable-plan-promo::before {
+            background: linear-gradient(90deg, #f59e0b, #fc7b04, #f59e0b);
+            background-size: 200% 100%;
+            animation: planesShimmer 3s linear infinite;
+        }
+        @keyframes planesShimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        #modalPlanesPago .contable-plan-card:hover {
+            box-shadow: 0 18px 40px rgba(15,10,5,.08), 0 6px 14px rgba(15,10,5,.05) !important;
+            transform: translateY(-2px);
+            border-color: rgba(252,123,4,.2) !important;
+        }
+        #modalPlanesPago .contable-plan-card.contable-plan-promo {
+            background: linear-gradient(135deg,#fffaf3 0%,#fff 35%,#fff 65%,#fff5e6 100%) !important;
+            border-color: rgba(252,123,4,.22) !important;
+        }
+        #modalPlanesPago .contable-plan-header {
+            padding: 1.1rem 1.35rem !important;
+            border-bottom: 1px solid #f1ece5 !important;
+            background: linear-gradient(180deg,#fcfaf6 0%,#fff 100%) !important;
+            margin-top: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        #modalPlanesPago .contable-plan-card.contable-plan-promo .contable-plan-header {
+            background: linear-gradient(180deg,rgba(252,123,4,.06) 0%,transparent 100%) !important;
+            border-bottom-color: rgba(252,123,4,.15) !important;
+        }
+        #modalPlanesPago .contable-plan-nombre {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #1e1b15;
+            letter-spacing: -0.01em;
+        }
+        #modalPlanesPago .contable-promo-badge {
+            background: linear-gradient(135deg,#fc7b04,#f59e0b);
+            color: #fff;
+            border-radius: 999px;
+            padding: 0.25rem 0.7rem;
+            font-size: 0.66rem;
+            letter-spacing: 0.06em;
+            font-weight: 700;
+            text-transform: uppercase;
+            box-shadow: 0 3px 8px rgba(252,123,4,.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-left: 0.5rem;
+        }
+        #modalPlanesPago .contable-plan-total {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #9a4904;
+            background: linear-gradient(135deg, rgba(154,73,4,.08), rgba(154,73,4,.03));
+            padding: 0.4rem 0.85rem;
+            border-radius: 10px;
+            border: 1px solid rgba(154,73,4,.18);
+            letter-spacing: -0.01em;
+            line-height: 1;
+        }
+        #modalPlanesPago .contable-plan-card.contable-plan-promo .contable-plan-total {
+            color: #c96004;
+            background: linear-gradient(135deg, rgba(252,123,4,.1), rgba(252,123,4,.03));
+            border-color: rgba(252,123,4,.22);
+        }
+        #modalPlanesPago .contable-promo-dates-bar {
+            background: linear-gradient(90deg, rgba(252,123,4,.08), rgba(252,123,4,.02)) !important;
+            border-bottom: 1px solid rgba(252,123,4,.12) !important;
+            padding: 0.55rem 1.35rem;
+            font-size: 0.78rem;
+            color: #c96004;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        #modalPlanesPago .contable-promo-dates-bar i {
+            background: rgba(252,123,4,.18);
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fc7b04;
+        }
+        #modalPlanesPago .contable-conceptos-list {
+            padding: 0.25rem 0 0.6rem !important;
+        }
+        #modalPlanesPago .contable-conceptos-table {
+            width: 100%;
+        }
+        #modalPlanesPago .contable-conceptos-table thead th {
+            font-size: 0.66rem !important;
+            color: #94908a !important;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            font-weight: 700;
+            padding: 0.7rem 1.35rem !important;
+            border-bottom: 1px solid #f1ece5;
+            background: transparent;
+        }
+        #modalPlanesPago .contable-conceptos-table tbody td {
+            padding: 0.7rem 1.35rem !important;
+            font-size: 0.875rem;
+            color: #44423d;
+            border-bottom: 1px solid #faf6f0 !important;
+        }
+        #modalPlanesPago .contable-conceptos-table tbody tr:hover td {
+            background: rgba(252,123,4,.025);
+        }
+        #modalPlanesPago .contable-cuotas-badge {
+            background: linear-gradient(135deg, rgba(154,73,4,.16), rgba(154,73,4,.06)) !important;
+            color: #9a4904 !important;
+            font-weight: 700;
+            font-size: 0.78rem;
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            border: 1px solid rgba(154,73,4,.18);
+            display: inline-block;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        /* Loading / empty states */
+        #modalPlanesPago #planesPagoLoading,
+        #modalPlanesPago #planesPagoEmpty {
+            background: #fff;
+            border: 1px dashed rgba(252,123,4,.25);
+            border-radius: 14px;
+            padding: 2rem 1.5rem;
+        }
+        #modalPlanesPago #planesPagoLoading .spinner-border {
+            color: #fc7b04 !important;
+        }
+        #modalPlanesPago #planesPagoEmpty i {
+            color: rgba(252,123,4,.4);
+        }
+
+        /* ==========================================================
+           VALIDACIONES — feedback de campos en Registrar Persona
+           ========================================================== */
+        #modalRegistrarPersona .form-control.is-invalid-custom,
+        #modalRegistrarPersona .form-select.is-invalid-custom {
+            border-color: #ef4444 !important;
+            background-color: #fef4f4;
+        }
+        #modalRegistrarPersona .form-control.is-valid-custom,
+        #modalRegistrarPersona .form-select.is-valid-custom {
+            border-color: #10b981 !important;
+        }
+        #modalRegistrarPersona .invalid-feedback-custom {
+            display: block;
+            color: #ef4444;
+            font-size: 0.7rem;
+            margin-top: 0.2rem;
+        }
+        #modalRegistrarPersona .valid-feedback-custom {
+            display: block;
+            color: #10b981;
+            font-size: 0.7rem;
+            margin-top: 0.2rem;
+        }
+
+        /* Carnet feedback inline en modal inscripciones */
+        #carnetSearchFeedback {
+            font-size: 0.72rem;
+            min-height: 1rem;
+            margin-top: 0.25rem;
+        }
     </style>
 @endsection
 
@@ -1266,10 +1553,10 @@
                             </div>
                             <div class="d-flex gap-2 align-items-center flex-wrap">
                                 <input type="text" id="buscarCarnet" class="form-control form-control-sm"
-                                    placeholder="Carnet de identidad..." maxlength="20"
-                                    style="max-width:200px;font-size:0.88rem;border-radius:8px;">
-                                <button type="button" id="btnBuscarEstudiante" class="btn btn-sm"
-                                    style="background:#9a4904;color:#fff;font-weight:600;border-radius:8px;padding:0.4rem 1rem;font-size:0.82rem;">
+                                    placeholder="Carnet (7 a 11 dígitos)..." maxlength="11" inputmode="numeric"
+                                    style="max-width:220px;font-size:0.88rem;border-radius:8px;">
+                                <button type="button" id="btnBuscarEstudiante" class="btn btn-sm" disabled
+                                    style="background:#9a4904;color:#fff;font-weight:600;border-radius:8px;padding:0.4rem 1rem;font-size:0.82rem;opacity:0.5;cursor:not-allowed;pointer-events:none;">
                                     <i class="ri-search-line me-1"></i>Buscar
                                 </button>
                                 <button type="button" id="btnNuevaInscripcion" class="btn btn-sm ms-auto" disabled
@@ -1277,6 +1564,7 @@
                                     <i class="ri-add-circle-line me-1"></i>Nueva Inscripción
                                 </button>
                             </div>
+                            <div id="carnetSearchFeedback"></div>
                             <div id="busquedaResultado" class="mt-3"></div>
                         </div>
 
@@ -1339,26 +1627,30 @@
                                     <span style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#9a4904;">Identidad</span>
                                 </div>
                                 <div class="row g-2">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Carnet <span class="text-danger">*</span></label>
                                         <input type="text" id="inputCarnetPersona" name="carnet"
                                             class="form-control form-control-sm" required maxlength="20" readonly
                                             style="background:#f1f5f9;cursor:not-allowed;font-size:0.85rem;border-radius:9px;">
+                                        <input type="hidden" name="expedido" value="">
                                     </div>
-                                    <div class="col-md-4">
-                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Expedido</label>
-                                        <select name="expedido" class="form-select form-select-sm" style="font-size:0.85rem;border-radius:9px;">
-                                            <option value="">—</option>
-                                            <option value="LP">La Paz</option>
-                                            <option value="CB">Cochabamba</option>
-                                            <option value="SC">Santa Cruz</option>
-                                            <option value="OR">Oruro</option>
-                                            <option value="PT">Potosí</option>
-                                            <option value="CH">Chuquisaca</option>
-                                            <option value="TJ">Tarija</option>
-                                            <option value="BN">Beni</option>
-                                            <option value="PD">Pando</option>
-                                        </select>
+                                    <div class="col-md-3">
+                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Nombres <span class="text-danger">*</span></label>
+                                        <input type="text" name="nombres" class="form-control form-control-sm"
+                                            required maxlength="100" style="font-size:0.85rem;border-radius:9px;">
+                                        <div class="invalid-feedback-custom" id="fbNombres" style="display:none;"></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Apellido Paterno <span class="text-danger" title="Al menos un apellido es requerido">*</span></label>
+                                        <input type="text" name="apellido_paterno" class="form-control form-control-sm"
+                                            maxlength="80" style="font-size:0.85rem;border-radius:9px;">
+                                        <div class="invalid-feedback-custom" id="fbApellidoPaterno" style="display:none;"></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Apellido Materno <span class="text-danger" title="Al menos un apellido es requerido">*</span></label>
+                                        <input type="text" name="apellido_materno" class="form-control form-control-sm"
+                                            maxlength="80" style="font-size:0.85rem;border-radius:9px;">
+                                        <div class="invalid-feedback-custom" id="fbApellidoMaterno" style="display:none;"></div>
                                     </div>
                                     <div class="col-md-4">
                                         <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Sexo <span class="text-danger">*</span></label>
@@ -1367,21 +1659,7 @@
                                             <option value="M">Masculino</option>
                                             <option value="F">Femenino</option>
                                         </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Nombres <span class="text-danger">*</span></label>
-                                        <input type="text" name="nombres" class="form-control form-control-sm"
-                                            required maxlength="100" style="font-size:0.85rem;border-radius:9px;">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Apellido Paterno</label>
-                                        <input type="text" name="apellido_paterno" class="form-control form-control-sm"
-                                            maxlength="80" style="font-size:0.85rem;border-radius:9px;">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Apellido Materno</label>
-                                        <input type="text" name="apellido_materno" class="form-control form-control-sm"
-                                            maxlength="80" style="font-size:0.85rem;border-radius:9px;">
+                                        <div class="invalid-feedback-custom" id="fbSexo" style="display:none;"></div>
                                     </div>
                                     <div class="col-md-4">
                                         <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Fecha Nacimiento</label>
@@ -1389,8 +1667,8 @@
                                             style="font-size:0.85rem;border-radius:9px;">
                                     </div>
                                     <div class="col-md-4">
-                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Estado Civil</label>
-                                        <select name="estado_civil" class="form-select form-select-sm" style="font-size:0.85rem;border-radius:9px;">
+                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Estado Civil <span class="text-danger">*</span></label>
+                                        <select name="estado_civil" class="form-select form-select-sm" required style="font-size:0.85rem;border-radius:9px;">
                                             <option value="">Seleccionar...</option>
                                             <option value="Soltero/a">Soltero/a</option>
                                             <option value="Casado/a">Casado/a</option>
@@ -1398,6 +1676,7 @@
                                             <option value="Viudo/a">Viudo/a</option>
                                             <option value="Unión Libre">Unión Libre</option>
                                         </select>
+                                        <div class="invalid-feedback-custom" id="fbEstadoCivil" style="display:none;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -1412,20 +1691,22 @@
                                 </div>
                                 <div class="row g-2">
                                     <div class="col-md-4">
-                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Correo</label>
+                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Correo <span class="text-danger">*</span></label>
                                         <div style="position:relative;">
                                             <i class="ri-mail-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
                                             <input type="email" name="correo" class="form-control form-control-sm"
-                                                maxlength="150" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                                maxlength="150" placeholder="correo@ejemplo.com" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
                                         </div>
+                                        <div class="invalid-feedback-custom" id="fbCorreo" style="display:none;"></div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Celular</label>
+                                        <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Celular <span class="text-danger">*</span></label>
                                         <div style="position:relative;">
                                             <i class="ri-smartphone-line" style="position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.9rem;pointer-events:none;"></i>
                                             <input type="text" name="celular" class="form-control form-control-sm"
-                                                maxlength="20" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
+                                                maxlength="8" inputmode="numeric" placeholder="70000000" style="font-size:0.85rem;border-radius:9px;padding-left:2.1rem;">
                                         </div>
+                                        <div class="invalid-feedback-custom" id="fbCelular" style="display:none;"></div>
                                     </div>
                                     <div class="col-md-4">
                                         <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Teléfono</label>
@@ -1446,12 +1727,13 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem;">
-                                            <i class="ri-building-line" style="color:#fc7b04;font-size:.8rem;"></i> Ciudad
+                                            <i class="ri-building-line" style="color:#fc7b04;font-size:.8rem;"></i> Ciudad <span class="text-danger">*</span>
                                         </label>
-                                        <select name="ciudad_id" class="form-select form-select-sm" id="inputCiudad"
+                                        <select name="ciudade_id" class="form-select form-select-sm" id="inputCiudad" required
                                             disabled style="font-size:0.85rem;border-radius:9px;">
                                             <option value="">Seleccione departamento primero</option>
                                         </select>
+                                        <div class="invalid-feedback-custom" id="fbCiudadeId" style="display:none;"></div>
                                     </div>
                                     <div class="col-md-4">
                                         <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;display:block;margin-bottom:.4rem;">Dirección</label>
@@ -2367,13 +2649,58 @@
                 });
             });
 
+            // Validación en tiempo real del carnet de búsqueda (7 a 11 dígitos)
+            function setBtnBuscarEstudianteEnabled(enabled) {
+                const $btn = $('#btnBuscarEstudiante');
+                $btn.prop('disabled', !enabled).css({
+                    'opacity': enabled ? '1' : '0.5',
+                    'cursor': enabled ? 'pointer' : 'not-allowed',
+                    'pointer-events': enabled ? '' : 'none'
+                });
+            }
+            function validarCarnetBusqueda() {
+                const $input = $('#buscarCarnet');
+                const $fb = $('#carnetSearchFeedback');
+                const raw = $input.val() || '';
+                const cleaned = raw.replace(/\D/g, '').slice(0, 11);
+                if (cleaned !== raw) $input.val(cleaned);
+                $input.css('border-color', '');
+                if (!cleaned) {
+                    $fb.html('').css('color', '');
+                    setBtnBuscarEstudianteEnabled(false);
+                    return { ok: false, empty: true, value: cleaned };
+                }
+                if (cleaned.length < 7) {
+                    $fb.html('<i class="ri-error-warning-line"></i> El carnet debe tener entre 7 y 11 dígitos. Faltan ' + (7 - cleaned.length) + '.').css('color', '#ef4444');
+                    $input.css('border-color', '#ef4444');
+                    setBtnBuscarEstudianteEnabled(false);
+                    return { ok: false, value: cleaned };
+                }
+                if (cleaned.length > 11) {
+                    $fb.html('<i class="ri-error-warning-line"></i> Máximo 11 dígitos.').css('color', '#ef4444');
+                    $input.css('border-color', '#ef4444');
+                    setBtnBuscarEstudianteEnabled(false);
+                    return { ok: false, value: cleaned };
+                }
+                $fb.html('<i class="ri-checkbox-circle-line"></i> Carnet válido (' + cleaned.length + ' dígitos).').css('color', '#10b981');
+                $input.css('border-color', '#10b981');
+                setBtnBuscarEstudianteEnabled(true);
+                return { ok: true, value: cleaned };
+            }
+            $(document).on('input', '#buscarCarnet', function() {
+                validarCarnetBusqueda();
+            });
+            $(document).on('shown.bs.modal', '#modalInscripciones', function() {
+                validarCarnetBusqueda();
+            });
+
             // Buscar estudiante por carnet
             $('#btnBuscarEstudiante').on('click', function() {
-                const carnet = $('#buscarCarnet').val().trim();
-                if (!carnet) {
-                    alert('Ingrese un carnet de identidad');
+                const v = validarCarnetBusqueda();
+                if (!v.ok) {
                     return;
                 }
+                const carnet = v.value;
 
                 $('#busquedaResultado').html(
                     '<div class="text-center py-2"><span class="spinner-border spinner-border-sm"></span> Buscando...</div>'
@@ -2500,7 +2827,7 @@
                         verificado: false
                     },
                     correo: {
-                        valido: true,
+                        valido: false,
                         verificado: false
                     },
                     sexo: {
@@ -2512,6 +2839,13 @@
                 $('#btnConfirmarRegistrarPersona').prop('disabled', true);
                 $('#formRegistrarPersona')[0].reset();
                 $('#inputCarnetPersona').val(carnetBuscado);
+                $('#modalRegistrarPersona .form-control, #modalRegistrarPersona .form-select').removeClass('is-invalid-custom is-valid-custom');
+                $('#modalRegistrarPersona .invalid-feedback-custom').text('').hide();
+                // Mostrar inmediatamente los requisitos pendientes (apellidos, correo)
+                setTimeout(function() {
+                    validarApellidosPersona();
+                    $('#fbCorreo').text('Ingrese un correo válido.').css('color', '#94a3b8').show();
+                }, 0);
 
                 // Cargar departamentos si no existen
                 if ($('#inputDepartamento option').length <= 1) {
@@ -2563,17 +2897,133 @@
                 });
             });
 
+            // Helpers de validación visual
+            function fbShow($el, ok, msg) {
+                if (!msg) {
+                    $el.text('').hide();
+                    return;
+                }
+                $el.text(msg).css('color', ok ? '#10b981' : '#ef4444').show();
+            }
+            function markField(name, ok, msg) {
+                const $el = $('[name="' + name + '"]').first();
+                $el.removeClass('is-invalid-custom is-valid-custom');
+                if (msg !== undefined) $el.addClass(ok ? 'is-valid-custom' : 'is-invalid-custom');
+                const fbId = 'fb' + name.replace(/(^|_)(\w)/g, (m, _, c) => c.toUpperCase());
+                const $fb = $('#' + fbId);
+                if ($fb.length) fbShow($fb, ok, msg);
+            }
+
+            function validarApellidosPersona() {
+                const ap = ($('[name="apellido_paterno"]').val() || '').trim();
+                const am = ($('[name="apellido_materno"]').val() || '').trim();
+                $('[name="apellido_paterno"], [name="apellido_materno"]').removeClass('is-invalid-custom is-valid-custom');
+                $('#fbApellidoPaterno, #fbApellidoMaterno').text('').hide();
+                if (!ap && !am) {
+                    $('[name="apellido_paterno"], [name="apellido_materno"]').addClass('is-invalid-custom');
+                    fbShow($('#fbApellidoPaterno'), false, 'Ingrese al menos un apellido (paterno o materno).');
+                    fbShow($('#fbApellidoMaterno'), false, 'Ingrese al menos un apellido (paterno o materno).');
+                    return false;
+                }
+                if (ap) $('[name="apellido_paterno"]').addClass('is-valid-custom');
+                if (am) $('[name="apellido_materno"]').addClass('is-valid-custom');
+                return true;
+            }
+
+            function validarCelularPersona() {
+                const $input = $('[name="celular"]');
+                const cleaned = ($input.val() || '').replace(/\D/g, '').slice(0, 8);
+                if (cleaned !== $input.val()) $input.val(cleaned);
+                $input.removeClass('is-invalid-custom is-valid-custom');
+                if (!cleaned) {
+                    $input.addClass('is-invalid-custom');
+                    fbShow($('#fbCelular'), false, 'El celular es requerido.');
+                    return false;
+                }
+                if (cleaned.length !== 8) {
+                    $input.addClass('is-invalid-custom');
+                    fbShow($('#fbCelular'), false, 'Debe tener exactamente 8 dígitos.');
+                    return false;
+                }
+                $input.addClass('is-valid-custom');
+                fbShow($('#fbCelular'), true, 'Celular válido.');
+                return true;
+            }
+
+            function validarSelectRequerido(name, msg) {
+                const $el = $('[name="' + name + '"]').first();
+                const val = $el.val();
+                $el.removeClass('is-invalid-custom is-valid-custom');
+                const fbId = '#fb' + name.replace(/(^|_)(\w)/g, (m, _, c) => c.toUpperCase());
+                const $fb = $(fbId);
+                if (!val) {
+                    $el.addClass('is-invalid-custom');
+                    fbShow($fb, false, msg);
+                    return false;
+                }
+                $el.addClass('is-valid-custom');
+                fbShow($fb, true, '');
+                return true;
+            }
+
+            function validarNombresPersona() {
+                const $el = $('[name="nombres"]');
+                const val = ($el.val() || '').trim();
+                $el.removeClass('is-invalid-custom is-valid-custom');
+                if (!val) {
+                    $el.addClass('is-invalid-custom');
+                    fbShow($('#fbNombres'), false, 'Los nombres son requeridos.');
+                    return false;
+                }
+                $el.addClass('is-valid-custom');
+                fbShow($('#fbNombres'), true, '');
+                return true;
+            }
+
+            // Validación de formato del correo (la unicidad se verifica con `validarCampo`)
+            function validarCorreoFormato() {
+                const $el = $('[name="correo"]');
+                const val = ($el.val() || '').trim();
+                $el.removeClass('is-invalid-custom is-valid-custom');
+                if (!val) {
+                    $el.addClass('is-invalid-custom');
+                    fbShow($('#fbCorreo'), false, 'El correo es requerido.');
+                    validaciones.correo.valido = false;
+                    validaciones.correo.verificado = false;
+                    return false;
+                }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                    $el.addClass('is-invalid-custom');
+                    fbShow($('#fbCorreo'), false, 'Ingrese un correo válido (ejemplo@dominio.com).');
+                    validaciones.correo.valido = false;
+                    validaciones.correo.verificado = false;
+                    return false;
+                }
+                // Formato correcto; el estado final lo define la verificación AJAX de unicidad
+                $el.addClass('is-valid-custom');
+                return true;
+            }
+
             // Función para actualizar botón registrar
             function actualizarBotonRegistrar() {
                 const btn = $('#btnConfirmarRegistrarPersona');
-                const sexo = $('select[name="sexo"]').val();
 
-                validaciones.sexo.valido = sexo !== '';
+                const sexoOk = ($('select[name="sexo"]').val() || '') !== '';
+                const ecOk = ($('select[name="estado_civil"]').val() || '') !== '';
+                const ciudadOk = ($('select[name="ciudade_id"]').val() || '') !== '';
+                const nombresOk = (($('[name="nombres"]').val() || '').trim()) !== '';
+                const apOk = (($('[name="apellido_paterno"]').val() || '').trim()) !== ''
+                    || (($('[name="apellido_materno"]').val() || '').trim()) !== '';
+                const cel = (($('[name="celular"]').val() || '').replace(/\D/g, ''));
+                const celOk = cel.length === 8;
+
+                validaciones.sexo.valido = sexoOk;
 
                 const habilitar = validaciones.carnet.valido &&
                     validaciones.carnet.verificado &&
                     validaciones.correo.valido &&
-                    validaciones.sexo.valido;
+                    validaciones.correo.verificado &&
+                    sexoOk && ecOk && ciudadOk && nombresOk && apOk && celOk;
 
                 btn.prop('disabled', !habilitar);
                 btn.css({
@@ -2583,7 +3033,7 @@
 
                 if (!habilitar) {
                     btn.attr('title',
-                        'Complete todos los campos requeridos y verifique que carnet/correo estén disponibles');
+                        'Complete todos los campos requeridos (sexo, estado civil, ciudad, al menos un apellido, celular de 8 dígitos) y verifique carnet/correo.');
                 } else {
                     btn.removeAttr('title');
                 }
@@ -2618,19 +3068,20 @@
                                 carnetFeedback + '</div>');
                         }
 
-                        // Validar correo
-                        if (correo && correo.length >= 3) {
+                        // Validar correo (sólo si el formato ya es válido)
+                        if (correo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
                             validaciones.correo.valido = response.disponible.correo;
+                            validaciones.correo.verificado = true;
 
-                            const correoFeedback = response.disponible.correo ?
-                                '<span class="text-success"><i class="ri-check-circle-fill"></i> ' +
-                                response.mensajes.correo + '</span>' :
-                                '<span class="text-danger"><i class="ri-close-circle-fill"></i> ' +
-                                response.mensajes.correo + '</span>';
-
-                            $('input[name="correo"]').next('.validacion-feedback').remove();
-                            $('input[name="correo"]').after('<div class="validacion-feedback small">' +
-                                correoFeedback + '</div>');
+                            const $correo = $('input[name="correo"]');
+                            $correo.removeClass('is-invalid-custom is-valid-custom');
+                            if (response.disponible.correo) {
+                                $correo.addClass('is-valid-custom');
+                                $('#fbCorreo').text('Correo disponible.').css('color', '#10b981').show();
+                            } else {
+                                $correo.addClass('is-invalid-custom');
+                                $('#fbCorreo').text(response.mensajes.correo || 'Este correo ya está registrado.').css('color', '#ef4444').show();
+                            }
                         }
 
                         actualizarBotonRegistrar();
@@ -2647,17 +3098,44 @@
             // Eventos input para validar
             $(document).on('input', '#inputCarnetPersona, input[name="correo"]', function() {
                 clearTimeout(validarTimeout);
+                const isCorreo = $(this).is('[name="correo"]');
+                if (isCorreo) {
+                    const formatoOk = validarCorreoFormato();
+                    actualizarBotonRegistrar();
+                    if (!formatoOk) return;
+                }
                 const carnet = $('#inputCarnetPersona').val().trim();
                 const correo = $('input[name="correo"]').val().trim();
 
                 if (carnet.length >= 3 || correo.length >= 3) {
                     validarTimeout = setTimeout(function() {
                         validarCampo(carnet, correo);
-                    }, 300);
+                    }, 350);
                 }
             });
 
             $(document).on('change', 'select[name="sexo"]', function() {
+                validarSelectRequerido('sexo', 'Seleccione el sexo.');
+                actualizarBotonRegistrar();
+            });
+            $(document).on('change', 'select[name="estado_civil"]', function() {
+                validarSelectRequerido('estado_civil', 'Seleccione el estado civil.');
+                actualizarBotonRegistrar();
+            });
+            $(document).on('change', 'select[name="ciudade_id"]', function() {
+                validarSelectRequerido('ciudade_id', 'Seleccione la ciudad.');
+                actualizarBotonRegistrar();
+            });
+            $(document).on('input', '[name="nombres"]', function() {
+                validarNombresPersona();
+                actualizarBotonRegistrar();
+            });
+            $(document).on('input', '[name="apellido_paterno"], [name="apellido_materno"]', function() {
+                validarApellidosPersona();
+                actualizarBotonRegistrar();
+            });
+            $(document).on('input', '[name="celular"]', function() {
+                validarCelularPersona();
                 actualizarBotonRegistrar();
             });
 
@@ -2677,8 +3155,24 @@
                 });
 
                 const form = $('#formRegistrarPersona')[0];
+                let okExtras = true;
+                if (!validarNombresPersona()) okExtras = false;
+                if (!validarApellidosPersona()) okExtras = false;
+                if (!validarSelectRequerido('sexo', 'Seleccione el sexo.')) okExtras = false;
+                if (!validarSelectRequerido('estado_civil', 'Seleccione el estado civil.')) okExtras = false;
+                if (!validarSelectRequerido('ciudade_id', 'Seleccione la ciudad.')) okExtras = false;
+                if (!validarCelularPersona()) okExtras = false;
+                if (!validarCorreoFormato()) okExtras = false;
+                if (!validaciones.correo.verificado || !validaciones.correo.valido) {
+                    fbShow($('#fbCorreo'), false, 'El correo no ha sido verificado o ya está registrado.');
+                    okExtras = false;
+                }
                 if (!form.checkValidity()) {
                     form.reportValidity();
+                    return;
+                }
+                if (!okExtras) {
+                    showToast('error', 'Corrija los campos marcados antes de continuar.');
                     return;
                 }
 

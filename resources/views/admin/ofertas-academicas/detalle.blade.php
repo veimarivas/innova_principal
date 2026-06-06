@@ -64,6 +64,7 @@
                         @include('admin.ofertas-academicas.partials.ofertas-detalle.tab-contable')
                         @include('admin.ofertas-academicas.partials.ofertas-detalle.tab-finanzas')
                         @include('admin.ofertas-academicas.partials.ofertas-detalle.tab-inscripciones')
+                        @include('admin.ofertas-academicas.partials.ofertas-detalle.tab-area-academica')
                         @include('admin.ofertas-academicas.partials.ofertas-detalle.tab-plataforma')
                     </div>
                 </div>

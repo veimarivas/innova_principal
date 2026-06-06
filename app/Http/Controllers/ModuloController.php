@@ -37,7 +37,15 @@ class ModuloController extends Controller
             ->orderBy('personas.apellido_paterno', 'asc')
             ->orderBy('personas.apellido_materno', 'asc')
             ->orderBy('personas.nombres', 'asc')
-            ->with(['estudiante.persona.estudios.grado_academico', 'estudiante.persona.estudios.profesion', 'estudiante.persona.estudios.universidad', 'trabajador_cargo', 'matriculaciones', 'planesPago'])
+            ->with([
+                'estudiante.persona.ciudad.departamento',
+                'estudiante.persona.estudios.grado_academico',
+                'estudiante.persona.estudios.profesion',
+                'estudiante.persona.estudios.universidad',
+                'trabajador_cargo',
+                'matriculaciones',
+                'planesPago'
+            ])
             ->get();
 
         $moodleMatriculas = MoodleMatricula::where('modulo_id', $moduloId)
@@ -68,11 +76,17 @@ class ModuloController extends Controller
             $persona = $inscripcion->estudiante?->persona;
             $estudios = $persona?->estudios ?? collect();
             $estudiosData = $estudios->map(function ($e) {
+                $grado     = $e->grado_academico?->nombre ?? '';
+                $profesion = $e->profesion?->nombre ?? '';
+                $universidad = $e->universidad?->nombre ?? '';
+                $parts = array_filter([$grado, $profesion, $universidad], fn($v) => $v && trim($v) !== '');
                 return [
-                    'grado' => $e->grado_academico?->nombre ?? '',
-                    'profesion' => $e->profesion?->nombre ?? '',
-                    'universidad' => $e->universidad?->nombre ?? '',
+                    'grado' => $grado,
+                    'profesion' => $profesion,
+                    'universidad' => $universidad,
+                    'estado' => $e->estado,
                     'principal' => (bool) $e->principal,
+                    'texto' => implode(' — ', $parts),
                 ];
             })->toArray();
 
@@ -88,6 +102,13 @@ class ModuloController extends Controller
                 'estudiante_ci' => $persona->carnet ?? '—',
                 'celular' => $persona->celular ?? '—',
                 'correo' => $persona->correo ?? '—',
+                'departamento' => $persona?->ciudad?->departamento?->nombre ?? '—',
+                'ciudad' => $persona?->ciudad?->nombre ?? '—',
+                'sexo' => $persona?->sexo ?? '—',
+                'fecha_nacimiento' => $persona?->fecha_nacimiento
+                    ? (\Carbon\Carbon::parse($persona->fecha_nacimiento)->format('d/m/Y'))
+                    : '—',
+                'estado_civil' => $persona?->estado_civil ?? '—',
                 'plan_pago' => $inscripcion->planesPago?->nombre ?? '—',
                 'estudios' => $estudiosData,
                 'matriculado' => $matricula !== null,

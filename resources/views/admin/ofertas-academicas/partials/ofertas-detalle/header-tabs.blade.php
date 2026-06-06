@@ -81,6 +81,7 @@
         <button class="oferta-tab" data-tab="contable"><i class="ri-calculator-line"></i> Área Contable</button>
         <button class="oferta-tab" data-tab="finanzas"><i class="ri-wallet-line"></i> Finanzas</button>
         <button class="oferta-tab" data-tab="inscripciones"><i class="ri-user-follow-line"></i> Inscripciones <span class="tab-badge" id="inscripcionesBadge">{{ $oferta->inscripciones()->count() }}</span></button>
+        <button class="oferta-tab" data-tab="area-academica"><i class="ri-graduation-cap-line"></i> Área Académica</button>
         <button class="oferta-tab" data-tab="plataforma"><i class="ri-shield-keyhole-line"></i> Plataforma Moodle</button>
     </div>
 </div>

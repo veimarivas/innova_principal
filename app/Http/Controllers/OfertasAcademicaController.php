@@ -277,9 +277,12 @@ class OfertasAcademicaController extends Controller
         // Cargar datos financieros de los participantes
         $inscripciones = $oferta->inscripciones()
             ->with([
-                'estudiante.persona', 
+                'estudiante.persona',
+                'estudiante.persona.ciudad.departamento',
                 'estudiante.persona.estudios.grado_academico',
-                'planesPago', 
+                'estudiante.persona.estudios.profesion',
+                'estudiante.persona.estudios.universidad',
+                'planesPago',
                 'cuotas.pagosCuota',
                 'trabajador_cargo.trabajador.persona'
             ])
@@ -396,11 +399,65 @@ class OfertasAcademicaController extends Controller
             ->orderBy('cargos.nombre', 'asc')
             ->get();
 
+        // ── Área Académica: lista de estudiantes con su perfil completo ──────
+        $areaAcademicaEstudiantes = [];
+        foreach ($inscripciones as $inscripcion) {
+            if (!$inscripcion->estudiante || !$inscripcion->estudiante->persona) continue;
+            $persona = $inscripcion->estudiante->persona;
+
+            $estudios = [];
+            foreach ($persona->estudios as $est) {
+                $grado     = $est->grado_academico?->nombre;
+                $profesion = $est->profesion?->nombre;
+                $universidad = $est->universidad?->nombre;
+                $parts = array_filter([$grado, $profesion, $universidad], fn($v) => $v && trim($v) !== '');
+                if (!empty($parts)) {
+                    $estudios[] = [
+                        'texto'      => implode(' — ', $parts),
+                        'grado'      => $grado,
+                        'profesion'  => $profesion,
+                        'universidad'=> $universidad,
+                        'estado'     => $est->estado,
+                        'principal'  => (bool) $est->principal,
+                    ];
+                }
+            }
+
+            $areaAcademicaEstudiantes[] = [
+                'inscripcion_id'   => $inscripcion->id,
+                'estudiante_id'    => $inscripcion->estudiante->id,
+                'carnet'           => $persona->carnet ?? '—',
+                'apellido_paterno' => $persona->apellido_paterno ?? '',
+                'apellido_materno' => $persona->apellido_materno ?? '',
+                'nombres'          => $persona->nombres ?? '',
+                'celular'          => $persona->celular ?? '—',
+                'correo'           => $persona->correo ?? '—',
+                'departamento'     => $persona->ciudad?->departamento?->nombre ?? '—',
+                'ciudad'           => $persona->ciudad?->nombre ?? '—',
+                'sexo'             => $persona->sexo ?? '—',
+                'fecha_nacimiento' => $persona->fecha_nacimiento
+                    ? (\Carbon\Carbon::parse($persona->fecha_nacimiento)->format('d/m/Y'))
+                    : '—',
+                'estado_civil'     => $persona->estado_civil ?? '—',
+                'estudios'         => $estudios,
+                'estado'           => $inscripcion->estado,
+            ];
+        }
+
+        // Ordenar por apellido paterno, luego materno, luego nombres
+        usort($areaAcademicaEstudiantes, function ($a, $b) {
+            return strcmp(
+                ($a['apellido_paterno'] . ' ' . $a['apellido_materno'] . ' ' . $a['nombres']),
+                ($b['apellido_paterno'] . ' ' . $b['apellido_materno'] . ' ' . $b['nombres'])
+            );
+        });
+
         return view('admin.ofertas-academicas.detalle', compact(
             'oferta', 'respAcademico', 'respMarketing',
             'trabajadores',
             'participantesFinanzas', 'resumenPorConcepto',
-            'totalPlan', 'totalPagado'
+            'totalPlan', 'totalPagado',
+            'areaAcademicaEstudiantes'
         ));
     }
 
@@ -1334,6 +1391,9 @@ class OfertasAcademicaController extends Controller
                         'id' => $i->id,
                         'estudiante_id' => $i->estudiante_id,
                         'estudiante_nombre' => $nombreEstudiante ?: '—',
+                        'apellido_paterno' => $estudiante?->apellido_paterno ?? '',
+                        'apellido_materno' => $estudiante?->apellido_materno ?? '',
+                        'nombres' => $estudiante?->nombres ?? '',
                         'estudiante_ci' => $estudiante?->carnet ?? '—',
                         'celular' => $estudiante?->celular ?? '—',
                         'correo' => $estudiante?->correo ?? '—',

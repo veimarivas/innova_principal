@@ -1919,4 +1919,427 @@
     @media (max-width: 480px) {
         .info-grid { grid-template-columns: 1fr; }
     }
+
+    /* ==========================================================
+       MODULO DETALLE — TAB ACADÉMICO (rediseño)
+       ========================================================== */
+    .md-aa-table-wrap {
+        margin: 1rem 0 0;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: auto;
+        max-height: 68vh;
+        box-shadow: 0 2px 8px rgba(15, 10, 5, 0.04);
+    }
+    .md-aa-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.82rem;
+    }
+    .md-aa-table thead th {
+        background: linear-gradient(180deg, #fbfaf7 0%, #f5f2ec 100%);
+        color: #333;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.75rem 0.85rem;
+        border-bottom: 2px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        white-space: nowrap;
+        text-align: left;
+    }
+    .md-aa-table tbody td {
+        padding: 0.7rem 0.85rem;
+        border-bottom: 1px solid #f4efe7;
+        color: #495057;
+        vertical-align: middle;
+    }
+    .md-aa-table tbody tr:hover td {
+        background: rgba(252, 123, 4, 0.025);
+    }
+    .md-aa-table tbody tr:last-child td { border-bottom: none; }
+
+    /* Sticky columns (#, Carnet, Estudiante) */
+    .md-aa-table .md-aa-sticky {
+        position: sticky;
+        background: #fff;
+        z-index: 1;
+    }
+    .md-aa-table thead th.md-aa-sticky {
+        background: linear-gradient(180deg, #fbfaf7 0%, #f5f2ec 100%);
+        z-index: 3;
+    }
+    .md-aa-table .md-aa-stk-1 { left: 0;     min-width: 50px;  width: 50px;  text-align: center; }
+    .md-aa-table .md-aa-stk-2 { left: 50px;  min-width: 110px; width: 110px; }
+    .md-aa-table .md-aa-stk-3 { left: 160px; min-width: 260px; max-width: 320px;
+        box-shadow: inset -1px 0 0 #ede5d5, 4px 0 8px -4px rgba(15, 10, 5, 0.08); }
+    .md-aa-table tbody tr:hover .md-aa-sticky { background: #fffaf3; }
+
+    .md-aa-cell-num {
+        font-weight: 700;
+        color: #fc7b04;
+        text-align: center;
+        font-size: 0.78rem;
+    }
+    .md-aa-ci-chip {
+        display: inline-block;
+        font-weight: 700;
+        font-size: 0.8rem;
+        background: rgba(252, 123, 4, 0.1);
+        color: #c96004;
+        padding: 0.2rem 0.55rem;
+        border-radius: 8px;
+        border: 1px solid rgba(252, 123, 4, 0.18);
+        white-space: nowrap;
+    }
+    .md-aa-cell-estudiante .md-aa-est-nombre {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 0.83rem;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+    .md-aa-est-link {
+        display: inline-block;
+        text-decoration: none;
+        transition: color 0.15s, text-decoration-color 0.15s;
+        text-decoration-color: transparent;
+    }
+    .md-aa-est-link:hover {
+        color: #fc7b04;
+        text-decoration: underline;
+        text-decoration-color: rgba(252, 123, 4, 0.55);
+        text-underline-offset: 3px;
+    }
+
+    /* Contacto */
+    .md-aa-cell-contacto { max-width: 280px; }
+    .md-aa-contact-line {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        color: #495057;
+        line-height: 1.3;
+    }
+    .md-aa-contact-line + .md-aa-contact-line { margin-top: 0.25rem; }
+    .md-aa-contact-line i {
+        width: 22px; height: 22px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.85rem;
+        background: rgba(252, 123, 4, 0.1);
+        color: #c96004;
+    }
+    .md-aa-contact-correo i { background: rgba(79, 70, 229, 0.1); color: #4f46e5; }
+    .md-aa-contact-correo span { color: #4f46e5; font-weight: 500; word-break: break-all; }
+    .md-aa-contact-line span { flex: 1; min-width: 0; word-break: break-word; }
+
+    /* Info compactas */
+    .md-aa-info-line {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.78rem;
+        color: #495057;
+        line-height: 1.35;
+    }
+    .md-aa-info-line i { color: #fc7b04; font-size: 0.85rem; flex-shrink: 0; }
+    .md-aa-info-sub { color: #94a3b8; font-size: 0.74rem; margin-top: 0.18rem; }
+    .md-aa-info-sub i { color: #94a3b8; }
+    .md-aa-personal-row {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        flex-wrap: wrap;
+    }
+    .md-aa-personal-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.76rem;
+        color: #495057;
+    }
+    .md-aa-personal-item i { color: #fc7b04; font-size: 0.8rem; }
+
+    .md-aa-sexo-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+    }
+    .md-aa-sexo-m { background: rgba(59, 130, 246, 0.12); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.22); }
+    .md-aa-sexo-f { background: rgba(236, 72, 153, 0.12); color: #be185d; border: 1px solid rgba(236, 72, 153, 0.22); }
+    .md-aa-sexo-na { background: #f1f5f9; color: #94a3b8; }
+
+    /* Botón estudios */
+    .md-aa-btn-estudios {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(99, 102, 241, 0.04));
+        color: #4f46e5;
+        border: 1px solid rgba(99, 102, 241, 0.22);
+        border-radius: 9px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.76rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .md-aa-btn-estudios:hover {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.08));
+        border-color: rgba(99, 102, 241, 0.4);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.18);
+    }
+
+    .md-aa-plan-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: linear-gradient(135deg, rgba(252, 123, 4, 0.1), rgba(252, 123, 4, 0.03));
+        color: #9a4904;
+        border: 1px solid rgba(252, 123, 4, 0.18);
+        border-radius: 8px;
+        padding: 0.25rem 0.55rem;
+        font-size: 0.76rem;
+        font-weight: 600;
+    }
+    .md-aa-plan-chip i { font-size: 0.85rem; }
+
+    /* Module column */
+    .md-aa-table thead th.md-aa-mod-col {
+        text-align: center;
+        background: linear-gradient(180deg, #f5f0fa 0%, #ede5f4 100%);
+        color: #4c1d95;
+        vertical-align: middle;
+        min-width: 220px;
+        padding: 0.65rem 0.65rem;
+    }
+    .md-aa-mod-col-name {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 0.3rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1.25;
+        white-space: normal;
+        word-break: break-word;
+        text-align: center;
+        max-width: 220px;
+        margin: 0 auto;
+    }
+    .md-aa-mod-col-name i { color: #7c3aed; font-size: 0.9rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .md-aa-mod-col-name span { text-transform: none; letter-spacing: 0; }
+    .md-aa-mod-col-estado {
+        margin-top: 0.45rem;
+        display: flex;
+        justify-content: center;
+    }
+    .md-aa-mod-estado-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+    }
+    .md-aa-mod-estado-chip i { font-size: 0.7rem; }
+    .md-aa-mod-col-sub {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 0.45rem;
+        gap: 0.4rem;
+    }
+    .md-aa-mod-col-sub-label {
+        font-size: 0.6rem;
+        font-weight: 600;
+        color: #7c6695;
+        background: rgba(255, 255, 255, 0.6);
+        padding: 0.12rem 0.45rem;
+        border-radius: 4px;
+        text-align: center;
+        flex: 1;
+    }
+    .md-aa-mod-cell {
+        text-align: center;
+        background: rgba(124, 58, 237, 0.015);
+    }
+    .md-aa-table tbody tr:hover .md-aa-mod-cell { background: rgba(124, 58, 237, 0.05); }
+    .md-aa-mod-cell-blocked {
+        background: repeating-linear-gradient(
+            45deg,
+            rgba(148, 163, 184, 0.04),
+            rgba(148, 163, 184, 0.04) 8px,
+            rgba(148, 163, 184, 0.09) 8px,
+            rgba(148, 163, 184, 0.09) 16px
+        ) !important;
+    }
+    .md-aa-notas-pair {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.85rem;
+    }
+    .md-aa-nota {
+        display: inline-block;
+        min-width: 30px;
+        text-align: center;
+        padding: 0.18rem 0.5rem;
+        border-radius: 7px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        background: #f3f1ec;
+        color: #6b7280;
+        border: 1px solid #e8e2d6;
+    }
+    .md-aa-nota.loaded.ok {
+        background: rgba(34, 197, 94, 0.12);
+        color: #15803d;
+        border-color: rgba(34, 197, 94, 0.25);
+    }
+    .md-aa-nota.loaded.fail {
+        background: rgba(239, 68, 68, 0.1);
+        color: #b91c1c;
+        border-color: rgba(239, 68, 68, 0.25);
+    }
+    .md-aa-nota.loading {
+        opacity: 0.55;
+        animation: mdAaPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes mdAaPulse {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.85; }
+    }
+    .md-aa-nota.md-aa-nota-blocked {
+        background: transparent;
+        color: #cbc6bd;
+        border-color: transparent;
+        font-weight: 500;
+        cursor: not-allowed;
+    }
+    .md-aa-nota-sep { color: #cbc6bd; font-weight: 400; }
+
+    .md-aa-legend {
+        margin: 0.75rem 0 1rem;
+        font-size: 0.74rem;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .md-aa-legend i { color: #fc7b04; }
+
+    .md-aa-table-wrap::-webkit-scrollbar { width: 8px; height: 8px; }
+    .md-aa-table-wrap::-webkit-scrollbar-thumb {
+        background: rgba(252, 123, 4, 0.25);
+        border-radius: 4px;
+    }
+    .md-aa-table-wrap::-webkit-scrollbar-thumb:hover { background: rgba(252, 123, 4, 0.45); }
+
+    /* Modal Estudios */
+    #modalEstudiosModulo .md-aa-modal-est-header {
+        background: linear-gradient(135deg, rgba(252, 123, 4, 0.08), rgba(252, 123, 4, 0.02));
+        border: 1px solid rgba(252, 123, 4, 0.18);
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 1rem;
+    }
+    #modalEstudiosModulo .md-aa-modal-est-name {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #1e293b;
+        margin-bottom: 0.2rem;
+    }
+    #modalEstudiosModulo .md-aa-modal-est-ci {
+        font-size: 0.78rem;
+        color: #64748b;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    #modalEstudiosModulo .md-aa-modal-est-ci i { color: #fc7b04; }
+    .md-aa-modal-estudios-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+    }
+    .md-aa-modal-estudio-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        padding: 0.7rem 0.85rem;
+        background: #fff;
+        border: 1px solid #ede8e2;
+        border-radius: 11px;
+    }
+    .md-aa-modal-estudio-item.principal {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.07), rgba(245, 158, 11, 0.01));
+        border-color: rgba(245, 158, 11, 0.3);
+    }
+    .md-aa-modal-estudio-num {
+        width: 28px; height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6366f1, #818cf8);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .md-aa-modal-estudio-item.principal .md-aa-modal-estudio-num {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    }
+    .md-aa-modal-estudio-grado {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .md-aa-modal-estudio-grado .md-aa-principal-star { color: #f59e0b; font-size: 0.8rem; }
+    .md-aa-modal-estudio-meta {
+        margin-top: 0.25rem;
+        font-size: 0.76rem;
+        color: #495057;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem 0.75rem;
+    }
+    .md-aa-modal-estudio-meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    .md-aa-modal-estudio-meta-item i { color: #fc7b04; font-size: 0.8rem; }
+    .md-aa-modal-estudio-estado {
+        margin-top: 0.4rem;
+        display: inline-block;
+        font-size: 0.66rem;
+        font-weight: 700;
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(99, 102, 241, 0.12);
+        color: #4f46e5;
+        letter-spacing: 0.04em;
+    }
 </style>
