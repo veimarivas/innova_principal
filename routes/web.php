@@ -672,6 +672,7 @@ Route::prefix('admin/contabilidad')->middleware(['auth', 'isAdmin'])->name('admi
     Route::get('/cuotas-proximas', [ContabilidadController::class, 'cuotasProximas'])->name('cuotas-proximas');
     Route::get('/recibos', [ContabilidadController::class, 'recibos'])->name('recibos');
     Route::post('/recibos/{pagoId}/subir-factura', [ContabilidadController::class, 'subirFactura'])->name('recibos.subir-factura');
+    Route::get('/control-pagos', [ContabilidadController::class, 'controlPagos'])->name('control-pagos');
 });
 
 // Perfil del usuario autenticado

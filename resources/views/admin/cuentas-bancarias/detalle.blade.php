@@ -85,6 +85,29 @@
 .acct-hero-text h1 { margin:0; font-size:1.45rem; font-weight:800; color:#fff; letter-spacing:-0.3px; }
 .acct-hero-text p { margin:0.2rem 0 0; font-size:0.82rem; color:rgba(255,255,255,0.65); font-weight:500; }
 .acct-hero-text p strong { color:rgba(255,255,255,0.9); }
+.acct-hero-meta {
+    display:flex; flex-wrap:wrap; gap:0.5rem;
+    margin-top:0.6rem;
+}
+.acct-hero-num {
+    display:inline-flex; align-items:center; gap:0.45rem;
+    padding:0.4rem 0.85rem; border-radius:10px;
+    background:rgba(255,255,255,0.10);
+    border:1px solid rgba(255,255,255,0.16);
+    color:#fff; font-family:'Inter','JetBrains Mono',monospace;
+    font-size:0.85rem; font-weight:700; letter-spacing:0.6px;
+    backdrop-filter:blur(8px);
+}
+.acct-hero-num i { font-size:0.85rem; color:rgba(255,255,255,0.65); }
+.acct-hero-type {
+    display:inline-flex; align-items:center; gap:0.35rem;
+    padding:0.4rem 0.85rem; border-radius:10px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.12);
+    color:rgba(255,255,255,0.85);
+    font-size:0.75rem; font-weight:600;
+}
+.acct-hero-type i { font-size:0.78rem; color:rgba(255,255,255,0.6); }
 .acct-hero-badge {
     display:inline-flex; align-items:center; gap:0.35rem;
     padding:0.4rem 1rem; border-radius:20px;
@@ -202,6 +225,134 @@
 .mov-empty { text-align:center; padding:2.5rem; color:var(--d-muted); }
 .mov-empty i { font-size:2rem; opacity:0.4; margin-bottom:0.5rem; }
 
+/* ── Mejoras visuales tabla de movimientos ── */
+.mov-table th:first-child { padding-left:1.5rem; }
+.mov-table td:first-child { padding-left:1.5rem; }
+.mov-tipo-pill {
+    display:inline-flex; align-items:center; gap:0.4rem;
+    padding:0.3rem 0.7rem; border-radius:20px;
+    font-size:0.7rem; font-weight:700; letter-spacing:0.3px;
+    border:1px solid transparent;
+}
+.mov-tipo-pill i { font-size:0.78rem; }
+.mov-tipo-pill.ingreso { background:rgba(40,167,69,0.10); color:#198754; border-color:rgba(40,167,69,0.20); }
+.mov-tipo-pill.egreso  { background:rgba(220,53,69,0.10); color:#dc3545; border-color:rgba(220,53,69,0.20); }
+.mov-tipo-pill.otro    { background:rgba(108,117,125,0.10); color:#6c757d; border-color:rgba(108,117,125,0.20); }
+.mov-monto-cell {
+    display:inline-flex; align-items:baseline; gap:0.25rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight:700;
+}
+.mov-monto-cell .moneda { font-size:0.7rem; font-weight:600; opacity:0.7; }
+.mov-ref-chip {
+    display:inline-flex; align-items:center; gap:0.3rem;
+    padding:0.2rem 0.55rem; border-radius:6px;
+    background:rgba(15,23,42,0.04); color:var(--d-body);
+    font-size:0.74rem; font-family:'Inter',monospace; font-weight:600;
+    border:1px solid var(--d-row-border);
+    max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+[data-bs-theme="dark"] .mov-ref-chip { background:rgba(255,255,255,0.04); }
+
+/* ── Acción "Ver" en movimientos ── */
+.mov-action {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:32px; height:32px; border:none; border-radius:8px;
+    background:rgba(252,123,4,0.10); color:#c25e00;
+    cursor:pointer; transition:all .2s;
+}
+.mov-action:hover { background:linear-gradient(135deg,#fc7b04,#c25e00); color:#fff; transform:translateY(-1px); box-shadow:0 4px 12px rgba(252,123,4,0.3); }
+.mov-action:disabled, .mov-action[disabled] { opacity:0.35; cursor:not-allowed; }
+
+/* ── Modal detalle movimiento ── */
+.mov-modal .modal-content { border:none; border-radius:16px; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,0.18); }
+.mov-modal-header {
+    background:linear-gradient(135deg,#5a2e0c 0%,#743c04 60%,#fc7b04 100%);
+    color:#fff; padding:1.25rem 1.5rem; display:flex; align-items:center; gap:14px;
+}
+.mov-modal-icon {
+    width:44px; height:44px; border-radius:12px; flex-shrink:0;
+    background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.20);
+    display:flex; align-items:center; justify-content:center; font-size:1.3rem;
+}
+.mov-modal-title { margin:0; font-weight:700; font-size:1.05rem; }
+.mov-modal-sub { font-size:0.78rem; opacity:0.85; margin-top:2px; }
+.mov-modal-close {
+    margin-left:auto; width:34px; height:34px; border:none; border-radius:8px;
+    background:rgba(255,255,255,0.15); color:#fff; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+}
+.mov-modal-close:hover { background:rgba(255,255,255,0.25); }
+.mov-recibo-doc {
+    background:#fff; border:1px solid #e2e8f0; border-radius:12px;
+    padding:1.25rem 1.5rem; margin:0;
+}
+.mov-recibo-header {
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding-bottom:0.85rem; margin-bottom:0.85rem;
+    border-bottom:2px solid #fc7b04;
+}
+.mov-recibo-brand { display:flex; align-items:center; gap:10px; }
+.mov-recibo-brand img { width:38px; height:38px; object-fit:contain; }
+.mov-recibo-brand-name { font-size:0.78rem; font-weight:800; color:#1e293b; line-height:1.15; }
+.mov-recibo-brand-sub { font-size:0.66rem; color:#64748b; }
+.mov-recibo-num-wrap { text-align:right; }
+.mov-recibo-num-lbl { font-size:0.7rem; color:#c25e00; font-weight:700; letter-spacing:0.5px; }
+.mov-recibo-num-val {
+    display:inline-block; margin-top:2px;
+    font-family:'Inter',monospace; font-size:0.95rem; font-weight:800; color:#1e293b;
+    background:rgba(252,123,4,0.10); border:1px solid rgba(252,123,4,0.20);
+    border-radius:7px; padding:3px 10px;
+}
+.mov-recibo-meta {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem;
+    font-size:0.78rem; margin-bottom:0.9rem;
+}
+.mov-recibo-meta-lbl { font-size:0.65rem; color:#64748b; text-transform:uppercase; letter-spacing:0.4px; font-weight:700; }
+.mov-recibo-meta-val { color:#1e293b; font-weight:600; }
+.mov-recibo-info {
+    background:#fafaf7; border:1px dashed #e2e8f0; border-radius:10px;
+    padding:0.75rem 0.95rem; margin-bottom:0.9rem;
+}
+.mov-recibo-info-row { display:flex; gap:0.4rem; font-size:0.82rem; line-height:1.4; }
+.mov-recibo-info-row strong { color:#1e293b; min-width:90px; }
+.mov-recibo-info-row span { color:#475569; }
+.mov-recibo-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:0.6rem; }
+.mov-recibo-table th {
+    background:#f8f5f1; color:#7b6f62; font-size:0.7rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:0.4px;
+    padding:0.5rem 0.65rem; text-align:left; border:1px solid #e9e2d9;
+}
+.mov-recibo-table td { padding:0.5rem 0.65rem; border:1px solid #e9e2d9; color:#1e293b; }
+.mov-recibo-table .text-end { text-align:right; }
+.mov-recibo-total-row { background:#fef3c7; font-weight:800; color:#92400e; }
+.mov-recibo-desc {
+    font-size:0.78rem; color:#b45309;
+    background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2);
+    padding:6px 10px; border-radius:7px; margin-bottom:0.7rem;
+}
+.mov-recibo-signs { display:flex; justify-content:space-between; gap:1rem; margin-top:1.25rem; font-size:0.72rem; }
+.mov-recibo-sign { flex:1; text-align:center; }
+.mov-recibo-sign-line { border-top:1.5px solid #1e293b; padding-top:4px; color:#1e293b; font-weight:600; }
+.mov-recibo-sign-lbl { font-size:0.62rem; color:#64748b; text-transform:uppercase; letter-spacing:0.4px; margin-top:2px; }
+.mov-modal-footer {
+    display:flex; gap:8px; justify-content:flex-end; padding:0.85rem 1.5rem;
+    background:#f8fafc; border-top:1px solid #e2e8f0;
+}
+.mov-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:0.55rem 1.1rem; border-radius:10px; font-size:0.82rem; font-weight:700;
+    border:none; cursor:pointer; transition:all .2s;
+}
+.mov-btn-primary { background:linear-gradient(135deg,#fc7b04,#c25e00); color:#fff; }
+.mov-btn-primary:hover { color:#fff; transform:translateY(-1px); box-shadow:0 6px 18px rgba(252,123,4,0.35); }
+.mov-btn-secondary { background:#e2e8f0; color:#475569; }
+.mov-btn-secondary:hover { background:#cbd5e1; }
+.mov-no-pago {
+    text-align:center; padding:2rem; color:#94a3b8; font-size:0.85rem;
+}
+.mov-no-pago i { font-size:2.4rem; opacity:0.4; display:block; margin-bottom:0.5rem; }
+
 @media (max-width:992px) {
     .stats-grid { grid-template-columns:repeat(2,1fr); }
     .content-grid { grid-template-columns:1fr; }
@@ -214,6 +365,7 @@
 @endsection
 
 @section('content')
+@php \Carbon\Carbon::setLocale('es'); @endphp
 <!-- Hero -->
 <div class="container-fluid py-3 anim-fade delay-1">
     <div class="acct-hero">
@@ -224,10 +376,16 @@
                 </div>
                 <div class="acct-hero-text">
                     <h1>{{ $cuentaBancaria->banco->nombre }}</h1>
-                    <p>
-                        <strong>{{ $cuentaBancaria->numero_cuenta }}</strong>
-                        &middot; {{ $cuentaBancaria->tipo_cuenta }}
-                        &middot;
+                    <p>{{ $cuentaBancaria->titular ?? 'Cuenta bancaria registrada' }}</p>
+                    <div class="acct-hero-meta">
+                        <span class="acct-hero-num">
+                            <i class="ri-bank-card-2-line"></i>
+                            {{ trim(chunk_split($cuentaBancaria->numero_cuenta, 4, ' ')) }}
+                        </span>
+                        <span class="acct-hero-type">
+                            <i class="ri-{{ $cuentaBancaria->tipo_cuenta === 'Cuenta Corriente' ? 'building-line' : 'safe-line' }}"></i>
+                            {{ $cuentaBancaria->tipo_cuenta }}
+                        </span>
                         <span class="acct-hero-badge {{ $cuentaBancaria->estado ? 'activa' : 'inactiva' }}">
                             <i class="ri-{{ $cuentaBancaria->estado ? 'checkbox-circle' : 'close-circle' }}-line"></i>
                             {{ $cuentaBancaria->estado ? 'Activa' : 'Inactiva' }}
@@ -237,7 +395,7 @@
                             <i class="ri-star-fill"></i> Principal
                         </span>
                         @endif
-                    </p>
+                    </div>
                 </div>
             </div>
             <a href="{{ route('admin.bancos.index') }}" class="acct-back-link">
@@ -283,7 +441,7 @@
             <div class="stat-card-sub">
                 <i class="ri-calendar-line"></i>
                 @if($ultimoMovimiento)
-                Último: {{ $ultimoMovimiento->created_at->format('d/m/Y') }}
+                Último: {{ $ultimoMovimiento->created_at ? ucfirst($ultimoMovimiento->created_at->translatedFormat('l, j \d\e F \d\e\l Y')) : '—' }}
                 @else
                 Sin movimientos
                 @endif
@@ -402,11 +560,11 @@
                 <div class="info-card-body">
                     <div class="info-row">
                         <span class="info-label">Creada</span>
-                        <span class="info-value">{{ $cuentaBancaria->created_at->format('d/m/Y') }}</span>
+                        <span class="info-value">{{ $cuentaBancaria->created_at ? ucfirst($cuentaBancaria->created_at->translatedFormat('l, j \d\e F \d\e\l Y')) : '—' }}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Actualizada</span>
-                        <span class="info-value">{{ $cuentaBancaria->updated_at->format('d/m/Y') }}</span>
+                        <span class="info-value">{{ $cuentaBancaria->updated_at ? ucfirst($cuentaBancaria->updated_at->translatedFormat('l, j \d\e F \d\e\l Y')) : '—' }}</span>
                     </div>
                 </div>
             </div>
@@ -493,26 +651,114 @@
                             <th>Monto</th>
                             <th>Referencia</th>
                             <th>Descripción</th>
+                            <th style="text-align:center;width:80px;">Acción</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($movimientos as $mov)
+                            @php
+                                $tipoLower = strtolower((string) $mov->tipo);
+                                $esIngreso = $tipoLower === 'ingreso';
+                                $esEgreso  = $tipoLower === 'egreso';
+                                $tipoCls   = $esIngreso ? 'ingreso' : ($esEgreso ? 'egreso' : 'otro');
+                                $tipoIcon  = $esIngreso ? 'ri-arrow-up-circle-line' : ($esEgreso ? 'ri-arrow-down-circle-line' : 'ri-exchange-line');
+                                $signo     = $esIngreso ? '+' : ($esEgreso ? '-' : '');
+                                $montoCls  = $esIngreso ? 'monto-pos' : ($esEgreso ? 'monto-neg' : '');
+                            @endphp
                         <tr>
-                            <td style="white-space:nowrap;">{{ $mov->created_at->format('d/m/Y') }}</td>
+                            <td style="white-space:nowrap;">
+                                <div style="display:flex;flex-direction:column;line-height:1.25;">
+                                    @if($mov->created_at)
+                                        <span style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--d-muted);">{{ ucfirst($mov->created_at->translatedFormat('l')) }}</span>
+                                        <span style="font-weight:600;color:var(--d-title);font-size:0.85rem;">{{ $mov->created_at->translatedFormat('j \d\e F \d\e\l Y') }}</span>
+                                        <span style="font-size:0.7rem;color:var(--d-muted);">{{ $mov->created_at->format('H:i') }}</span>
+                                    @else
+                                        <span style="font-weight:600;color:var(--d-title);">—</span>
+                                    @endif
+                                </div>
+                            </td>
                             <td>
-                                @if($mov->tipo === 'ingreso')
-                                    <span class="badge bg-success" style="font-size:0.68rem;font-weight:600;">Ingreso</span>
-                                @elseif($mov->tipo === 'egreso')
-                                    <span class="badge bg-danger" style="font-size:0.68rem;font-weight:600;">Egreso</span>
+                                <span class="mov-tipo-pill {{ $tipoCls }}">
+                                    <i class="{{ $tipoIcon }}"></i> {{ ucfirst($tipoLower ?: $mov->tipo) }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="mov-monto-cell {{ $montoCls }}">
+                                    {{ $signo }}{{ number_format($mov->monto, 2) }} <span class="moneda">Bs</span>
+                                </span>
+                            </td>
+                            <td>
+                                @if($mov->referencia)
+                                    <span class="mov-ref-chip" title="{{ $mov->referencia }}">
+                                        <i class="ri-hashtag" style="opacity:0.55;"></i>{{ $mov->referencia }}
+                                    </span>
                                 @else
-                                    <span class="badge bg-secondary" style="font-size:0.68rem;">{{ $mov->tipo }}</span>
+                                    <span style="color:var(--d-muted);font-size:0.8rem;">—</span>
                                 @endif
                             </td>
-                            <td class="{{ $mov->tipo === 'ingreso' ? 'monto-pos' : 'monto-neg' }}">
-                                {{ $mov->tipo === 'ingreso' ? '+' : '-' }}{{ number_format($mov->monto, 2) }} Bs
+                            <td style="color:var(--d-body);font-size:0.82rem;">{{ $mov->descripcion ?? '—' }}</td>
+                            <td style="text-align:center;">
+                                @php
+                                    $movPagoData = null;
+                                    if ($mov->pago) {
+                                        $pg = $mov->pago;
+                                        $estNombre = '—';
+                                        $programa  = '—';
+                                        $plan      = '—';
+                                        foreach ($pg->pagosCuotas as $pcm) {
+                                            if ($pcm->cuota && $pcm->cuota->inscripcion) {
+                                                $ins = $pcm->cuota->inscripcion;
+                                                if ($ins->estudiante && $ins->estudiante->persona) {
+                                                    $pp = $ins->estudiante->persona;
+                                                    $estNombre = trim(($pp->nombres ?? '').' '.($pp->apellido_paterno ?? '').' '.($pp->apellido_materno ?? '')) ?: '—';
+                                                }
+                                                if ($ins->ofertaAcademica) {
+                                                    $programa = $ins->ofertaAcademica->programa->nombre
+                                                        ?? ($ins->ofertaAcademica->posgrado->nombre ?? ($ins->ofertaAcademica->nombre ?? '—'));
+                                                }
+                                                $plan = $ins->planesPago->nombre ?? '—';
+                                                break;
+                                            }
+                                        }
+                                        $cobrador = '—';
+                                        if ($pg->trabajadorCargo && $pg->trabajadorCargo->trabajador && $pg->trabajadorCargo->trabajador->persona) {
+                                            $cp = $pg->trabajadorCargo->trabajador->persona;
+                                            $cobrador = trim(($cp->nombres ?? '').' '.($cp->apellido_paterno ?? '').' '.($cp->apellido_materno ?? '')) ?: '—';
+                                        }
+                                        $movPagoData = [
+                                            'id'          => $pg->id,
+                                            'recibo'      => $pg->recibo,
+                                            'fecha'       => $pg->fecha_pago ? \Carbon\Carbon::parse($pg->fecha_pago)->translatedFormat('l, j \d\e F \d\e\l Y') : '—',
+                                            'metodo'      => $pg->tipo_pago,
+                                            'monto'       => (float) $pg->monto_total,
+                                            'descuento'   => (float) ($pg->descuento_bs ?? 0),
+                                            'estudiante'  => $estNombre,
+                                            'programa'    => $programa,
+                                            'plan'        => $plan,
+                                            'cobrador'    => $cobrador,
+                                            'pdf_url'     => route('admin.estudiantes.generarReciboPdf', ['pagoId' => $pg->id]),
+                                            'cuotas'      => $pg->pagosCuotas->map(fn($pcm) => [
+                                                'nombre'  => $pcm->cuota->nombre ?? ('Cuota #'.$pcm->cuota_id),
+                                                'n_cuota' => $pcm->cuota->n_cuota ?? null,
+                                                'monto'   => (float) $pcm->monto_bs,
+                                            ])->values()->all(),
+                                            'detalles'    => $pg->detalles->map(fn($d) => [
+                                                'tipo'  => $d->tipo_pago,
+                                                'monto' => (float) $d->monto_bs,
+                                            ])->values()->all(),
+                                        ];
+                                    }
+                                @endphp
+                                @if($movPagoData)
+                                    <button type="button" class="mov-action btn-ver-mov"
+                                        data-pago='@json($movPagoData)'
+                                        title="Ver detalle del recibo">
+                                        <i class="ri-eye-line"></i>
+                                    </button>
+                                @else
+                                    <span style="color:var(--d-muted);">—</span>
+                                @endif
                             </td>
-                            <td style="color:var(--d-muted);font-size:0.8rem;">{{ $mov->referencia ?? '—' }}</td>
-                            <td style="color:var(--d-muted);font-size:0.8rem;">{{ $mov->descripcion ?? '—' }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -527,6 +773,106 @@
                 <p class="mb-0">No hay movimientos registrados para esta cuenta</p>
             </div>
             @endif
+        </div>
+    </div>
+</div>
+
+{{-- ─── Modal Detalle Movimiento / Recibo ─── --}}
+<div class="modal fade mov-modal" id="modalMovDetalle" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="mov-modal-header">
+                <div class="mov-modal-icon"><i class="ri-receipt-line"></i></div>
+                <div>
+                    <h5 class="mov-modal-title">Detalle del Recibo</h5>
+                    <div class="mov-modal-sub" id="movRecibo">—</div>
+                </div>
+                <button type="button" class="mov-modal-close" data-bs-dismiss="modal" aria-label="Cerrar">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+
+            <div class="modal-body p-3" style="background:#f8fafc;">
+                <div class="mov-recibo-doc">
+                    <div class="mov-recibo-header">
+                        <div class="mov-recibo-brand">
+                            <img src="{{ asset('images/logo_secundario.png') }}" alt="Logo" onerror="this.style.display='none'">
+                            <div>
+                                <div class="mov-recibo-brand-name">INNOVA CIENCIA VIRTUAL</div>
+                                <div class="mov-recibo-brand-sub">Educación Superior Virtual</div>
+                            </div>
+                        </div>
+                        <div class="mov-recibo-num-wrap">
+                            <div class="mov-recibo-num-lbl">COMPROBANTE</div>
+                            <div class="mov-recibo-num-val" id="movReciboNum">—</div>
+                        </div>
+                    </div>
+
+                    <div class="mov-recibo-meta">
+                        <div>
+                            <div class="mov-recibo-meta-lbl">Fecha</div>
+                            <div class="mov-recibo-meta-val" id="movFecha">—</div>
+                        </div>
+                        <div>
+                            <div class="mov-recibo-meta-lbl">Método</div>
+                            <div class="mov-recibo-meta-val" id="movMetodo">—</div>
+                        </div>
+                        <div>
+                            <div class="mov-recibo-meta-lbl">Emisor</div>
+                            <div class="mov-recibo-meta-val" id="movCobrador">—</div>
+                        </div>
+                    </div>
+
+                    <div class="mov-recibo-info">
+                        <div class="mov-recibo-info-row"><strong>Estudiante:</strong> <span id="movEstudiante">—</span></div>
+                        <div class="mov-recibo-info-row"><strong>Programa:</strong> <span id="movPrograma">—</span></div>
+                        <div class="mov-recibo-info-row"><strong>Plan:</strong> <span id="movPlan">—</span></div>
+                    </div>
+
+                    <table class="mov-recibo-table">
+                        <thead>
+                            <tr>
+                                <th style="width:36px;">#</th>
+                                <th>Concepto</th>
+                                <th class="text-end" style="width:130px;">Monto (Bs)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="movConceptos"></tbody>
+                        <tfoot>
+                            <tr class="mov-recibo-total-row">
+                                <td colspan="2">TOTAL</td>
+                                <td class="text-end" id="movTotal">—</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div class="mov-recibo-desc" id="movDescuentoBox" style="display:none;">
+                        <i class="ri-discount-line"></i> Descuento aplicado: <strong id="movDescuento">—</strong>
+                    </div>
+
+                    <div id="movDetalles" style="margin-top:0.6rem;"></div>
+
+                    <div class="mov-recibo-signs">
+                        <div class="mov-recibo-sign">
+                            <div class="mov-recibo-sign-line" id="movEmisor">—</div>
+                            <div class="mov-recibo-sign-lbl">EMISOR</div>
+                        </div>
+                        <div class="mov-recibo-sign">
+                            <div class="mov-recibo-sign-line" id="movDepositante">—</div>
+                            <div class="mov-recibo-sign-lbl">DEPOSITANTE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mov-modal-footer">
+                <a id="movDescargarPdf" href="#" target="_blank" class="mov-btn mov-btn-primary">
+                    <i class="ri-printer-line"></i> Imprimir recibo
+                </a>
+                <button type="button" class="mov-btn mov-btn-secondary" data-bs-dismiss="modal">
+                    <i class="ri-close-line"></i> Cerrar
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -748,6 +1094,84 @@ document.addEventListener('DOMContentLoaded', function () {
         const fb = document.getElementById('fbQr');
         if (fb) { fb.textContent = ''; fb.className = 'field-feedback'; }
     }
+
+    /* ─── Modal detalle de movimiento (recibo) ─────────────────── */
+    const modalMovEl = document.getElementById('modalMovDetalle');
+    const modalMov = modalMovEl ? new bootstrap.Modal(modalMovEl) : null;
+
+    function escMov(v) {
+        if (v === null || v === undefined) return '—';
+        return String(v).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+    function fmtMov(n) {
+        return Number(n || 0).toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    document.querySelectorAll('.btn-ver-mov').forEach(btn => {
+        btn.addEventListener('click', function () {
+            let data;
+            try { data = JSON.parse(this.dataset.pago); } catch (e) { return; }
+            if (!data) return;
+
+            document.getElementById('movRecibo').textContent      = data.recibo || '—';
+            document.getElementById('movReciboNum').textContent   = data.recibo || '—';
+            document.getElementById('movFecha').textContent       = (data.fecha || '—').charAt(0).toUpperCase() + (data.fecha || '—').slice(1);
+            document.getElementById('movMetodo').textContent      = data.metodo || '—';
+            document.getElementById('movCobrador').textContent    = data.cobrador || '—';
+            document.getElementById('movEstudiante').textContent  = data.estudiante || '—';
+            document.getElementById('movPrograma').textContent    = data.programa || '—';
+            document.getElementById('movPlan').textContent        = data.plan || '—';
+            document.getElementById('movEmisor').textContent      = data.cobrador || '—';
+            document.getElementById('movDepositante').textContent = data.estudiante || '—';
+
+            // Conceptos
+            const cuotas = data.cuotas || [];
+            let total = 0;
+            const tbody = document.getElementById('movConceptos');
+            tbody.innerHTML = cuotas.length
+                ? cuotas.map((c, i) => {
+                    total += Number(c.monto || 0);
+                    return `<tr>
+                        <td style="text-align:center;font-weight:700;color:#7b6f62;">${i + 1}</td>
+                        <td>${escMov(c.nombre)}${c.n_cuota ? ` <span style="color:#94a3b8;font-size:0.74rem;">(Cuota ${c.n_cuota})</span>` : ''}</td>
+                        <td class="text-end" style="font-weight:700;">${fmtMov(c.monto)}</td>
+                    </tr>`;
+                }).join('')
+                : `<tr><td colspan="3" style="text-align:center;color:#94a3b8;">Sin conceptos registrados</td></tr>`;
+            document.getElementById('movTotal').textContent = fmtMov(data.monto || total);
+
+            // Descuento
+            const descBox = document.getElementById('movDescuentoBox');
+            if (Number(data.descuento) > 0) {
+                document.getElementById('movDescuento').textContent = 'Bs ' + fmtMov(data.descuento);
+                descBox.style.display = 'block';
+            } else {
+                descBox.style.display = 'none';
+            }
+
+            // Detalles del método (Efectivo + QR si Parcial)
+            const detalles = data.detalles || [];
+            const detContainer = document.getElementById('movDetalles');
+            if (detalles.length > 1) {
+                detContainer.innerHTML = `
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:0.78rem;">
+                        ${detalles.map(d => `
+                            <span style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:5px 10px;color:#475569;">
+                                <strong style="color:#1e293b;">${escMov(d.tipo)}:</strong> Bs ${fmtMov(d.monto)}
+                            </span>
+                        `).join('')}
+                    </div>`;
+            } else {
+                detContainer.innerHTML = '';
+            }
+
+            // Link PDF
+            const pdfLink = document.getElementById('movDescargarPdf');
+            pdfLink.href = data.pdf_url || '#';
+
+            if (modalMov) modalMov.show();
+        });
+    });
 });
 </script>
 @endsection

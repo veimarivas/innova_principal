@@ -515,7 +515,8 @@ class ContabilidadController extends Controller
             'trabajadorCargo.cargo',
             'pagosCuotas.cuota.inscripcion.estudiante.persona',
             'pagosCuotas.cuota.inscripcion.ofertaAcademica.programa',
-            'detalles'
+            'detalles.caja.trabajadorCargo.trabajador.persona',
+            'detalles.cuentaBancaria.banco',
         ])
         ->whereBetween('fecha_pago', [$inicio, $fin])
         ->orderBy('recibo', 'desc')
@@ -586,6 +587,258 @@ class ContabilidadController extends Controller
             'success' => true,
             'message' => 'Factura subida correctamente.',
             'path'    => Storage::url($path),
+        ]);
+    }
+
+    /**
+     * Control de pagos: detalle por trabajador, por oferta y por método.
+     * Soporta filtros por rango (fecha_inicio/fecha_fin) o gestión/mes.
+     */
+    public function controlPagos(Request $request)
+    {
+        $modo = $request->input('modo', 'mes');   // 'mes' | 'rango'
+
+        // ── Rango de fechas ──
+        if ($modo === 'rango' && $request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+            $inicio = Carbon::parse($request->input('fecha_inicio'))->startOfDay();
+            $fin    = Carbon::parse($request->input('fecha_fin'))->endOfDay();
+            $gestion = $inicio->year;
+            $mes     = $inicio->month;
+        } else {
+            $modo    = 'mes';
+            $gestion = (int) $request->input('gestion', date('Y'));
+            $mes     = (int) $request->input('mes', date('n'));
+            $inicio  = Carbon::create($gestion, $mes, 1)->startOfMonth();
+            $fin     = Carbon::create($gestion, $mes, 1)->endOfMonth();
+        }
+
+        // ── Gestiones disponibles ──
+        $gestiones = Pago::selectRaw('YEAR(fecha_pago) as anio')
+            ->distinct()->orderBy('anio', 'desc')->pluck('anio');
+        if ($gestiones->isEmpty()) {
+            $gestiones = collect([(int) date('Y')]);
+        }
+
+        // ── Carga de pagos del período ──
+        $pagos = Pago::with([
+                'trabajadorCargo.trabajador.persona',
+                'trabajadorCargo.cargo',
+                'pagosCuotas.cuota.inscripcion.estudiante.persona',
+                'pagosCuotas.cuota.inscripcion.ofertaAcademica.programa',
+                'detalles.caja.trabajadorCargo.trabajador.persona',
+                'detalles.cuentaBancaria.banco',
+            ])
+            ->whereBetween('fecha_pago', [$inicio, $fin])
+            ->orderBy('fecha_pago', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        // ── Stats globales ──
+        $totalGeneral  = (float) $pagos->sum('monto_total');
+        $totalDesc     = (float) $pagos->sum('descuento_bs');
+        $cantidadPagos = $pagos->count();
+
+        $totalEfectivo      = 0.0;
+        $totalQr            = 0.0;
+        $totalTransferencia = 0.0;
+        $totalOtros         = 0.0;
+
+        foreach ($pagos as $p) {
+            foreach ($p->detalles as $d) {
+                $monto = (float) $d->monto_bs;
+                $tipo  = $d->tipo_pago;
+                if ($tipo === 'Efectivo')              $totalEfectivo      += $monto;
+                elseif ($tipo === 'Qr')                $totalQr            += $monto;
+                elseif ($tipo === 'Transferencia')     $totalTransferencia += $monto;
+                else                                   $totalOtros         += $monto;
+            }
+        }
+
+        // ── Por trabajador (cobrador) ──
+        $porTrabajador = [];
+        foreach ($pagos as $p) {
+            $tc       = $p->trabajadorCargo;
+            $tcId     = $tc?->id ?? 0;
+            $nombre   = '—';
+            $cargo    = '—';
+            if ($tc && $tc->trabajador && $tc->trabajador->persona) {
+                $persona = $tc->trabajador->persona;
+                $nombre  = trim(($persona->nombres ?? '').' '.($persona->apellido_paterno ?? '').' '.($persona->apellido_materno ?? '')) ?: '—';
+            }
+            if ($tc) {
+                $cargo = $tc->cargo->nombre ?? ($tc->nombre_cargo ?? '—');
+            }
+
+            if (!isset($porTrabajador[$tcId])) {
+                $porTrabajador[$tcId] = [
+                    'id' => $tcId, 'nombre' => $nombre, 'cargo' => $cargo,
+                    'cantidad' => 0, 'total' => 0.0, 'efectivo' => 0.0, 'qr' => 0.0, 'transferencia' => 0.0, 'otros' => 0.0,
+                ];
+            }
+            $porTrabajador[$tcId]['cantidad']++;
+            $porTrabajador[$tcId]['total'] += (float) $p->monto_total;
+            foreach ($p->detalles as $d) {
+                $m = (float) $d->monto_bs;
+                $t = $d->tipo_pago;
+                if ($t === 'Efectivo')          $porTrabajador[$tcId]['efectivo']      += $m;
+                elseif ($t === 'Qr')            $porTrabajador[$tcId]['qr']            += $m;
+                elseif ($t === 'Transferencia') $porTrabajador[$tcId]['transferencia'] += $m;
+                else                            $porTrabajador[$tcId]['otros']         += $m;
+            }
+        }
+        $porTrabajador = collect($porTrabajador)->sortByDesc('total')->values()->all();
+
+        // ── Por oferta académica ──
+        $porOferta = [];
+        foreach ($pagos as $p) {
+            // Una oferta por pago (tomamos la primera cuota relacionada)
+            $ofertaId     = 0;
+            $ofertaNombre = '—';
+            foreach ($p->pagosCuotas as $pc) {
+                if ($pc->cuota && $pc->cuota->inscripcion && $pc->cuota->inscripcion->ofertaAcademica) {
+                    $oa = $pc->cuota->inscripcion->ofertaAcademica;
+                    $ofertaId     = $oa->id;
+                    $ofertaNombre = $oa->programa->nombre ?? ($oa->nombre ?? ('Oferta #'.$oa->id));
+                    break;
+                }
+            }
+            if (!isset($porOferta[$ofertaId])) {
+                $porOferta[$ofertaId] = [
+                    'id' => $ofertaId, 'nombre' => $ofertaNombre,
+                    'cantidad' => 0, 'total' => 0.0, 'estudiantes' => [],
+                ];
+            }
+            $porOferta[$ofertaId]['cantidad']++;
+            $porOferta[$ofertaId]['total'] += (float) $p->monto_total;
+            // Tracking de estudiantes únicos
+            foreach ($p->pagosCuotas as $pc) {
+                if ($pc->cuota && $pc->cuota->inscripcion && $pc->cuota->inscripcion->estudiante) {
+                    $porOferta[$ofertaId]['estudiantes'][$pc->cuota->inscripcion->estudiante->id] = true;
+                }
+            }
+        }
+        foreach ($porOferta as &$o) {
+            $o['estudiantes_count'] = count($o['estudiantes']);
+            unset($o['estudiantes']);
+        }
+        unset($o);
+        $porOferta = collect($porOferta)->sortByDesc('total')->values()->all();
+
+        // ── Serie diaria para gráfico ──
+        $diasMap = [];
+        $cursor  = $inicio->copy();
+        while ($cursor->lte($fin)) {
+            $diasMap[$cursor->format('Y-m-d')] = [
+                'fecha' => $cursor->format('Y-m-d'),
+                'efectivo' => 0.0, 'qr' => 0.0, 'transferencia' => 0.0, 'otros' => 0.0,
+            ];
+            $cursor->addDay();
+        }
+        foreach ($pagos as $p) {
+            $key = Carbon::parse($p->fecha_pago)->format('Y-m-d');
+            if (!isset($diasMap[$key])) continue;
+            foreach ($p->detalles as $d) {
+                $m = (float) $d->monto_bs;
+                $t = $d->tipo_pago;
+                if ($t === 'Efectivo')          $diasMap[$key]['efectivo']      += $m;
+                elseif ($t === 'Qr')            $diasMap[$key]['qr']            += $m;
+                elseif ($t === 'Transferencia') $diasMap[$key]['transferencia'] += $m;
+                else                            $diasMap[$key]['otros']         += $m;
+            }
+        }
+        $chartLabels        = array_map(fn($d) => Carbon::parse($d)->format('d/m'), array_keys($diasMap));
+        $chartEfectivo      = array_map(fn($d) => round($d['efectivo'], 2),      array_values($diasMap));
+        $chartQr            = array_map(fn($d) => round($d['qr'], 2),            array_values($diasMap));
+        $chartTransferencia = array_map(fn($d) => round($d['transferencia'], 2), array_values($diasMap));
+
+        // ── Detalle de pagos para la tabla ──
+        $detallePagos = $pagos->map(function ($p) {
+            // Estudiante / oferta
+            $estNombre   = '—';
+            $ofertaNombre = '—';
+            foreach ($p->pagosCuotas as $pc) {
+                if ($pc->cuota && $pc->cuota->inscripcion) {
+                    $ins = $pc->cuota->inscripcion;
+                    if ($ins->estudiante && $ins->estudiante->persona) {
+                        $pp = $ins->estudiante->persona;
+                        $estNombre = trim(($pp->nombres ?? '').' '.($pp->apellido_paterno ?? '').' '.($pp->apellido_materno ?? '')) ?: '—';
+                    }
+                    if ($ins->ofertaAcademica) {
+                        $ofertaNombre = $ins->ofertaAcademica->programa->nombre ?? ($ins->ofertaAcademica->nombre ?? '—');
+                    }
+                    break;
+                }
+            }
+            // Cobrador
+            $cobrador = '—';
+            if ($p->trabajadorCargo && $p->trabajadorCargo->trabajador && $p->trabajadorCargo->trabajador->persona) {
+                $cp = $p->trabajadorCargo->trabajador->persona;
+                $cobrador = trim(($cp->nombres ?? '').' '.($cp->apellido_paterno ?? '').' '.($cp->apellido_materno ?? '')) ?: '—';
+            }
+            // Detalles enriquecidos
+            $detalles = $p->detalles->map(function ($d) {
+                $cajaInfo = null;
+                if ($d->caja) {
+                    $enc = null;
+                    if ($d->caja->trabajadorCargo && $d->caja->trabajadorCargo->trabajador && $d->caja->trabajadorCargo->trabajador->persona) {
+                        $pp = $d->caja->trabajadorCargo->trabajador->persona;
+                        $enc = trim(($pp->nombres ?? '').' '.($pp->apellido_paterno ?? '').' '.($pp->apellido_materno ?? '')) ?: null;
+                    }
+                    $cajaInfo = ['nombre' => $d->caja->nombre, 'encargado' => $enc];
+                }
+                $cuentaInfo = null;
+                if ($d->cuentaBancaria) {
+                    $cuentaInfo = [
+                        'banco'         => $d->cuentaBancaria->banco->nombre ?? '—',
+                        'numero'        => $d->cuentaBancaria->numero_cuenta,
+                        'tipo'          => $d->cuentaBancaria->tipo_cuenta,
+                    ];
+                }
+                return [
+                    'tipo'       => $d->tipo_pago,
+                    'monto'      => (float) $d->monto_bs,
+                    'caja'       => $cajaInfo,
+                    'cuenta'     => $cuentaInfo,
+                    'referencia' => $d->referencia,
+                ];
+            })->values()->all();
+
+            return [
+                'id'           => $p->id,
+                'recibo'       => $p->recibo,
+                'fecha'        => $p->fecha_pago,
+                'estudiante'   => $estNombre,
+                'oferta'       => $ofertaNombre,
+                'cobrador'     => $cobrador,
+                'monto'        => (float) $p->monto_total,
+                'descuento'    => (float) ($p->descuento_bs ?? 0),
+                'tipo_pago'    => $p->tipo_pago,
+                'detalles'     => $detalles,
+                'pdf_url'      => route('admin.estudiantes.generarReciboPdf', ['pagoId' => $p->id]),
+            ];
+        })->values()->all();
+
+        return view('admin.contabilidad.control-pagos', [
+            'modo'               => $modo,
+            'gestion'            => $gestion,
+            'mes'                => $mes,
+            'inicio'             => $inicio,
+            'fin'                => $fin,
+            'gestiones'          => $gestiones,
+            'totalGeneral'       => $totalGeneral,
+            'totalDesc'          => $totalDesc,
+            'cantidadPagos'      => $cantidadPagos,
+            'totalEfectivo'      => $totalEfectivo,
+            'totalQr'            => $totalQr,
+            'totalTransferencia' => $totalTransferencia,
+            'totalOtros'         => $totalOtros,
+            'porTrabajador'      => $porTrabajador,
+            'porOferta'          => $porOferta,
+            'chartLabels'        => $chartLabels,
+            'chartEfectivo'      => $chartEfectivo,
+            'chartQr'            => $chartQr,
+            'chartTransferencia' => $chartTransferencia,
+            'detallePagos'       => $detallePagos,
         ]);
     }
 }

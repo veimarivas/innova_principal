@@ -635,6 +635,11 @@
                                     class="nav-link {{ Route::currentRouteName() === 'admin.contabilidad.recibos' ? 'active' : '' }}">Recibos</a>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ route('admin.contabilidad.control-pagos') }}" title="Control de Pagos"
+                                    class="nav-link {{ Route::currentRouteName() === 'admin.contabilidad.control-pagos' ? 'active' : '' }}">Control
+                                    de Pagos</a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ route('admin.comprobantes.index') }}" title="Comprobantes de Pago"
                                     class="nav-link {{ Route::currentRouteName() === 'admin.comprobantes.index' ? 'active' : '' }}">Comprobantes
                                     de Pago</a>

@@ -47,6 +47,21 @@
     .oferta-acad-card.oferta-al-dia::before    { background: #16a34a; }
     .oferta-acad-card.oferta-pendiente::before { background: #d97706; }
     .oferta-acad-card.oferta-sin-pago::before  { background: #dc2626; }
+    .oferta-acad-card.oferta-pre-inscrito::before { background: #2563eb; }
+    .oferta-acad-card.oferta-pre-inscrito {
+        background: linear-gradient(135deg, #eff6ff 0%, #ffffff 60%);
+        border-color: #bfdbfe;
+    }
+    .oferta-acad-preinsc-msg {
+        display: flex; align-items: center; gap: .4rem;
+        font-size: .75rem; font-weight: 600;
+        color: #1e40af;
+        background: rgba(37,99,235,.08);
+        border: 1px dashed rgba(37,99,235,.3);
+        border-radius: 8px;
+        padding: .45rem .65rem;
+    }
+    .oferta-acad-preinsc-msg i { font-size: .9rem; }
     .oferta-acad-card:hover {
         border-color: #cbd5e1;
         box-shadow: 0 6px 14px rgba(15,23,42,.08);
@@ -727,8 +742,42 @@
                         'Sin pagos');
 
                     var ofertasHtml = '';
-                    if (est.ofertas && est.ofertas.length > 0) {
+                    if (!est.ofertas || est.ofertas.length === 0) {
                         ofertasHtml = '<div class="ofertas-academicas-wrap mt-3 pt-3">' +
+                            '<div class="alert d-flex align-items-center gap-2 mb-0" role="alert" ' +
+                                'style="background:#fef3c7;border:1px solid #fcd34d;color:#92400e;border-radius:10px;padding:.65rem .85rem;font-size:.82rem;font-weight:600;">' +
+                                '<i class="ri-error-warning-line" style="font-size:1.1rem;"></i>' +
+                                '<span>El estudiante no está inscrito en ningún programa.</span>' +
+                            '</div>' +
+                        '</div>';
+                    } else {
+                        // Detalle de programas pre-inscritos
+                        var preInscritos = est.ofertas.filter(function(o){ return o.estado_inscripcion === 'Pre-Inscrito'; });
+                        var preInscritosHtml = '';
+                        if (preInscritos.length > 0) {
+                            preInscritosHtml = '<div class="alert d-flex align-items-start gap-2 mb-2" role="alert" ' +
+                                'style="background:#eff6ff;border:1px solid #93c5fd;color:#1e40af;border-radius:10px;padding:.6rem .85rem;font-size:.8rem;font-weight:600;">' +
+                                '<i class="ri-information-line mt-1" style="font-size:1rem;"></i>' +
+                                '<div><div>Pre-inscrito en:</div><ul class="mb-0 ps-3" style="font-weight:500;">' +
+                                preInscritos.map(function(o){ return '<li>' + o.oferta_nombre + '</li>'; }).join('') +
+                                '</ul></div>' +
+                            '</div>';
+                        }
+
+                        // Detalle de saldo pendiente
+                        var saldoTotal = parseFloat(est.saldo) || 0;
+                        var sinSaldoHtml = '';
+                        if (saldoTotal <= 0) {
+                            sinSaldoHtml = '<div class="alert d-flex align-items-center gap-2 mb-2" role="alert" ' +
+                                'style="background:#dcfce7;border:1px solid #86efac;color:#166534;border-radius:10px;padding:.6rem .85rem;font-size:.8rem;font-weight:600;">' +
+                                '<i class="ri-checkbox-circle-fill" style="font-size:1.05rem;"></i>' +
+                                '<span>El estudiante no tiene saldo pendiente de pagar.</span>' +
+                            '</div>';
+                        }
+
+                        ofertasHtml = '<div class="ofertas-academicas-wrap mt-3 pt-3">' +
+                            preInscritosHtml +
+                            sinSaldoHtml +
                             '<div class="ofertas-academicas-head">' +
                                 '<i class="ri-graduation-cap-line"></i>' +
                                 '<span>Ofertas académicas</span>' +
@@ -737,6 +786,26 @@
                             '<div class="ofertas-academicas-grid">';
 
                         est.ofertas.forEach(function(oferta, idx) {
+                            var inscEstado  = oferta.estado_inscripcion || '';
+                            var esPreInsc   = inscEstado === 'Pre-Inscrito';
+
+                            if (esPreInsc) {
+                                ofertasHtml += '<div class="oferta-acad-card oferta-pre-inscrito">' +
+                                    '<div class="oferta-acad-head">' +
+                                        '<div class="oferta-acad-titulo">' +
+                                            '<span class="oferta-acad-codigo" style="background:rgba(37,99,235,.12);color:#1d4ed8;">' + oferta.oferta_codigo + '</span>' +
+                                            '<span class="oferta-acad-nombre">' + oferta.oferta_nombre + '</span>' +
+                                        '</div>' +
+                                        '<span class="oferta-acad-estado" style="background:rgba(37,99,235,.13);color:#1d4ed8;"><i class="ri-time-line"></i> Pre-inscrito</span>' +
+                                    '</div>' +
+                                    '<div class="oferta-acad-preinsc-msg">' +
+                                        '<i class="ri-information-line"></i>' +
+                                        '<span>Sin deuda generada. La deuda se generará al inscribirse al programa.</span>' +
+                                    '</div>' +
+                                '</div>';
+                                return;
+                            }
+
                             var pagadoNum   = parseFloat(oferta.total_pagado) || 0;
                             var saldoNum    = parseFloat(oferta.saldo) || 0;
                             var totalNum    = pagadoNum + saldoNum;
@@ -744,12 +813,19 @@
                             var estadoCls   = saldoNum <= 0 ? 'al-dia' : (pagadoNum > 0 ? 'pendiente' : 'sin-pago');
                             var estadoTxt   = saldoNum <= 0 ? 'Al día' : (pagadoNum > 0 ? 'Pendiente' : 'Sin pagos');
                             var estadoIco   = saldoNum <= 0 ? 'ri-checkbox-circle-fill' : (pagadoNum > 0 ? 'ri-time-line' : 'ri-error-warning-line');
+                            var inscBadge   = '';
+                            if (inscEstado === 'Inscrito') {
+                                inscBadge = '<span class="oferta-acad-estado" style="background:rgba(37,99,235,.13);color:#1d4ed8;"><i class="ri-user-follow-line"></i> Inscrito</span>';
+                            } else if (inscEstado === 'Confirmado') {
+                                inscBadge = '<span class="oferta-acad-estado" style="background:rgba(34,197,94,.13);color:#15803d;"><i class="ri-shield-check-line"></i> Confirmado</span>';
+                            }
 
                             ofertasHtml += '<div class="oferta-acad-card oferta-' + estadoCls + '">' +
                                 '<div class="oferta-acad-head">' +
                                     '<div class="oferta-acad-titulo">' +
                                         '<span class="oferta-acad-codigo">' + oferta.oferta_codigo + '</span>' +
                                         '<span class="oferta-acad-nombre">' + oferta.oferta_nombre + '</span>' +
+                                        (inscBadge ? '<div class="mt-1">' + inscBadge + '</div>' : '') +
                                     '</div>' +
                                     '<span class="oferta-acad-estado ' + estadoCls + '"><i class="' + estadoIco + '"></i> ' + estadoTxt + '</span>' +
                                 '</div>' +

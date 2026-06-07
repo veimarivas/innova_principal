@@ -655,57 +655,128 @@
                             <i class="ri-payment-line me-2"></i>Método de Pago
                         </h6>
 
-                        <div class="row justify-content-center g-3 mb-4">
-                            @if ($tipoPago === 'Efectivo')
-                                <div class="col-md-5">
-                                    <div class="card" style="border:none;border-radius:12px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);box-shadow:0 4px 12px rgba(37,99,235,0.15);">
-                                        <div class="card-body text-center py-3">
-                                            <i class="ri-cash-line fs-2" style="color:#2563eb;"></i>
-                                            <p class="mb-1 mt-2" style="color:#1e40af;font-weight:600;">Efectivo</p>
-                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($totalEfectivo, 2) }}</h4>
+                        <div class="row g-3 mb-4">
+                            @forelse ($pago->detalles as $detalle)
+                                @php
+                                    $tp = $detalle->tipo_pago;
+                                    $bg = '#dbeafe,#bfdbfe'; $ic = 'ri-cash-line'; $col = '#2563eb'; $colDark = '#1e40af'; $shadow = 'rgba(37,99,235,0.15)';
+                                    if ($tp === 'Qr') {
+                                        $bg = '#d1fae5,#a7f3d0'; $ic = 'ri-qr-code-line'; $col = '#059669'; $colDark = '#065f46'; $shadow = 'rgba(16,185,129,0.15)';
+                                    } elseif ($tp === 'Transferencia') {
+                                        $bg = '#e0e7ff,#c7d2fe'; $ic = 'ri-bank-line'; $col = '#4f46e5'; $colDark = '#4338ca'; $shadow = 'rgba(99,102,241,0.15)';
+                                    } elseif ($tp === 'Depósito') {
+                                        $bg = '#fef3c7,#fde68a'; $ic = 'ri-safe-line'; $col = '#d97706'; $colDark = '#92400e'; $shadow = 'rgba(217,119,6,0.15)';
+                                    } elseif ($tp === 'Cheque') {
+                                        $bg = '#fce7f3,#fbcfe8'; $ic = 'ri-file-paper-2-line'; $col = '#db2777'; $colDark = '#9d174d'; $shadow = 'rgba(219,39,119,0.15)';
+                                    }
+                                @endphp
+                                <div class="col-md-6">
+                                    <div class="card h-100" style="border:none;border-radius:12px;background:linear-gradient(135deg,{{ $bg }});box-shadow:0 4px 12px {{ $shadow }};">
+                                        <div class="card-body py-3 px-3">
+                                            <div class="d-flex align-items-center gap-3 mb-2">
+                                                <div style="width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,0.55);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                                    <i class="{{ $ic }} fs-3" style="color:{{ $col }};"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <p class="mb-0" style="color:{{ $colDark }};font-weight:700;font-size:.9rem;">{{ $tp }}</p>
+                                                    <h5 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($detalle->monto_bs, 2) }}</h5>
+                                                </div>
+                                            </div>
+
+                                            @if ($tp === 'Efectivo')
+                                                <div class="mt-2 pt-2" style="border-top:1px dashed rgba(255,255,255,0.7);">
+                                                    @if ($detalle->caja)
+                                                        @php
+                                                            $encargadoNombre = null;
+                                                            $encargadoCargo = null;
+                                                            $cajaTc = $detalle->caja->trabajadorCargo ?? null;
+                                                            if ($cajaTc && $cajaTc->trabajador && $cajaTc->trabajador->persona) {
+                                                                $p = $cajaTc->trabajador->persona;
+                                                                $encargadoNombre = trim(($p->nombres ?? '') . ' ' . ($p->apellido_paterno ?? '') . ' ' . ($p->apellido_materno ?? ''));
+                                                                $encargadoNombre = $encargadoNombre ?: null;
+                                                            }
+                                                            if ($cajaTc) {
+                                                                $encargadoCargo = $cajaTc->cargo->nombre ?? ($cajaTc->nombre_cargo ?? null);
+                                                            }
+                                                        @endphp
+                                                        <div class="d-flex align-items-start gap-2 mb-2" style="font-size:.78rem;color:{{ $colDark }};">
+                                                            <i class="ri-safe-2-line mt-1" style="color:{{ $col }};"></i>
+                                                            <div>
+                                                                <div style="font-weight:600;text-transform:uppercase;letter-spacing:.04em;opacity:.85;font-size:.65rem;">Caja</div>
+                                                                <div style="color:#1e293b;font-weight:600;">{{ $detalle->caja->nombre }}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex align-items-start gap-2" style="font-size:.78rem;color:{{ $colDark }};">
+                                                            <i class="ri-user-3-line mt-1" style="color:{{ $col }};"></i>
+                                                            <div>
+                                                                <div style="font-weight:600;text-transform:uppercase;letter-spacing:.04em;opacity:.85;font-size:.65rem;">Encargado/a</div>
+                                                                <div style="color:#1e293b;font-weight:600;">
+                                                                    {{ $encargadoNombre ?? '—' }}
+                                                                    @if ($encargadoCargo)
+                                                                        <span style="font-weight:500;opacity:.75;"> · {{ $encargadoCargo }}</span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <div style="font-size:.75rem;color:{{ $colDark }};opacity:.7;font-style:italic;">
+                                                            <i class="ri-information-line me-1"></i>Sin caja registrada
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @elseif (in_array($tp, ['Qr','Transferencia','Depósito']))
+                                                <div class="mt-2 pt-2" style="border-top:1px dashed rgba(255,255,255,0.7);">
+                                                    @if ($detalle->cuentaBancaria)
+                                                        <div class="d-flex align-items-start gap-2 mb-2" style="font-size:.78rem;color:{{ $colDark }};">
+                                                            <i class="ri-bank-line mt-1" style="color:{{ $col }};"></i>
+                                                            <div>
+                                                                <div style="font-weight:600;text-transform:uppercase;letter-spacing:.04em;opacity:.85;font-size:.65rem;">Banco</div>
+                                                                <div style="color:#1e293b;font-weight:600;">{{ $detalle->cuentaBancaria->banco->nombre ?? '—' }}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex align-items-start gap-2 mb-2" style="font-size:.78rem;color:{{ $colDark }};">
+                                                            <i class="ri-bank-card-line mt-1" style="color:{{ $col }};"></i>
+                                                            <div>
+                                                                <div style="font-weight:600;text-transform:uppercase;letter-spacing:.04em;opacity:.85;font-size:.65rem;">Cuenta</div>
+                                                                <div style="color:#1e293b;font-weight:600;font-family:'Inter',monospace;">
+                                                                    {{ $detalle->cuentaBancaria->numero_cuenta }}
+                                                                    @if ($detalle->cuentaBancaria->tipo_cuenta)
+                                                                        <span style="font-weight:500;opacity:.75;">({{ $detalle->cuentaBancaria->tipo_cuenta }})</span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <div style="font-size:.75rem;color:{{ $colDark }};opacity:.7;font-style:italic;margin-bottom:.4rem;">
+                                                            <i class="ri-information-line me-1"></i>Sin cuenta bancaria registrada
+                                                        </div>
+                                                    @endif
+
+                                                    @if ($detalle->referencia)
+                                                        <div class="d-flex align-items-start gap-2" style="font-size:.78rem;color:{{ $colDark }};">
+                                                            <i class="ri-hashtag mt-1" style="color:{{ $col }};"></i>
+                                                            <div>
+                                                                <div style="font-weight:600;text-transform:uppercase;letter-spacing:.04em;opacity:.85;font-size:.65rem;">Referencia</div>
+                                                                <div style="color:#1e293b;font-weight:600;font-family:'Inter',monospace;word-break:break-all;">{{ $detalle->referencia }}</div>
+                                                            </div>
+                                                        </div>
+                                                    @elseif ($tp === 'Transferencia')
+                                                        <div style="font-size:.75rem;color:{{ $colDark }};opacity:.7;font-style:italic;">
+                                                            <i class="ri-information-line me-1"></i>Sin número de referencia
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
-                            @elseif ($tipoPago === 'Qr')
-                                <div class="col-md-5">
-                                    <div class="card" style="border:none;border-radius:12px;background:linear-gradient(135deg,#d1fae5,#a7f3d0);box-shadow:0 4px 12px rgba(16,185,129,0.15);">
-                                        <div class="card-body text-center py-3">
-                                            <i class="ri-qr-code-line fs-2" style="color:#059669;"></i>
-                                            <p class="mb-1 mt-2" style="color:#065f46;font-weight:600;">QR</p>
-                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($totalQr, 2) }}</h4>
-                                        </div>
+                            @empty
+                                <div class="col-12">
+                                    <div class="alert alert-light text-center mb-0" style="border:1px dashed #cbd5e1;color:#64748b;border-radius:12px;">
+                                        <i class="ri-information-line me-1"></i>Sin detalles de medios de pago registrados.
                                     </div>
                                 </div>
-                            @elseif ($tipoPago === 'Transferencia')
-                                <div class="col-md-5">
-                                    <div class="card" style="border:none;border-radius:12px;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);box-shadow:0 4px 12px rgba(99,102,241,0.15);">
-                                        <div class="card-body text-center py-3">
-                                            <i class="ri-bank-line fs-2" style="color:#4f46e5;"></i>
-                                            <p class="mb-1 mt-2" style="color:#4338ca;font-weight:600;">Transferencia</p>
-                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($totalTransferencia, 2) }}</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            @elseif ($tipoPago === 'Parcial')
-                                <div class="col-md-5">
-                                    <div class="card" style="border:none;border-radius:12px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);box-shadow:0 4px 12px rgba(37,99,235,0.15);">
-                                        <div class="card-body text-center py-3">
-                                            <i class="ri-cash-line fs-2" style="color:#2563eb;"></i>
-                                            <p class="mb-1 mt-2" style="color:#1e40af;font-weight:600;">Efectivo</p>
-                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($totalEfectivo, 2) }}</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-5">
-                                    <div class="card" style="border:none;border-radius:12px;background:linear-gradient(135deg,#d1fae5,#a7f3d0);box-shadow:0 4px 12px rgba(16,185,129,0.15);">
-                                        <div class="card-body text-center py-3">
-                                            <i class="ri-qr-code-line fs-2" style="color:#059669;"></i>
-                                            <p class="mb-1 mt-2" style="color:#065f46;font-weight:600;">QR</p>
-                                            <h4 class="mb-0" style="color:#1e293b;font-weight:700;">Bs. {{ number_format($totalQr, 2) }}</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
+                            @endforelse
                         </div>
 
                         <div style="background:white;padding:1.25rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">

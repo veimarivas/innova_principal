@@ -117,15 +117,22 @@ class CuentaBancariaController extends Controller
         $cuentaBancaria->load('banco');
 
         $movimientos = $cuentaBancaria->movimientos()
+            ->with([
+                'pago.pagosCuotas.cuota.inscripcion.estudiante.persona',
+                'pago.pagosCuotas.cuota.inscripcion.ofertaAcademica.programa',
+                'pago.pagosCuotas.cuota.inscripcion.planesPago',
+                'pago.detalles',
+                'pago.trabajadorCargo.trabajador.persona',
+            ])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
         $totalIngresos = $cuentaBancaria->movimientos()
-            ->where('tipo', 'ingreso')
+            ->whereRaw('LOWER(tipo) = ?', ['ingreso'])
             ->sum('monto');
 
         $totalEgresos = $cuentaBancaria->movimientos()
-            ->where('tipo', 'egreso')
+            ->whereRaw('LOWER(tipo) = ?', ['egreso'])
             ->sum('monto');
 
         $balance = $totalIngresos - $totalEgresos;
@@ -139,8 +146,8 @@ class CuentaBancariaController extends Controller
         $chartData = $cuentaBancaria->movimientos()
             ->select(
                 DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as fecha"),
-                DB::raw("SUM(CASE WHEN tipo = 'ingreso' THEN monto ELSE 0 END) as ingresos"),
-                DB::raw("SUM(CASE WHEN tipo = 'egreso' THEN monto ELSE 0 END) as egresos")
+                DB::raw("SUM(CASE WHEN LOWER(tipo) = 'ingreso' THEN monto ELSE 0 END) as ingresos"),
+                DB::raw("SUM(CASE WHEN LOWER(tipo) = 'egreso' THEN monto ELSE 0 END) as egresos")
             )
             ->where('created_at', '>=', now()->subDays(30))
             ->groupBy('fecha')

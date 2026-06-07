@@ -69,24 +69,111 @@
     .fin-filter-bar select { border-radius:var(--radius-sm); border:1px solid var(--fin-border); padding:8px 12px; font-size:.875rem; min-width:220px; background:var(--fin-surface); color:var(--fin-text); }
     .fin-filter-bar select:focus { outline:none; border-color:var(--fin-warning); box-shadow:0 0 0 3px rgba(245,158,11,.15); }
 
-    .fin-tabs { overflow-x:auto; padding-bottom:4px; margin-bottom:24px; }
-    .fin-tabs .nav-tabs { display:flex; gap:6px; border:none; min-width:max-content; }
-    .fin-tabs .nav-link {
-        border:none; border-radius:var(--radius-md); color:var(--fin-text-muted);
-        font-weight:500; font-size:.875rem; padding:12px 22px;
-        background:var(--fin-surface); white-space:nowrap;
-        display:flex; align-items:center; gap:8px; transition:all .25s;
+    /* ── Resumen superior ── */
+    .fin-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
+    .fin-stat-card {
+        background:var(--fin-surface-2); border:1px solid var(--fin-border);
+        border-radius:var(--radius-lg); padding:18px 20px;
+        display:flex; align-items:center; gap:14px; box-shadow:var(--shadow-md);
     }
-    .fin-tabs .nav-link:hover { color:var(--fin-warning-dark); background:var(--fin-warning-light); transform:translateY(-2px); }
-    .fin-tabs .nav-link.active {
-        color:#fff; background:linear-gradient(135deg,var(--fin-warning) 0%,var(--fin-warning-dark) 100%);
-        box-shadow:0 4px 12px rgba(245,158,11,.35); transform:translateY(-2px);
+    .fin-stat-icon {
+        width:46px; height:46px; border-radius:12px; flex-shrink:0;
+        display:flex; align-items:center; justify-content:center; font-size:1.35rem;
     }
-    .tab-count {
-        background:rgba(245,158,11,.15); color:var(--fin-warning-dark);
-        padding:2px 9px; border-radius:20px; font-size:.72rem; font-weight:700;
+    .fin-stat-icon.warning { background:rgba(245,158,11,.12); color:var(--fin-warning-dark); }
+    .fin-stat-icon.primary { background:var(--fin-primary-light); color:var(--fin-primary); }
+    .fin-stat-icon.dark    { background:rgba(120,53,15,.12);   color:#78350f; }
+    .fin-stat-lbl { font-size:.72rem; font-weight:600; color:var(--fin-text-muted); text-transform:uppercase; letter-spacing:.05em; }
+    .fin-stat-val { font-size:1.35rem; font-weight:700; color:var(--fin-text); line-height:1.1; margin-top:2px; }
+    @media(max-width:768px){ .fin-stats { grid-template-columns:1fr; } }
+
+    /* ── Layout dos columnas ── */
+    .fin-layout { display:grid; grid-template-columns:340px 1fr; gap:20px; align-items:start; }
+    @media(max-width:992px){ .fin-layout { grid-template-columns:1fr; } }
+
+    /* ── Sidebar de ofertas ── */
+    .ofertas-sidebar {
+        background:var(--fin-surface-2); border:1px solid var(--fin-border);
+        border-radius:var(--radius-lg); padding:14px; box-shadow:var(--shadow-md);
+        position:sticky; top:16px; max-height:calc(100vh - 40px); display:flex; flex-direction:column;
     }
-    .fin-tabs .nav-link.active .tab-count { background:rgba(255,255,255,.25); color:#fff; }
+    .ofertas-sidebar-head {
+        display:flex; align-items:center; justify-content:space-between; gap:8px;
+        padding:4px 6px 10px; margin-bottom:8px;
+        border-bottom:1px solid var(--fin-border);
+    }
+    .ofertas-sidebar-title {
+        font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+        color:var(--fin-text-muted); display:flex; align-items:center; gap:6px;
+    }
+    .ofertas-sidebar-title i { color:var(--fin-warning); }
+    .ofertas-sidebar-count {
+        background:var(--fin-warning-light); color:var(--fin-warning-dark);
+        padding:2px 9px; border-radius:20px; font-size:.7rem; font-weight:700;
+    }
+    .ofertas-search { position:relative; margin-bottom:10px; }
+    .ofertas-search i {
+        position:absolute; left:11px; top:50%; transform:translateY(-50%);
+        color:var(--fin-text-muted); font-size:.95rem;
+    }
+    .ofertas-search input {
+        width:100%; padding:9px 12px 9px 34px;
+        border:1px solid var(--fin-border); border-radius:var(--radius-md);
+        background:var(--fin-surface); color:var(--fin-text); font-size:.85rem;
+        transition:border-color .2s, box-shadow .2s;
+    }
+    .ofertas-search input:focus { outline:none; border-color:var(--fin-warning); box-shadow:0 0 0 3px rgba(245,158,11,.13); }
+    .ofertas-list { overflow-y:auto; padding-right:4px; display:flex; flex-direction:column; gap:6px; }
+    .ofertas-list::-webkit-scrollbar { width:6px; }
+    .ofertas-list::-webkit-scrollbar-track { background:transparent; }
+    .ofertas-list::-webkit-scrollbar-thumb { background:var(--fin-border); border-radius:10px; }
+    .ofertas-list::-webkit-scrollbar-thumb:hover { background:#cbd5e1; }
+    .oferta-item {
+        position:relative;
+        display:flex; align-items:flex-start; gap:11px;
+        padding:11px 13px; border-radius:var(--radius-md);
+        background:transparent; border:1px solid transparent;
+        cursor:pointer; transition:all .2s;
+    }
+    .oferta-item:hover { background:var(--fin-surface); border-color:var(--fin-border); }
+    .oferta-item.active {
+        background:linear-gradient(135deg, rgba(245,158,11,.1) 0%, rgba(245,158,11,.04) 100%);
+        border-color:rgba(245,158,11,.35);
+        box-shadow:0 2px 8px rgba(245,158,11,.08);
+    }
+    .oferta-item.active::before {
+        content:''; position:absolute; left:0; top:8px; bottom:8px; width:3px;
+        background:linear-gradient(180deg, var(--fin-warning) 0%, var(--fin-warning-dark) 100%);
+        border-radius:0 3px 3px 0;
+    }
+    .oferta-item-icon {
+        width:36px; height:36px; border-radius:10px; flex-shrink:0;
+        background:var(--fin-warning-light); color:var(--fin-warning-dark);
+        display:flex; align-items:center; justify-content:center; font-size:1.05rem;
+        transition:all .2s;
+    }
+    .oferta-item.active .oferta-item-icon {
+        background:linear-gradient(135deg, var(--fin-warning) 0%, var(--fin-warning-dark) 100%);
+        color:#fff;
+    }
+    .oferta-item-body { flex:1; min-width:0; }
+    .oferta-item-nombre {
+        font-size:.86rem; font-weight:600; color:var(--fin-text);
+        line-height:1.3; margin-bottom:4px;
+        display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+        overflow:hidden;
+    }
+    .oferta-item-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .oferta-item-chip {
+        display:inline-flex; align-items:center; gap:3px;
+        font-size:.7rem; font-weight:600; padding:2px 8px; border-radius:20px;
+        background:rgba(245,158,11,.1); color:var(--fin-warning-dark);
+    }
+    .oferta-item-chip.monto { background:rgba(120,53,15,.1); color:#78350f; }
+    .ofertas-empty-search {
+        text-align:center; padding:28px 12px;
+        color:var(--fin-text-muted); font-size:.85rem;
+    }
 
     .tab-panel-card {
         background:var(--fin-surface-2); border:1px solid var(--fin-border);
@@ -252,26 +339,83 @@
             <p style="color:var(--fin-text-muted);">No hay cuotas que venzan en los próximos 7 días.</p>
         </div>
     @else
-        <div class="fin-tabs">
-            <ul class="nav nav-tabs" id="proxTabs" role="tablist">
-                @foreach($resultados as $index => $oferta)
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link {{ $index === 0 ? 'active' : '' }}"
-                            data-bs-toggle="tab"
-                            data-bs-target="#tab-content-{{ $oferta['oferta_id'] }}"
-                            type="button" role="tab">
-                            {{ Str::limit($oferta['oferta_nombre'], 28) }}
-                            <span class="tab-count">{{ $oferta['total_estudiantes'] }}</span>
-                        </button>
-                    </li>
-                @endforeach
-            </ul>
+        @php
+            $totalGlobal = 0;
+            $totalEstGlobal = 0;
+            foreach ($resultados as $o) {
+                $totalGlobal += $o['total_monto'] ?? 0;
+                $totalEstGlobal += $o['total_estudiantes'] ?? 0;
+            }
+        @endphp
+
+        {{-- Resumen superior --}}
+        <div class="fin-stats">
+            <div class="fin-stat-card">
+                <div class="fin-stat-icon primary"><i class="ri-book-2-line"></i></div>
+                <div>
+                    <div class="fin-stat-lbl">Ofertas con cuotas próximas</div>
+                    <div class="fin-stat-val">{{ count($resultados) }}</div>
+                </div>
+            </div>
+            <div class="fin-stat-card">
+                <div class="fin-stat-icon warning"><i class="ri-group-line"></i></div>
+                <div>
+                    <div class="fin-stat-lbl">Estudiantes por avisar</div>
+                    <div class="fin-stat-val">{{ $totalEstGlobal }}</div>
+                </div>
+            </div>
+            <div class="fin-stat-card">
+                <div class="fin-stat-icon dark"><i class="ri-money-dollar-circle-line"></i></div>
+                <div>
+                    <div class="fin-stat-lbl">Total próximo a vencer</div>
+                    <div class="fin-stat-val">Bs {{ number_format($totalGlobal, 2) }}</div>
+                </div>
+            </div>
         </div>
 
-        <div class="tab-content">
+        <div class="fin-layout">
+
+            {{-- Sidebar de ofertas --}}
+            <aside class="ofertas-sidebar">
+                <div class="ofertas-sidebar-head">
+                    <span class="ofertas-sidebar-title"><i class="ri-list-unordered"></i> Ofertas</span>
+                    <span class="ofertas-sidebar-count">{{ count($resultados) }}</span>
+                </div>
+                <div class="ofertas-search">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="ofertaSearchInput" placeholder="Buscar oferta...">
+                </div>
+                <div class="ofertas-list" id="ofertasList">
+                    @foreach($resultados as $index => $oferta)
+                        <div class="oferta-item {{ $index === 0 ? 'active' : '' }}"
+                             data-target="tab-content-{{ $oferta['oferta_id'] }}"
+                             data-name="{{ Str::lower($oferta['oferta_nombre']) }}">
+                            <div class="oferta-item-icon"><i class="ri-book-2-line"></i></div>
+                            <div class="oferta-item-body">
+                                <div class="oferta-item-nombre">{{ $oferta['oferta_nombre'] }}</div>
+                                <div class="oferta-item-meta">
+                                    <span class="oferta-item-chip">
+                                        <i class="ri-user-line"></i> {{ $oferta['total_estudiantes'] }}
+                                    </span>
+                                    <span class="oferta-item-chip monto">
+                                        Bs {{ number_format($oferta['total_monto'], 2) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                    <div class="ofertas-empty-search d-none" id="ofertasEmptySearch">
+                        <i class="ri-search-line" style="font-size:1.4rem;display:block;margin-bottom:6px;"></i>
+                        Sin coincidencias
+                    </div>
+                </div>
+            </aside>
+
+            {{-- Panel principal --}}
+            <div class="ofertas-panels" id="ofertasPanels">
             @foreach($resultados as $index => $oferta)
-                <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}"
-                     id="tab-content-{{ $oferta['oferta_id'] }}" role="tabpanel">
+                <div class="oferta-panel {{ $index === 0 ? '' : 'd-none' }}"
+                     id="tab-content-{{ $oferta['oferta_id'] }}">
                     <div class="tab-panel-card">
                         <div class="panel-header">
                             <h5 class="panel-title">
@@ -330,8 +474,35 @@
                     </div>
                 </div>
             @endforeach
+            </div>
         </div>
     @endif
+</div>
+
+{{-- Modal resultado WhatsApp masivo --}}
+<div class="modal fade" id="modalWaResultado" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+        <div class="modal-content" style="border:none;border-radius:var(--radius-lg);overflow:hidden;">
+            <div id="modalWaResultadoHeader" class="text-center px-4 py-4"
+                 style="background:linear-gradient(135deg,#25D366 0%,#128C7E 100%);color:#fff;">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                     style="width:64px;height:64px;background:rgba(255,255,255,.2);">
+                    <i id="modalWaResultadoIcon" class="ri-whatsapp-line" style="font-size:2rem;"></i>
+                </div>
+                <h5 id="modalWaResultadoTitle" class="fw-bold text-white mb-1">Recordatorios abiertos</h5>
+                <p id="modalWaResultadoSubtitle" class="mb-0" style="opacity:.9;font-size:.875rem;">—</p>
+            </div>
+            <div class="modal-body p-4" style="background:var(--fin-surface-2);">
+                <div id="modalWaResultadoBody" class="d-flex flex-column gap-2"></div>
+            </div>
+            <div class="modal-footer" style="background:var(--fin-surface);border-top:1px solid var(--fin-border);">
+                <button class="btn btn-sm fw-semibold" data-bs-dismiss="modal"
+                        style="background:var(--fin-warning);color:#fff;border-radius:var(--radius-md);padding:8px 20px;">
+                    <i class="ri-check-line me-1"></i> Entendido
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 {{-- Modal cuotas --}}
@@ -354,6 +525,40 @@
 <script>
     const deudasData = @json($resultados);
     const modalCuotas = new bootstrap.Modal(document.getElementById('modalCuotas'));
+    const modalWaResultado = new bootstrap.Modal(document.getElementById('modalWaResultado'));
+
+    // ── Switcheo de ofertas (sidebar) ──
+    document.querySelectorAll('.oferta-item').forEach(item => {
+        item.addEventListener('click', function () {
+            const target = this.dataset.target;
+            document.querySelectorAll('.oferta-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.oferta-panel').forEach(p => p.classList.add('d-none'));
+            const panel = document.getElementById(target);
+            if (panel) {
+                panel.classList.remove('d-none');
+                if (window.innerWidth <= 992) {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+    });
+
+    // ── Buscador de ofertas ──
+    const searchInput = document.getElementById('ofertaSearchInput');
+    const emptySearch = document.getElementById('ofertasEmptySearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const q = this.value.trim().toLowerCase();
+            let visibles = 0;
+            document.querySelectorAll('#ofertasList .oferta-item').forEach(item => {
+                const match = !q || (item.dataset.name || '').includes(q);
+                item.style.display = match ? '' : 'none';
+                if (match) visibles++;
+            });
+            if (emptySearch) emptySearch.classList.toggle('d-none', visibles > 0);
+        });
+    }
 
     function escHtml(str) {
         if (!str) return '';
@@ -432,8 +637,63 @@
             window.open(`https://wa.me/591${est.celular.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank');
             enviados++;
         });
-        if (enviados > 0) alert(`${enviados} recordatorio(s) abierto(s)${sinCelular ? `, ${sinCelular} sin celular` : ''}.`);
-        else alert('No hay estudiantes con celular registrado en esta oferta.');
+        mostrarModalWaResultado({
+            enviados: enviados,
+            sinCelular: sinCelular,
+            oferta: oferta.oferta_nombre
+        });
+    }
+
+    function mostrarModalWaResultado({ enviados, sinCelular, oferta }) {
+        const header = document.getElementById('modalWaResultadoHeader');
+        const icon   = document.getElementById('modalWaResultadoIcon');
+        const title  = document.getElementById('modalWaResultadoTitle');
+        const sub    = document.getElementById('modalWaResultadoSubtitle');
+        const body   = document.getElementById('modalWaResultadoBody');
+
+        const exito = enviados > 0;
+        header.style.background = exito
+            ? 'linear-gradient(135deg,#25D366 0%,#128C7E 100%)'
+            : 'linear-gradient(135deg,#f59e0b 0%,#b45309 100%)';
+        icon.className = exito ? 'ri-checkbox-circle-line' : 'ri-error-warning-line';
+        icon.style.fontSize = '2rem';
+        title.textContent = exito ? '¡Recordatorios abiertos!' : 'Sin celulares registrados';
+        sub.textContent = exito
+            ? 'Se abrieron las ventanas de WhatsApp.'
+            : 'No hay estudiantes con celular en esta oferta.';
+
+        const items = [
+            { ico:'ri-book-2-line',   lbl:'Oferta',                  val:escHtml(oferta), cls:'primary' },
+            { ico:'ri-whatsapp-line', lbl:'Recordatorios abiertos',  val:enviados,        cls:'success' }
+        ];
+        if (sinCelular > 0) {
+            items.push({ ico:'ri-phone-off-line', lbl:'Sin celular registrado', val:sinCelular, cls:'warning' });
+        }
+
+        const colorMap = {
+            primary: { bg:'var(--fin-primary-light)', fg:'var(--fin-primary-dark)' },
+            success: { bg:'rgba(37,211,102,.12)',     fg:'#128C7E' },
+            warning: { bg:'rgba(245,158,11,.12)',     fg:'var(--fin-warning-dark)' }
+        };
+
+        body.innerHTML = items.map(it => {
+            const c = colorMap[it.cls];
+            return `
+                <div class="d-flex align-items-center gap-3 p-3"
+                     style="background:var(--fin-surface);border:1px solid var(--fin-border);border-radius:var(--radius-md);">
+                    <div class="d-flex align-items-center justify-content-center rounded-3"
+                         style="width:38px;height:38px;background:${c.bg};color:${c.fg};font-size:1.05rem;flex-shrink:0;">
+                        <i class="${it.ico}"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--fin-text-muted);">${it.lbl}</div>
+                        <div style="font-size:.95rem;font-weight:600;color:var(--fin-text);word-break:break-word;">${it.val}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        modalWaResultado.show();
     }
 </script>
 @endpush
