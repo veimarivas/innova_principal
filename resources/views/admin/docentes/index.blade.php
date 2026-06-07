@@ -1179,6 +1179,42 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before { bac
     </div>
 </div>
 
+<!-- Modal: Habilitar / Deshabilitar acceso virtual -->
+<div class="modal fade" id="modalToggleVirtual" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+        <div class="modal-content">
+            <div class="modal-header" id="tv-header" style="background:linear-gradient(135deg,#fc7b04,#b85500);color:#fff;border-bottom:none;">
+                <h5 class="modal-title" style="color:#fff;font-weight:700;display:flex;align-items:center;gap:8px;">
+                    <i id="tv-header-title-icon" class="ri-shield-check-line"></i>
+                    <span id="tv-header-title-text">Habilitar acceso virtual</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1) brightness(2);opacity:.85;"></button>
+            </div>
+            <div class="modal-body text-center px-4 py-3">
+                <input type="hidden" id="tv-user-id">
+                <div id="tv-icon-ring" style="width:72px;height:72px;border-radius:50%;background:rgba(252,123,4,.12);color:#fc7b04;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:2rem;box-shadow:inset 0 0 0 2px currentColor;opacity:1;">
+                    <i id="tv-icon" class="ri-shield-user-line"></i>
+                </div>
+                <p id="tv-titulo" style="font-weight:700;font-size:1rem;margin-bottom:6px;color:#1f2937;">¿Habilitar acceso al portal virtual?</p>
+                <p style="font-size:.92rem;color:#b85500;font-weight:600;margin-bottom:6px;">
+                    <strong id="tv-nombre">—</strong>
+                </p>
+                <p id="tv-mensaje" style="font-size:.82rem;color:#6b7280;margin-bottom:0;">
+                    El docente podrá ingresar al portal virtual nuevamente.
+                </p>
+            </div>
+            <div class="modal-footer justify-content-center gap-3" style="background:#f8fafc;border-top:1px solid #f1f5f9;">
+                <button type="button" class="btn btn-modal-cancel px-4" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-modal-submit px-4" id="tv-confirmar">
+                    <i class="ri-shield-check-line"></i> Sí, habilitar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="toastContainer" class="toast-container"></div>
 </div>
 @endsection
@@ -1345,6 +1381,32 @@ function previewImage(input, previewId) {
                         } else {
                             btns += '<button type="button" class="doc-btn-action" title="Sin cuenta" disabled style="opacity:0.3;cursor:not-allowed;"><i class="ri-whatsapp-line"></i></button>';
                         }
+
+                        // Toggle acceso virtual (habilitar/deshabilitar cuenta para el portal virtual)
+                        if (d.tiene_usuario && d.usuario_id) {
+                            const tieneVirtual = !!d.acceso_virtual;
+                            const tieneAdmin   = !!d.acceso_admin;
+                            if (tieneVirtual) {
+                                btns += '<button type="button" class="doc-btn-action btn-toggle-virtual"'
+                                    + ' data-user-id="' + d.usuario_id + '"'
+                                    + ' data-nombre="' + nombre + '"'
+                                    + ' data-es-virtual="1"'
+                                    + ' data-acceso-admin="' + (tieneAdmin ? '1' : '0') + '"'
+                                    + ' style="background:rgba(22,163,74,.10);color:#16a34a;border:1px solid rgba(22,163,74,.25);"'
+                                    + ' title="Cuenta habilitada — Click para deshabilitar el acceso al portal virtual">'
+                                    + '<i class="ri-shield-check-line"></i></button>';
+                            } else {
+                                btns += '<button type="button" class="doc-btn-action btn-toggle-virtual"'
+                                    + ' data-user-id="' + d.usuario_id + '"'
+                                    + ' data-nombre="' + nombre + '"'
+                                    + ' data-es-virtual="0"'
+                                    + ' data-acceso-admin="' + (tieneAdmin ? '1' : '0') + '"'
+                                    + ' style="background:rgba(217,119,6,.10);color:#d97706;border:1px solid rgba(217,119,6,.25);"'
+                                    + ' title="Cuenta deshabilitada para el portal virtual — Click para habilitar">'
+                                    + '<i class="ri-shield-cross-line"></i></button>';
+                            }
+                        }
+
                         btns += '<button type="button" class="doc-btn-action doc-btn-action-delete btn-accion-eliminar" data-id="' + d.id + '" data-nombre="' + nombre + '" title="Eliminar docente"><i class="ri-delete-bin-fill"></i></button>'
                             + '</div>';
                         return btns;
@@ -1449,6 +1511,76 @@ function previewImage(input, previewId) {
         $('#editCelular').on('input', function () {
             this.value = this.value.replace(/\D/g, '').slice(0, 8);
             validarCelular('editCelular','iconECelular','fbECelular');
+        });
+
+        // Toggle acceso virtual (habilitar / deshabilitar) desde docentes
+        $(document).on('click', '.btn-toggle-virtual', function (e) {
+            e.stopPropagation();
+            const userId         = $(this).data('user-id');
+            const nombre         = $(this).data('nombre');
+            const esVirtualAhora = $(this).data('es-virtual') == 1;
+            const accesoAdmin    = $(this).data('acceso-admin') == 1;
+
+            if (!userId) {
+                toast('error', 'No se encontró el usuario asociado.');
+                return;
+            }
+
+            $('#tv-user-id').val(userId);
+            $('#tv-nombre').text(nombre);
+
+            if (esVirtualAhora) {
+                $('#tv-titulo').text('¿Deshabilitar acceso al portal virtual?');
+                $('#tv-icon-ring').css({ background: 'rgba(220,38,38,.10)', color: '#dc2626' });
+                $('#tv-icon').attr('class', 'ri-shield-cross-line');
+                $('#tv-header').css({ background: 'linear-gradient(135deg,#dc2626,#b91c1c)' });
+                $('#tv-header-title-text').text('Deshabilitar acceso virtual');
+                $('#tv-header-title-icon').attr('class', 'ri-shield-cross-line');
+                let msg = 'El docente ya no podrá ingresar al portal virtual.';
+                if (accesoAdmin) {
+                    msg += ' Conservará su acceso al panel administrativo.';
+                } else {
+                    msg += ' Como no tiene otro acceso, no podrá iniciar sesión hasta que se le habilite nuevamente.';
+                }
+                $('#tv-mensaje').text(msg);
+                $('#tv-confirmar').removeClass('btn-modal-submit').addClass('btn-danger-modal')
+                    .html('<i class="ri-shield-cross-line"></i> Sí, deshabilitar');
+            } else {
+                $('#tv-titulo').text('¿Habilitar acceso al portal virtual?');
+                $('#tv-icon-ring').css({ background: 'rgba(252,123,4,.12)', color: '#fc7b04' });
+                $('#tv-icon').attr('class', 'ri-shield-user-line');
+                $('#tv-header').css({ background: 'linear-gradient(135deg,#fc7b04,#b85500)' });
+                $('#tv-header-title-text').text('Habilitar acceso virtual');
+                $('#tv-header-title-icon').attr('class', 'ri-shield-check-line');
+                let msg = 'El docente podrá ingresar al portal virtual nuevamente.';
+                if (accesoAdmin) {
+                    msg += ' Como también tiene acceso al panel administrativo, verá el selector de modo al iniciar sesión.';
+                }
+                $('#tv-mensaje').text(msg);
+                $('#tv-confirmar').removeClass('btn-danger-modal').addClass('btn-modal-submit')
+                    .html('<i class="ri-shield-check-line"></i> Sí, habilitar');
+            }
+
+            new bootstrap.Modal(document.getElementById('modalToggleVirtual')).show();
+        });
+
+        $('#tv-confirmar').on('click', function () {
+            const userId = $('#tv-user-id').val();
+            const $btn = $(this);
+            const origLabel = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Procesando…');
+            $.post('/admin/users/' + userId + '/toggle-acceso-virtual', { _token: CSRF })
+                .done(function (r) {
+                    bootstrap.Modal.getInstance(document.getElementById('modalToggleVirtual'))?.hide();
+                    tabla.ajax.reload(null, false);
+                    toast('success', r.message || 'Acceso actualizado correctamente.');
+                })
+                .fail(function (xhr) {
+                    toast('error', xhr.responseJSON?.message || 'No se pudo actualizar el acceso.');
+                })
+                .always(function () {
+                    $btn.prop('disabled', false).html(origLabel);
+                });
         });
 
         $(document).on('click', '.btn-accion-eliminar', function () {

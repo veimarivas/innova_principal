@@ -357,14 +357,15 @@ public function verificarDocumento(Request $request, $id)
 
         $data = $estudiantes->map(function ($e) use ($conMoodle) {
             $arr = $e->toArray();
-            $arr['tiene_cuenta_sistema'] = $e->persona && $e->persona->usuario !== null;
+            $usuario = $e->persona?->usuario;
+            $arr['tiene_cuenta_sistema'] = $usuario !== null;
             $arr['tiene_cuenta_moodle']  = in_array($e->id, $conMoodle);
-            $arr['usuario_username'] = $e->persona && $e->persona->usuario
-                ? $e->persona->usuario->username
-                : null;
-            $arr['usuario_moodle_password'] = $e->persona && $e->persona->usuario
-                ? $e->persona->usuario->moodle_password
-                : null;
+            $arr['tiene_usuario']        = $usuario !== null;
+            $arr['usuario_id']           = $usuario?->id;
+            $arr['acceso_admin']         = (bool) ($usuario?->acceso_admin);
+            $arr['acceso_virtual']       = (bool) ($usuario?->acceso_virtual);
+            $arr['usuario_username']     = $usuario?->username;
+            $arr['usuario_moodle_password'] = $usuario?->moodle_password;
             return $arr;
         });
 

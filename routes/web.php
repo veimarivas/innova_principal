@@ -522,6 +522,7 @@ Route::prefix('admin/users')->middleware(['auth', 'isAdmin'])->name('admin.users
     Route::post('/{id}/toggle-estado',     [UserController::class, 'toggleEstado'])->name('toggleEstado');
     Route::post('/{id}/toggle-acceso-admin',   [UserController::class, 'toggleAccesoAdmin'])->name('toggleAccesoAdmin');
     Route::post('/{id}/toggle-acceso-virtual', [UserController::class, 'toggleAccesoVirtual'])->name('toggleAccesoVirtual');
+    Route::get('/{id}/info-trabajador',        [UserController::class, 'infoTrabajador'])->name('infoTrabajador');
     Route::get('/{id}/roles',   [UserController::class, 'obtenerRoles'])->name('obtenerRoles');
     Route::post('/{id}/roles',  [UserController::class, 'asignarRoles'])->name('asignarRoles');
 });

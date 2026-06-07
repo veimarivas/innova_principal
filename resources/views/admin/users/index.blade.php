@@ -60,9 +60,9 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
 
 /* ── Tabs de tipo de usuario ── */
 .tipo-usuario-tabs {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
 }
-@media (max-width: 700px) { .tipo-usuario-tabs { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .tipo-usuario-tabs { grid-template-columns: 1fr; } }
 .tipo-tab {
     background: #fff; border: 2px solid #e9ecef; border-radius: 14px;
     padding: 14px 18px; display: flex; align-items: center; gap: 14px;
@@ -89,6 +89,14 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
     position: relative; z-index: 1;
 }
 .tipo-tab-icon.tipo-virtual { background: linear-gradient(135deg, #2c5fb7, #1e3a8a); box-shadow: 0 4px 12px rgba(44,95,183,.30); }
+.tipo-tab-icon.tipo-sin-acceso { background: linear-gradient(135deg, #9ca3af, #6b7280); box-shadow: 0 4px 12px rgba(107,114,128,.30); }
+.tipo-tab[data-tipo="sin_acceso"]:hover { border-color: #d1d5db; }
+.tipo-tab[data-tipo="sin_acceso"].active {
+    border-color: #6b7280;
+    background: linear-gradient(135deg, #f3f4f6 0%, #fff 100%);
+    box-shadow: 0 6px 18px rgba(107,114,128,.18);
+}
+.tipo-tab[data-tipo="sin_acceso"].active .tipo-tab-count { color: #6b7280; }
 .tipo-tab-info { flex: 1; position: relative; z-index: 1; }
 .tipo-tab-label { font-weight: 700; font-size: 1rem; color: #1f2937; }
 .tipo-tab-desc { font-size: .78rem; color: #6b7280; margin-top: 2px; }
@@ -136,6 +144,92 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
 .access-badge.admin { background: rgba(252,123,4,.12); color: #b85500; border: 1px solid rgba(252,123,4,.30); }
 .access-badge.virtual { background: rgba(44,95,183,.10); color: #1e3a8a; border: 1px solid rgba(44,95,183,.25); }
 .access-badge i { font-size: .78rem; }
+
+/* ── Modal Toggle Admin: alerts/cards de detalle ── */
+.ta-alert {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px; border-radius: 12px;
+    font-size: .85rem;
+}
+.ta-alert i { font-size: 1.4rem; margin-top: 1px; flex-shrink: 0; }
+.ta-alert strong { display: block; font-weight: 700; margin-bottom: 2px; }
+.ta-alert .small { font-size: .75rem; opacity: .85; }
+.ta-alert-success {
+    background: linear-gradient(135deg, rgba(22,163,74,.10), rgba(22,163,74,.04));
+    border: 1.5px solid rgba(22,163,74,.30); color: #15803d;
+}
+.ta-alert-success i { color: #16a34a; }
+.ta-alert-warning {
+    background: linear-gradient(135deg, #fff4e6, #fff);
+    border: 1.5px dashed rgba(217,119,6,.45); color: #92400e;
+}
+.ta-alert-warning i { color: #d97706; }
+
+.ta-persona-card {
+    background: #f8fafc; border: 1px solid #f1f5f9;
+    border-radius: 12px; padding: 12px 16px;
+}
+html[data-bs-theme="dark"] .ta-persona-card {
+    background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06);
+}
+.ta-persona-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; font-size: .85rem;
+}
+.ta-persona-row + .ta-persona-row { border-top: 1px dashed #e5e7eb; }
+html[data-bs-theme="dark"] .ta-persona-row + .ta-persona-row { border-top-color: rgba(255,255,255,.06); }
+.ta-persona-row span {
+    color: #6b7280; font-weight: 600; font-size: .75rem;
+    text-transform: uppercase; letter-spacing: .03em;
+}
+.ta-persona-row strong { color: #1f2937; font-weight: 600; }
+html[data-bs-theme="dark"] .ta-persona-row strong { color: #f1f5f9; }
+
+.ta-seccion-titulo {
+    font-size: .78rem; font-weight: 700; color: #b85500;
+    text-transform: uppercase; letter-spacing: .04em;
+    margin: 10px 0 8px; display: flex; align-items: center; gap: 6px;
+    padding-bottom: 4px; border-bottom: 1.5px solid rgba(252,123,4,.18);
+}
+.ta-cargos-list { display: flex; flex-direction: column; gap: 8px; }
+.ta-cargo-item {
+    background: #fff; border: 1.5px solid #fed7aa;
+    border-left: 4px solid #fc7b04;
+    border-radius: 10px; padding: 10px 14px;
+    display: flex; flex-direction: column; gap: 4px;
+}
+html[data-bs-theme="dark"] .ta-cargo-item {
+    background: rgba(252,123,4,.05); border-color: rgba(252,123,4,.20);
+}
+.ta-cargo-nombre {
+    font-weight: 700; font-size: .92rem; color: #b85500;
+    display: flex; align-items: center; gap: 6px;
+}
+.ta-cargo-detalle {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    font-size: .76rem; color: #6b7280;
+}
+.ta-cargo-detalle span { display: inline-flex; align-items: center; gap: 4px; }
+.ta-cargo-detalle i { color: #fc7b04; font-size: .85rem; }
+.ta-cargo-estado {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+}
+.ta-cargo-estado.vigente { background: rgba(22,163,74,.12); color: #15803d; }
+.ta-cargo-estado.no-vigente { background: rgba(220,38,38,.10); color: #b91c1c; }
+.ta-cargos-vacio {
+    text-align: center; color: #9ca3af; font-size: .85rem;
+    padding: 18px; border: 1.5px dashed #e5e7eb; border-radius: 10px;
+}
+
+.ta-info-box {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 10px 12px; background: rgba(252,123,4,.07);
+    border-left: 3px solid #fc7b04; border-radius: 6px;
+    font-size: .8rem; color: #475569;
+}
+.ta-info-box i { color: #fc7b04; font-size: 1rem; flex-shrink: 0; }
+html[data-bs-theme="dark"] .ta-info-box { color: #cbd5e1; }
 </style>
 @endsection
 
@@ -187,6 +281,14 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
                 <div class="tipo-tab-desc">Docentes y estudiantes</div>
             </div>
             <div class="tipo-tab-count" id="cnt-virtual">0</div>
+        </button>
+        <button type="button" class="tipo-tab" data-tipo="sin_acceso">
+            <div class="tipo-tab-icon tipo-sin-acceso"><i class="ri-shield-cross-line"></i></div>
+            <div class="tipo-tab-info">
+                <div class="tipo-tab-label">Sin Acceso</div>
+                <div class="tipo-tab-desc">Cuentas deshabilitadas</div>
+            </div>
+            <div class="tipo-tab-count" id="cnt-sin_acceso">0</div>
         </button>
     </div>
 
@@ -480,6 +582,134 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
     </div>
 </div>
 
+<!-- Modal Toggle Acceso Admin -->
+<div class="modal fade" id="modalToggleAdmin" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:560px;">
+        <div class="modal-content">
+            <div class="modal-header" id="ta-header" style="background:linear-gradient(135deg,#fc7b04,#b85500);color:#fff;border-bottom:none;">
+                <h5 class="modal-title" style="color:#fff;font-weight:700;display:flex;align-items:center;gap:8px;">
+                    <i id="ta-header-icon" class="ri-shield-user-line"></i>
+                    <span id="ta-header-text">Acceso al Panel Administrativo</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1) brightness(2);opacity:.85;"></button>
+            </div>
+
+            <div class="modal-body px-4 py-3">
+                <input type="hidden" id="ta-id">
+
+                <!-- Estado de carga -->
+                <div id="ta-loading" class="text-center py-4" style="display:none;">
+                    <span class="spinner-border" style="color:#fc7b04;"></span>
+                    <div class="mt-2 text-muted small">Verificando información del trabajador...</div>
+                </div>
+
+                <!-- Vista simple (cuando NO se va a habilitar — solo deshabilitar) -->
+                <div id="ta-vista-simple" class="text-center" style="display:none;">
+                    <div id="ta-icon-ring" style="width:72px;height:72px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:2rem;box-shadow:inset 0 0 0 2px currentColor;">
+                        <i id="ta-icon" class="ri-shield-user-line"></i>
+                    </div>
+                    <p id="ta-titulo" style="font-weight:700;font-size:1rem;margin-bottom:6px;color:#1f2937;">¿Otorgar acceso al panel administrativo?</p>
+                    <p style="font-size:.92rem;color:#b85500;font-weight:600;margin-bottom:6px;">
+                        <strong id="ta-nombre-simple">—</strong>
+                    </p>
+                    <p id="ta-mensaje" style="font-size:.82rem;color:#6b7280;margin-bottom:0;">—</p>
+                </div>
+
+                <!-- Vista detallada: persona ES trabajador -->
+                <div id="ta-vista-trabajador" style="display:none;">
+                    <div class="ta-alert ta-alert-success mb-3">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <div>
+                            <strong>Persona registrada como trabajador.</strong>
+                            <div class="small">Confirma para habilitar nuevamente el acceso al panel administrativo.</div>
+                        </div>
+                    </div>
+
+                    <div class="ta-persona-card mb-3">
+                        <div class="ta-persona-row"><span>Nombre</span><strong id="ta-tp-nombre">—</strong></div>
+                        <div class="ta-persona-row"><span>Carnet</span><strong id="ta-tp-carnet">—</strong></div>
+                        <div class="ta-persona-row"><span>Correo</span><strong id="ta-tp-correo">—</strong></div>
+                        <div class="ta-persona-row"><span>Celular</span><strong id="ta-tp-celular">—</strong></div>
+                    </div>
+
+                    <div class="ta-seccion-titulo">
+                        <i class="ri-briefcase-line"></i> Cargos asignados (<span id="ta-cargos-count">0</span>)
+                    </div>
+                    <div id="ta-cargos-list" class="ta-cargos-list"></div>
+                </div>
+
+                <!-- Vista detallada: persona NO es trabajador -->
+                <div id="ta-vista-no-trabajador" style="display:none;">
+                    <div class="ta-alert ta-alert-warning mb-3">
+                        <i class="ri-error-warning-fill"></i>
+                        <div>
+                            <strong>Esta persona no está registrada como trabajador.</strong>
+                            <div class="small">Para tener acceso al panel administrativo necesita ser registrada como trabajador y tener al menos un cargo asignado.</div>
+                        </div>
+                    </div>
+
+                    <div class="ta-persona-card mb-3">
+                        <div class="ta-persona-row"><span>Nombre</span><strong id="ta-np-nombre">—</strong></div>
+                        <div class="ta-persona-row"><span>Carnet</span><strong id="ta-np-carnet">—</strong></div>
+                        <div class="ta-persona-row"><span>Correo</span><strong id="ta-np-correo">—</strong></div>
+                        <div class="ta-persona-row"><span>Celular</span><strong id="ta-np-celular">—</strong></div>
+                    </div>
+
+                    <div class="ta-info-box">
+                        <i class="ri-information-line"></i>
+                        <span>Al confirmar serás redirigido a la sección de trabajadores con la búsqueda pre-cargada para que puedas asignarle uno o más cargos.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer justify-content-center gap-3" style="background:#f8fafc;border-top:1px solid #f1f5f9;">
+                <button type="button" class="btn btn-modal-cancel px-4" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-modal-submit px-4" id="ta-confirmar">
+                    <i class="ri-shield-user-line"></i> Otorgar acceso admin
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Toggle Acceso Virtual -->
+<div class="modal fade" id="modalToggleVirtual" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+        <div class="modal-content">
+            <div class="modal-header" id="tv-header" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border-bottom:none;">
+                <h5 class="modal-title" style="color:#fff;font-weight:700;display:flex;align-items:center;gap:8px;">
+                    <i id="tv-header-title-icon" class="ri-presentation-line"></i>
+                    <span id="tv-header-title-text">Acceso al Portal Virtual</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1) brightness(2);opacity:.85;"></button>
+            </div>
+            <div class="modal-body text-center px-4 py-3">
+                <input type="hidden" id="tv-id">
+                <div id="tv-icon-ring" style="width:72px;height:72px;border-radius:50%;background:rgba(37,99,235,.12);color:#2563eb;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:2rem;box-shadow:inset 0 0 0 2px currentColor;opacity:1;">
+                    <i id="tv-icon" class="ri-presentation-line"></i>
+                </div>
+                <p id="tv-titulo" style="font-weight:700;font-size:1rem;margin-bottom:6px;color:#1f2937;">¿Otorgar acceso al portal virtual?</p>
+                <p style="font-size:.92rem;color:#b85500;font-weight:600;margin-bottom:6px;">
+                    <strong id="tv-nombre">—</strong>
+                </p>
+                <p id="tv-mensaje" style="font-size:.82rem;color:#6b7280;margin-bottom:0;">
+                    El usuario podrá entrar al portal virtual.
+                </p>
+            </div>
+            <div class="modal-footer justify-content-center gap-3" style="background:#f8fafc;border-top:1px solid #f1f5f9;">
+                <button type="button" class="btn btn-modal-cancel px-4" data-bs-dismiss="modal">
+                    <i class="ri-close-line me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-modal-submit px-4" id="tv-confirmar">
+                    <i class="ri-presentation-line"></i> Otorgar acceso virtual
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="toastContainer" class="toast-container"></div>
 @endsection
 
@@ -598,11 +828,47 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
                                   + 'title="Habilitar cuenta"><i class="ri-shield-check-line"></i></button>';
                         }
 
-                        // 4) Asignar Roles (Spatie)
-                        btns += '<button type="button" class="user-btn-action user-btn-reset btn-asignar-roles" '
-                              + 'data-id="' + d.id + '" data-nombre="' + nombre + '" '
-                              + 'style="background:#fff4e6;color:#b85500;" '
-                              + 'title="Asignar roles"><i class="ri-shield-user-line"></i></button>';
+                        // 4) Asignar Roles (Spatie) — solo si el usuario tiene acceso admin
+                        if (d.acceso_admin) {
+                            btns += '<button type="button" class="user-btn-action user-btn-reset btn-asignar-roles" '
+                                  + 'data-id="' + d.id + '" data-nombre="' + nombre + '" '
+                                  + 'style="background:#fff4e6;color:#b85500;border:1px solid rgba(252,123,4,.25);" '
+                                  + 'title="Asignar roles"><i class="ri-shield-keyhole-line"></i></button>';
+                        }
+
+                        // 4b) Toggle acceso ADMIN — siempre visible
+                        {
+                            const yaEsAdmin = !!d.acceso_admin;
+                            const colorBg   = yaEsAdmin ? '#dcfce7' : '#fff4e6';
+                            const colorFg   = yaEsAdmin ? '#16a34a' : '#d97706';
+                            const icono     = yaEsAdmin ? 'ri-shield-check-line' : 'ri-shield-cross-line';
+                            const titulo    = yaEsAdmin
+                                ? 'Acceso admin habilitado — Click para deshabilitar'
+                                : 'Acceso admin deshabilitado — Click para habilitar';
+                            btns += '<button type="button" class="user-btn-action btn-toggle-admin" '
+                                  + 'data-id="' + d.id + '" data-nombre="' + nombre + '" '
+                                  + 'data-es-admin="' + (yaEsAdmin ? '1' : '0') + '" '
+                                  + 'data-otro-acceso="' + (d.acceso_virtual ? '1' : '0') + '" '
+                                  + 'style="background:' + colorBg + ';color:' + colorFg + ';border:1px solid ' + colorFg + '33;" '
+                                  + 'title="' + titulo + '"><i class="' + icono + '"></i></button>';
+                        }
+
+                        // 4c) Toggle acceso VIRTUAL — siempre visible
+                        {
+                            const yaEsVirtual = !!d.acceso_virtual;
+                            const colorBg     = yaEsVirtual ? '#dbeafe' : '#fff4e6';
+                            const colorFg     = yaEsVirtual ? '#2563eb' : '#d97706';
+                            const icono       = yaEsVirtual ? 'ri-presentation-fill' : 'ri-presentation-line';
+                            const titulo      = yaEsVirtual
+                                ? 'Acceso al portal virtual habilitado — Click para deshabilitar'
+                                : 'Acceso al portal virtual deshabilitado — Click para habilitar';
+                            btns += '<button type="button" class="user-btn-action btn-toggle-virtual" '
+                                  + 'data-id="' + d.id + '" data-nombre="' + nombre + '" '
+                                  + 'data-es-virtual="' + (yaEsVirtual ? '1' : '0') + '" '
+                                  + 'data-otro-acceso="' + (d.acceso_admin ? '1' : '0') + '" '
+                                  + 'style="background:' + colorBg + ';color:' + colorFg + ';border:1px solid ' + colorFg + '33;" '
+                                  + 'title="' + titulo + '"><i class="' + icono + '"></i></button>';
+                        }
 
                         // 5) Eliminar
                         btns += '<button type="button" class="user-btn-action user-btn-delete btn-accion-eliminar" '
@@ -651,10 +917,12 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
     }
 
     function actualizarContadorOtroTipo() {
-        const otroTipo = tipoActual === 'admin' ? 'virtual' : 'admin';
-        $.get('{{ route("admin.users.listar") }}', { tipo: otroTipo })
-            .done(r => $('#cnt-' + otroTipo).text((r.data || []).length))
-            .fail(() => {});
+        ['admin', 'virtual', 'sin_acceso'].forEach(function (tipo) {
+            if (tipo === tipoActual) return;
+            $.get('{{ route("admin.users.listar") }}', { tipo: tipo })
+                .done(r => $('#cnt-' + tipo).text((r.data || []).length))
+                .fail(() => {});
+        });
     }
 
     let idReiniciar = null;
@@ -668,7 +936,7 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
     window.generarPasswordDefault = generarPasswordDefault;
 
     function bindEvents() {
-        // === Cambio de tab (Administradores / Virtual) ===
+        // === Cambio de tab (Administradores / Virtual / Sin acceso) ===
         $('.tipo-tab').on('click', function () {
             const t = $(this).data('tipo');
             if (t === tipoActual) return;
@@ -678,9 +946,12 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
             if (t === 'admin') {
                 $('#tabla-titulo').text('Usuarios Administradores');
                 $('#tabla-subtitulo').text('Cuentas con acceso al panel administrativo');
-            } else {
+            } else if (t === 'virtual') {
                 $('#tabla-titulo').text('Usuarios del Portal Virtual');
                 $('#tabla-subtitulo').text('Docentes y estudiantes con acceso a la plataforma');
+            } else if (t === 'sin_acceso') {
+                $('#tabla-titulo').text('Cuentas Sin Acceso');
+                $('#tabla-subtitulo').text('Usuarios deshabilitados — habilite al menos un acceso para que puedan iniciar sesión');
             }
             tabla.ajax.reload();
         });
@@ -819,7 +1090,214 @@ html[data-bs-theme="dark"] .btn-search:hover { background: #ff9d4d; }
             openModal('modalEliminar');
         });
 
-        // Asignar Roles (Spatie)
+        // Estado del modal toggle-admin: 'deshabilitar' | 'habilitar-trabajador' | 'habilitar-no-trabajador'
+        let taAccion = null;
+        let taCarnetParaRedirect = null;
+
+        // Toggle acceso ADMIN
+        $(document).on('click', '.btn-toggle-admin', function () {
+            const id = $(this).data('id');
+            const nombre = $(this).data('nombre');
+            const yaEsAdmin = $(this).data('es-admin') == 1;
+            const tieneVirtual = $(this).data('otro-acceso') == 1;
+            $('#ta-id').val(id);
+
+            // Reset vistas
+            $('#ta-vista-simple, #ta-vista-trabajador, #ta-vista-no-trabajador').hide();
+            $('#ta-loading').hide();
+
+            if (yaEsAdmin) {
+                // ── Deshabilitar (vista simple) ──
+                taAccion = 'deshabilitar';
+                taCarnetParaRedirect = null;
+                $('#ta-header').css('background', 'linear-gradient(135deg,#dc2626,#b91c1c)');
+                $('#ta-header-icon').attr('class', 'ri-shield-cross-line');
+                $('#ta-header-text').text('Quitar acceso administrativo');
+                $('#ta-icon-ring').css({ background: 'rgba(220,38,38,.10)', color: '#dc2626' });
+                $('#ta-icon').attr('class', 'ri-shield-cross-line');
+                $('#ta-titulo').text('¿Quitar acceso al panel administrativo?');
+                $('#ta-nombre-simple').text(nombre);
+                let msg = 'El usuario dejará de poder ingresar al panel administrativo.';
+                msg += tieneVirtual
+                    ? ' Conservará su acceso al portal virtual.'
+                    : ' Como no tiene otro acceso, no podrá iniciar sesión hasta que se le habilite nuevamente.';
+                $('#ta-mensaje').text(msg);
+                $('#ta-vista-simple').show();
+                $('#ta-confirmar').removeClass('btn-modal-submit').addClass('btn-danger-modal')
+                    .html('<i class="ri-shield-cross-line"></i> Sí, quitar acceso')
+                    .prop('disabled', false);
+                openModal('modalToggleAdmin');
+                return;
+            }
+
+            // ── Habilitar: primero consultar si es trabajador ──
+            $('#ta-header').css('background', 'linear-gradient(135deg,#fc7b04,#b85500)');
+            $('#ta-header-icon').attr('class', 'ri-shield-user-line');
+            $('#ta-header-text').text('Habilitar acceso administrativo');
+            $('#ta-loading').show();
+            $('#ta-confirmar').prop('disabled', true).html('<i class="ri-shield-user-line"></i> Sí, habilitar');
+            openModal('modalToggleAdmin');
+
+            $.get('/admin/users/' + id + '/info-trabajador').done(function (r) {
+                $('#ta-loading').hide();
+                if (!r.success) {
+                    toast('error', r.message || 'Error al obtener información.');
+                    closeModal('modalToggleAdmin');
+                    return;
+                }
+
+                const p = r.persona || {};
+                const nombreCompleto = [p.nombres, p.apellido_paterno, p.apellido_materno].filter(Boolean).join(' ');
+                taCarnetParaRedirect = p.carnet || null;
+
+                if (r.es_trabajador) {
+                    // ── Vista: es trabajador ──
+                    taAccion = 'habilitar-trabajador';
+                    $('#ta-tp-nombre').text(nombreCompleto || '—');
+                    $('#ta-tp-carnet').text(p.carnet || '—');
+                    $('#ta-tp-correo').text(p.correo || '—');
+                    $('#ta-tp-celular').text(p.celular || '—');
+
+                    const cargos = r.cargos || [];
+                    $('#ta-cargos-count').text(cargos.length);
+
+                    if (cargos.length === 0) {
+                        $('#ta-cargos-list').html('<div class="ta-cargos-vacio"><i class="ri-error-warning-line"></i> Es trabajador pero no tiene cargos asignados todavía.</div>');
+                    } else {
+                        let html = '';
+                        cargos.forEach(function (c) {
+                            const estadoClass = (c.estado || '').toLowerCase() === 'vigente' ? 'vigente' : 'no-vigente';
+                            html += '<div class="ta-cargo-item">'
+                                + '  <div class="ta-cargo-nombre"><i class="ri-briefcase-fill"></i> ' + escHtml(c.cargo || '—')
+                                + '    <span class="ta-cargo-estado ' + estadoClass + '">' + escHtml(c.estado || '—') + '</span>'
+                                + '  </div>'
+                                + '  <div class="ta-cargo-detalle">'
+                                + (c.sede ? '<span><i class="ri-building-line"></i>' + escHtml(c.sede) + '</span>' : '')
+                                + (c.sucursal ? '<span><i class="ri-building-2-line"></i>' + escHtml(c.sucursal) + '</span>' : '')
+                                + (c.fecha_ingreso ? '<span><i class="ri-calendar-event-line"></i>Ingreso: ' + escHtml(c.fecha_ingreso) + '</span>' : '')
+                                + (c.fecha_termino ? '<span><i class="ri-calendar-close-line"></i>Término: ' + escHtml(c.fecha_termino) + '</span>' : '')
+                                + '  </div>'
+                                + '</div>';
+                        });
+                        $('#ta-cargos-list').html(html);
+                    }
+
+                    $('#ta-vista-trabajador').show();
+                    $('#ta-confirmar')
+                        .removeClass('btn-danger-modal').addClass('btn-modal-submit')
+                        .html('<i class="ri-shield-check-line"></i> Sí, habilitar acceso admin')
+                        .prop('disabled', false);
+                } else {
+                    // ── Vista: NO es trabajador ──
+                    taAccion = 'habilitar-no-trabajador';
+                    $('#ta-np-nombre').text(nombreCompleto || '—');
+                    $('#ta-np-carnet').text(p.carnet || '—');
+                    $('#ta-np-correo').text(p.correo || '—');
+                    $('#ta-np-celular').text(p.celular || '—');
+                    $('#ta-vista-no-trabajador').show();
+                    $('#ta-confirmar')
+                        .removeClass('btn-danger-modal').addClass('btn-modal-submit')
+                        .html('<i class="ri-user-add-line"></i> Registrar como Trabajador')
+                        .prop('disabled', false);
+                }
+            }).fail(function () {
+                $('#ta-loading').hide();
+                toast('error', 'Error al obtener información del trabajador.');
+                closeModal('modalToggleAdmin');
+            });
+        });
+
+        $('#ta-confirmar').on('click', function () {
+            const id = $('#ta-id').val();
+            const $btn = $(this);
+            const origLabel = $btn.html();
+
+            // Si NO es trabajador → redirigir al panel trabajadores
+            if (taAccion === 'habilitar-no-trabajador') {
+                if (taCarnetParaRedirect) {
+                    sessionStorage.setItem('trab_carnet_busqueda', taCarnetParaRedirect);
+                    window.location.href = '/admin/trabajadores?carnet=' + encodeURIComponent(taCarnetParaRedirect);
+                } else {
+                    window.location.href = '/admin/trabajadores';
+                }
+                return;
+            }
+
+            // Otros casos → toggle del acceso admin
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Procesando…');
+            $.post('/admin/users/' + id + '/toggle-acceso-admin', { _token: '{{ csrf_token() }}' })
+                .done(function (r) {
+                    closeModal('modalToggleAdmin');
+                    tabla.ajax.reload(null, false);
+                    actualizarContadorOtroTipo();
+                    toast('success', r.message || 'Acceso actualizado.');
+                })
+                .fail(function (xhr) {
+                    toast('error', xhr.responseJSON?.message || 'No se pudo actualizar el acceso.');
+                })
+                .always(function () {
+                    $btn.prop('disabled', false).html(origLabel);
+                });
+        });
+
+        // Toggle acceso VIRTUAL
+        $(document).on('click', '.btn-toggle-virtual', function () {
+            const id = $(this).data('id');
+            const nombre = $(this).data('nombre');
+            const yaEsVirtual = $(this).data('es-virtual') == 1;
+            const tieneAdmin  = $(this).data('otro-acceso') == 1;
+            $('#tv-id').val(id);
+            $('#tv-nombre').text(nombre);
+            if (yaEsVirtual) {
+                $('#tv-icon-ring').css({ background: 'rgba(220,38,38,.10)', color: '#dc2626' });
+                $('#tv-icon').attr('class', 'ri-shield-cross-line');
+                $('#tv-header').css({ background: 'linear-gradient(135deg,#dc2626,#b91c1c)' });
+                $('#tv-header-title-text').text('Quitar acceso al portal virtual');
+                $('#tv-header-title-icon').attr('class', 'ri-shield-cross-line');
+                $('#tv-titulo').text('¿Quitar acceso al portal virtual?');
+                let msg = 'El usuario dejará de poder ingresar al portal virtual.';
+                msg += tieneAdmin
+                    ? ' Conservará su acceso al panel administrativo.'
+                    : ' Como no tiene otro acceso, no podrá iniciar sesión hasta que se le habilite nuevamente.';
+                $('#tv-mensaje').text(msg);
+                $('#tv-confirmar').removeClass('btn-modal-submit').addClass('btn-danger-modal')
+                    .html('<i class="ri-shield-cross-line"></i> Quitar acceso virtual');
+            } else {
+                $('#tv-icon-ring').css({ background: 'rgba(37,99,235,.12)', color: '#2563eb' });
+                $('#tv-icon').attr('class', 'ri-presentation-line');
+                $('#tv-header').css({ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)' });
+                $('#tv-header-title-text').text('Otorgar acceso al portal virtual');
+                $('#tv-header-title-icon').attr('class', 'ri-presentation-line');
+                $('#tv-titulo').text('¿Otorgar acceso al portal virtual?');
+                let msg = 'El usuario podrá entrar al portal virtual.';
+                if (tieneAdmin) msg += ' Verá el selector de modo al iniciar sesión (admin / virtual).';
+                $('#tv-mensaje').text(msg);
+                $('#tv-confirmar').removeClass('btn-danger-modal').addClass('btn-modal-submit')
+                    .html('<i class="ri-presentation-line"></i> Otorgar acceso virtual');
+            }
+            openModal('modalToggleVirtual');
+        });
+
+        $('#tv-confirmar').on('click', function () {
+            const id = $('#tv-id').val();
+            const $btn = $(this);
+            const origLabel = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Procesando…');
+            $.post('/admin/users/' + id + '/toggle-acceso-virtual', { _token: '{{ csrf_token() }}' })
+                .done(function (r) {
+                    closeModal('modalToggleVirtual');
+                    tabla.ajax.reload(null, false);
+                    actualizarContadorOtroTipo();
+                    toast('success', r.message || 'Acceso actualizado.');
+                })
+                .fail(function (xhr) {
+                    toast('error', xhr.responseJSON?.message || 'No se pudo actualizar el acceso.');
+                })
+                .always(function () {
+                    $btn.prop('disabled', false).html(origLabel);
+                });
+        });
+
         $(document).on('click', '.btn-asignar-roles', function () {
             const id = $(this).data('id');
             const nombre = $(this).data('nombre');

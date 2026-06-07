@@ -29,13 +29,15 @@ class VirtualDashboardController extends Controller
         $user    = Auth::user();
         $persona = $user->persona;
 
-        $esEstudiante = false;
-        $esDocente    = false;
+        $esEstudiante       = false;
+        $esDocente          = false;
+        $tieneInscripcionAct = false;
 
         if ($persona) {
             $est = $persona->estudiante;
             if ($est) {
-                $esEstudiante = Inscripcione::where('estudiante_id', $est->id)
+                $esEstudiante        = true;
+                $tieneInscripcionAct = Inscripcione::where('estudiante_id', $est->id)
                     ->whereIn('estado', ['activo', 'Activo', 'Inscrito', 'Confirmado'])
                     ->exists();
             }
@@ -46,8 +48,16 @@ class VirtualDashboardController extends Controller
             }
         }
 
+        // Si no es ni estudiante ni docente:
+        //   - Con acceso_admin → mandarlo al panel admin
+        //   - Sin ningún perfil ni admin → redirigir a login con flash y limpiar sesión
         if (!$esEstudiante && !$esDocente) {
-            return redirect('/')->with('error', 'No tienes acceso al portal.');
+            if ($user->puedeAdmin()) {
+                return redirect('/admin/dashboard');
+            }
+            Auth::logout();
+            return redirect('/login')->with('status',
+                'Tu cuenta no tiene perfil de estudiante ni docente asignado. Contacta al administrador para que te asigne uno.');
         }
 
         $perfilActivo = session('perfil_activo', $esEstudiante ? 'estudiante' : 'docente');

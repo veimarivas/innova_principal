@@ -66,6 +66,8 @@ class UserController extends Controller
 
         if ($tipo === 'virtual') {
             $query->where('acceso_virtual', true);
+        } elseif ($tipo === 'sin_acceso') {
+            $query->where('acceso_admin', false)->where('acceso_virtual', false);
         } else {
             $query->where('acceso_admin', true);
         }
@@ -123,6 +125,66 @@ class UserController extends Controller
             'message' => $user->acceso_admin
                 ? 'Acceso administrativo habilitado.'
                 : 'Acceso administrativo deshabilitado.',
+        ]);
+    }
+
+    /**
+     * Información del usuario respecto a si su persona es trabajador y qué cargos tiene.
+     * Se usa al habilitar acceso admin: si es trabajador con cargos se muestra el detalle;
+     * si no es trabajador se sugiere registrarlo.
+     */
+    public function infoTrabajador($id)
+    {
+        $user = User::with('persona.ciudad')->find($id);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Usuario no encontrado.'], 404);
+        }
+
+        $persona = $user->persona;
+        if (!$persona) {
+            return response()->json([
+                'success' => true,
+                'es_trabajador' => false,
+                'persona' => null,
+                'cargos' => [],
+                'mensaje' => 'El usuario no tiene una persona asociada.',
+            ]);
+        }
+
+        $trabajador = \App\Models\Trabajadore::with([
+            'trabajadores_cargos.cargo',
+            'trabajadores_cargos.sucursale.sede',
+        ])->where('persona_id', $persona->id)->first();
+
+        $cargos = collect();
+        if ($trabajador && $trabajador->trabajadores_cargos) {
+            $cargos = $trabajador->trabajadores_cargos->map(function ($tc) {
+                return [
+                    'cargo'          => $tc->cargo?->nombre,
+                    'sede'           => $tc->sucursale?->sede?->nombre,
+                    'sucursal'       => $tc->sucursale?->nombre,
+                    'estado'         => $tc->estado,
+                    'fecha_ingreso'  => $tc->fecha_ingreso,
+                    'fecha_termino'  => $tc->fecha_termino,
+                ];
+            })->values();
+        }
+
+        return response()->json([
+            'success'       => true,
+            'es_trabajador' => $trabajador !== null,
+            'trabajador_id' => $trabajador?->id,
+            'persona'       => [
+                'id'               => $persona->id,
+                'carnet'           => $persona->carnet,
+                'nombres'          => $persona->nombres,
+                'apellido_paterno' => $persona->apellido_paterno,
+                'apellido_materno' => $persona->apellido_materno,
+                'correo'           => $persona->correo,
+                'celular'          => $persona->celular,
+                'ciudad'           => $persona->ciudad?->nombre,
+            ],
+            'cargos' => $cargos,
         ]);
     }
 

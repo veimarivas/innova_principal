@@ -50,6 +50,7 @@ class TrabajadoreController extends Controller
             $arr['tiene_usuario']        = $usuario !== null;
             $arr['acceso_admin']         = (bool) ($usuario?->acceso_admin);
             $arr['acceso_virtual']       = (bool) ($usuario?->acceso_virtual);
+            $arr['usuario_id']           = $usuario?->id;
             $arr['usuario_username']     = $usuario?->username;
             $arr['usuario_moodle_password'] = $usuario?->moodle_password;
             return $arr;

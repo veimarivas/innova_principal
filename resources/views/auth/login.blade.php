@@ -1037,6 +1037,21 @@
                         <p class="login-subtitle">Ingresa tus credenciales para acceder a tu cuenta</p>
                     </div>
 
+                    @if(session('status'))
+                        <div class="alert alert-warning d-flex align-items-start gap-2"
+                             style="background:linear-gradient(135deg,#fff4e6,#ffe9d6);color:#b85500;border:1px solid rgba(252,123,4,.30);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:.85rem;">
+                            <i class="ri-error-warning-fill" style="font-size:1.2rem;margin-top:1px;"></i>
+                            <div>{{ session('status') }}</div>
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert alert-danger d-flex align-items-start gap-2"
+                             style="background:linear-gradient(135deg,#fee2e2,#fecaca);color:#b91c1c;border:1px solid rgba(220,38,38,.30);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:.85rem;">
+                            <i class="ri-close-circle-fill" style="font-size:1.2rem;margin-top:1px;"></i>
+                            <div>{{ session('error') }}</div>
+                        </div>
+                    @endif
+
                     <form action="{{ route('login') }}" method="POST" class="auth-form">
                         @csrf
 
