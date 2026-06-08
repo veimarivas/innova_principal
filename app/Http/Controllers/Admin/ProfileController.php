@@ -136,7 +136,7 @@ class ProfileController extends Controller
             ->get()
             ->keyBy('month');
 
-        $mesesCortos = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        $mesesCortos = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
         $grafico = ['meses' => [], 'inscritos' => [], 'pre_inscritos' => [], 'totales' => []];
 
         for ($m = 1; $m <= 12; $m++) {
@@ -426,8 +426,8 @@ class ProfileController extends Controller
                     'modalidad_nombre'        => optional($oferta->modalidad)->nombre ?? 'Sin modalidad',
                     'fecha_inicio_formateada' => $oferta->fecha_inicio_inscripciones
                         ? Carbon::parse($oferta->fecha_inicio_inscripciones)->format('d/m/Y') : '—',
-                    'fecha_fin_formateada'    => $oferta->fecha_fin_programa
-                        ? Carbon::parse($oferta->fecha_fin_programa)->format('d/m/Y') : '—',
+                    'fecha_inicio_programa_formateada' => $oferta->fecha_inicio_programa
+                        ? Carbon::parse($oferta->fecha_inicio_programa)->format('d/m/Y') : '—',
                 ];
             });
 

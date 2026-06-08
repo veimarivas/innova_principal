@@ -746,7 +746,7 @@ class ContabilidadController extends Controller
                 else                            $diasMap[$key]['otros']         += $m;
             }
         }
-        $chartLabels        = array_map(fn($d) => Carbon::parse($d)->format('d/m'), array_keys($diasMap));
+        $chartLabels        = array_map(fn($d) => Carbon::parse($d)->locale('es')->translatedFormat('j \d\e F \d\e\l Y'), array_keys($diasMap));
         $chartEfectivo      = array_map(fn($d) => round($d['efectivo'], 2),      array_values($diasMap));
         $chartQr            = array_map(fn($d) => round($d['qr'], 2),            array_values($diasMap));
         $chartTransferencia = array_map(fn($d) => round($d['transferencia'], 2), array_values($diasMap));

@@ -18,10 +18,10 @@
                 <div class="col-xl-2 col-md-3 col-sm-6">
                     <label class="mkt-label">Mes</label>
                     <select name="month" id="marketingMonth" class="mkt-select">
-                        <option value="todos">Todos los meses</option>
+                        <option value="todos" {{ date('n') == 'todos' ? 'selected' : '' }}>Todos los meses</option>
                         @php $meses=[1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre']; @endphp
                         @foreach ($meses as $k => $m)
-                            <option value="{{ $k }}">{{ $m }}</option>
+                            <option value="{{ $k }}" {{ $k == date('n') ? 'selected' : '' }}>{{ $m }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -197,61 +197,86 @@
 {{-- Modal Subir Comprobante --}}
 <div class="modal fade" id="modalComprobante" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" style="max-width:620px;">
-        <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 10px 40px rgba(0,0,0,.2);">
-            <div class="modal-header" style="background:linear-gradient(135deg,#9a4904,#df6a04);color:white;border-radius:12px 12px 0 0;">
-                <h5 class="modal-title" style="font-weight:600;color:#fff;">
-                    <i class="ri-file-list-3-line me-2"></i>Subir Comprobante de Pago
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.18);">
+
+            <div class="modal-header" style="background:linear-gradient(135deg,#9a4904,#df6a04,#fc7b04);border:none;padding:1.25rem 1.5rem;display:flex;align-items:center;gap:14px;">
+                <div style="width:44px;height:44px;border-radius:12px;flex-shrink:0;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:1.25rem;">
+                    <i class="ri-file-list-3-line" style="color:#fff;"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <h5 class="modal-title" style="font-weight:700;font-size:1.05rem;color:#fff;margin:0;">
+                        Subir Comprobante de Pago
+                    </h5>
+                    <div style="font-size:0.73rem;color:rgba(255,255,255,0.85);margin-top:2px;">Registrar documento de pago del estudiante</div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="opacity:0.8;"></button>
             </div>
+
             <div class="modal-body" style="padding:1.5rem;">
 
                 {{-- Info estudiante --}}
-                <div id="compInscritoInfo" style="padding:.75rem 1rem;background:#f8fafc;border-radius:8px;border-left:4px solid #fc7b04;margin-bottom:1.25rem;">
-                    <div style="font-weight:600;color:#1e293b;" id="compEstudianteNombre"></div>
-                    <div style="font-size:.8rem;color:#64748b;margin-top:.2rem;" id="compEstudianteDetalle"></div>
+                <div id="compInscritoInfo" style="display:flex;align-items:flex-start;gap:12px;padding:.75rem 1rem;background:#fffbeb;border-radius:10px;border:1px solid rgba(252,123,4,.2);margin-bottom:1.25rem;">
+                    <div style="width:40px;height:40px;border-radius:10px;background:rgba(252,123,4,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="ri-user-line" style="color:#fc7b04;font-size:1.1rem;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:700;color:#1e293b;font-size:.88rem;" id="compEstudianteNombre"></div>
+                        <div style="font-size:.78rem;color:#64748b;margin-top:.2rem;" id="compEstudianteDetalle"></div>
+                    </div>
                 </div>
 
                 {{-- Archivo --}}
-                <div style="margin-bottom:1rem;">
-                    <label style="font-size:.8rem;font-weight:600;color:#475569;display:block;margin-bottom:.4rem;">
-                        Archivo del comprobante <span style="color:#dc2626;">*</span>
+                <div style="margin-bottom:1.25rem;">
+                    <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#475569;display:block;margin-bottom:.35rem;">
+                        <i class="ri-upload-cloud-line" style="color:#fc7b04;font-size:.8rem;"></i> Archivo del comprobante <span style="color:#dc2626;">*</span>
                     </label>
                     <input type="file" id="compArchivo" accept=".jpg,.jpeg,.png,.pdf"
-                        style="border:1px solid #e2e8f0;border-radius:6px;padding:.4rem .75rem;font-size:.85rem;width:100%;background:#f8fafc;">
-                    <div style="font-size:.72rem;color:#94a3b8;margin-top:.3rem;">JPG, PNG o PDF — máx. 5 MB</div>
+                        style="width:100%;padding:.5rem .75rem;border:1.5px solid #e2e8f0;border-radius:9px;font-size:.85rem;background:#f8fafc;transition:border-color .2s;"
+                        onfocus="this.style.borderColor='#9a4904';this.style.boxShadow='0 0 0 3px rgba(154,73,4,.1)';this.style.background='#fff'"
+                        onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none';this.style.background='#f8fafc'">
+                    <div style="font-size:.7rem;color:#94a3b8;margin-top:.35rem;display:flex;align-items:center;gap:4px;">
+                        <i class="ri-information-line"></i> JPG, PNG o PDF — máx. 5 MB
+                    </div>
                 </div>
 
                 {{-- Observaciones --}}
                 <div style="margin-bottom:1.25rem;">
-                    <label style="font-size:.8rem;font-weight:600;color:#475569;display:block;margin-bottom:.4rem;">Observaciones</label>
+                    <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#475569;display:block;margin-bottom:.35rem;">
+                        <i class="ri-edit-line" style="color:#fc7b04;font-size:.8rem;"></i> Observaciones
+                    </label>
                     <textarea id="compObservaciones" rows="2" placeholder="Opcional..."
-                        style="border:1px solid #e2e8f0;border-radius:6px;padding:.5rem .75rem;font-size:.85rem;width:100%;background:#f8fafc;resize:vertical;"></textarea>
+                        style="width:100%;padding:.5rem .75rem;border:1.5px solid #e2e8f0;border-radius:9px;font-size:.85rem;background:#f8fafc;resize:vertical;transition:border-color .2s;font-family:'Plus Jakarta Sans',sans-serif;"
+                        onfocus="this.style.borderColor='#9a4904';this.style.boxShadow='0 0 0 3px rgba(154,73,4,.1)';this.style.background='#fff'"
+                        onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none';this.style.background='#f8fafc'"></textarea>
                 </div>
 
                 {{-- Cuotas --}}
                 <div>
-                    <label style="font-size:.8rem;font-weight:600;color:#475569;display:block;margin-bottom:.5rem;">
-                        Cuotas que cubre este comprobante <span style="color:#dc2626;">*</span>
+                    <label style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#475569;display:block;margin-bottom:.45rem;">
+                        <i class="ri-coins-line" style="color:#fc7b04;font-size:.8rem;"></i> Cuotas que cubre este comprobante <span style="color:#dc2626;">*</span>
                     </label>
-                    <div id="compCuotasLoading" class="text-center py-3">
+                    <div id="compCuotasLoading" style="text-align:center;padding:1.25rem 0;">
                         <div class="spinner-border spinner-border-sm" style="color:#9a4904;"></div>
-                        <span class="ms-2 text-muted" style="font-size:.8rem;">Cargando cuotas...</span>
+                        <span style="margin-left:.5rem;font-size:.8rem;color:#64748b;">Cargando cuotas...</span>
                     </div>
                     <div id="compCuotasContainer" style="display:none;"></div>
                 </div>
 
             </div>
-            <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;">
+
+            <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:1rem 1.5rem;background:#f8fafc;display:flex;gap:8px;">
                 <button type="button" class="btn" data-bs-dismiss="modal"
-                    style="padding:.5rem 1.25rem;border-radius:6px;border:1px solid #cbd5e1;background:white;color:#475569;font-weight:500;">
-                    Cancelar
+                    style="display:inline-flex;align-items:center;gap:6px;padding:.5rem 1.25rem;border-radius:9px;border:1px solid #cbd5e1;background:white;color:#475569;font-weight:600;font-size:.85rem;cursor:pointer;transition:all .2s;"
+                    onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">
+                    <i class="ri-close-line"></i> Cancelar
                 </button>
                 <button type="button" id="btnEnviarComprobante"
-                    style="padding:.5rem 1.25rem;border-radius:6px;border:none;background:#9a4904;color:white;font-weight:500;cursor:pointer;">
-                    <i class="ri-upload-cloud-line me-1"></i> Enviar Comprobante
+                    style="display:inline-flex;align-items:center;gap:6px;padding:.5rem 1.25rem;border-radius:9px;border:none;background:linear-gradient(135deg,#9a4904,#df6a04);color:white;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(154,73,4,.28);"
+                    onmouseover="this.style.boxShadow='0 6px 18px rgba(154,73,4,.38)'" onmouseout="this.style.boxShadow='0 4px 12px rgba(154,73,4,.28)'">
+                    <i class="ri-upload-cloud-line"></i> Enviar Comprobante
                 </button>
             </div>
+
         </div>
     </div>
 </div>

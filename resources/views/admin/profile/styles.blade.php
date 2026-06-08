@@ -1004,40 +1004,45 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 12px 18px;
+        padding: 11px 18px;
         background: var(--prof-surface);
         border-bottom: 1px solid var(--prof-border);
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.06em;
         color: var(--prof-text-muted);
     }
 
-    .mkt-filters-header i { color: var(--prof-accent); font-size: 1rem; }
+    .mkt-filters-header i { color: var(--prof-accent); font-size: 0.95rem; }
 
     .mkt-filters-body { padding: 14px 18px; }
 
     .mkt-label {
         display: block;
-        font-size: 0.72rem;
-        font-weight: 600;
+        font-size: 0.68rem;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.04em;
         color: var(--prof-text-muted);
-        margin-bottom: 5px;
+        margin-bottom: 4px;
     }
 
     .mkt-select {
         width: 100%;
         padding: 7px 10px;
         border: 1px solid var(--prof-border);
-        border-radius: var(--radius-sm);
+        border-radius: 9px;
         font-size: 0.82rem;
         color: var(--prof-text);
         background: white;
         transition: border-color 0.2s;
         font-family: 'Plus Jakarta Sans', sans-serif;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 32px;
     }
 
     .mkt-select:focus {
@@ -1064,7 +1069,7 @@
         width: 100%;
         padding: 7px 10px 7px 32px;
         border: 1px solid var(--prof-border);
-        border-radius: var(--radius-sm);
+        border-radius: 9px;
         font-size: 0.82rem;
         color: var(--prof-text);
         background: white;
@@ -1083,26 +1088,28 @@
         background: linear-gradient(135deg, #9a4904, #df6a04);
         color: white;
         border: none;
-        border-radius: var(--radius-sm);
+        border-radius: 9px;
         font-size: 0.82rem;
         cursor: pointer;
         transition: all 0.2s;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 3px 8px rgba(154,73,4,0.25);
     }
 
     .mkt-btn-filter:hover {
         background: linear-gradient(135deg, #743c04, #9a4904);
         transform: translateY(-1px);
+        box-shadow: 0 5px 14px rgba(154,73,4,0.35);
     }
 
     .mkt-btn-reset {
         padding: 7px 10px;
-        background: var(--prof-surface);
+        background: transparent;
         color: var(--prof-text-muted);
         border: 1px solid var(--prof-border);
-        border-radius: var(--radius-sm);
+        border-radius: 9px;
         font-size: 0.82rem;
         cursor: pointer;
         transition: all 0.2s;
@@ -1114,9 +1121,10 @@
     .mkt-btn-reset:hover {
         border-color: var(--prof-primary);
         color: var(--prof-primary);
+        background: var(--prof-surface);
     }
 
-    /* Stat cards */
+    /* Stat cards — KPI style (contabilidad pattern) */
     .mkt-stat-card {
         background: white;
         border-radius: var(--radius-md);
@@ -1124,13 +1132,32 @@
         box-shadow: var(--shadow-sm);
         overflow: hidden;
         height: 100%;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mkt-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+    }
+
+    .mkt-stat-card:nth-child(1)::before { background: linear-gradient(90deg, #9a4904, #fc7b04); }
+    .mkt-stat-card:nth-child(2)::before { background: linear-gradient(90deg, #16a34a, #4ade80); }
+    .mkt-stat-card:nth-child(3)::before { background: linear-gradient(90deg, #d97706, #fbbf24); }
+    .mkt-stat-card:nth-child(4)::before { background: linear-gradient(90deg, #64748b, #94a3b8); }
+
+    .mkt-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
     }
 
     .mkt-stat-body {
         display: flex;
         align-items: center;
         gap: 14px;
-        padding: 16px 18px;
+        padding: 18px;
     }
 
     .mkt-stat-value {
@@ -1143,15 +1170,17 @@
     }
 
     .mkt-stat-label {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         color: var(--prof-text-muted);
-        font-weight: 500;
+        font-weight: 600;
         margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
     }
 
     .mkt-stat-icon {
         width: 46px; height: 46px;
-        border-radius: var(--radius-md);
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1164,15 +1193,19 @@
         background: white;
         border-radius: var(--radius-md);
         border: 1px solid var(--prof-border);
+        border-top: 4px solid var(--prof-primary);
         box-shadow: var(--shadow-sm);
         overflow: hidden;
         height: 100%;
+        transition: box-shadow 0.25s;
     }
+
+    .mkt-chart-card:hover { box-shadow: var(--shadow-md); }
 
     .mkt-chart-header {
         padding: 14px 18px;
         border-bottom: 1px solid var(--prof-border);
-        background: var(--prof-surface);
+        background: linear-gradient(135deg, #fefefe 0%, var(--prof-surface) 100%);
     }
 
     .mkt-chart-title {
@@ -1195,9 +1228,13 @@
         background: white;
         border-radius: var(--radius-md);
         border: 1px solid var(--prof-border);
+        border-top: 4px solid var(--prof-primary);
         box-shadow: var(--shadow-sm);
         overflow: hidden;
+        transition: box-shadow 0.25s;
     }
+
+    .mkt-table-card:hover { box-shadow: var(--shadow-md); }
 
     .mkt-table-header {
         display: flex;
@@ -1205,7 +1242,7 @@
         justify-content: space-between;
         padding: 14px 18px;
         border-bottom: 1px solid var(--prof-border);
-        background: var(--prof-surface);
+        background: linear-gradient(135deg, #fefefe 0%, var(--prof-surface) 100%);
     }
 
     .mkt-table-title {
@@ -1241,7 +1278,7 @@
         border: 1px solid var(--prof-border);
         background: white;
         color: var(--prof-text-muted);
-        border-radius: var(--radius-sm);
+        border-radius: 9px;
         font-size: 0.8rem;
         cursor: pointer;
         transition: all 0.2s;
@@ -1250,6 +1287,7 @@
     .mkt-btn-outline:hover {
         border-color: var(--prof-primary);
         color: var(--prof-primary);
+        background: var(--prof-surface);
     }
 
     .mkt-table-body { padding: 0; }
@@ -1261,25 +1299,28 @@
     }
 
     .mkt-table-body .table th {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
         font-weight: 700;
         color: var(--prof-text-muted);
-        background: var(--prof-surface);
-        border-bottom: 1px solid var(--prof-border);
-        padding: 10px 14px;
+        background: linear-gradient(180deg, var(--prof-surface) 0%, #f1f5f9 100%);
+        border-bottom: 2px solid var(--prof-border);
+        padding: 11px 14px;
         white-space: nowrap;
     }
 
     .mkt-table-body .table td {
-        padding: 10px 14px;
+        padding: 11px 14px;
         vertical-align: middle;
         border-bottom: 1px solid var(--prof-border);
         color: var(--prof-text);
+        font-size: 0.81rem;
     }
 
-    .mkt-table-body .table tbody tr:hover { background: var(--prof-surface); }
+    .mkt-table-body .table tbody tr:last-child td { border-bottom: none; }
+
+    .mkt-table-body .table tbody tr:hover { background: linear-gradient(90deg, rgba(154,73,4,0.03), rgba(154,73,4,0.06)); }
 
     /* Status badges */
     .mkt-status-inscrito {
@@ -1289,9 +1330,10 @@
         padding: 3px 10px;
         border-radius: 50px;
         font-size: 0.7rem;
-        font-weight: 600;
-        background: rgba(16,185,129,0.1);
-        color: #10b981;
+        font-weight: 700;
+        background: rgba(16,185,129,0.12);
+        color: #059669;
+        border: 1px solid rgba(16,185,129,0.18);
     }
 
     .mkt-status-preinscrito {
@@ -1301,9 +1343,10 @@
         padding: 3px 10px;
         border-radius: 50px;
         font-size: 0.7rem;
-        font-weight: 600;
-        background: rgba(252,123,4,0.1);
-        color: #fc7b04;
+        font-weight: 700;
+        background: rgba(252,123,4,0.12);
+        color: #d97706;
+        border: 1px solid rgba(252,123,4,0.18);
     }
 
     /* Pagination */
@@ -1325,7 +1368,7 @@
         border: 1px solid var(--prof-border);
         background: white;
         color: var(--prof-text-muted);
-        border-radius: var(--radius-sm);
+        border-radius: 9px;
         font-size: 0.8rem;
         font-weight: 500;
         cursor: pointer;
@@ -1338,6 +1381,7 @@
         background: linear-gradient(135deg, #9a4904, #df6a04);
         border-color: transparent;
         color: white;
+        box-shadow: 0 3px 10px rgba(154,73,4,0.25);
     }
 
     .mkt-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -1350,7 +1394,7 @@
         padding: 10px 16px;
         background: var(--prof-primary-light);
         border: 1px solid rgba(154,73,4,0.2);
-        border-radius: var(--radius-sm);
+        border-radius: 9px;
         font-size: 0.82rem;
         font-weight: 600;
         color: var(--prof-primary);
@@ -1368,7 +1412,10 @@
         border: 1px solid var(--prof-border);
         box-shadow: var(--shadow-sm);
         overflow: hidden;
+        transition: box-shadow 0.2s;
     }
+
+    .mkt-program-group:hover { box-shadow: var(--shadow-md); }
 
     .mkt-program-header {
         display: flex;
@@ -1409,22 +1456,23 @@
     }
 
     .mkt-group-table thead th {
-        font-size: 0.68rem;
+        font-size: 0.65rem;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
         font-weight: 700;
         color: var(--prof-text-muted);
-        background: var(--prof-surface);
-        border-bottom: 1px solid var(--prof-border);
+        background: linear-gradient(180deg, var(--prof-surface) 0%, #f1f5f9 100%);
+        border-bottom: 2px solid var(--prof-border);
         padding: 10px 14px;
         white-space: nowrap;
     }
 
     .mkt-group-table tbody td {
-        padding: 10px 14px;
+        padding: 11px 14px;
         vertical-align: middle;
         border-bottom: 1px solid var(--prof-border);
         color: var(--prof-text);
+        font-size: 0.81rem;
     }
 
     .mkt-group-table tbody tr:last-child td {
@@ -1440,12 +1488,42 @@
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        padding: 3px 10px;
+        padding: 3px 9px;
         border-radius: 50px;
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         font-weight: 600;
         background: rgba(139, 92, 246, 0.1);
         color: #7c3aed;
+        border: 1px solid rgba(139, 92, 246, 0.15);
+        white-space: nowrap;
+    }
+
+    .mkt-badge-sucursal {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: 50px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        background: rgba(20, 184, 166, 0.1);
+        color: #0d9488;
+        border: 1px solid rgba(20, 184, 166, 0.15);
+        white-space: nowrap;
+    }
+
+    .mkt-badge-fecha {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: 50px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        background: rgba(100, 116, 139, 0.08);
+        color: #64748b;
+        border: 1px solid rgba(100, 116, 139, 0.15);
+        white-space: nowrap;
     }
 
     .mkt-badge-sucursal {
@@ -1893,7 +1971,16 @@
         border: 1px solid var(--prof-border);
         box-shadow: var(--shadow-sm);
         overflow: hidden;
-        border-top: 3px solid var(--prof-accent);
+        position: relative;
+    }
+
+    .oa-filters-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #9a4904, #fc7b04);
+        z-index: 1;
     }
 
     .oa-filters-header {
@@ -1995,7 +2082,7 @@
         width: 100%;
         padding: 8px 12px;
         border: 1.5px solid var(--prof-border);
-        border-radius: var(--radius-sm);
+        border-radius: 9px;
         font-size: 0.83rem;
         color: var(--prof-text);
         background: var(--prof-surface);
@@ -2068,7 +2155,20 @@
         border: 1px solid var(--prof-border);
         box-shadow: var(--shadow-sm);
         overflow: hidden;
+        position: relative;
+        transition: box-shadow 0.25s;
     }
+
+    .oa-table-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #9a4904, #fc7b04);
+        z-index: 1;
+    }
+
+    .oa-table-card:hover { box-shadow: var(--shadow-md); }
 
     .oa-table-header {
         display: flex;
@@ -2140,21 +2240,23 @@
         align-items: center;
         gap: 6px;
         padding: 7px 14px;
-        border: 1.5px solid var(--prof-border);
-        background: white;
-        color: var(--prof-text-muted);
-        border-radius: var(--radius-sm);
+        background: linear-gradient(135deg, #9a4904, #df6a04);
+        color: white;
+        border: none;
+        border-radius: 9px;
         font-size: 0.8rem;
-        font-weight: 500;
+        font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
         font-family: 'Plus Jakarta Sans', sans-serif;
+        box-shadow: 0 2px 8px rgba(154,73,4,0.2);
     }
 
     .oa-btn-refresh:hover {
-        border-color: var(--prof-primary);
-        color: var(--prof-primary);
-        background: var(--prof-primary-light);
+        background: linear-gradient(135deg, #743c04, #9a4904);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(154,73,4,0.35);
+        color: white;
     }
 
     .oa-hint-bar {
@@ -2170,12 +2272,12 @@
     }
 
     .oa-hint-icon {
-        width: 28px; height: 28px;
+        width: 30px; height: 30px;
         background: rgba(252,123,4,0.12);
-        border-radius: 6px;
+        border-radius: 8px;
         display: flex; align-items: center; justify-content: center;
         color: var(--prof-accent);
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         flex-shrink: 0;
     }
 

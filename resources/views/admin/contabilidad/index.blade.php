@@ -1920,26 +1920,33 @@
                 </div>
             </div>
         </div>
-        <form method="GET" action="{{ route('admin.contabilidad.dashboard') }}" class="cont-filters"
-            style="display: flex; gap: 12px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
-            <select name="gestion" class="form-select"
-                style="width: auto; border-radius: 8px; border: 1px solid #e2e8f0; padding: 8px 12px; font-size: 0.9rem;">
-                @foreach ($gestiones as $g)
-                    <option value="{{ $g }}" {{ $gestion == $g ? 'selected' : '' }}>{{ $g }}
-                    </option>
-                @endforeach
-            </select>
-            <select name="mes" class="form-select"
-                style="width: auto; border-radius: 8px; border: 1px solid #e2e8f0; padding: 8px 12px; font-size: 0.9rem;">
-                @foreach ($meses as $num => $nombre)
-                    <option value="{{ $num }}" {{ $mes == $num ? 'selected' : '' }}>{{ $nombre }}</option>
-                @endforeach
-            </select>
-            <button type="submit" class="btn btn-primary"
-                style="background: #0d9488; border: none; border-radius: 8px; padding: 8px 16px; font-size: 0.9rem; color: white; font-weight: 500;">
-                <i class="ri-filter-line"></i> Aplicar
-            </button>
-        </form>
+        <div class="cont-filters"
+            style="background:var(--cont-surface);border:1px solid var(--cont-border);border-radius:14px;padding:14px 18px;margin-bottom:22px;box-shadow:var(--cont-shadow-sm);">
+            <form method="GET" action="{{ route('admin.contabilidad.dashboard') }}" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+                <div style="display:flex;flex-direction:column;min-width:140px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--cont-text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Gestión</label>
+                    <select name="gestion" style="background:var(--cont-surface-alt) !important;border:1px solid var(--cont-border) !important;border-radius:9px !important;padding:.5rem .75rem !important;color:var(--cont-text) !important;font-size:0.85rem !important;">
+                        @foreach ($gestiones as $g)
+                            <option value="{{ $g }}" {{ $gestion == $g ? 'selected' : '' }}>{{ $g }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div style="display:flex;flex-direction:column;min-width:160px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--cont-text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Mes</label>
+                    <select name="mes" style="background:var(--cont-surface-alt) !important;border:1px solid var(--cont-border) !important;border-radius:9px !important;padding:.5rem .75rem !important;color:var(--cont-text) !important;font-size:0.85rem !important;">
+                        @foreach ($meses as $num => $nombre)
+                            <option value="{{ $num }}" {{ $mes == $num ? 'selected' : '' }}>{{ $nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;border:none;border-radius:10px;padding:.5rem 1.1rem;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 3px 10px rgba(13,148,136,0.28);">
+                    <i class="ri-filter-3-line"></i> Aplicar
+                </button>
+                <a href="{{ route('admin.contabilidad.dashboard') }}" style="display:inline-flex;align-items:center;gap:5px;background:transparent;color:var(--cont-text-muted);border:1px solid var(--cont-border);border-radius:10px;padding:.45rem .95rem;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;">
+                    <i class="ri-refresh-line"></i> Limpiar
+                </a>
+            </form>
+        </div>
         <div class="cont-chart-card" style="margin-bottom: 24px;">
             <div class="cont-chart-header">
                 <div class="cont-chart-title">
@@ -2428,10 +2435,22 @@
                             }
                         },
                         tooltip: {
+                            backgroundColor: '#fff',
+                            titleColor: '#1a1a1a',
+                            bodyColor: '#3d2810',
+                            borderColor: 'rgba(0,0,0,0.08)',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 8,
                             callbacks: {
                                 label: function(context) {
                                     return context.dataset.label + ': Bs. ' + context.parsed.y
                                         .toLocaleString('es-BO');
+                                },
+                                afterBody: function(items) {
+                                    let total = 0;
+                                    items.forEach(i => total += i.parsed.y);
+                                    return ['', '─────────────────', 'Total: Bs. ' + total.toLocaleString('es-BO')];
                                 }
                             }
                         }

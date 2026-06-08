@@ -480,7 +480,7 @@ class AdminController extends Controller
         foreach ($rangoMeses as $carbonMes) {
             $key = $carbonMes->format('Y-m');
             $todosMeses[$key] = [
-                'label' => $carbonMes->format('M Y'),
+                'label' => $carbonMes->locale('es')->translatedFormat('F Y'),
                 'inscritos' => $estadisticasPorMes->get($key, (object)['inscritos' => 0])->inscritos,
                 'pre_inscritos' => $estadisticasPorMes->get($key, (object)['pre_inscritos' => 0])->pre_inscritos,
             ];

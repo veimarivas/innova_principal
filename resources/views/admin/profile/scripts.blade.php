@@ -475,7 +475,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
-                    tooltip: { mode: 'index', intersect: false }
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: '#fff',
+                        titleColor: '#1a1a1a',
+                        bodyColor: '#3d2810',
+                        borderColor: 'rgba(0,0,0,0.08)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y,
+                            afterBody: function(items) {
+                                let total = 0;
+                                items.forEach(i => total += i.parsed.y);
+                                return ['', '─────────────────', ' Total: ' + total];
+                            }
+                        }
+                    }
                 },
                 scales: {
                     x: { grid: { display: false }, ticks: { font: { size: 10 } } },
@@ -511,8 +529,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 plugins: {
                     legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, padding: 8 } },
                     tooltip: {
+                        backgroundColor: '#fff',
+                        titleColor: '#1a1a1a',
+                        bodyColor: '#3d2810',
+                        borderColor: 'rgba(0,0,0,0.08)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
                         callbacks: {
-                            label: ctx => ` ${ctx.label}: ${ctx.raw} (${Math.round(ctx.raw/values.reduce((a,b)=>a+b,0)*100)}%)`
+                            label: ctx => {
+                                const total = values.reduce((a, b) => a + b, 0);
+                                const pct = total > 0 ? Math.round(ctx.raw / total * 100) : 0;
+                                return ' ' + ctx.label + ': ' + ctx.raw + ' (' + pct + '%)';
+                            },
+                            footer: function(items) {
+                                let total = 0;
+                                items.forEach(i => total += i.raw);
+                                return 'Total: ' + total;
+                            }
                         }
                     }
                 }
@@ -638,17 +672,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     <span class="mkt-program-badge">${grupo.total} inscripción${grupo.total !== 1 ? 'es' : ''}</span>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-hover mkt-group-table">
+                    <table class="table mkt-group-table">
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th style="width:40px;">#</th>
                                 <th>Estudiante</th>
                                 <th>Documentos</th>
                                 <th>Plan</th>
                                 <th>Sucursal</th>
                                 <th>Estado</th>
                                 <th>Fecha</th>
-                                <th>Acciones</th>
+                                <th style="text-align:center;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>`;
@@ -689,9 +723,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             else if (key === 'documento_provision_nacional') docName = 'PN';
                             
                             if (val) {
-                                badges.push('<span class="badge" style="background:#059669;color:#ffffff;font-size:0.65rem;" title="' + key + '"><i class="ri-check-line"></i>' + docName + '</span>');
+                                badges.push('<span style="display:inline-flex;align-items:center;gap:2px;padding:2px 7px;background:rgba(5,150,105,0.12);color:#059669;border:1px solid rgba(5,150,105,0.18);border-radius:50px;font-size:0.63rem;font-weight:700;" title="' + key + '"><i class="ri-check-line" style="font-size:0.6rem;"></i>' + docName + '</span>');
                             } else {
-                                badges.push('<span class="badge" style="background:#dc2626;color:#ffffff;font-size:0.65rem;" title="' + key + '"><i class="ri-close-line"></i>' + docName + '</span>');
+                                badges.push('<span style="display:inline-flex;align-items:center;gap:2px;padding:2px 7px;background:rgba(220,38,38,0.1);color:#dc2626;border:1px solid rgba(220,38,38,0.15);border-radius:50px;font-size:0.63rem;font-weight:700;" title="' + key + '"><i class="ri-close-line" style="font-size:0.6rem;"></i>' + docName + '</span>');
                             }
                         }
                         docsHtml = '<div class="d-flex gap-1 flex-wrap">' + badges.join('') + '</div>';
@@ -727,20 +761,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     : '';
 
                 html += `<tr>
-                    <td class="text-muted">${i + 1}</td>
+                    <td><span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--prof-surface);border-radius:50%;font-size:0.68rem;font-weight:700;color:#94a3b8;border:1px solid var(--prof-border);font-family:'Outfit',sans-serif;">${i + 1}</span></td>
                     <td>
                         <div style="font-weight:600;font-size:0.82rem;">${nombre}</div>
-                        <div style="font-size:0.7rem;color:#64748b;">${carnet}</div>
+                        <div style="font-size:0.7rem;color:#64748b;margin-top:1px;">${carnet}</div>
                     </td>
                     <td>${docsHtml}</td>
                     <td>${planBadge}</td>
                     <td>${sucursalBadge}</td>
                     <td>${estadoBadge}</td>
                     <td>${fechaBadge}</td>
-                    <td>
-                        <div class="d-flex gap-1">
-                            <a href="/admin/estudiantes/${estudianteId}/detalle" class="btn btn-sm btn-outline-secondary" title="Ver detalle">
-                                <i class="ri-user-line"></i>
+                    <td style="text-align:center;">
+                        <div class="d-flex gap-1" style="justify-content:center;">
+                            <a href="/admin/estudiantes/${estudianteId}/detalle" title="Ver detalle"
+                               style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:1px solid var(--prof-border);color:var(--prof-text-muted);text-decoration:none;transition:all .15s;"
+                               onmouseover="this.style.borderColor='#9a4904';this.style.color='#9a4904'" onmouseout="this.style.borderColor='var(--prof-border)';this.style.color='var(--prof-text-muted)'">
+                                <i class="ri-eye-line" style="font-size:0.9rem;"></i>
                             </a>
                             ${btnCambiar}
                         </div>
@@ -995,32 +1031,36 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        let html = '<div class="table-responsive"><table class="table table-hover">';
+        let html = '<div class="table-responsive"><table class="table">';
         html += `<thead><tr>
             <th>Código</th>
             <th>Programa</th>
             <th>Sucursal</th>
             <th>Modalidad</th>
             <th>Inicio Inscr.</th>
-            <th>Fin Programa</th>
-            <th>Enlace</th>
+            <th>Inicio Programa</th>
+            <th style="text-align:center;">Enlace</th>
         </tr></thead><tbody>`;
 
         rows.forEach(o => {
             const programaNombreEsc = (o.programa_nombre || '').replace(/'/g, "\\'");
             html += `<tr>
-                <td><span style="font-weight:600;font-family:'Outfit',sans-serif;color:#9a4904;">${o.codigo ?? '—'}</span></td>
-                <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${o.programa_nombre}</td>
-                <td>${o.sucursal_nombre}${o.sede_nombre ? `<span style="font-size:0.7rem;color:#64748b;display:block;">${o.sede_nombre}</span>` : ''}</td>
-                <td>${o.modalidad_nombre}</td>
-                <td style="white-space:nowrap;">${o.fecha_inicio_formateada}</td>
-                <td style="white-space:nowrap;">${o.fecha_fin_formateada}</td>
+                <td><span style="font-weight:700;font-family:'Outfit',sans-serif;color:#9a4904;font-size:0.78rem;">${o.codigo ?? '—'}</span></td>
+                <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;">${o.programa_nombre}</td>
                 <td>
+                    <span class="mkt-badge-sucursal"><i class="ri-map-pin-line"></i>${o.sucursal_nombre}</span>
+                    ${o.sede_nombre ? `<div style="font-size:0.68rem;color:#94a3b8;margin-top:2px;">${o.sede_nombre}</div>` : ''}
+                </td>
+                <td><span class="mkt-badge-plan"><i class="ri-calendar-line"></i>${o.modalidad_nombre}</span></td>
+                <td style="white-space:nowrap;"><span class="mkt-badge-fecha"><i class="ri-calendar-event-line"></i>${o.fecha_inicio_formateada}</span></td>
+                <td style="white-space:nowrap;"><span class="mkt-badge-fecha"><i class="ri-play-circle-line"></i>${o.fecha_inicio_programa_formateada}</span></td>
+                <td style="text-align:center;">
                     <button type="button"
                         onclick="abrirModalEnlace(${o.id}, '${programaNombreEsc}')"
                         title="Generar enlace y QR de pre-inscripción"
-                        style="padding:.3rem .6rem;background:rgba(154,73,4,.12);border:1px solid rgba(154,73,4,.3);color:#9a4904;border-radius:6px;cursor:pointer;font-size:.78rem;display:inline-flex;align-items:center;gap:.3rem;transition:background .2s;">
-                        <i class="ri-qr-code-line"></i>
+                        style="padding:.35rem .7rem;background:linear-gradient(135deg,#9a4904,#df6a04);border:none;color:white;border-radius:8px;cursor:pointer;font-size:.72rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;transition:all .2s;box-shadow:0 2px 6px rgba(154,73,4,0.2);"
+                        onmouseover="this.style.boxShadow='0 4px 12px rgba(154,73,4,0.35)'" onmouseout="this.style.boxShadow='0 2px 6px rgba(154,73,4,0.2)'">
+                        <i class="ri-qr-code-line"></i> QR
                     </button>
                 </td>
             </tr>`;
@@ -1252,23 +1292,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
-                let html = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">'
-                    + '<thead><tr style="background:#f8fafc;">'
-                    + '<th style="padding:.6rem 1rem;font-size:.72rem;font-weight:600;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Estudiante</th>'
-                    + '<th style="padding:.6rem 1rem;font-size:.72rem;font-weight:600;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Programa</th>'
-                    + '<th style="padding:.6rem 1rem;font-size:.72rem;font-weight:600;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Plan de Pago</th>'
-                    + '<th style="padding:.6rem 1rem;font-size:.72rem;font-weight:600;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Comprobantes</th>'
-                    + '<th style="padding:.6rem 1rem;font-size:.72rem;font-weight:600;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Acción</th>'
+                let html = '<div class="table-responsive" style="margin:0;"><table class="table mkt-group-table">'
+                    + '<thead><tr>'
+                    + '<th>Estudiante</th>'
+                    + '<th>Programa</th>'
+                    + '<th>Plan de Pago</th>'
+                    + '<th>Comprobantes</th>'
+                    + '<th style="text-align:center;">Acción</th>'
                     + '</tr></thead><tbody>';
 
                 inscritos.forEach(ins => {
                     const compsBadges = ins.comprobantes.length
                         ? ins.comprobantes.map(c => {
-                            const bg = c.estado === 'verificado' ? '#d1fae5' : c.estado === 'rechazado' ? '#fee2e2' : '#fef3c7';
-                            const fg = c.estado === 'verificado' ? '#065f46' : c.estado === 'rechazado' ? '#991b1b' : '#92400e';
-                            return `<span style="display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:.7rem;font-weight:600;background:${bg};color:${fg};margin:.1rem;">${escHtml(c.fecha)} · ${escHtml(c.estado)}</span>`;
+                            const cls = c.estado === 'verificado' ? 'verificado' : c.estado === 'rechazado' ? 'rechazado' : 'pendiente';
+                            const bg = c.estado === 'verificado' ? 'rgba(5,150,105,0.12)' : c.estado === 'rechazado' ? 'rgba(220,38,38,0.1)' : 'rgba(245,158,11,0.12)';
+                            const fg = c.estado === 'verificado' ? '#059669' : c.estado === 'rechazado' ? '#dc2626' : '#d97706';
+                            const icon = c.estado === 'verificado' ? 'ri-checkbox-circle-line' : c.estado === 'rechazado' ? 'ri-close-circle-line' : 'ri-time-line';
+                            return `<span style="display:inline-flex;align-items:center;gap:3px;padding:.2rem .55rem;border-radius:50px;font-size:.65rem;font-weight:700;background:${bg};color:${fg};border:1px solid ${fg}22;margin:.1rem;"><i class="${icon}" style="font-size:.6rem;"></i>${escHtml(c.fecha)} · ${c.estado}</span>`;
                         }).join('')
-                        : '<span style="font-size:.75rem;color:#94a3b8;">Ninguno</span>';
+                        : '<span style="font-size:.72rem;color:#94a3b8;font-style:italic;">Ninguno</span>';
 
                     const accionHtml = ins.tiene_cuotas_pendientes
                         ? `<button class="btn-subir-comprobante"
@@ -1276,20 +1318,25 @@ document.addEventListener('DOMContentLoaded', function () {
                                 data-nombre="${escAttr(ins.estudiante_nombre)}"
                                 data-programa="${escAttr(ins.programa)}"
                                 data-plan="${escAttr(ins.plan_pago)}"
-                                style="padding:.35rem .85rem;background:#9a4904;color:white;border:none;border-radius:6px;font-size:.78rem;font-weight:500;cursor:pointer;">
-                                <i class="ri-upload-cloud-line me-1"></i>Subir Comprobante
+                                style="display:inline-flex;align-items:center;gap:5px;padding:.35rem .8rem;background:linear-gradient(135deg,#9a4904,#df6a04);color:white;border:none;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 2px 6px rgba(154,73,4,0.2);"
+                                onmouseover="this.style.boxShadow='0 4px 12px rgba(154,73,4,0.35)'" onmouseout="this.style.boxShadow='0 2px 6px rgba(154,73,4,0.2)'">
+                                <i class="ri-upload-cloud-line"></i> Subir Comprobante
                             </button>`
-                        : `<span style="font-size:.75rem;color:#16a34a;font-weight:600;"><i class="ri-checkbox-circle-line me-1"></i>Al día</span>`;
+                        : `<span style="display:inline-flex;align-items:center;gap:3px;font-size:.72rem;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:.25rem .65rem;border-radius:50px;border:1px solid rgba(5,150,105,0.15);white-space:nowrap;"><i class="ri-checkbox-circle-line"></i>Al día</span>`;
 
-                    html += `<tr style="border-bottom:1px solid #f1f5f9;">
+                    html += `<tr>
                         <td style="padding:.65rem 1rem;">
-                            <div style="font-weight:600;font-size:.85rem;color:#1e293b;">${escHtml(ins.estudiante_nombre)}</div>
-                            <div style="font-size:.72rem;color:#94a3b8;">CI: ${escHtml(ins.estudiante_carnet)}</div>
+                            <div style="font-weight:600;font-size:.85rem;color:var(--prof-text);">${escHtml(ins.estudiante_nombre)}</div>
+                            <div style="font-size:.68rem;color:#94a3b8;margin-top:1px;">CI: ${escHtml(ins.estudiante_carnet)}</div>
                         </td>
-                        <td style="padding:.65rem 1rem;font-size:.82rem;color:#475569;">${escHtml(ins.programa)}</td>
-                        <td style="padding:.65rem 1rem;font-size:.82rem;color:#475569;">${escHtml(ins.plan_pago)}</td>
-                        <td style="padding:.65rem 1rem;">${compsBadges}</td>
-                        <td style="padding:.65rem 1rem;">${accionHtml}</td>
+                        <td style="padding:.65rem 1rem;font-weight:500;font-size:.82rem;color:var(--prof-text);">${escHtml(ins.programa)}</td>
+                        <td style="padding:.65rem 1rem;font-size:.82rem;">
+                            <span class="mkt-badge-plan"><i class="ri-card-line"></i>${escHtml(ins.plan_pago)}</span>
+                        </td>
+                        <td style="padding:.65rem 1rem;">
+                            <div style="display:flex;flex-wrap:wrap;gap:2px;">${compsBadges}</div>
+                        </td>
+                        <td style="padding:.65rem 1rem;text-align:center;">${accionHtml}</td>
                     </tr>`;
                 });
 

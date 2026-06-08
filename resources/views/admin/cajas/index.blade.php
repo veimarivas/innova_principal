@@ -46,7 +46,7 @@
     pointer-events:none;
 }
 .cj-hero-content { position:relative; z-index:1; }
-.cj-hero h1 { margin:0; font-size:1.55rem; font-weight:800; display:flex; align-items:center; gap:12px; letter-spacing:-0.02em; }
+.cj-hero h1 { margin:0; font-size:1.55rem; font-weight:800; display:flex; align-items:center; gap:12px; letter-spacing:-0.02em; color:#fff; }
 .cj-hero h1 i { color:#a7f3d0; }
 .cj-hero p { margin:6px 0 0; opacity:0.85; font-size:0.9rem; }
 .cj-hero-actions { position:relative; z-index:1; }
@@ -232,7 +232,7 @@
     background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.22);
     display:flex; align-items:center; justify-content:center; font-size:1.25rem;
 }
-.cj-modal-title { margin:0; font-weight:700; font-size:1.05rem; }
+.cj-modal-title { margin:0; font-weight:700; font-size:1.05rem; color:#fff; }
 .cj-modal-sub { font-size:0.78rem; opacity:0.85; }
 .cj-modal-close {
     margin-left:auto; width:34px; height:34px; border:none; border-radius:9px;

@@ -275,7 +275,7 @@
     background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.20);
     display:flex; align-items:center; justify-content:center; font-size:1.3rem;
 }
-.mov-modal-title { margin:0; font-weight:700; font-size:1.05rem; }
+.mov-modal-title { margin:0; font-weight:700; font-size:1.05rem; color:#fff; }
 .mov-modal-sub { font-size:0.78rem; opacity:0.85; margin-top:2px; }
 .mov-modal-close {
     margin-left:auto; width:34px; height:34px; border:none; border-radius:8px;

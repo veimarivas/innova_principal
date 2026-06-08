@@ -41,7 +41,7 @@
     pointer-events:none;
 }
 .cb-hero-content { position:relative; z-index:1; }
-.cb-hero h1 { margin:0; font-size:1.6rem; font-weight:800; display:flex; align-items:center; gap:12px; letter-spacing:-0.02em; }
+.cb-hero h1 { margin:0; font-size:1.6rem; font-weight:800; display:flex; align-items:center; gap:12px; letter-spacing:-0.02em; color:#fff; }
 .cb-hero h1 i { color:#fed7aa; font-size:1.45rem; }
 .cb-hero p { margin:6px 0 0; opacity:0.85; font-size:0.9rem; }
 .cb-hero-actions { position:relative; z-index:1; display:flex; gap:10px; flex-wrap:wrap; }
@@ -165,25 +165,26 @@
 .cb-pill i { font-size:0.7rem; }
 
 .cb-card-numero {
-    background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);
+    background:linear-gradient(135deg,#1a2332 0%,#0f172a 100%);
     color:#fff; border-radius:12px;
     padding:14px 16px; margin:6px 0 12px;
     position:relative; overflow:hidden;
+    border:1px solid rgba(252,123,4,0.15);
 }
 .cb-card-numero::before {
     content:''; position:absolute; top:-50%; right:-20%;
     width:200px; height:200px; border-radius:50%;
-    background:radial-gradient(circle,rgba(252,123,4,0.2),transparent 70%);
+    background:radial-gradient(circle,rgba(252,123,4,0.25),transparent 70%);
 }
 .cb-card-numero-lbl {
-    font-size:0.62rem; opacity:0.55; text-transform:uppercase; letter-spacing:0.08em; font-weight:700;
-    position:relative; z-index:1;
+    font-size:0.62rem; opacity:0.6; text-transform:uppercase; letter-spacing:0.08em; font-weight:700;
+    position:relative; z-index:1; color:rgba(255,255,255,0.6);
 }
 .cb-card-numero-val {
     font-family:'Inter','JetBrains Mono',monospace;
-    font-size:1.05rem; font-weight:800; letter-spacing:0.12em;
+    font-size:1.1rem; font-weight:800; letter-spacing:0.14em;
     margin-top:3px; position:relative; z-index:1;
-    color:#fed7aa;
+    color:#ffedd5;
 }
 .cb-card-chip {
     position:absolute; top:14px; right:16px; z-index:1;
@@ -278,7 +279,7 @@
     background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.22);
     display:flex; align-items:center; justify-content:center; font-size:1.25rem;
 }
-.cb-modal-title { margin:0; font-weight:700; font-size:1.05rem; }
+.cb-modal-title { margin:0; font-weight:700; font-size:1.05rem; color:#fff; }
 .cb-modal-sub { font-size:0.78rem; opacity:0.85; }
 .cb-modal-close-btn {
     margin-left:auto; width:34px; height:34px; border:none; border-radius:9px;
@@ -506,14 +507,13 @@
                                     <i class="ri-{{ $cuenta->estado ? 'eye-off-line' : 'eye-line' }}"></i>
                                 </button>
                             </form>
-                            <form action="{{ route('admin.cuentas-bancarias.destroy', $cuenta->id) }}" method="POST"
-                                  class="cb-action-form" onsubmit="return confirm('¿Eliminar esta cuenta?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="cb-action-btn eliminar" title="Eliminar">
-                                    <i class="ri-delete-bin-line"></i>
-                                </button>
-                            </form>
+                            <button type="button" class="cb-action-btn eliminar btn-eliminar-cuenta"
+                                    title="Eliminar"
+                                    data-url="{{ route('admin.cuentas-bancarias.destroy', $cuenta->id) }}"
+                                    data-banco="{{ $cuenta->banco->nombre ?? '—' }}"
+                                    data-numero="{{ $cuenta->numero_cuenta }}">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -692,6 +692,51 @@
     </div>
 </div>
 @endforeach
+
+{{-- ════════════════ Modal Confirmar Eliminación ════════════════ --}}
+<div class="modal fade cb-modal" id="modalEliminarCuenta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+        <div class="modal-content">
+            <div class="cb-modal-header">
+                <div class="cb-modal-header-icon" style="background:rgba(220,53,69,0.25);border-color:rgba(220,53,69,0.3);">
+                    <i class="ri-delete-bin-line" style="color:#fff;"></i>
+                </div>
+                <div>
+                    <h5 class="cb-modal-title">Eliminar cuenta</h5>
+                    <div class="cb-modal-sub">Esta acción no se puede deshacer</div>
+                </div>
+                <button type="button" class="cb-modal-close-btn" data-bs-dismiss="modal" aria-label="Cerrar">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="cb-modal-body">
+                <div style="text-align:center;padding:0.5rem 0;">
+                    <div style="width:64px;height:64px;border-radius:50%;background:rgba(220,53,69,0.10);display:inline-flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                        <i class="ri-alert-line" style="font-size:1.8rem;color:#dc3545;"></i>
+                    </div>
+                    <p style="font-size:0.95rem;color:var(--cb-text);font-weight:600;margin-bottom:6px;">
+                        ¿Eliminar esta cuenta bancaria?
+                    </p>
+                    <p style="font-size:0.82rem;color:var(--cb-muted);margin:0;" id="modalEliminarInfo">
+                        — ·
+                    </p>
+                </div>
+            </div>
+            <div class="cb-modal-footer" style="justify-content:center;gap:10px;">
+                <button type="button" class="cb-modal-btn cb-modal-btn-cancel" data-bs-dismiss="modal">
+                    <i class="ri-close-line"></i> Cancelar
+                </button>
+                <form id="formEliminarCuenta" method="POST" style="display:inline-flex;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="cb-modal-btn" style="background:linear-gradient(135deg,#dc3545,#b02a37);color:#fff;box-shadow:0 4px 12px rgba(220,53,69,0.28);">
+                        <i class="ri-delete-bin-line"></i> Sí, eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('script')
@@ -734,6 +779,23 @@ document.addEventListener('DOMContentLoaded', function () {
             this.classList.add('active');
             filtroActivo = this.dataset.filtro;
             aplicarFiltros();
+        });
+    });
+
+    /* ─── Modal eliminar cuenta ─── */
+    const modalEliminar = document.getElementById('modalEliminarCuenta');
+    const formEliminar = document.getElementById('formEliminarCuenta');
+    const infoEliminar = document.getElementById('modalEliminarInfo');
+
+    document.querySelectorAll('.btn-eliminar-cuenta').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const url = this.dataset.url;
+            const banco = this.dataset.banco;
+            const numero = this.dataset.numero;
+            formEliminar.action = url;
+            infoEliminar.textContent = banco + ' · ' + numero;
+            const modal = new bootstrap.Modal(modalEliminar);
+            modal.show();
         });
     });
 });

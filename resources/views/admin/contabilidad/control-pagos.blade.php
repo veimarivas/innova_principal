@@ -41,7 +41,7 @@
     pointer-events:none;
 }
 .cp-hero-content { position:relative; z-index:1; }
-.cp-hero h1 { margin:0; font-size:1.55rem; font-weight:800; display:flex; align-items:center; gap:12px; letter-spacing:-0.02em; }
+.cp-hero h1 { margin:0; font-size:1.55rem; font-weight:800; display:flex; align-items:center; gap:12px; letter-spacing:-0.02em; color:#fff; }
 .cp-hero h1 i { color:#fed7aa; }
 .cp-hero p { margin:6px 0 0; opacity:0.85; font-size:0.9rem; }
 .cp-hero-meta {
@@ -421,6 +421,14 @@
                 <div class="cp-chart-container-sm">
                     <canvas id="cpChartMetodo"></canvas>
                 </div>
+                <div style="margin-top:14px;padding:12px 14px;background:rgba(252,123,4,0.06);border:1px solid rgba(252,123,4,0.18);border-radius:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                    <span style="font-size:0.82rem;font-weight:700;color:var(--cp-text);">
+                        <i class="ri-funds-line" style="color:#fc7b04;"></i> Total ingresos
+                    </span>
+                    <span style="font-size:1.1rem;font-weight:800;color:#15803d;font-family:'Outfit',sans-serif;">
+                        Bs {{ number_format($totalGeneral, 2) }}
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -551,7 +559,7 @@
     <div class="cp-card">
         <div class="cp-card-head">
             <h6 class="cp-card-title"><i class="ri-list-check-3"></i> Detalle de pagos</h6>
-            <span class="cp-card-sub">{{ count($detallePagos) }} pago(s) — clic en el ojo para ver caja/banco/referencia</span>
+            <span class="cp-card-sub">{{ count($detallePagos) }} pago(s) — clic en el ojo para ver detalle</span>
         </div>
         <div class="cp-card-body" style="padding:0;">
             @if (count($detallePagos) > 0)
@@ -589,106 +597,11 @@
                                     <td><span class="cp-pill {{ $clsTipo }}">{{ $pago['tipo_pago'] }}</span></td>
                                     <td class="text-end"><span class="cp-monto-pos">Bs {{ number_format($pago['monto'], 2) }}</span></td>
                                     <td class="text-center">
-                                        <button type="button" class="cp-act-btn btn-cp-toggle" data-pago-id="{{ $pago['id'] }}" title="Ver detalle">
+                                        <button type="button" class="cp-act-btn btn-cp-detalle"
+                                                title="Ver detalle"
+                                                data-pago='@json($pago)'>
                                             <i class="ri-eye-line"></i>
                                         </button>
-                                    </td>
-                                </tr>
-                                <tr class="cp-detalle-row-tr" id="cp-detalle-{{ $pago['id'] }}" style="display:none;">
-                                    <td colspan="8" style="padding:0;background:#fdfaf5;">
-                                        <div class="cp-detalles-wrap">
-                                            <div class="cp-summary-bar">
-                                                <i class="ri-information-line"></i>
-                                                <span>Detalle de medios de pago — total: <strong>Bs {{ number_format($pago['monto'], 2) }}</strong>@if($pago['descuento'] > 0) · descuento: <strong>Bs {{ number_format($pago['descuento'], 2) }}</strong>@endif</span>
-                                                <a href="{{ $pago['pdf_url'] }}" target="_blank" class="cp-filter-btn" style="margin-left:auto;padding:.35rem .8rem;font-size:.74rem;">
-                                                    <i class="ri-printer-line"></i> Imprimir recibo
-                                                </a>
-                                            </div>
-                                            @if (count($pago['detalles']) > 0)
-                                                <div class="cp-detalles-grid">
-                                                    @foreach ($pago['detalles'] as $det)
-                                                        @php
-                                                            $detCls = match ($det['tipo']) {
-                                                                'Efectivo'      => 'efectivo',
-                                                                'Qr'            => 'qr',
-                                                                'Transferencia' => 'transfer',
-                                                                'Depósito'      => 'deposito',
-                                                                default         => 'otro',
-                                                            };
-                                                            $detIcon = $tipoToIcon[$det['tipo']] ?? 'ri-exchange-line';
-                                                        @endphp
-                                                        <div class="cp-detalle-card">
-                                                            <div class="cp-detalle-head">
-                                                                <div class="cp-detalle-icon {{ $detCls }}"><i class="{{ $detIcon }}"></i></div>
-                                                                <span class="cp-detalle-tipo">{{ $det['tipo'] }}</span>
-                                                                <span class="cp-detalle-monto">Bs {{ number_format($det['monto'], 2) }}</span>
-                                                            </div>
-
-                                                            @if ($det['tipo'] === 'Efectivo')
-                                                                @if ($det['caja'])
-                                                                    <div class="cp-detalle-row">
-                                                                        <i class="ri-safe-2-line"></i>
-                                                                        <div>
-                                                                            <strong>Caja chica</strong>
-                                                                            <div class="v">{{ $det['caja']['nombre'] }}</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cp-detalle-row">
-                                                                        <i class="ri-user-3-line"></i>
-                                                                        <div>
-                                                                            <strong>Encargado/a</strong>
-                                                                            <div class="v">{{ $det['caja']['encargado'] ?? '—' }}</div>
-                                                                        </div>
-                                                                    </div>
-                                                                @else
-                                                                    <div class="cp-detalle-row"><i class="ri-information-line"></i> <span style="color:var(--cp-muted);font-style:italic;">Sin caja registrada</span></div>
-                                                                @endif
-                                                            @elseif (in_array($det['tipo'], ['Qr', 'Transferencia', 'Depósito']))
-                                                                @if ($det['cuenta'])
-                                                                    <div class="cp-detalle-row">
-                                                                        <i class="ri-bank-line"></i>
-                                                                        <div>
-                                                                            <strong>Banco</strong>
-                                                                            <div class="v">{{ $det['cuenta']['banco'] }}</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="cp-detalle-row">
-                                                                        <i class="ri-bank-card-line"></i>
-                                                                        <div>
-                                                                            <strong>Cuenta</strong>
-                                                                            <div class="v" style="font-family:'Inter',monospace;">
-                                                                                {{ $det['cuenta']['numero'] }}
-                                                                                @if ($det['cuenta']['tipo'])
-                                                                                    <span style="opacity:.7;font-weight:500;"> · {{ $det['cuenta']['tipo'] }}</span>
-                                                                                @endif
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                @else
-                                                                    <div class="cp-detalle-row"><i class="ri-information-line"></i> <span style="color:var(--cp-muted);font-style:italic;">Sin cuenta bancaria</span></div>
-                                                                @endif
-                                                                @if ($det['referencia'])
-                                                                    <div class="cp-detalle-row">
-                                                                        <i class="ri-hashtag"></i>
-                                                                        <div>
-                                                                            <strong>Referencia</strong>
-                                                                            <div class="v" style="font-family:'Inter',monospace;word-break:break-all;">{{ $det['referencia'] }}</div>
-                                                                        </div>
-                                                                    </div>
-                                                                @elseif ($det['tipo'] === 'Transferencia')
-                                                                    <div class="cp-detalle-row"><i class="ri-information-line"></i> <span style="color:var(--cp-muted);font-style:italic;">Sin número de referencia</span></div>
-                                                                @endif
-                                                            @endif
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            @else
-                                                <div class="cp-empty-table" style="padding:18px;">
-                                                    <i class="ri-information-line"></i>
-                                                    Sin detalles de medios de pago registrados.
-                                                </div>
-                                            @endif
-                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -704,6 +617,37 @@
         </div>
     </div>
 
+</div>
+
+{{-- ════════════════ Modal Detalle de Pago ════════════════ --}}
+<div class="modal fade" id="modalDetallePago" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.18);">
+            <div style="background:linear-gradient(135deg,#2a1404 0%,#5a2e0c 45%,#c25e00 100%);color:#fff;padding:18px 22px;display:flex;align-items:center;gap:12px;">
+                <div style="width:44px;height:44px;border-radius:12px;flex-shrink:0;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.22);display:flex;align-items:center;justify-content:center;font-size:1.25rem;">
+                    <i class="ri-receipt-line"></i>
+                </div>
+                <div>
+                    <h5 style="margin:0;font-weight:700;font-size:1.05rem;color:#fff;" id="modalDetalleTitulo">Detalle del pago</h5>
+                    <div style="font-size:0.78rem;opacity:0.85;" id="modalDetalleSub">—</div>
+                </div>
+                <button type="button" style="margin-left:auto;width:34px;height:34px;border:none;border-radius:9px;background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;" data-bs-dismiss="modal" aria-label="Cerrar">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div style="padding:1.25rem 1.5rem;background:#fafaf7;" id="modalDetalleBody">
+                <div style="text-align:center;padding:2rem;color:#94a3b8;">
+                    <i class="ri-loader-4-line" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i>
+                    Cargando...
+                </div>
+            </div>
+            <div style="background:#fff;border-top:1px solid var(--cp-border);padding:0.85rem 1.5rem;display:flex;justify-content:flex-end;gap:8px;" id="modalDetalleFooter">
+                <button type="button" style="display:inline-flex;align-items:center;gap:6px;padding:0.55rem 1.2rem;border-radius:10px;font-size:0.82rem;font-weight:700;border:none;cursor:pointer;background:#e2e8f0;color:#475569;" data-bs-dismiss="modal">
+                    <i class="ri-close-line"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -728,17 +672,80 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ── Toggle detalles ──
-    document.querySelectorAll('.btn-cp-toggle').forEach(btn => {
+    // ── Modal detalle de pago ──
+    const modalDetalle = document.getElementById('modalDetallePago');
+    const modalBody = document.getElementById('modalDetalleBody');
+    const modalFooter = document.getElementById('modalDetalleFooter');
+    const modalSub = document.getElementById('modalDetalleSub');
+    const iconMap = { Efectivo: 'ri-cash-line', Qr: 'ri-qr-code-line', Transferencia: 'ri-bank-line', Depósito: 'ri-safe-line', Cheque: 'ri-file-paper-2-line', Otro: 'ri-exchange-line' };
+
+    document.querySelectorAll('.btn-cp-detalle').forEach(btn => {
         btn.addEventListener('click', function () {
-            const id = this.dataset.pagoId;
-            const fila = document.getElementById('cp-detalle-' + id);
-            const filaPrincipal = document.querySelector('.cp-fila[data-pago-id="' + id + '"]');
-            if (!fila) return;
-            const visible = fila.style.display !== 'none';
-            fila.style.display = visible ? 'none' : '';
-            filaPrincipal?.classList.toggle('cp-row-expanded', !visible);
-            this.querySelector('i').className = visible ? 'ri-eye-line' : 'ri-eye-off-line';
+            const pago = JSON.parse(this.dataset.pago);
+            modalSub.textContent = 'Recibo #' + pago.recibo + ' · ' + pago.estudiante;
+
+            let html = '';
+
+            // Summary bar
+            html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(252,123,4,0.06);border:1px solid rgba(252,123,4,0.18);border-radius:10px;margin-bottom:12px;font-size:0.82rem;color:var(--cp-text);">';
+            html += '<i class="ri-information-line" style="color:#fc7b04;"></i>';
+            html += '<span>Detalle de medios de pago — total: <strong>Bs ' + Number(pago.monto).toLocaleString('es-BO', { minimumFractionDigits: 2 }) + '</strong>';
+            if (pago.descuento > 0) html += ' · descuento: <strong>Bs ' + Number(pago.descuento).toLocaleString('es-BO', { minimumFractionDigits: 2 }) + '</strong>';
+            html += '</span></div>';
+
+            if (pago.detalles && pago.detalles.length > 0) {
+                html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;">';
+                pago.detalles.forEach(function (det) {
+                    const detCls = { Efectivo: 'efectivo', Qr: 'qr', Transferencia: 'transfer', Depósito: 'deposito' }[det.tipo] || 'otro';
+                    const icon = iconMap[det.tipo] || 'ri-exchange-line';
+                    html += '<div style="background:#fff;border:1px solid var(--cp-border);border-radius:12px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">';
+                    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px dashed var(--cp-border);">';
+                    const iconBg = { efectivo: 'rgba(14,165,233,0.10)', qr: 'rgba(20,184,166,0.10)', transfer: 'rgba(99,102,241,0.10)', deposito: 'rgba(217,119,6,0.10)', otro: 'rgba(108,117,125,0.10)' };
+                    const iconColor = { efectivo: '#0284c7', qr: '#0d9488', transfer: '#4f46e5', deposito: '#b45309', otro: '#6c757d' };
+                    html += '<div style="width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:' + (iconBg[detCls] || iconBg.otro) + ';color:' + (iconColor[detCls] || iconColor.otro) + ';"><i class="' + icon + '"></i></div>';
+                    html += '<span style="font-size:0.78rem;font-weight:800;color:var(--cp-text);">' + det.tipo + '</span>';
+                    html += '<span style="font-size:0.95rem;font-weight:800;color:var(--cp-text);margin-left:auto;">Bs ' + Number(det.monto).toLocaleString('es-BO', { minimumFractionDigits: 2 }) + '</span>';
+                    html += '</div>';
+
+                    if (det.tipo === 'Efectivo' && det.caja) {
+                        html += '<div style="display:flex;gap:8px;align-items:flex-start;font-size:0.76rem;color:var(--cp-text);line-height:1.3;margin-top:4px;"><i class="ri-safe-2-line" style="color:#fc7b04;font-size:0.82rem;margin-top:2px;"></i><div><strong style="font-size:0.64rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--cp-muted);font-weight:700;">Caja chica</strong><div style="font-weight:600;">' + (det.caja.nombre || '—') + '</div></div></div>';
+                        html += '<div style="display:flex;gap:8px;align-items:flex-start;font-size:0.76rem;color:var(--cp-text);line-height:1.3;margin-top:4px;"><i class="ri-user-3-line" style="color:#fc7b04;font-size:0.82rem;margin-top:2px;"></i><div><strong style="font-size:0.64rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--cp-muted);font-weight:700;">Encargado/a</strong><div style="font-weight:600;">' + (det.caja.encargado || '—') + '</div></div></div>';
+                    } else if (det.tipo === 'Efectivo') {
+                        html += '<div style="display:flex;gap:8px;align-items:flex-start;font-size:0.76rem;color:var(--cp-muted);font-style:italic;margin-top:4px;"><i class="ri-information-line"></i> Sin caja registrada</div>';
+                    }
+
+                    if (['Qr', 'Transferencia', 'Depósito'].includes(det.tipo)) {
+                        if (det.cuenta) {
+                            html += '<div style="display:flex;gap:8px;align-items:flex-start;font-size:0.76rem;color:var(--cp-text);line-height:1.3;margin-top:4px;"><i class="ri-bank-line" style="color:#fc7b04;font-size:0.82rem;margin-top:2px;"></i><div><strong style="font-size:0.64rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--cp-muted);font-weight:700;">Banco</strong><div style="font-weight:600;">' + (det.cuenta.banco || '—') + '</div></div></div>';
+                            html += '<div style="display:flex;gap:8px;align-items:flex-start;font-size:0.76rem;color:var(--cp-text);line-height:1.3;margin-top:4px;"><i class="ri-bank-card-line" style="color:#fc7b04;font-size:0.82rem;margin-top:2px;"></i><div><strong style="font-size:0.64rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--cp-muted);font-weight:700;">Cuenta</strong><div style="font-weight:600;font-family:\'Inter\',monospace;">' + (det.cuenta.numero || '—') + (det.cuenta.tipo ? ' <span style="opacity:.7;font-weight:500;"> · ' + det.cuenta.tipo + '</span>' : '') + '</div></div></div>';
+                        } else {
+                            html += '<div style="display:flex;gap:8px;align-items:flex-start;font-size:0.76rem;color:var(--cp-muted);font-style:italic;margin-top:4px;"><i class="ri-information-line"></i> Sin cuenta bancaria</div>';
+                        }
+                        if (det.referencia) {
+                            html += '<div style="display:flex;gap:8px;align-items:flex-start;font-size:0.76rem;color:var(--cp-text);line-height:1.3;margin-top:4px;"><i class="ri-hashtag" style="color:#fc7b04;font-size:0.82rem;margin-top:2px;"></i><div><strong style="font-size:0.64rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--cp-muted);font-weight:700;">Referencia</strong><div style="font-weight:600;font-family:\'Inter\',monospace;word-break:break-all;">' + det.referencia + '</div></div></div>';
+                        } else if (det.tipo === 'Transferencia') {
+                            html += '<div style="display:flex;gap:8px;align-items:flex-start;font-size:0.76rem;color:var(--cp-muted);font-style:italic;margin-top:4px;"><i class="ri-information-line"></i> Sin número de referencia</div>';
+                        }
+                    }
+
+                    html += '</div>';
+                });
+                html += '</div>';
+            } else {
+                html += '<div style="text-align:center;padding:18px;color:var(--cp-muted);"><i class="ri-information-line" style="font-size:2.4rem;opacity:0.45;display:block;margin-bottom:8px;"></i>Sin detalles de medios de pago registrados.</div>';
+            }
+
+            modalBody.innerHTML = html;
+
+            modalFooter.innerHTML =
+                '<a href="' + pago.pdf_url + '" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:0.55rem 1.2rem;border-radius:10px;font-size:0.82rem;font-weight:700;border:none;cursor:pointer;text-decoration:none;background:linear-gradient(135deg,#fc7b04,#c25e00);color:#fff;box-shadow:0 4px 12px rgba(252,123,4,0.28);">' +
+                '<i class="ri-printer-line"></i> Imprimir recibo' +
+                '</a>' +
+                '<button type="button" style="display:inline-flex;align-items:center;gap:6px;padding:0.55rem 1.2rem;border-radius:10px;font-size:0.82rem;font-weight:700;border:none;cursor:pointer;background:#e2e8f0;color:#475569;" data-bs-dismiss="modal">' +
+                '<i class="ri-close-line"></i> Cerrar' +
+                '</button>';
+
+            new bootstrap.Modal(modalDetalle).show();
         });
     });
 
@@ -794,7 +801,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         bodyColor: isDark ? '#ced4da' : '#3d2810',
                         borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
                         borderWidth: 1, padding: 12, cornerRadius: 8,
-                        callbacks: { label: c => c.dataset.label + ': Bs ' + Number(c.raw).toLocaleString('es-BO', { minimumFractionDigits: 2 }) }
+                        callbacks: {
+                            label: c => c.dataset.label + ': Bs ' + Number(c.raw).toLocaleString('es-BO', { minimumFractionDigits: 2 }),
+                            afterBody: function (items) {
+                                let total = 0;
+                                items.forEach(i => total += i.raw);
+                                return ['', '─────────────────', 'Total: Bs ' + total.toLocaleString('es-BO', { minimumFractionDigits: 2 })];
+                            }
+                        }
                     }
                 },
                 scales: {

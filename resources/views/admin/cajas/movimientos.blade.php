@@ -49,7 +49,7 @@
 }
 .mv-hero-breadcrumb a { color:#a7f3d0; text-decoration:none; }
 .mv-hero-breadcrumb a:hover { color:#fff; }
-.mv-hero h1 { margin:0; font-size:1.55rem; font-weight:800; display:flex; align-items:center; gap:12px; letter-spacing:-0.02em; }
+.mv-hero h1 { margin:0; font-size:1.55rem; font-weight:800; display:flex; align-items:center; gap:12px; letter-spacing:-0.02em; color:#fff; }
 .mv-hero h1 i { color:#a7f3d0; }
 .mv-hero-sub { margin:6px 0 0; opacity:0.85; font-size:0.88rem; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .mv-hero-sub i { color:#a7f3d0; }
