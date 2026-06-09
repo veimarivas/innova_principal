@@ -230,8 +230,8 @@
         tabla = $('#tabla-universidades').DataTable({
             ajax: { url: '{{ route("admin.universidades.listar") }}', dataSrc: 'data' },
             ordering: true,
-            paging: false,
-            info: false,
+            paging: true,
+            info: true,
             columns: [
                 {
                     data: 'nombre',

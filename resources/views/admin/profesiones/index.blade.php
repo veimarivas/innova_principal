@@ -204,8 +204,8 @@
         tabla = $('#tabla-profesiones').DataTable({
             ajax: { url: '{{ route("admin.profesiones.listar") }}', dataSrc: 'data' },
             ordering: true,
-            paging: false,
-            info: false,
+            paging: true,
+            info: true,
             columns: [
                 {
                     data: 'nombre',

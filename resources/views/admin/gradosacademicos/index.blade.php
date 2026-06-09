@@ -204,8 +204,8 @@
         tabla = $('#tabla-grados').DataTable({
             ajax: { url: '{{ route("admin.grados-academicos.listar") }}', dataSrc: 'data' },
             ordering: true,
-            paging: false,
-            info: false,
+            paging: true,
+            info: true,
             columns: [
                 {
                     data: 'nombre',
