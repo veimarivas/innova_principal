@@ -1,4 +1,4 @@
-﻿<style>
+<style>
     :root {
         --d-bg: #f5f6fa;
         --d-card: #ffffff;
