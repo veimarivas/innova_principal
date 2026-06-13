@@ -72,9 +72,29 @@ class User extends Authenticatable
         return (bool) $this->acceso_virtual;
     }
 
+    /**
+     * El portal virtual solo es útil para docentes o estudiantes.
+     * Si el usuario tiene `acceso_virtual = true` pero no es ninguno de los dos,
+     * no debe ofrecerse la opción del Portal Virtual.
+     */
+    public function esDocenteOEstudiante(): bool
+    {
+        $persona = $this->persona;
+        if (!$persona) return false;
+        return $persona->estudiante !== null || $persona->docente !== null;
+    }
+
+    /**
+     * Puede entrar al Portal Virtual realmente (flag de acceso + perfil de docente/estudiante).
+     */
+    public function puedeVirtualReal(): bool
+    {
+        return $this->puedeVirtual() && $this->esDocenteOEstudiante();
+    }
+
     public function tieneAmbosAccesos(): bool
     {
-        return $this->puedeAdmin() && $this->puedeVirtual();
+        return $this->puedeAdmin() && $this->puedeVirtualReal();
     }
 
     public function urlInicio(): string
@@ -85,7 +105,7 @@ class User extends Authenticatable
         if ($this->puedeAdmin()) {
             return '/admin/dashboard';
         }
-        if ($this->puedeVirtual()) {
+        if ($this->puedeVirtualReal()) {
             return '/virtual/dashboard';
         }
         return '/login';

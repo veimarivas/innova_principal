@@ -171,6 +171,192 @@
         flex-shrink: 0;
     }
 
+    /* ── Tabs principales de Finanzas (Detalle Completo / Ingresos Reales / Retirados) ── */
+    .fin-main-tabs-card {
+        background: var(--fc-surface);
+        border: 1px solid var(--fc-border);
+        border-radius: 16px;
+        padding: 8px;
+        margin-bottom: 22px;
+        box-shadow: var(--fc-shadow-sm);
+    }
+    .fin-main-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; border: 0; margin: 0; padding: 0; list-style: none; }
+    .fin-main-tabs .nav-item { margin: 0; }
+    .fin-main-tab-btn {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
+        column-gap: 12px;
+        align-items: center;
+        padding: 12px 16px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        color: var(--fc-text);
+        font-family: 'Sora','DM Sans',sans-serif;
+        text-align: left;
+        position: relative;
+        transition: all .25s ease;
+    }
+    .fin-main-tab-btn i {
+        grid-row: 1 / span 2;
+        font-size: 1.45rem;
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--fc-alt);
+        border-radius: 10px;
+        color: var(--fc-muted);
+        transition: all .25s ease;
+    }
+    .fin-main-tab-btn span { font-weight: 700; font-size: .92rem; line-height: 1.2; }
+    .fin-main-tab-btn small { font-size: .7rem; font-weight: 500; color: var(--fc-muted); line-height: 1.2; }
+    .fin-main-tab-btn:hover { background: var(--fc-alt); }
+    .fin-main-tab-btn.active {
+        background: linear-gradient(135deg, rgba(99,102,241,.07), rgba(13,148,136,.05));
+        border-color: rgba(99,102,241,.25);
+        box-shadow: 0 4px 12px rgba(99,102,241,.10);
+    }
+    .fin-main-tab-btn.active i { background: linear-gradient(135deg,#6366f1,#0d9488); color: #fff; }
+    .fin-main-tab-btn.active span { color: #1e1b4b; }
+    #fin-tab-ingresos.active { background: linear-gradient(135deg, rgba(5,150,105,.08), rgba(16,185,129,.04)); border-color: rgba(5,150,105,.25); box-shadow: 0 4px 12px rgba(5,150,105,.10); }
+    #fin-tab-ingresos.active i { background: linear-gradient(135deg,#059669,#10b981); }
+    #fin-tab-retirados.active { background: linear-gradient(135deg, rgba(220,38,38,.08), rgba(248,113,113,.04)); border-color: rgba(220,38,38,.25); box-shadow: 0 4px 12px rgba(220,38,38,.10); }
+    #fin-tab-retirados.active i { background: linear-gradient(135deg,#dc2626,#f87171); }
+
+    .fin-main-tab-badge {
+        position: absolute;
+        top: 8px; right: 10px;
+        background: #dc2626;
+        color: #fff;
+        font-size: .65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 20px;
+        min-width: 22px;
+        text-align: center;
+    }
+
+    .fin-main-tab-intro {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        background: var(--fc-alt);
+        border: 1px solid var(--fc-border-lt);
+        border-radius: 14px;
+        padding: 14px 18px;
+        margin-bottom: 22px;
+    }
+    .fin-main-tab-intro--danger { background: linear-gradient(135deg, rgba(220,38,38,.04), rgba(248,113,113,.02)); border-color: rgba(220,38,38,.18); }
+    .fin-main-tab-intro-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .fin-main-tab-intro-title { font-family: 'Sora','DM Sans',sans-serif; font-weight: 700; font-size: 1rem; color: var(--fc-text); margin-bottom: 2px; }
+    .fin-main-tab-intro-sub { font-size: .8rem; color: #475569; line-height: 1.5; }
+
+    @media (max-width: 900px) {
+        .fin-main-tabs { grid-template-columns: 1fr; }
+        .fin-main-tab-btn small { font-size: .65rem; }
+    }
+
+    /* ── Tinte de fila según estado contable ── */
+    .fin-row--contable-on  > td { background-color: rgba(16, 185, 129, 0.07) !important; }
+    .fin-row--contable-on:hover > td { background-color: rgba(16, 185, 129, 0.12) !important; }
+    .fin-row--contable-off > td { background-color: rgba(220, 38, 38, 0.07) !important; }
+    .fin-row--contable-off:hover > td { background-color: rgba(220, 38, 38, 0.12) !important; }
+    .fin-row--contable-on  > td,
+    .fin-row--contable-off > td { transition: background-color .25s ease; }
+
+    /* ── Distribución (planes + sexo) ── */
+    .fin-dist-row {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+    .fin-dist-legend { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .fin-dist-legend .fin-dist-legend-row {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: var(--fc-alt); border: 1px solid var(--fc-border-lt);
+        padding: 4px 9px; border-radius: 999px;
+        font-size: .72rem; color: var(--fc-text);
+    }
+    .fin-dist-legend .fin-dist-legend-row .swatch { width: 10px; height: 10px; border-radius: 3px; }
+    .fin-dist-legend .fin-dist-legend-row strong { font-family: 'Sora','DM Sans',sans-serif; }
+    .fin-sexo-legend { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .fin-sexo-card {
+        display: flex; align-items: center; gap: 10px;
+        background: var(--fc-alt); border-radius: 10px; padding: 9px 12px;
+    }
+    .fin-sexo-card-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .fin-sexo-card-value { font-family: 'Sora','DM Sans',sans-serif; font-weight: 700; font-size: 1.05rem; line-height: 1; color: var(--fc-text); }
+    .fin-sexo-card-label { font-size: .7rem; color: var(--fc-muted); margin-top: 2px; }
+    .fin-sexo-card-pct { font-family: 'Sora','DM Sans',sans-serif; font-weight: 800; font-size: 1.05rem; }
+    @media (max-width: 900px) {
+        .fin-dist-row { grid-template-columns: 1fr; }
+    }
+
+    /* ── Badge de estado general (Activo / Retirado) ── */
+    .fin-activo-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: 'Sora','DM Sans',sans-serif;
+        font-size: .7rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 999px;
+        white-space: nowrap;
+        border: 1px solid transparent;
+    }
+    .fin-activo-badge i { font-size: .85rem; }
+    .fin-activo-badge--on  { background: rgba(16, 185, 129, .12); color: #047857; border-color: rgba(16, 185, 129, .28); }
+    .fin-activo-badge--off { background: rgba(220, 38, 38, .12);  color: #b91c1c; border-color: rgba(220, 38, 38, .28); }
+
+    /* ── Celda Contable con sugerencia ── */
+    .fin-contable-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+    .fin-contable-sug {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: .66rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 999px;
+        cursor: help;
+        white-space: nowrap;
+        animation: finContableSugPulse 2.4s ease-in-out infinite;
+    }
+    button.fin-contable-sug-btn {
+        cursor: pointer;
+        font-family: inherit;
+        transition: transform .15s ease, filter .15s ease;
+    }
+    button.fin-contable-sug-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    button.fin-contable-sug-btn:active { transform: translateY(0); }
+    .fin-contable-sug-eye { font-size: .8rem; opacity: .65; margin-left: 2px; }
+    .fin-contable-sug i { font-size: .82rem; }
+    .fin-contable-sug--down {
+        background: rgba(220,38,38,.10);
+        color: #b91c1c;
+        border: 1px solid rgba(220,38,38,.28);
+    }
+    .fin-contable-sug--up {
+        background: rgba(5,150,105,.10);
+        color: #047857;
+        border: 1px solid rgba(5,150,105,.28);
+    }
+    @keyframes finContableSugPulse {
+        0%, 100% { opacity: .9; }
+        50%      { opacity: .55; }
+    }
+
     @media (max-width: 1200px) {
         .fin-kpi-grid   { grid-template-columns: repeat(2, 1fr); }
         .fin-charts-row { grid-template-columns: repeat(2, 1fr); }
@@ -197,237 +383,147 @@
     </div>
 
     @php
-        $finTotalProg   = collect($resumenPorConcepto)->sum('total');
-        $finTotalPag    = collect($resumenPorConcepto)->sum('pagado');
-        $finTotalPend   = collect($resumenPorConcepto)->sum('pendiente');
-        $finInscritos   = count(array_filter($participantesFinanzas, fn($p) => in_array($p['estado'], ['Inscrito','Confirmado','Inscrito '])));
-        $finPct         = $finTotalProg > 0 ? ($finTotalPag / $finTotalProg) * 100 : 0;
-        $finPctPend     = $finTotalProg > 0 ? ($finTotalPend / $finTotalProg) * 100 : 0;
-        $finTrendCls    = $finPct >= 50 ? 'up' : 'down';
-        $finColorMap    = ['Matrícula' => '#6366f1', 'Colegiatura' => '#0891b2', 'Certificación' => '#d97706'];
-        $finIconMap     = ['Matrícula' => 'ri-file-text-line', 'Colegiatura' => 'ri-calendar-check-line', 'Certificación' => 'ri-award-line'];
+        $finColorMap = ['Matrícula' => '#6366f1', 'Colegiatura' => '#0891b2', 'Certificación' => '#d97706'];
+        $finIconMap  = ['Matrícula' => 'ri-file-text-line', 'Colegiatura' => 'ri-calendar-check-line', 'Certificación' => 'ri-award-line'];
+        $finCantInscritos = count(array_filter($participantesFinanzas, fn($p) => in_array($p['estado'], ['Inscrito','Confirmado','Inscrito '])));
+        // Poblaciones para los gráficos de distribución (planes / sexo) por apartado
+        $finPartCompleto  = array_filter($participantesFinanzas, fn($p) => in_array($p['estado'], ['Inscrito','Confirmado','Inscrito ']));
+        // Ingresos Reales: SOLO estado === 'Inscrito' (y no retirados para la cantidad activos)
+        $finPartActivos   = array_filter($participantesFinanzas, fn($p) => $p['estado'] === 'Inscrito' && ($p['activo'] ?? true) === true);
+        $finPartRetirados = array_filter($participantesFinanzas, fn($p) => ($p['activo'] ?? true) === false);
     @endphp
 
-    {{-- ── KPI Cards ── --}}
-    <div class="fin-kpi-grid">
-        {{-- Inscritos --}}
-        <div class="fin-kpi-card kpi-ins">
-            <div class="fin-kpi-body">
-                <div class="fin-kpi-header">
-                    <div class="fin-kpi-icon ins"><i class="ri-user-star-line"></i></div>
-                    <span class="fin-kpi-trend {{ $finTrendCls }}">
-                        <i class="ri-arrow-{{ $finTrendCls === 'up' ? 'up' : 'down' }}-line"></i>
-                        {{ number_format($finPct, 1) }}%
-                    </span>
-                </div>
-                <div class="fin-kpi-value">{{ $finInscritos }}</div>
-                <div class="fin-kpi-label">Total Inscritos</div>
-            </div>
-            <div class="fin-kpi-bar">
-                <div class="fin-kpi-bar-fill" style="width:{{ min($finPct,100) }}%;background:linear-gradient(90deg,#6366f1,#8b5cf6);"></div>
-            </div>
-        </div>
-
-        {{-- Programado --}}
-        <div class="fin-kpi-card kpi-prog">
-            <div class="fin-kpi-body">
-                <div class="fin-kpi-header">
-                    <div class="fin-kpi-icon prog"><i class="ri-calculator-line"></i></div>
-                </div>
-                <div class="fin-kpi-value">Bs. {{ number_format($finTotalProg, 0, ',', '.') }}</div>
-                <div class="fin-kpi-label">Total Programado</div>
-            </div>
-            <div class="fin-kpi-bar">
-                <div class="fin-kpi-bar-fill" style="width:100%;background:linear-gradient(90deg,#64748b,#94a3b8);"></div>
-            </div>
-        </div>
-
-        {{-- Cobrado --}}
-        <div class="fin-kpi-card kpi-pag">
-            <div class="fin-kpi-body">
-                <div class="fin-kpi-header">
-                    <div class="fin-kpi-icon pag"><i class="ri-checkbox-circle-line"></i></div>
-                    <span class="fin-kpi-trend up">
-                        <i class="ri-arrow-up-line"></i>
-                        {{ number_format($finPct, 1) }}%
-                    </span>
-                </div>
-                <div class="fin-kpi-value">Bs. {{ number_format($finTotalPag, 0, ',', '.') }}</div>
-                <div class="fin-kpi-label">Total Cobrado</div>
-            </div>
-            <div class="fin-kpi-bar">
-                <div class="fin-kpi-bar-fill" style="width:{{ min($finPct,100) }}%;background:linear-gradient(90deg,#059669,#10b981);"></div>
-            </div>
-        </div>
-
-        {{-- Pendiente --}}
-        <div class="fin-kpi-card kpi-pend">
-            <div class="fin-kpi-body">
-                <div class="fin-kpi-header">
-                    <div class="fin-kpi-icon pend"><i class="ri-time-line"></i></div>
-                    <span class="fin-kpi-trend {{ $finTrendCls }}">
-                        <i class="ri-arrow-{{ $finTrendCls === 'up' ? 'down' : 'up' }}-line"></i>
-                        {{ number_format($finPctPend, 1) }}%
-                    </span>
-                </div>
-                <div class="fin-kpi-value">Bs. {{ number_format($finTotalPend, 0, ',', '.') }}</div>
-                <div class="fin-kpi-label">Total Pendiente</div>
-            </div>
-            <div class="fin-kpi-bar">
-                <div class="fin-kpi-bar-fill" style="width:{{ min($finPctPend,100) }}%;background:linear-gradient(90deg,#dc2626,#f87171);"></div>
-            </div>
-        </div>
+    {{-- ═══════════════ TABS PRINCIPALES DE FINANZAS ═══════════════ --}}
+    <div class="fin-main-tabs-card">
+        <ul class="fin-main-tabs nav" id="finResumenTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="fin-main-tab-btn nav-link active" id="fin-tab-completo" data-bs-toggle="tab" data-bs-target="#fin-pane-completo" type="button" role="tab">
+                    <i class="ri-list-check-2"></i>
+                    <span>Detalle Completo</span>
+                    <small>Todos los inscritos</small>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="fin-main-tab-btn nav-link" id="fin-tab-ingresos" data-bs-toggle="tab" data-bs-target="#fin-pane-ingresos" type="button" role="tab">
+                    <i class="ri-line-chart-line"></i>
+                    <span>Ingresos Reales</span>
+                    <small>Activos + cobrado de retirados</small>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="fin-main-tab-btn nav-link" id="fin-tab-retirados" data-bs-toggle="tab" data-bs-target="#fin-pane-retirados" type="button" role="tab">
+                    <i class="ri-user-unfollow-line"></i>
+                    <span>Pérdida por Retiros</span>
+                    <small>Estudiantes dados de baja</small>
+                    @if (($cantidadRetirados ?? 0) > 0)
+                        <span class="fin-main-tab-badge">{{ $cantidadRetirados }}</span>
+                    @endif
+                </button>
+            </li>
+        </ul>
     </div>
 
-    {{-- ── Charts Row ── --}}
-    <div class="fin-charts-row">
+    <div class="tab-content fin-main-tab-content" id="finResumenTabsContent">
 
-        {{-- 1. Distribución por Concepto (Donut) --}}
-        <div class="fin-chart-card" style="border-top:3px solid #6366f1;">
-            <div class="fin-chart-header">
-                <div class="fin-chart-title"><i class="ri-pie-chart-2-line"></i> Distribución por Concepto</div>
-                <span class="fin-chart-badge">Cobrado</span>
-            </div>
-            <div class="fin-doughnut-wrap">
-                <canvas id="finChartConceptos"></canvas>
-                <div class="fin-center-label">
-                    <div class="fin-center-value">Bs.&nbsp;{{ number_format($finTotalProg, 0, ',', '.') }}</div>
-                    <div class="fin-center-sub">Programado</div>
+        {{-- ═══ TAB 1: DETALLE COMPLETO ═══ --}}
+        <div class="tab-pane fade show active" id="fin-pane-completo" role="tabpanel" aria-labelledby="fin-tab-completo">
+            <div class="fin-main-tab-intro">
+                <div class="fin-main-tab-intro-icon" style="background:rgba(99,102,241,.12);color:#6366f1;"><i class="ri-list-check-2"></i></div>
+                <div>
+                    <div class="fin-main-tab-intro-title">Detalle Completo</div>
+                    <div class="fin-main-tab-intro-sub">Todo lo que se debería cobrar a todos los inscritos (activos y retirados).</div>
                 </div>
             </div>
-            <div class="fin-legend-list" id="finLegendConceptos"></div>
+            @include('admin.ofertas-academicas.partials.ofertas-detalle._finanzas-detalle-section', [
+                'resumen'           => $resumenPorConcepto,
+                'suffix'            => 'Completo',
+                'kpiCountValue'     => $finCantInscritos,
+                'kpiCountLabel'     => 'Total Inscritos',
+                'kpiCountIconBg'    => 'rgba(99,102,241,.12)',
+                'kpiCountIconColor' => '#6366f1',
+                'kpiCountIcon'      => 'ri-user-star-line',
+                'labels'            => ['programado' => 'Programado', 'cobrado' => 'Cobrado', 'pendiente' => 'Pendiente'],
+                'pendienteVariant'  => 'normal',
+                'colorMap'          => $finColorMap,
+                'iconMap'           => $finIconMap,
+                'participantes'     => $finPartCompleto,
+            ])
         </div>
 
-        {{-- 2. Porcentaje de Cobro (CSS barras) --}}
-        <div class="fin-chart-card" style="border-top:3px solid #0d9488;">
-            <div class="fin-chart-header">
-                <div class="fin-chart-title"><i class="ri-bar-chart-horizontal-line"></i> Porcentaje de Cobro</div>
-                <span class="fin-chart-badge">por concepto</span>
-            </div>
-            <div class="fin-hbars">
-                @foreach ($resumenPorConcepto as $concepto => $datos)
-                    @php
-                        $pctBar  = $datos['total'] > 0 ? ($datos['pagado'] / $datos['total']) * 100 : 0;
-                        $dotClr  = $finColorMap[$concepto] ?? '#64748b';
-                        $pctClr  = $pctBar >= 70 ? '#059669' : ($pctBar >= 40 ? '#d97706' : '#dc2626');
-                        $barGrad = $pctBar >= 70
-                            ? 'linear-gradient(90deg,#059669,#34d399)'
-                            : ($pctBar >= 40 ? 'linear-gradient(90deg,#d97706,#fbbf24)' : 'linear-gradient(90deg,#dc2626,#f87171)');
-                        $twVal   = number_format(min($pctBar, 100), 2, '.', '');
-                    @endphp
-                    <div>
-                        <div class="fin-hbar-meta">
-                            <div class="fin-hbar-concept">
-                                <span class="fin-hbar-dot" style="background:{{ $dotClr }};"></span>
-                                {{ $concepto }}
-                            </div>
-                            <div class="fin-hbar-right">
-                                <span class="fin-hbar-pct" style="color:{{ $pctClr }};">{{ number_format($pctBar, 1) }}%</span>
-                                <span class="fin-hbar-of">cobrado</span>
-                            </div>
-                        </div>
-                        <div class="fin-hbar-track">
-                            <div class="fin-hbar-fill" style="--tw:{{ $twVal }}%;background:{{ $barGrad }};"></div>
-                        </div>
-                        <div class="fin-hbar-amounts">
-                            <span class="fin-hbar-cobrado" style="color:{{ $pctClr }};">Bs.&nbsp;{{ number_format($datos['pagado'], 0, ',', '.') }}</span>
-                            <span class="fin-hbar-total">de Bs.&nbsp;{{ number_format($datos['total'], 0, ',', '.') }}</span>
-                        </div>
+        {{-- ═══ TAB 2: INGRESOS REALES ═══ --}}
+        <div class="tab-pane fade" id="fin-pane-ingresos" role="tabpanel" aria-labelledby="fin-tab-ingresos">
+            <div class="fin-main-tab-intro">
+                <div class="fin-main-tab-intro-icon" style="background:rgba(5,150,105,.12);color:#059669;"><i class="ri-line-chart-line"></i></div>
+                <div>
+                    <div class="fin-main-tab-intro-title">Ingresos Reales</div>
+                    <div class="fin-main-tab-intro-sub">
+                        Programado de los inscritos activos + lo que ya se cobró a los retirados.
+                        El pendiente solo incluye lo cobrable de activos (los retirados ya no se podrán cobrar).
                     </div>
-                @endforeach
+                </div>
             </div>
+            @include('admin.ofertas-academicas.partials.ofertas-detalle._finanzas-detalle-section', [
+                'resumen'           => $resumenPorConceptoIngresosReales,
+                'suffix'            => 'IngresosReales',
+                'kpiCountValue'     => $cantidadInscritoActivo ?? 0,
+                'kpiCountLabel'     => 'Inscritos Activos',
+                'kpiCountIconBg'    => 'rgba(5,150,105,.12)',
+                'kpiCountIconColor' => '#059669',
+                'kpiCountIcon'      => 'ri-user-follow-line',
+                'labels'            => ['programado' => 'Realizable', 'cobrado' => 'Cobrado', 'pendiente' => 'Por Cobrar'],
+                'pendienteVariant'  => 'normal',
+                'colorMap'          => $finColorMap,
+                'iconMap'           => $finIconMap,
+                'participantes'     => $finPartActivos,
+            ])
         </div>
 
-        {{-- 3. Estado de Pagos (Donut) --}}
-        <div class="fin-chart-card" style="border-top:3px solid #059669;">
-            <div class="fin-chart-header">
-                <div class="fin-chart-title"><i class="ri-donut-chart-line"></i> Estado de Pagos</div>
-                <span class="fin-chart-badge">Global</span>
-            </div>
-            @php
-                $finColorPct = $finPct >= 70 ? '#059669' : ($finPct >= 40 ? '#d97706' : '#dc2626');
-            @endphp
-            <div class="fin-doughnut-wrap">
-                <canvas id="finChartEstado"></canvas>
-                <div class="fin-center-label">
-                    <div class="fin-estado-pct-big" style="color:{{ $finColorPct }};">{{ number_format($finPct, 1) }}%</div>
-                    <div class="fin-center-sub">Cobrado</div>
+        {{-- ═══ TAB 3: PÉRDIDA POR RETIROS ═══ --}}
+        <div class="tab-pane fade" id="fin-pane-retirados" role="tabpanel" aria-labelledby="fin-tab-retirados">
+            <div class="fin-main-tab-intro fin-main-tab-intro--danger">
+                <div class="fin-main-tab-intro-icon" style="background:rgba(220,38,38,.12);color:#dc2626;"><i class="ri-user-unfollow-line"></i></div>
+                <div>
+                    <div class="fin-main-tab-intro-title">Pérdida por Retiros</div>
+                    <div class="fin-main-tab-intro-sub">
+                        Detalle de los estudiantes retirados: lo que se les debía cobrar, lo que se alcanzó a cobrar
+                        y lo que ya no se podrá cobrar (pérdida).
+                    </div>
                 </div>
             </div>
-            <div class="fin-estado-cards">
-                <div class="fin-estado-mini" style="border-left-color:#059669;">
-                    <div class="fin-estado-mini-value" style="color:#059669;">Bs.&nbsp;{{ number_format($finTotalPag, 0, ',', '.') }}</div>
-                    <div class="fin-estado-mini-label"><i class="ri-checkbox-circle-line"></i> Cobrado</div>
+
+            @if (($cantidadRetirados ?? 0) === 0)
+                <div style="background:var(--fc-alt);border:1px dashed var(--fc-border);border-radius:14px;padding:42px 22px;text-align:center;color:var(--fc-muted);">
+                    <i class="ri-user-unfollow-line" style="font-size:2.2rem;display:block;margin-bottom:10px;opacity:.55;"></i>
+                    <div style="font-size:.95rem;font-weight:600;color:#475569;margin-bottom:4px;">Sin retiros registrados</div>
+                    <div style="font-size:.82rem;">No hay estudiantes dados de baja en esta oferta académica.</div>
                 </div>
-                <div class="fin-estado-mini" style="border-left-color:#dc2626;">
-                    <div class="fin-estado-mini-value" style="color:#dc2626;">Bs.&nbsp;{{ number_format($finTotalPend, 0, ',', '.') }}</div>
-                    <div class="fin-estado-mini-label"><i class="ri-time-line"></i> Pendiente</div>
-                </div>
-            </div>
+            @else
+                @include('admin.ofertas-academicas.partials.ofertas-detalle._finanzas-detalle-section', [
+                    'resumen'           => $resumenPorConceptoRetirados,
+                    'suffix'            => 'Retirados',
+                    'kpiCountValue'     => $cantidadRetirados,
+                    'kpiCountLabel'     => 'Estudiantes Retirados',
+                    'kpiCountIconBg'    => 'rgba(220,38,38,.12)',
+                    'kpiCountIconColor' => '#dc2626',
+                    'kpiCountIcon'      => 'ri-user-unfollow-line',
+                    'labels'            => ['programado' => 'Programado', 'cobrado' => 'Cobrado', 'pendiente' => 'Perdido'],
+                    'pendienteVariant'  => 'perdida',
+                    'colorMap'          => $finColorMap,
+                    'iconMap'           => $finIconMap,
+                    'participantes'     => $finPartRetirados,
+                ])
+            @endif
         </div>
 
     </div>
-
-    {{-- ── Resumen por Concepto ── --}}
-    <h3 class="fin-section-title">Resumen por Concepto</h3>
-    <div class="fin-rc-grid">
-        @foreach ($resumenPorConcepto as $concepto => $datos)
-            @php
-                $rcPct    = $datos['total'] > 0 ? ($datos['pagado'] / $datos['total']) * 100 : 0;
-                $rcColor  = $finColorMap[$concepto] ?? '#64748b';
-                $rcPctClr = $rcPct >= 70 ? '#059669' : ($rcPct >= 40 ? '#d97706' : '#dc2626');
-                $rcGrad   = $rcPct >= 70
-                    ? 'linear-gradient(90deg,#059669,#34d399)'
-                    : ($rcPct >= 40 ? 'linear-gradient(90deg,#d97706,#fbbf24)' : 'linear-gradient(90deg,#dc2626,#f87171)');
-                $rcTw     = number_format(min($rcPct, 100), 2, '.', '');
-                $rcIcon   = $finIconMap[$concepto] ?? 'ri-money-dollar-circle-line';
-            @endphp
-            <div class="fin-rc-card">
-                <div class="fin-rc-accent" style="background:{{ $rcColor }};"></div>
-                <div class="fin-rc-body">
-                    <div class="fin-rc-top">
-                        <div class="fin-rc-icon-wrap">
-                            <div class="fin-rc-icon" style="background:{{ $rcColor }}18;color:{{ $rcColor }};">
-                                <i class="{{ $rcIcon }}"></i>
-                            </div>
-                            <div>
-                                <div class="fin-rc-name">{{ $concepto }}</div>
-                                <div class="fin-rc-sub">
-                                    <i class="ri-coins-line"></i>
-                                    {{ number_format($datos['total'], 0, ',', '.') }} Bs. programados
-                                </div>
-                            </div>
-                        </div>
-                        <div style="text-align:right;flex-shrink:0;">
-                            <div class="fin-rc-pct-badge" style="color:{{ $rcPctClr }};">{{ number_format($rcPct, 1) }}%</div>
-                            <div class="fin-rc-pct-label">cobrado</div>
-                        </div>
-                    </div>
-                    <div class="fin-rc-track">
-                        <div class="fin-rc-fill" style="--tw:{{ $rcTw }}%;background:{{ $rcGrad }};"></div>
-                    </div>
-                    <div class="fin-rc-stats">
-                        <div class="fin-rc-stat">
-                            <div class="fin-rc-stat-value">Bs.&nbsp;{{ number_format($datos['total'], 0, ',', '.') }}</div>
-                            <div class="fin-rc-stat-label">Programado</div>
-                        </div>
-                        <div class="fin-rc-stat">
-                            <div class="fin-rc-stat-value" style="color:#059669;">Bs.&nbsp;{{ number_format($datos['pagado'], 0, ',', '.') }}</div>
-                            <div class="fin-rc-stat-label">Cobrado</div>
-                        </div>
-                        <div class="fin-rc-stat">
-                            <div class="fin-rc-stat-value" style="color:#dc2626;">Bs.&nbsp;{{ number_format($datos['pendiente'], 0, ',', '.') }}</div>
-                            <div class="fin-rc-stat-label">Pendiente</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
+    {{-- ═══════════════ FIN TABS PRINCIPALES ═══════════════ --}}
 
     @php
         $inscritosData   = array_filter($participantesFinanzas, fn($p) => in_array($p['estado'], ['Inscrito', 'Confirmado', 'Inscrito ']));
         $preInscritosData = array_filter($participantesFinanzas, fn($p) => $p['estado'] === 'Pre-Inscrito');
+        $finFaseDesarrollo = (int) ($oferta->fase_id ?? 0) === 4;
+        $finExtraCols      = $finFaseDesarrollo ? 3 : 2; // [Avance + Activo (+ Contable)]
+        $finTotalCols      = $finFaseDesarrollo ? 13 : 12;
     @endphp
 
     {{-- ── Tabla de Estado Financiero ── --}}
@@ -489,7 +585,7 @@
                                     <th colspan="5"></th>
                                     <th class="text-center fin-th-group-conceptos" colspan="3">Conceptos de Pago</th>
                                     <th class="text-center fin-th-group-totales" colspan="2">Totales</th>
-                                    <th colspan="1"></th>
+                                    <th colspan="{{ $finExtraCols }}"></th>
                                 </tr>
                                 <tr class="fin-thead-cols">
                                     <th class="text-center fin-th-num">#</th>
@@ -503,6 +599,10 @@
                                     <th class="text-end fin-th-totales-col"><i class="ri-check-double-line" style="color:#059669;margin-right:3px;"></i>Cobrado</th>
                                     <th class="text-end fin-th-totales-col"><i class="ri-time-line" style="color:#dc2626;margin-right:3px;"></i>Saldo</th>
                                     <th class="text-center">Avance</th>
+                                    <th class="text-center" title="Activo general / Retirado (inscripciones.activo)">Activo</th>
+                                    @if ($finFaseDesarrollo)
+                                        <th class="text-center" title="Estado contable con sugerencia automática según cuotas vencidas / pagos al día">Contable</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -520,8 +620,10 @@
                                         $certificacion= $participante['conceptos']['Certificación']?? ['total' => 0, 'pagado' => 0, 'pendiente' => 0];
                                         $partes = explode(' ', trim($participante['nombre_completo']));
                                         $ini = strtoupper(substr($partes[0] ?? '?', 0, 1) . substr($partes[1] ?? '', 0, 1));
+                                        $contableActivo = $participante['activo_contable'] ?? true;
+                                        $sugerencia     = $participante['sugerencia_contable'] ?? null;
                                     @endphp
-                                    <tr class="fin-row">
+                                    <tr class="fin-row{{ $finFaseDesarrollo ? ($contableActivo ? ' fin-row--contable-on' : ' fin-row--contable-off') : '' }}" data-inscripcion-id="{{ $participante['inscripcion_id'] }}">
                                         <td class="text-center fin-td-num">{{ $loop->iteration }}</td>
                                         <td class="fin-td-estudiante">
                                             <div class="fin-student-cell">
@@ -558,9 +660,55 @@
                                                 </div>
                                             </div>
                                         </td>
+                                        @php $genActivo = $participante['activo'] ?? true; @endphp
+                                        <td class="text-center">
+                                            @if ($genActivo)
+                                                <span class="fin-activo-badge fin-activo-badge--on">
+                                                    <i class="ri-checkbox-circle-line"></i> Activo
+                                                </span>
+                                            @else
+                                                <span class="fin-activo-badge fin-activo-badge--off">
+                                                    <i class="ri-user-unfollow-line"></i> Retirado
+                                                </span>
+                                            @endif
+                                        </td>
+                                        @if ($finFaseDesarrollo)
+                                        <td class="text-center">
+                                            <div class="fin-contable-cell"
+                                                 data-inscripcion-id="{{ $participante['inscripcion_id'] }}"
+                                                 data-tiene-vencidas="{{ ($participante['tiene_cuota_vencida'] ?? false) ? 1 : 0 }}">
+                                                <button type="button"
+                                                        class="ins-estado-toggle {{ $contableActivo ? 'on' : 'off' }} fin-contable-toggle"
+                                                        data-inscripcion-id="{{ $participante['inscripcion_id'] }}"
+                                                        data-campo="activo_contable"
+                                                        data-valor="{{ $contableActivo ? 1 : 0 }}"
+                                                        title="Estado contable: {{ $contableActivo ? 'Activo' : 'Inactivo' }} — click para cambiar">
+                                                    <span class="ins-estado-toggle-track"><span class="ins-estado-toggle-knob"></span></span>
+                                                    <span class="ins-estado-toggle-label">{{ $contableActivo ? 'Activo' : 'Baja' }}</span>
+                                                </button>
+                                                @if ($sugerencia === 'desactivar')
+                                                    <button type="button"
+                                                            class="fin-contable-sug fin-contable-sug--down fin-contable-sug-btn"
+                                                            data-inscripcion-id="{{ $participante['inscripcion_id'] }}"
+                                                            title="Tiene cuotas vencidas — ver detalle">
+                                                        <i class="ri-error-warning-line"></i> Sugerir baja
+                                                        <i class="ri-eye-line fin-contable-sug-eye"></i>
+                                                    </button>
+                                                @elseif ($sugerencia === 'activar')
+                                                    <button type="button"
+                                                            class="fin-contable-sug fin-contable-sug--up fin-contable-sug-btn"
+                                                            data-inscripcion-id="{{ $participante['inscripcion_id'] }}"
+                                                            title="Está al día — ver detalle">
+                                                        <i class="ri-arrow-up-circle-line"></i> Sugerir alta
+                                                        <i class="ri-eye-line fin-contable-sug-eye"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        @endif
                                     </tr>
                                 @empty
-                                    <tr><td colspan="11" class="fin-empty-row">
+                                    <tr><td colspan="{{ $finTotalCols }}" class="fin-empty-row">
                                         <i class="ri-wallet-line"></i>
                                         <p>No hay participantes inscritos</p>
                                     </td></tr>
@@ -662,6 +810,140 @@
             </div>
         </div>
     </div>
+
+{{-- ═══════════════ Modal Detalle Estado Contable ═══════════════ --}}
+<div class="modal fade" id="modalContableDetalle" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.18);">
+            <div class="modal-header" id="modalContableHeader" style="background:linear-gradient(135deg,#7f1d1d 0%,#b91c1c 50%,#dc2626 100%);color:white;padding:1.1rem 1.5rem;border:none;">
+                <div class="d-flex align-items-center gap-3" style="flex:1;">
+                    <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i id="modalContableHeaderIcon" class="ri-error-warning-line" style="font-size:1.4rem;"></i>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <h5 class="modal-title mb-0" id="modalContableTitulo" style="font-size:1rem;font-weight:700;letter-spacing:-.01em;color:#fff;">Detalle de estado contable</h5>
+                        <div id="modalContableSubtitulo" style="font-size:.73rem;opacity:.82;margin-top:.15rem;color:rgba(255,255,255,.9);">—</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" style="padding:0;">
+                <div id="modalContableLoading" class="text-center" style="padding:3rem 1.5rem;">
+                    <div class="spinner-border" style="color:#dc2626;width:2.25rem;height:2.25rem;" role="status"></div>
+                    <p class="mt-3 mb-0" style="font-size:.85rem;color:#64748b;font-weight:500;">Cargando detalle de cuotas…</p>
+                </div>
+
+                <div id="modalContableContent" style="display:none;">
+                    {{-- Banner sugerencia --}}
+                    <div id="modalContableBanner" class="fin-mc-banner"></div>
+
+                    {{-- KPIs --}}
+                    <div class="fin-mc-kpi-row">
+                        <div class="fin-mc-kpi fin-mc-kpi--danger">
+                            <div class="fin-mc-kpi-label"><i class="ri-error-warning-line"></i> Vencidas</div>
+                            <div class="fin-mc-kpi-value" id="modalContableKpiVencidas">0</div>
+                            <div class="fin-mc-kpi-sub" id="modalContableKpiVencidasMonto">Bs. 0</div>
+                        </div>
+                        <div class="fin-mc-kpi fin-mc-kpi--warn">
+                            <div class="fin-mc-kpi-label"><i class="ri-time-line"></i> Por vencer</div>
+                            <div class="fin-mc-kpi-value" id="modalContableKpiPorVencer">0</div>
+                            <div class="fin-mc-kpi-sub" id="modalContableKpiPorVencerMonto">Bs. 0</div>
+                        </div>
+                        <div class="fin-mc-kpi fin-mc-kpi--ok">
+                            <div class="fin-mc-kpi-label"><i class="ri-checkbox-circle-line"></i> Pagadas</div>
+                            <div class="fin-mc-kpi-value" id="modalContableKpiPagadas">0</div>
+                            <div class="fin-mc-kpi-sub">cuota(s)</div>
+                        </div>
+                    </div>
+
+                    {{-- Tabla de cuotas vencidas --}}
+                    <div class="fin-mc-section" id="modalContableSeccionVencidas">
+                        <div class="fin-mc-section-title fin-mc-section-title--danger">
+                            <i class="ri-error-warning-fill"></i> Cuotas Vencidas
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table fin-mc-tbl mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Cuota</th>
+                                        <th class="text-end">Monto</th>
+                                        <th class="text-end">Pagado</th>
+                                        <th class="text-end">Pendiente</th>
+                                        <th class="text-center">Vencimiento</th>
+                                        <th class="text-center">Días atraso</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modalContableTbodyVencidas"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- Tabla de cuotas por vencer --}}
+                    <div class="fin-mc-section" id="modalContableSeccionPorVencer">
+                        <div class="fin-mc-section-title fin-mc-section-title--warn">
+                            <i class="ri-time-line"></i> Cuotas por Vencer
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table fin-mc-tbl mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Cuota</th>
+                                        <th class="text-end">Monto</th>
+                                        <th class="text-end">Pagado</th>
+                                        <th class="text-end">Pendiente</th>
+                                        <th class="text-center">Vencimiento</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modalContableTbodyPorVencer"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:.85rem 1.25rem;justify-content:space-between;background:#f8fafc;">
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal" style="border:1px solid #cbd5e1;font-weight:600;">
+                    <i class="ri-close-line"></i> Cerrar
+                </button>
+                <button type="button" class="btn btn-sm" id="modalContableAccion" style="display:none;font-weight:700;color:#fff;border:none;padding:.45rem 1.1rem;border-radius:8px;">
+                    <i class="ri-check-line"></i> <span id="modalContableAccionText">Aplicar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fin-mc-banner { padding: 12px 18px; font-size: .82rem; font-weight: 600; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #e2e8f0; }
+    .fin-mc-banner i { font-size: 1.1rem; }
+    .fin-mc-banner.suggest-down { background: rgba(220,38,38,.07); color: #991b1b; }
+    .fin-mc-banner.suggest-up   { background: rgba(5,150,105,.07); color: #047857; }
+    .fin-mc-banner.no-suggest   { background: #f8fafc; color: #475569; }
+
+    .fin-mc-kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 16px 18px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+    .fin-mc-kpi { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; }
+    .fin-mc-kpi-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #64748b; display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+    .fin-mc-kpi-value { font-family: 'Sora','DM Sans',sans-serif; font-weight: 800; font-size: 1.35rem; line-height: 1.1; }
+    .fin-mc-kpi-sub   { font-size: .7rem; color: #64748b; margin-top: 2px; }
+    .fin-mc-kpi--danger { border-left: 3px solid #dc2626; }
+    .fin-mc-kpi--danger .fin-mc-kpi-value { color: #b91c1c; }
+    .fin-mc-kpi--warn   { border-left: 3px solid #d97706; }
+    .fin-mc-kpi--warn .fin-mc-kpi-value { color: #b45309; }
+    .fin-mc-kpi--ok     { border-left: 3px solid #059669; }
+    .fin-mc-kpi--ok .fin-mc-kpi-value { color: #047857; }
+
+    .fin-mc-section { padding: 14px 18px; border-bottom: 1px solid #f1f5f9; }
+    .fin-mc-section:last-child { border-bottom: none; }
+    .fin-mc-section-title { display: flex; align-items: center; gap: 6px; font-family: 'Sora','DM Sans',sans-serif; font-weight: 700; font-size: .82rem; margin-bottom: 8px; }
+    .fin-mc-section-title--danger { color: #b91c1c; }
+    .fin-mc-section-title--warn   { color: #b45309; }
+
+    .fin-mc-tbl thead th { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 8px 10px; }
+    .fin-mc-tbl tbody td { font-size: .78rem; color: #1e293b; padding: 8px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    .fin-mc-tbl tbody tr:last-child td { border-bottom: none; }
+    .fin-mc-tbl .fin-mc-dias { display: inline-block; background: rgba(220,38,38,.1); color: #b91c1c; font-weight: 700; padding: 2px 9px; border-radius: 999px; font-size: .72rem; }
+</style>
 
 </div>{{-- .fin-tab --}}
 </div>{{-- .tab-content-section --}}

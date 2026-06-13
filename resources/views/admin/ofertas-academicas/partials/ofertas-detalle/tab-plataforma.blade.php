@@ -1,5 +1,28 @@
 <div class="tab-content-section" id="tab-plataforma">
 
+    <style>
+        .plt-estado-chip {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: .68rem; font-weight: 700;
+            padding: 3px 9px; border-radius: 999px;
+            white-space: nowrap;
+            font-family: 'Sora','DM Sans',sans-serif;
+            border: 1px solid transparent;
+            line-height: 1.1;
+        }
+        .plt-estado-chip i { font-size: .82rem; }
+        .plt-estado-on {
+            background: rgba(16,185,129,.12);
+            color: #047857;
+            border-color: rgba(16,185,129,.28);
+        }
+        .plt-estado-off {
+            background: rgba(220,38,38,.10);
+            color: #b91c1c;
+            border-color: rgba(220,38,38,.28);
+        }
+    </style>
+
     {{-- Header --}}
     <div class="plt-header-bar">
         <div class="plt-header-left">

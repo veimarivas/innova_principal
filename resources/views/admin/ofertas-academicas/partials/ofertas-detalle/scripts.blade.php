@@ -21,6 +21,83 @@
         let calendar = null;
         let selectedModuloFilter = null;
 
+        // ===== Mover los modals del detalle al <body> para evitar conflictos =====
+        // de stacking-context heredado del wrapper .oferta-details-theme-wrapper /
+        // .oferta-detail-card (que provocaba que solo se viera el backdrop).
+        function _relocateModalsToBody() {
+            const ids = [
+                'modalGeneralBaja',
+                'modalContableDetalle',
+                'modalAcademicoDetalle',
+                'modalCrearCuentasMoodle',
+                'modal2daInstancia',
+                'modalEstudiosEstudiante',
+                'modalConfirmarAccesoPlataforma',
+            ];
+            ids.forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el && el.parentElement !== document.body) {
+                    document.body.appendChild(el);
+                }
+            });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', _relocateModalsToBody);
+        } else {
+            _relocateModalsToBody();
+        }
+
+        // ===== Sincronización global del estado de una inscripción =====
+        // Llamar a esta función después de cualquier toggle exitoso (`activo`,
+        // `activo_contable`, `activo_academico`) para que TODAS las tabs reflejen
+        // el cambio sin recargar la página. Acepta el objeto data devuelto por
+        // /toggle-estado: { activo, activo_contable, activo_academico }.
+        window.aplicarEstadoInscripcion = function aplicarEstadoInscripcion(inscripcionId, estado) {
+            if (!inscripcionId || !estado) return;
+            const map = {
+                'activo':           !!estado.activo,
+                'activo_contable':  !!estado.activo_contable,
+                'activo_academico': !!estado.activo_academico,
+            };
+            Object.keys(map).forEach(function(campo) {
+                const nuevoValor = map[campo];
+                const label = nuevoValor ? 'Activo' : 'Baja';
+                const tituloBase = campo === 'activo_contable' ? 'Estado contable'
+                    : (campo === 'activo_academico' ? 'Estado académico' : 'Estado general');
+                const titulo = tituloBase + ': ' + (nuevoValor
+                    ? 'Activo (click para dar de baja)'
+                    : 'Inactivo (click para activar)');
+
+                $('.ins-estado-toggle[data-inscripcion-id="' + inscripcionId + '"][data-campo="' + campo + '"]').each(function() {
+                    const $t = $(this);
+                    $t.removeClass('on off').addClass(nuevoValor ? 'on' : 'off');
+                    $t.attr('data-valor', nuevoValor ? 1 : 0).removeData('valor');
+                    $t.find('.ins-estado-toggle-label').text(label);
+                    $t.attr('title', titulo);
+
+                    // Tints + sugerencias específicas
+                    if ($t.hasClass('fin-contable-toggle') && campo === 'activo_contable'
+                            && typeof actualizarSugerenciaContable === 'function') {
+                        actualizarSugerenciaContable($t.closest('.fin-contable-cell'), nuevoValor);
+                        pintarFilaContable($t.closest('tr.fin-row'), nuevoValor);
+                    }
+                    if ($t.hasClass('aa-academico-toggle') && campo === 'activo_academico'
+                            && typeof actualizarSugerenciaAcademica === 'function') {
+                        actualizarSugerenciaAcademica($t.closest('.aa-academico-cell'), nuevoValor);
+                        pintarFilaAcademica($t.closest('tr'), nuevoValor);
+                    }
+                });
+            });
+
+            // Invalida caché del tab Plataforma Moodle (los chips Contable/Académico
+            // y posibles bloqueos cambian). Si el tab está visible, recargar.
+            if (typeof _caData !== 'undefined') { try { _caData = null; } catch(e){} }
+            const tabPlat = document.getElementById('tab-plataforma');
+            if (tabPlat && tabPlat.classList.contains('active') && typeof window.cargarControlAcceso === 'function') {
+                window.cargarControlAcceso(true);
+            }
+        };
+
         // ===== UTILIDADES =====
         function toast(tipo, mensaje) {
             const iconMap = {
@@ -156,7 +233,11 @@
                 }
                 if (target === 'inscripciones') cargarInscripciones();
                 if (target === 'plataforma') cargarControlAcceso(false);
-                if (target === 'area-academica') cargarAreaAcademicaNotas();
+                // No auto-cargar notas desde Moodle al abrir el tab:
+                // las notas locales (matriculaciones.nota_regular) ya vienen renderizadas
+                // server-side. El botón "Recargar notas" sigue disponible para sincronizar
+                // contra Moodle manualmente.
+                // if (target === 'area-academica') cargarAreaAcademicaNotas();
             });
         });
 
@@ -177,6 +258,13 @@
                 aaNotasCargadas = true;
                 return;
             }
+            // Snapshot del valor server-side (matriculaciones.nota_regular) por si Moodle no tiene datos
+            $tabla.find('.aa-mod-cell:not(.aa-mod-cell-blocked) .aa-nota').each(function() {
+                const $n = $(this);
+                if ($n.attr('data-original') === undefined) {
+                    $n.attr('data-original', $n.text());
+                }
+            });
             // Marcar todas las celdas (no bloqueadas) como loading
             $tabla.find('.aa-mod-cell:not(.aa-mod-cell-blocked) .aa-nota').addClass('loading').text('…');
             $('#btnRefrescarNotasAA').addClass('is-loading').prop('disabled', true);
@@ -188,10 +276,15 @@
                     type: 'GET',
                     timeout: 25000
                 }).done(function(r) {
+                    function restore($n) {
+                        const orig = $n.attr('data-original');
+                        $n.removeClass('loading').addClass('loaded').text(orig !== undefined ? orig : '—');
+                    }
                     if (!r || r.success === false) {
-                        // Marcar todas las celdas de este módulo como sin datos
-                        $tabla.find('.aa-mod-cell[data-modulo-id="' + mid + '"] .aa-nota')
-                            .removeClass('loading').addClass('loaded').text('—');
+                        // Sin datos en Moodle: restaurar el valor local (matriculaciones.nota_regular)
+                        $tabla.find('.aa-mod-cell[data-modulo-id="' + mid + '"] .aa-nota').each(function() {
+                            restore($(this));
+                        });
                         return;
                     }
                     const estudiantes = r.estudiantes || [];
@@ -214,9 +307,9 @@
                                 .toggleClass('ok', nf >= 71)
                                 .toggleClass('fail', !isNaN(nf) && nf < 71);
                         } else {
-                            $final.addClass('loaded').text('—');
+                            restore($final);
                         }
-                        // Nota 2da instancia: si el endpoint la trae en algún día, leerla; por ahora "—"
+                        // Nota 2da instancia: si el endpoint la trae en algún día, leerla
                         if (est && (est.nota_segunda !== undefined || est.nota_2da !== undefined)) {
                             const ns = parseFloat(est.nota_segunda ?? est.nota_2da);
                             $segunda.text(isNaN(ns) ? '—' : ns.toFixed(2))
@@ -224,12 +317,16 @@
                                 .toggleClass('ok', ns >= 71)
                                 .toggleClass('fail', !isNaN(ns) && ns < 71);
                         } else {
-                            $segunda.addClass('loaded').text('—');
+                            restore($segunda);
                         }
                     });
                 }).fail(function() {
-                    $tabla.find('.aa-mod-cell[data-modulo-id="' + mid + '"] .aa-nota')
-                        .removeClass('loading').addClass('loaded').text('—');
+                    // Fallo de Moodle: restaurar valores locales
+                    $tabla.find('.aa-mod-cell[data-modulo-id="' + mid + '"] .aa-nota').each(function() {
+                        const $n = $(this);
+                        const orig = $n.attr('data-original');
+                        $n.removeClass('loading').addClass('loaded').text(orig !== undefined ? orig : '—');
+                    });
                 }).always(function() {
                     pendientes--;
                     if (pendientes <= 0) {
@@ -772,6 +869,71 @@
                     ? '<span class="ins-acc-chip activa"><i class="ri-check-line"></i> Activa</span>'
                     : '<span class="ins-acc-chip sin"><i class="ri-close-line"></i> Sin cuenta</span>';
 
+                // Toggles de Estado Contable y Académico — solo para Inscritos
+                function buildEstadoToggle(campo, valor, label) {
+                    if (estado !== 'Inscrito') {
+                        return '<span class="ins-estado-toggle-na" title="Solo disponible para Inscritos">—</span>';
+                    }
+                    const activo = valor !== false;
+                    return '<button type="button" class="ins-estado-toggle ' + (activo ? 'on' : 'off') + '" ' +
+                        'data-inscripcion-id="' + ins.id + '" data-campo="' + campo + '" data-valor="' + (activo ? 1 : 0) + '" ' +
+                        'title="' + label + ': ' + (activo ? 'Activo (click para dar de baja)' : 'Inactivo (click para activar)') + '">' +
+                        '<span class="ins-estado-toggle-track"><span class="ins-estado-toggle-knob"></span></span>' +
+                        '<span class="ins-estado-toggle-label">' + (activo ? 'Activo' : 'Baja') + '</span>' +
+                    '</button>';
+                }
+
+                // Sugerencias por estudiante (mora contable + 2+ reprobados académicos)
+                const tieneVencidas = !!ins.tiene_cuota_vencida;
+                const reprobados = Number(ins.cantidad_reprobados) || 0;
+                const acadActivo = ins.activo_academico !== false;
+                const contActivo = ins.activo_contable !== false;
+                const genActivo  = ins.activo !== false;
+
+                const sugContable = (tieneVencidas && contActivo) ? 'desactivar'
+                    : (!tieneVencidas && !contActivo ? 'activar' : null);
+                const sugAcad = (reprobados >= 2 && acadActivo) ? 'desactivar' : null;
+                // Sugerencia del campo "Activo" general: ambas sugerencias de baja activas → sugerir baja general
+                const sugGen = (sugContable === 'desactivar' && sugAcad === 'desactivar' && genActivo)
+                    ? 'desactivar' : null;
+
+                function buildSugChip(tipo, attrs, txt, titulo) {
+                    return '<button type="button" class="ins-cell-sug ins-cell-sug--' + tipo + ' ins-cell-sug-btn" ' +
+                        attrs + ' title="' + titulo + '">' +
+                        '<i class="' + (tipo === 'down' ? 'ri-error-warning-line' : 'ri-arrow-up-circle-line') + '"></i> ' + txt +
+                        ' <i class="ri-eye-line ins-cell-sug-eye"></i>' +
+                    '</button>';
+                }
+
+                function wrapCell(toggleHtml, sug, sugAttrs, sugTitle) {
+                    if (estado !== 'Inscrito' || !sug) return toggleHtml;
+                    const txt = sug === 'desactivar' ? 'Sugerir baja' : 'Sugerir alta';
+                    const tipo = sug === 'desactivar' ? 'down' : 'up';
+                    return '<div class="ins-cell-wrap">' + toggleHtml +
+                        buildSugChip(tipo, sugAttrs, txt, sugTitle) +
+                    '</div>';
+                }
+
+                const baseAttrs = 'data-inscripcion-id="' + ins.id + '"';
+                const activoCell    = wrapCell(
+                    buildEstadoToggle('activo', ins.activo, 'Estado general'),
+                    sugGen,
+                    baseAttrs + ' data-tipo="general"',
+                    'Mora contable + 2 o más módulos reprobados — ver detalle'
+                );
+                const contableCell  = wrapCell(
+                    buildEstadoToggle('activo_contable', ins.activo_contable, 'Estado contable'),
+                    sugContable,
+                    baseAttrs + ' data-tipo="contable"',
+                    sugContable === 'desactivar' ? 'Tiene cuotas vencidas — ver detalle' : 'Está al día — ver detalle'
+                );
+                const academicoCell = wrapCell(
+                    buildEstadoToggle('activo_academico', ins.activo_academico, 'Estado académico'),
+                    sugAcad,
+                    baseAttrs + ' data-tipo="academico"',
+                    reprobados + ' módulo(s) reprobado(s) — ver detalle'
+                );
+
                 const btnDetalle = ins.estudiante_id
                     ? '<a href="/admin/estudiantes/' + ins.estudiante_id + '/detalle" class="ins-action-btn" title="Ver detalle"><i class="ri-eye-line"></i></a>'
                     : '<button class="ins-action-btn" disabled title="Sin estudiante"><i class="ri-eye-line"></i></button>';
@@ -795,8 +957,13 @@
                     btnWa = '<button class="ins-action-btn" disabled title="' + (celularLimpio.length < 8 ? 'Sin celular' : 'Sin cuenta Moodle') + '"><i class="ri-whatsapp-line"></i></button>';
                 }
 
+                const faseDes = window.OFERTA_FASE_DESARROLLO === true;
+                const rowAcadTint = (estado === 'Inscrito' && faseDes)
+                    ? (genActivo ? ' ins-row--gen-on' : ' ins-row--gen-off')
+                    : '';
+
                 html +=
-                    '<tr>' +
+                    '<tr class="ins-row' + rowAcadTint + '" data-inscripcion-id="' + ins.id + '">' +
                     '<td class="text-center" style="color:#94a3b8;font-weight:600;font-size:.72rem;">' + (idx + 1) + '</td>' +
                     '<td>' +
                         '<div class="ins-student-cell">' +
@@ -811,6 +978,11 @@
                     '<td style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#475569;">' + escHtml(correo) + '</td>' +
                     '<td class="text-center"><span class="ins-plan-badge" title="' + escHtml(plan) + '">' + escHtml(plan) + '</span></td>' +
                     '<td class="text-center"><span class="ins-estado-badge ' + esCls + '"><i class="' + esIco + '"></i>' + estado + '</span></td>' +
+                    (faseDes ? (
+                        '<td class="text-center">' + activoCell + '</td>' +
+                        '<td class="text-center">' + contableCell + '</td>' +
+                        '<td class="text-center">' + academicoCell + '</td>'
+                    ) : '') +
                     '<td class="text-center">' + sistemaChip + '</td>' +
                     '<td class="text-center">' + moodleChip + '</td>' +
                     '<td><div class="ins-actions">' + btnDetalle + btnCambiar + btnWa + '</div></td>' +
@@ -832,6 +1004,810 @@
                     .done(function(response) {
                         renderInscripcionesTable(response.data || [], filter);
                     });
+            });
+        });
+
+        // ── Sticky cols (#, Carnet, Estudiante): oscurecer al hacer scroll horizontal ──
+        (function() {
+            const wrap = document.querySelector('.aa-table-wrap');
+            if (!wrap) return;
+            const sync = function() {
+                if (wrap.scrollLeft > 4) wrap.classList.add('is-scrolled');
+                else wrap.classList.remove('is-scrolled');
+            };
+            wrap.addEventListener('scroll', sync, { passive: true });
+            window.addEventListener('resize', sync, { passive: true });
+            sync();
+        })();
+
+        // ── Nota de 2da instancia (registrar / editar) ──
+        let aa2daCtx = null;
+
+        function abrirModal2da(ctx) {
+            aa2daCtx = ctx;
+            $('#modal2daSub').text((ctx.estudiante || '—') + ' · ' + (ctx.moduloNombre || ''));
+            $('#modal2daMax').text(Number(ctx.notaMinima).toFixed(2));
+            $('#modal2daInput').val(ctx.notaActual !== null && ctx.notaActual !== undefined ? Number(ctx.notaActual).toFixed(2) : '');
+            $('#modal2daInput').attr('max', Number(ctx.notaMinima));
+            $('#modal2daError').hide().text('');
+            $('#modal2daDelete').toggle(ctx.notaActual !== null && ctx.notaActual !== undefined);
+            new bootstrap.Modal(document.getElementById('modal2daInstancia')).show();
+            setTimeout(function() { $('#modal2daInput').focus().select(); }, 250);
+        }
+
+        // Sincroniza el sub-label "2da Inst." del header de un módulo según haya o no
+        // alguna celda en ese módulo con la 2da habilitada
+        function syncHeader2da(moduloId) {
+            const $th = $('th.aa-mod-col[data-modulo-id="' + moduloId + '"]');
+            if (!$th.length) return;
+            const hayAlguna = $('.aa-mod-cell[data-modulo-id="' + moduloId + '"] .aa-sub-2da').length > 0;
+            const $sub = $th.find('.aa-mod-col-sub');
+            $th.attr('data-tiene-2da', hayAlguna ? 1 : 0);
+            $th.toggleClass('aa-mod-col--solo', !hayAlguna);
+            // Asegurar que existan los span necesarios
+            let $labels = $sub.find('.aa-mod-col-sub-label');
+            if ($labels.length === 0) {
+                $sub.append('<span class="aa-mod-col-sub-label">Final</span>');
+                $labels = $sub.find('.aa-mod-col-sub-label');
+            }
+            if (hayAlguna) {
+                if ($labels.length < 2) {
+                    $sub.append('<span class="aa-mod-col-sub-label">2da Inst.</span>');
+                }
+            } else {
+                if ($labels.length > 1) {
+                    $labels.slice(1).remove();
+                }
+            }
+        }
+
+        // Habilitar 2da instancia (crea la columna 2da en la celda)
+        $(document).on('click', '.aa-nivel-hab-btn', function(e) {
+            e.stopPropagation();
+            const $btn = $(this);
+            const inscripcionId = $btn.attr('data-inscripcion-id');
+            const moduloId = $btn.attr('data-modulo-id');
+            if (!inscripcionId || !moduloId) return;
+
+            $btn.prop('disabled', true);
+            $.ajax({
+                url: '/admin/ofertas-academicas/' + window.OFERTA_ID + '/matriculacion/habilitar-nivelacion',
+                type: 'PATCH',
+                data: { inscripcion_id: inscripcionId, modulo_id: moduloId, habilitada: 1, _token: '{{ csrf_token() }}' }
+            }).done(function(resp) {
+                if (!resp.success) {
+                    toast('error', resp.message || 'No se pudo habilitar.');
+                    return;
+                }
+                const $cell = $btn.closest('td.aa-mod-cell');
+                reconstruirCelda2da($cell, {
+                    inscripcionId : inscripcionId,
+                    moduloId      : moduloId,
+                    moduloNombre  : $btn.attr('data-modulo-nombre') || '',
+                    estudiante    : $btn.attr('data-estudiante') || '',
+                    notaMinima    : Number($cell.find('.aa-nota-final').attr('title')?.match(/Mínima:\s*([\d.]+)/)?.[1] || 0),
+                }, /*habilitada*/ true, /*notaN*/ null);
+                syncHeader2da(moduloId);
+                toast('success', '2da instancia habilitada.');
+            }).fail(function(xhr) {
+                toast('error', xhr.responseJSON?.message || 'Error al habilitar.');
+            }).always(function() { $btn.prop('disabled', false); });
+        });
+
+        // Deshabilitar 2da instancia (limpia la columna 2da y borra nota_nivelacion)
+        $(document).on('click', '.aa-nivel-deshab-btn', function(e) {
+            e.stopPropagation();
+            if (!confirm('¿Deshabilitar la 2da instancia para este estudiante?')) return;
+            const $btn = $(this);
+            const inscripcionId = $btn.attr('data-inscripcion-id');
+            const moduloId = $btn.attr('data-modulo-id');
+            const $cell = $btn.closest('td.aa-mod-cell');
+
+            $.ajax({
+                url: '/admin/ofertas-academicas/' + window.OFERTA_ID + '/matriculacion/habilitar-nivelacion',
+                type: 'PATCH',
+                data: { inscripcion_id: inscripcionId, modulo_id: moduloId, habilitada: 0, _token: '{{ csrf_token() }}' }
+            }).done(function(resp) {
+                if (!resp.success) { toast('error', resp.message || 'Error.'); return; }
+                colapsarCelda2da($cell, inscripcionId, moduloId);
+                syncHeader2da(moduloId);
+                toast('success', '2da instancia deshabilitada.');
+            }).fail(function() { toast('error', 'Error al deshabilitar.'); });
+        });
+
+        // Construye la sub-celda 2da y cambia el grid a 2 columnas
+        function reconstruirCelda2da($cell, ctx, habilitada, notaN) {
+            const $grid = $cell.find('.aa-notas-grid');
+            if (!$grid.length) return;
+
+            if (!habilitada) {
+                colapsarCelda2da($cell, ctx.inscripcionId, ctx.moduloId);
+                return;
+            }
+
+            $grid.removeClass('aa-notas-grid--solo');
+            $cell.find('.aa-nivel-hab-btn').remove();
+
+            // Si ya existe la sub-2da no duplicar
+            let $sub2 = $grid.find('.aa-sub-2da');
+            if (!$sub2.length) {
+                $sub2 = $('<div class="aa-sub aa-sub-2da"></div>');
+                $grid.append($sub2);
+            }
+            $sub2.empty().removeClass('aa-sub--ok aa-sub--fail');
+
+            if (notaN === null || notaN === undefined) {
+                const wrap = $('<div class="aa-sub-content"></div>');
+                const btn = $('<button type="button" class="aa-nota-2da-add"><i class="ri-add-line"></i> Registrar</button>')
+                    .attr('data-inscripcion-id', ctx.inscripcionId)
+                    .attr('data-modulo-id', ctx.moduloId)
+                    .attr('data-modulo-nombre', ctx.moduloNombre)
+                    .attr('data-estudiante', ctx.estudiante)
+                    .attr('data-nota-minima', ctx.notaMinima)
+                    .attr('title', 'Registrar nota de 2da instancia (máx. ' + Number(ctx.notaMinima).toFixed(2) + ')');
+                const btnX = $('<button type="button" class="aa-nivel-deshab-btn" title="Deshabilitar 2da instancia"><i class="ri-close-circle-line"></i></button>')
+                    .attr('data-inscripcion-id', ctx.inscripcionId)
+                    .attr('data-modulo-id', ctx.moduloId);
+                wrap.append(btn).append(btnX);
+                $sub2.append(wrap);
+            } else {
+                const min = Number(ctx.notaMinima);
+                const aprobado = Number(notaN) >= min;
+                $sub2.addClass(aprobado ? 'aa-sub--ok' : 'aa-sub--fail');
+                const cls = aprobado ? 'aa-nota-final-cargada' : 'aa-nota-final-fail';
+                const span = $('<span class="aa-nota aa-nota-2da aa-nota-2da-editable"></span>')
+                    .addClass(cls)
+                    .text(Number(notaN).toFixed(2))
+                    .attr('data-inscripcion-id', ctx.inscripcionId)
+                    .attr('data-modulo-id', ctx.moduloId)
+                    .attr('data-modulo-nombre', ctx.moduloNombre)
+                    .attr('data-estudiante', ctx.estudiante)
+                    .attr('data-nota-actual', notaN)
+                    .attr('data-nota-minima', min)
+                    .attr('title', '2da Instancia: ' + Number(notaN).toFixed(2) + ' — click para editar');
+                $sub2.append(span);
+            }
+        }
+
+        function colapsarCelda2da($cell, inscripcionId, moduloId) {
+            const $grid = $cell.find('.aa-notas-grid');
+            $grid.find('.aa-sub-2da').remove();
+            $grid.addClass('aa-notas-grid--solo');
+
+            // Volver a poner el botón "Habilitar 2da" si la nota regular es reprobatoria
+            const $finalNota = $grid.find('.aa-nota-final');
+            const $finalSub = $grid.find('.aa-sub-final');
+            if ($finalNota.length && $finalNota.hasClass('aa-nota-final-fail') && !$finalSub.find('.aa-nivel-hab-btn').length) {
+                const min = Number($finalNota.attr('title')?.match(/Mínima:\s*([\d.]+)/)?.[1] || 0);
+                const $content = $finalSub.find('.aa-sub-content');
+                const btn = $('<button type="button" class="aa-nivel-hab-btn"><i class="ri-add-circle-line"></i> Habilitar 2da</button>')
+                    .attr('data-inscripcion-id', inscripcionId)
+                    .attr('data-modulo-id', moduloId)
+                    .attr('title', 'Habilitar 2da instancia para este estudiante');
+                if ($content.length) $content.append(btn);
+                else $finalSub.append(btn);
+            }
+        }
+
+        $(document).on('click', '.aa-nota-2da-add', function(e) {
+            e.stopPropagation();
+            abrirModal2da({
+                inscripcionId : $(this).attr('data-inscripcion-id'),
+                moduloId      : $(this).attr('data-modulo-id'),
+                moduloNombre  : $(this).attr('data-modulo-nombre'),
+                estudiante    : $(this).attr('data-estudiante'),
+                notaActual    : null,
+                notaMinima    : Number($(this).attr('data-nota-minima')),
+                $cell         : $(this).closest('td'),
+            });
+        });
+
+        $(document).on('click', '.aa-nota-2da-editable', function(e) {
+            e.stopPropagation();
+            abrirModal2da({
+                inscripcionId : $(this).attr('data-inscripcion-id'),
+                moduloId      : $(this).attr('data-modulo-id'),
+                moduloNombre  : $(this).attr('data-modulo-nombre'),
+                estudiante    : $(this).attr('data-estudiante'),
+                notaActual    : Number($(this).attr('data-nota-actual')),
+                notaMinima    : Number($(this).attr('data-nota-minima')),
+                $cell         : $(this).closest('td'),
+            });
+        });
+
+        function guardar2da(nuevaNota) {
+            if (!aa2daCtx) return;
+            const ctx = aa2daCtx;
+            const $save = $('#modal2daSave').prop('disabled', true);
+            $.ajax({
+                url: '/admin/ofertas-academicas/' + window.OFERTA_ID + '/matriculacion/nota-nivelacion',
+                type: 'PATCH',
+                data: {
+                    inscripcion_id : ctx.inscripcionId,
+                    modulo_id      : ctx.moduloId,
+                    nota_nivelacion: nuevaNota,
+                    _token         : '{{ csrf_token() }}'
+                }
+            }).done(function(resp) {
+                if (!resp.success) {
+                    $('#modal2daError').show().text(resp.message || 'No se pudo guardar.');
+                    return;
+                }
+                actualizarCelda2da(ctx, resp.data);
+                toast('success', nuevaNota === null ? 'Nota de 2da instancia eliminada.' : 'Nota de 2da instancia guardada.');
+                bootstrap.Modal.getInstance(document.getElementById('modal2daInstancia'))?.hide();
+            }).fail(function(xhr) {
+                const msg = xhr.responseJSON?.message || (xhr.responseJSON?.errors ? Object.values(xhr.responseJSON.errors).flat().join(' ') : 'Error al guardar.');
+                $('#modal2daError').show().text(msg);
+            }).always(function() {
+                $save.prop('disabled', false);
+            });
+        }
+
+        $(document).on('click', '#modal2daSave', function() {
+            const raw = $('#modal2daInput').val();
+            if (raw === '' || raw === null) {
+                $('#modal2daError').show().text('Ingresá una nota.');
+                return;
+            }
+            const n = Number(raw);
+            if (isNaN(n) || n < 0) {
+                $('#modal2daError').show().text('La nota debe ser un número positivo.');
+                return;
+            }
+            if (aa2daCtx && n > aa2daCtx.notaMinima) {
+                $('#modal2daError').show().text('La nota no puede ser mayor a ' + aa2daCtx.notaMinima.toFixed(2) + '.');
+                return;
+            }
+            guardar2da(n);
+        });
+
+        $(document).on('click', '#modal2daDelete', function() {
+            if (!confirm('¿Quitar la nota de 2da instancia?')) return;
+            guardar2da(null);
+        });
+
+        function actualizarCelda2da(ctx, data) {
+            const $cell = ctx.$cell;
+            if (!$cell || !$cell.length) return;
+            // Reconstruir delegando en el helper común (asegura grid + habilitada)
+            const min = Number(data.nota_minima);
+            reconstruirCelda2da($cell, {
+                inscripcionId : ctx.inscripcionId,
+                moduloId      : ctx.moduloId,
+                moduloNombre  : ctx.moduloNombre,
+                estudiante    : ctx.estudiante,
+                notaMinima    : min,
+            }, /*habilitada*/ data.nivelacion_habilitada !== false, /*notaN*/ data.nota_nivelacion);
+            syncHeader2da(ctx.moduloId);
+        }
+
+        // ── Datos académicos (módulos reprobados por inscripción) ──
+        @php
+            $areaAcadJs = [];
+            foreach (($areaAcademicaEstudiantes ?? []) as $e) {
+                $areaAcadJs[] = [
+                    'inscripcion_id'      => $e['inscripcion_id'] ?? null,
+                    'estudiante'          => trim(($e['apellido_paterno'] ?? '') . ' ' . ($e['apellido_materno'] ?? '') . ' ' . ($e['nombres'] ?? '')) ?: '—',
+                    'carnet'              => $e['carnet'] ?? '—',
+                    'cantidad_reprobados' => $e['cantidad_reprobados'] ?? 0,
+                    'modulos_reprobados'  => $e['modulos_reprobados'] ?? [],
+                    'nota_minima'         => $e['nota_minima'] ?? 0,
+                ];
+            }
+        @endphp
+        const areaAcadDataMap = (function() {
+            const map = {};
+            const items = @json($areaAcadJs);
+            items.forEach(function(it) { if (it.inscripcion_id) map[it.inscripcion_id] = it; });
+            return map;
+        })();
+
+        // Re-pintar fila / sugerencia académica
+        function pintarFilaAcademica($row, acadActivo) {
+            if (!$row || !$row.length) return;
+            $row.removeClass('aa-row--acad-on aa-row--acad-off')
+                .addClass(acadActivo ? 'aa-row--acad-on' : 'aa-row--acad-off');
+        }
+
+        function actualizarSugerenciaAcademica($cell, acadActivo) {
+            if (!$cell || !$cell.length) return;
+            const inscripcionId = $cell.attr('data-inscripcion-id');
+            const reprobados = Number($cell.attr('data-reprobados')) || 0;
+            const data = areaAcadDataMap[inscripcionId];
+            const nombre = data ? data.estudiante : '';
+            const $existing = $cell.find('.aa-acad-sug');
+
+            // Solo "Sugerir baja" cuando hay 2+ reprobados y está activo
+            if (acadActivo && reprobados >= 2) {
+                const html =
+                    '<button type="button" class="aa-acad-sug aa-acad-sug--down aa-acad-sug-btn" ' +
+                    'data-inscripcion-id="' + inscripcionId + '" ' +
+                    'data-estudiante="' + escHtml(nombre) + '" ' +
+                    'title="' + reprobados + ' módulo(s) reprobado(s) — ver detalle">' +
+                    '<i class="ri-error-warning-line"></i> Sugerir baja' +
+                    ' <i class="ri-eye-line aa-acad-sug-eye"></i>' +
+                    '</button>';
+                if ($existing.length) { $existing.replaceWith(html); }
+                else { $cell.append($(html).hide()); $cell.find('.aa-acad-sug').fadeIn(180); }
+            } else {
+                if ($existing.length) $existing.fadeOut(150, function() { $(this).remove(); });
+            }
+        }
+
+        // Click en sugerencia académica → abrir modal
+        $(document).on('click', '.aa-acad-sug-btn', function(e) {
+            e.stopPropagation();
+            const inscripcionId = $(this).attr('data-inscripcion-id');
+            if (!inscripcionId) return;
+            abrirModalAcademico(inscripcionId);
+        });
+
+        function abrirModalAcademico(inscripcionId) {
+            const d = areaAcadDataMap[inscripcionId];
+            if (!d) return;
+
+            $('#modalAcademicoSubtitulo').text((d.estudiante || '—') + ' · CI ' + (d.carnet || '—'));
+            $('#modalAcademicoNotaMinima').text('Nota mínima: ' + d.nota_minima);
+
+            // Banner
+            $('#modalAcademicoBanner').html(
+                '<i class="ri-error-warning-fill"></i>' +
+                '<span><strong>Sugerencia:</strong> dar de baja académica. Tiene <strong>' + d.cantidad_reprobados + '</strong> módulo(s) reprobado(s).</span>'
+            );
+
+            // Tabla
+            const $tb = $('#modalAcademicoTbodyReprobados').empty();
+            (d.modulos_reprobados || []).forEach(function(m) {
+                const diff = (Number(m.nota_regular) - Number(m.nota_minima)).toFixed(2);
+                const nota2da = (m.nota_nivelacion === null || m.nota_nivelacion === undefined)
+                    ? '<span class="aa-mc-nota empty">—</span>'
+                    : ('<span class="aa-mc-nota ' + (Number(m.nota_nivelacion) < Number(m.nota_minima) ? 'fail' : '') + '">' + Number(m.nota_nivelacion).toFixed(2) + '</span>');
+                $tb.append(
+                    '<tr>' +
+                    '<td><i class="ri-book-2-line" style="color:#94a3b8;margin-right:5px;"></i>' + escHtml(m.modulo_nombre || '') + '</td>' +
+                    '<td class="text-center"><span class="aa-mc-nota fail">' + Number(m.nota_regular).toFixed(2) + '</span></td>' +
+                    '<td class="text-center">' + nota2da + '</td>' +
+                    '<td class="text-center" style="color:#64748b;font-weight:600;">' + Number(m.nota_minima).toFixed(2) + '</td>' +
+                    '<td class="text-center"><span class="aa-mc-diff">' + diff + '</span></td>' +
+                    '</tr>'
+                );
+            });
+
+            $('#modalAcademicoAccion').attr('data-inscripcion-id', inscripcionId).show();
+            new bootstrap.Modal(document.getElementById('modalAcademicoDetalle')).show();
+        }
+
+        // Aplicar baja académica desde el modal
+        $(document).on('click', '#modalAcademicoAccion', function() {
+            const $btn = $(this);
+            const inscripcionId = $btn.attr('data-inscripcion-id');
+            if (!inscripcionId) return;
+            $btn.prop('disabled', true);
+
+            $.ajax({
+                url: '/admin/ofertas-academicas/inscripciones/' + inscripcionId + '/toggle-estado',
+                type: 'PATCH',
+                data: { campo: 'activo_academico', valor: 0, _token: '{{ csrf_token() }}' }
+            }).done(function(resp) {
+                if (!resp.success) { toast('error', resp.message || 'No se pudo actualizar.'); return; }
+                const d = resp.data || {};
+                window.aplicarEstadoInscripcion(inscripcionId, {
+                    activo:           d.activo,
+                    activo_contable:  d.activo_contable,
+                    activo_academico: d.activo_academico !== undefined ? d.activo_academico : false,
+                });
+                toast('success', 'Estado académico actualizado.');
+                bootstrap.Modal.getInstance(document.getElementById('modalAcademicoDetalle'))?.hide();
+            }).fail(function(xhr) {
+                toast('error', xhr.responseJSON?.message || 'Error al actualizar.');
+            }).always(function() {
+                $btn.prop('disabled', false);
+            });
+        });
+
+        // Abrir modal de detalle de estado contable
+        $(document).on('click', '.fin-contable-sug-btn', function(e) {
+            e.stopPropagation();
+            const inscripcionId = $(this).attr('data-inscripcion-id');
+            if (!inscripcionId) return;
+            abrirModalContable(inscripcionId);
+        });
+
+        function fmtBs(n) {
+            const v = Number(n) || 0;
+            return 'Bs. ' + v.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Pinta la fila completa según el estado contable (verde activo / rojo inactivo)
+        function pintarFilaContable($row, contableActivo) {
+            if (!$row || !$row.length) return;
+            $row.removeClass('fin-row--contable-on fin-row--contable-off')
+                .addClass(contableActivo ? 'fin-row--contable-on' : 'fin-row--contable-off');
+        }
+
+        // Recalcula el chip de sugerencia contable según el estado actual del toggle
+        // y la realidad de las cuotas (data-tiene-vencidas en la celda).
+        // - activo + vencidas → "Sugerir baja"
+        // - inactivo + sin vencidas → "Sugerir alta"
+        // - cualquier otro → sin sugerencia
+        function actualizarSugerenciaContable($cell, contableActivo) {
+            if (!$cell || !$cell.length) return;
+            const inscripcionId = $cell.attr('data-inscripcion-id');
+            const tieneVencidas = $cell.attr('data-tiene-vencidas') === '1';
+            const $existing = $cell.find('.fin-contable-sug');
+
+            let claseExtra = null;
+            let icono = '';
+            let texto = '';
+            let titulo = '';
+
+            if (contableActivo && tieneVencidas) {
+                claseExtra = 'fin-contable-sug--down';
+                icono  = 'ri-error-warning-line';
+                texto  = 'Sugerir baja';
+                titulo = 'Tiene cuotas vencidas — ver detalle';
+            } else if (!contableActivo && !tieneVencidas) {
+                claseExtra = 'fin-contable-sug--up';
+                icono  = 'ri-arrow-up-circle-line';
+                texto  = 'Sugerir alta';
+                titulo = 'Está al día — ver detalle';
+            }
+
+            if (claseExtra === null) {
+                if ($existing.length) $existing.fadeOut(150, function() { $(this).remove(); });
+                return;
+            }
+
+            const html =
+                '<button type="button" class="fin-contable-sug ' + claseExtra + ' fin-contable-sug-btn" ' +
+                'data-inscripcion-id="' + inscripcionId + '" title="' + titulo + '">' +
+                '<i class="' + icono + '"></i> ' + texto +
+                ' <i class="ri-eye-line fin-contable-sug-eye"></i>' +
+                '</button>';
+
+            if ($existing.length) {
+                $existing.replaceWith(html);
+            } else {
+                $cell.append($(html).hide());
+                $cell.find('.fin-contable-sug').fadeIn(180);
+            }
+        }
+
+        function abrirModalContable(inscripcionId) {
+            const $modal = $('#modalContableDetalle');
+            $('#modalContableLoading').show();
+            $('#modalContableContent').hide();
+            $('#modalContableAccion').hide();
+            $('#modalContableSubtitulo').text('—');
+
+            new bootstrap.Modal(document.getElementById('modalContableDetalle')).show();
+
+            $.ajax({
+                url: '/admin/ofertas-academicas/inscripciones/' + inscripcionId + '/detalle-estado-contable',
+                type: 'GET',
+            }).done(function(resp) {
+                if (!resp.success) {
+                    toast('error', resp.message || 'No se pudo cargar el detalle.');
+                    bootstrap.Modal.getInstance(document.getElementById('modalContableDetalle'))?.hide();
+                    return;
+                }
+                renderModalContable(resp.data, inscripcionId);
+            }).fail(function() {
+                toast('error', 'Error al cargar el detalle de cuotas.');
+                bootstrap.Modal.getInstance(document.getElementById('modalContableDetalle'))?.hide();
+            });
+        }
+
+        function renderModalContable(d, inscripcionId) {
+            // Subtítulo
+            const sub = (d.estudiante || '—') + ' · CI ' + (d.carnet || '—') + ' · ' + (d.plan_pago || '');
+            $('#modalContableSubtitulo').text(sub);
+
+            // Header color y banner según sugerencia
+            const $header = $('#modalContableHeader');
+            const $banner = $('#modalContableBanner');
+            const $accion = $('#modalContableAccion');
+
+            if (d.sugerencia === 'desactivar') {
+                $header.css('background', 'linear-gradient(135deg,#7f1d1d 0%,#b91c1c 50%,#dc2626 100%)');
+                $('#modalContableHeaderIcon').attr('class', 'ri-error-warning-line');
+                $('#modalContableTitulo').text('Cuotas vencidas detectadas');
+                $banner.attr('class', 'fin-mc-banner suggest-down').html(
+                    '<i class="ri-error-warning-fill"></i><span><strong>Sugerencia:</strong> dar de baja contablemente. ' +
+                    'Tiene ' + d.cantidad_vencidas + ' cuota(s) vencida(s) por ' + fmtBs(d.monto_vencido) + '.</span>'
+                );
+                $accion.css('background', 'linear-gradient(135deg,#b91c1c,#dc2626)').show();
+                $('#modalContableAccionText').text('Dar de baja contable');
+                $accion.attr('data-nuevo-valor', '0');
+            } else if (d.sugerencia === 'activar') {
+                $header.css('background', 'linear-gradient(135deg,#065f46 0%,#047857 50%,#059669 100%)');
+                $('#modalContableHeaderIcon').attr('class', 'ri-checkbox-circle-line');
+                $('#modalContableTitulo').text('Estudiante al día');
+                $banner.attr('class', 'fin-mc-banner suggest-up').html(
+                    '<i class="ri-checkbox-circle-fill"></i><span><strong>Sugerencia:</strong> reactivar contablemente. ' +
+                    'No tiene cuotas vencidas pendientes.</span>'
+                );
+                $accion.css('background', 'linear-gradient(135deg,#047857,#059669)').show();
+                $('#modalContableAccionText').text('Reactivar contable');
+                $accion.attr('data-nuevo-valor', '1');
+            } else {
+                $header.css('background', 'linear-gradient(135deg,#1e293b 0%,#334155 50%,#475569 100%)');
+                $('#modalContableHeaderIcon').attr('class', 'ri-information-line');
+                $('#modalContableTitulo').text('Detalle de cuotas');
+                $banner.attr('class', 'fin-mc-banner no-suggest').html(
+                    '<i class="ri-information-line"></i><span>Estado contable y realidad de cuotas son coherentes — sin sugerencias.</span>'
+                );
+                $accion.hide();
+            }
+
+            $accion.attr('data-inscripcion-id', inscripcionId);
+
+            // KPIs
+            $('#modalContableKpiVencidas').text(d.cantidad_vencidas);
+            $('#modalContableKpiVencidasMonto').text(fmtBs(d.monto_vencido));
+            $('#modalContableKpiPorVencer').text((d.cuotas_por_vencer || []).length);
+            $('#modalContableKpiPorVencerMonto').text(fmtBs(d.monto_por_vencer));
+            $('#modalContableKpiPagadas').text((d.cuotas_pagadas || []).length);
+
+            // Tabla vencidas
+            const $tbV = $('#modalContableTbodyVencidas').empty();
+            if ((d.cuotas_vencidas || []).length === 0) {
+                $('#modalContableSeccionVencidas').hide();
+            } else {
+                $('#modalContableSeccionVencidas').show();
+                d.cuotas_vencidas.forEach(function(c) {
+                    $tbV.append(
+                        '<tr>' +
+                        '<td><strong>#' + (c.n_cuota || '-') + '</strong> <span style="color:#64748b;">' + escHtml(c.nombre || '') + '</span></td>' +
+                        '<td class="text-end">' + fmtBs(c.monto) + '</td>' +
+                        '<td class="text-end" style="color:#059669;">' + fmtBs(c.pagado) + '</td>' +
+                        '<td class="text-end" style="color:#b91c1c;font-weight:700;">' + fmtBs(c.pendiente) + '</td>' +
+                        '<td class="text-center" style="color:#475569;">' + (c.fecha_vencimiento_fmt || '—') + '</td>' +
+                        '<td class="text-center"><span class="fin-mc-dias">' + c.dias_atraso + ' día(s)</span></td>' +
+                        '</tr>'
+                    );
+                });
+            }
+
+            // Tabla por vencer
+            const $tbP = $('#modalContableTbodyPorVencer').empty();
+            if ((d.cuotas_por_vencer || []).length === 0) {
+                $('#modalContableSeccionPorVencer').hide();
+            } else {
+                $('#modalContableSeccionPorVencer').show();
+                d.cuotas_por_vencer.forEach(function(c) {
+                    $tbP.append(
+                        '<tr>' +
+                        '<td><strong>#' + (c.n_cuota || '-') + '</strong> <span style="color:#64748b;">' + escHtml(c.nombre || '') + '</span></td>' +
+                        '<td class="text-end">' + fmtBs(c.monto) + '</td>' +
+                        '<td class="text-end" style="color:#059669;">' + fmtBs(c.pagado) + '</td>' +
+                        '<td class="text-end" style="color:#d97706;font-weight:700;">' + fmtBs(c.pendiente) + '</td>' +
+                        '<td class="text-center" style="color:#475569;">' + (c.fecha_vencimiento_fmt || '—') + '</td>' +
+                        '</tr>'
+                    );
+                });
+            }
+
+            $('#modalContableLoading').hide();
+            $('#modalContableContent').show();
+        }
+
+        // Aplicar acción sugerida desde el modal
+        $(document).on('click', '#modalContableAccion', function() {
+            const $btn = $(this);
+            const inscripcionId = $btn.attr('data-inscripcion-id');
+            const nuevoValor = $btn.attr('data-nuevo-valor') === '1';
+            if (!inscripcionId) return;
+            $btn.prop('disabled', true);
+
+            $.ajax({
+                url: '/admin/ofertas-academicas/inscripciones/' + inscripcionId + '/toggle-estado',
+                type: 'PATCH',
+                data: { campo: 'activo_contable', valor: nuevoValor ? 1 : 0, _token: '{{ csrf_token() }}' }
+            }).done(function(resp) {
+                if (!resp.success) {
+                    toast('error', resp.message || 'No se pudo actualizar.');
+                    return;
+                }
+                const d = resp.data || {};
+                window.aplicarEstadoInscripcion(inscripcionId, {
+                    activo:           d.activo,
+                    activo_contable:  d.activo_contable  !== undefined ? d.activo_contable  : nuevoValor,
+                    activo_academico: d.activo_academico,
+                });
+                toast('success', 'Estado contable actualizado.');
+                bootstrap.Modal.getInstance(document.getElementById('modalContableDetalle'))?.hide();
+            }).fail(function(xhr) {
+                toast('error', xhr.responseJSON?.message || 'Error al actualizar.');
+            }).always(function() {
+                $btn.prop('disabled', false);
+            });
+        });
+
+        // ── Sugerencias en el tab Inscripciones (cell-sug) ──
+        // Click en la sugerencia contable → reusar el modal de Finanzas
+        $(document).on('click', '.ins-cell-sug-btn[data-tipo="contable"]', function(e) {
+            e.stopPropagation();
+            const id = $(this).attr('data-inscripcion-id');
+            if (id) abrirModalContable(id);
+        });
+
+        // Click en la sugerencia académica → modal académico (requiere data en areaAcadDataMap)
+        $(document).on('click', '.ins-cell-sug-btn[data-tipo="academico"]', function(e) {
+            e.stopPropagation();
+            const id = $(this).attr('data-inscripcion-id');
+            if (!id) return;
+            if (areaAcadDataMap[id]) {
+                abrirModalAcademico(id);
+            } else {
+                toast('warning', 'Cambia al tab Área Académica para ver el detalle de notas.');
+            }
+        });
+
+        // Click en la sugerencia general → modal combinado
+        $(document).on('click', '.ins-cell-sug-btn[data-tipo="general"]', function(e) {
+            e.stopPropagation();
+            const id = $(this).attr('data-inscripcion-id');
+            if (id) abrirModalGeneralBaja(id);
+        });
+
+        function abrirModalGeneralBaja(inscripcionId) {
+            const _mgEl = document.getElementById('modalGeneralBaja');
+            if (!_mgEl) {
+                toast('error', 'No se encontró el modal de sugerencia general.');
+                return;
+            }
+            // Reubicar el modal al <body> para evitar stacking-context heredado
+            if (_mgEl.parentElement !== document.body) {
+                document.body.appendChild(_mgEl);
+            }
+            // Reset visual
+            $('#modalGeneralLoading').show();
+            $('#modalGeneralContent').hide();
+            // Usar getOrCreateInstance para no apilar instancias
+            const _mgInstance = bootstrap.Modal.getOrCreateInstance(_mgEl, { backdrop: true, focus: true });
+            _mgInstance.show();
+
+            // Trae detalle contable; el académico viene de areaAcadDataMap
+            $.ajax({
+                url: '/admin/ofertas-academicas/inscripciones/' + inscripcionId + '/detalle-estado-contable',
+                type: 'GET',
+            }).done(function(resp) {
+                if (!resp.success) {
+                    toast('error', resp.message || 'No se pudo cargar el detalle.');
+                    bootstrap.Modal.getInstance(document.getElementById('modalGeneralBaja'))?.hide();
+                    return;
+                }
+                renderModalGeneralBaja(resp.data, inscripcionId);
+            }).fail(function() {
+                toast('error', 'Error al cargar el detalle.');
+                bootstrap.Modal.getInstance(document.getElementById('modalGeneralBaja'))?.hide();
+            });
+        }
+
+        function renderModalGeneralBaja(c, inscripcionId) {
+            const a = areaAcadDataMap[inscripcionId] || null;
+
+            $('#modalGeneralSubtitulo').text((c.estudiante || '—') + ' · CI ' + (c.carnet || '—'));
+
+            // Sección Contable
+            $('#modalGeneralContBanner').text(
+                c.cantidad_vencidas + ' cuota(s) vencida(s) · ' + fmtBs(c.monto_vencido)
+            );
+            const $tbC = $('#modalGeneralContTbody').empty();
+            (c.cuotas_vencidas || []).forEach(function(cu) {
+                $tbC.append(
+                    '<tr>' +
+                    '<td><strong>#' + (cu.n_cuota || '-') + '</strong> <span style="color:#64748b;">' + escHtml(cu.nombre || '') + '</span></td>' +
+                    '<td class="text-end" style="color:#b91c1c;font-weight:700;">' + fmtBs(cu.pendiente) + '</td>' +
+                    '<td class="text-center" style="color:#475569;">' + (cu.fecha_vencimiento_fmt || '—') + '</td>' +
+                    '<td class="text-center"><span class="fin-mc-dias">' + cu.dias_atraso + ' día(s)</span></td>' +
+                    '</tr>'
+                );
+            });
+
+            // Sección Académica
+            if (a) {
+                $('#modalGeneralAcadBanner').text(
+                    a.cantidad_reprobados + ' módulo(s) reprobado(s) · Nota mínima ' + a.nota_minima
+                );
+                const $tbA = $('#modalGeneralAcadTbody').empty();
+                (a.modulos_reprobados || []).forEach(function(m) {
+                    const diff = (Number(m.nota_regular) - Number(m.nota_minima)).toFixed(2);
+                    $tbA.append(
+                        '<tr>' +
+                        '<td><i class="ri-book-2-line" style="color:#94a3b8;margin-right:5px;"></i>' + escHtml(m.modulo_nombre || '') + '</td>' +
+                        '<td class="text-center"><span class="aa-mc-nota fail">' + Number(m.nota_regular).toFixed(2) + '</span></td>' +
+                        '<td class="text-center" style="color:#64748b;">' + Number(m.nota_minima).toFixed(2) + '</td>' +
+                        '<td class="text-center"><span class="aa-mc-diff">' + diff + '</span></td>' +
+                        '</tr>'
+                    );
+                });
+                $('#modalGeneralAcadEmpty').hide();
+                $('#modalGeneralAcadWrap').show();
+            } else {
+                $('#modalGeneralAcadEmpty').show();
+                $('#modalGeneralAcadWrap').hide();
+            }
+
+            $('#modalGeneralAccion').attr('data-inscripcion-id', inscripcionId);
+            $('#modalGeneralLoading').hide();
+            $('#modalGeneralContent').show();
+        }
+
+        // Aplicar baja general desde el modal combinado
+        $(document).on('click', '#modalGeneralAccion', function() {
+            const $btn = $(this);
+            const inscripcionId = $btn.attr('data-inscripcion-id');
+            if (!inscripcionId) return;
+            $btn.prop('disabled', true);
+
+            $.ajax({
+                url: '/admin/ofertas-academicas/inscripciones/' + inscripcionId + '/toggle-estado',
+                type: 'PATCH',
+                data: { campo: 'activo', valor: 0, _token: '{{ csrf_token() }}' }
+            }).done(function(resp) {
+                if (!resp.success) { toast('error', resp.message || 'No se pudo actualizar.'); return; }
+                const d = resp.data || {};
+                window.aplicarEstadoInscripcion(inscripcionId, {
+                    activo:           d.activo           !== undefined ? d.activo           : false,
+                    activo_contable:  d.activo_contable  !== undefined ? d.activo_contable  : false,
+                    activo_academico: d.activo_academico !== undefined ? d.activo_academico : false,
+                });
+                // Refrescar la tabla de inscripciones para reflejar tinte de fila + sugerencias
+                if (typeof cargarInscripciones === 'function') cargarInscripciones();
+                toast('success', 'Estado general actualizado (dado de baja).');
+                bootstrap.Modal.getInstance(document.getElementById('modalGeneralBaja'))?.hide();
+            }).fail(function(xhr) {
+                toast('error', xhr.responseJSON?.message || 'Error al actualizar.');
+            }).always(function() {
+                $btn.prop('disabled', false);
+            });
+        });
+
+        // Toggle de estado Contable / Académico por inscripción
+        $(document).on('click', '.ins-estado-toggle', function(e) {
+            e.stopPropagation();
+            const $btn = $(this);
+            if ($btn.hasClass('loading')) return;
+
+            const inscripcionId = $btn.attr('data-inscripcion-id');
+            const campo = $btn.attr('data-campo');
+            // Leer del atributo (no de .data() — jQuery cachea el valor inicial)
+            const valorActual = Number($btn.attr('data-valor')) === 1;
+            const nuevoValor = !valorActual;
+
+            $btn.addClass('loading');
+
+            $.ajax({
+                url: '/admin/ofertas-academicas/inscripciones/' + inscripcionId + '/toggle-estado',
+                type: 'PATCH',
+                data: { campo: campo, valor: nuevoValor ? 1 : 0, _token: '{{ csrf_token() }}' }
+            })
+            .done(function(resp) {
+                if (!resp.success) {
+                    toast('error', resp.message || 'No se pudo actualizar el estado.');
+                    return;
+                }
+                // Sincroniza TODAS las tabs (Inscripciones, Finanzas, Área Académica, Moodle)
+                // con los valores reales que devuelve el backend.
+                const d = resp.data || {};
+                window.aplicarEstadoInscripcion(inscripcionId, {
+                    activo:           d.activo           !== undefined ? d.activo           : (campo === 'activo'           ? nuevoValor : undefined),
+                    activo_contable:  d.activo_contable  !== undefined ? d.activo_contable  : (campo === 'activo_contable'  ? nuevoValor : undefined),
+                    activo_academico: d.activo_academico !== undefined ? d.activo_academico : (campo === 'activo_academico' ? nuevoValor : undefined),
+                });
+                const labelTxt = campo === 'activo_contable' ? 'Estado contable'
+                    : (campo === 'activo_academico' ? 'Estado académico' : 'Estado general');
+                toast('success', labelTxt + ' actualizado.');
+            })
+            .fail(function(xhr) {
+                const msg = xhr.responseJSON?.message || 'Error al actualizar el estado.';
+                toast('error', msg);
+            })
+            .always(function() {
+                $btn.removeClass('loading');
             });
         });
 
@@ -4033,118 +5009,241 @@
             });
         }
 
-        // ===== FINANZAS CHARTS =====
+        // ===== FINANZAS CHARTS (3 tabs: Completo / IngresosReales / Retirados) =====
         (function() {
             'use strict';
 
-            var resumenPorConcepto = @json($resumenPorConcepto ?? []);
-            if (!resumenPorConcepto || Object.keys(resumenPorConcepto).length === 0) return;
+            var resumenes = {
+                'Completo':       @json($resumenPorConcepto ?? []),
+                'IngresosReales': @json($resumenPorConceptoIngresosReales ?? []),
+                'Retirados':      @json($resumenPorConceptoRetirados ?? []),
+            };
 
             var colores = { 'Matrícula': '#6366f1', 'Colegiatura': '#0891b2', 'Certificación': '#d97706' };
+            var rendered = {};
 
-            var conceptos = Object.keys(resumenPorConcepto).filter(function(c) {
-                return (resumenPorConcepto[c].total || 0) > 0;
-            });
-            if (conceptos.length === 0) return;
+            function renderSection(suffix) {
+                if (rendered[suffix]) return;
+                var resumen = resumenes[suffix];
+                if (!resumen || Object.keys(resumen).length === 0) return;
 
-            var totalesData = conceptos.map(function(c) { return resumenPorConcepto[c].total  || 0; });
-            var pagadoData  = conceptos.map(function(c) { return resumenPorConcepto[c].pagado || 0; });
-            var bgColors    = conceptos.map(function(c) { return colores[c] || '#64748b'; });
+                var conceptos = Object.keys(resumen).filter(function(c) { return (resumen[c].total || 0) > 0; });
+                if (conceptos.length === 0) { rendered[suffix] = true; return; }
 
-            var totalProg = totalesData.reduce(function(a, b) { return a + b; }, 0);
-            var totalPag  = pagadoData.reduce(function(a, b) { return a + b; }, 0);
-            var totalPend = totalProg - totalPag;
+                var totalesData = conceptos.map(function(c) { return resumen[c].total  || 0; });
+                var pagadoData  = conceptos.map(function(c) { return resumen[c].pagado || 0; });
+                var bgColors    = conceptos.map(function(c) { return colores[c] || '#64748b'; });
+                var totalProg   = totalesData.reduce(function(a, b) { return a + b; }, 0);
+                var totalPag    = pagadoData.reduce(function(a, b) { return a + b; }, 0);
+                var totalPend   = totalProg - totalPag;
 
-            // ── 1. Donut distribución por concepto ──────────────────────
-            var ctx1 = document.getElementById('finChartConceptos');
-            if (ctx1) {
-                new Chart(ctx1.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: conceptos,
-                        datasets: [{
-                            data: totalesData,
-                            backgroundColor: bgColors,
-                            hoverBackgroundColor: bgColors.map(function(c) { return c + 'dd'; }),
-                            borderWidth: 3,
-                            borderColor: '#ffffff',
-                            hoverOffset: 12,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '68%',
-                        animation: { animateRotate: true, duration: 900 },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(ctx) {
-                                        var sum = totalesData.reduce(function(a, b) { return a + b; }, 0);
-                                        var pct = sum > 0 ? (ctx.parsed / sum * 100).toFixed(1) : 0;
-                                        return '  Bs. ' + ctx.parsed.toLocaleString('es-BO') + '  (' + pct + '%)';
+                // 1. Donut distribución por concepto
+                var ctx1 = document.getElementById('finChartConceptos' + suffix);
+                if (ctx1) {
+                    new Chart(ctx1.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: conceptos,
+                            datasets: [{
+                                data: totalesData,
+                                backgroundColor: bgColors,
+                                hoverBackgroundColor: bgColors.map(function(c) { return c + 'dd'; }),
+                                borderWidth: 3,
+                                borderColor: '#ffffff',
+                                hoverOffset: 12,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '68%',
+                            animation: { animateRotate: true, duration: 900 },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(ctx) {
+                                            var sum = totalesData.reduce(function(a, b) { return a + b; }, 0);
+                                            var pct = sum > 0 ? (ctx.parsed / sum * 100).toFixed(1) : 0;
+                                            return '  Bs. ' + ctx.parsed.toLocaleString('es-BO') + '  (' + pct + '%)';
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                });
+                    });
 
-                // Leyenda personalizada
-                var sumTot = totalesData.reduce(function(a, b) { return a + b; }, 0);
-                var legendEl = document.getElementById('finLegendConceptos');
-                if (legendEl) {
-                    conceptos.forEach(function(label, i) {
-                        var distPct = sumTot > 0 ? (totalesData[i] / sumTot * 100).toFixed(1) : '0.0';
-                        var row = document.createElement('div');
-                        row.className = 'fin-legend-row';
-                        row.innerHTML =
-                            '<span class="fin-legend-swatch" style="background:' + bgColors[i] + ';"></span>' +
-                            '<span class="fin-legend-name">' + label + '</span>' +
-                            '<span class="fin-legend-amount">Bs. ' + totalesData[i].toLocaleString('es-BO') + '</span>' +
-                            '<span class="fin-legend-pct" style="background:' + bgColors[i] + '22;color:' + bgColors[i] + ';">' + distPct + '%</span>';
-                        legendEl.appendChild(row);
+                    var legendEl = document.getElementById('finLegendConceptos' + suffix);
+                    if (legendEl) {
+                        legendEl.innerHTML = '';
+                        conceptos.forEach(function(label, i) {
+                            var distPct = totalProg > 0 ? (totalesData[i] / totalProg * 100).toFixed(1) : '0.0';
+                            var row = document.createElement('div');
+                            row.className = 'fin-legend-row';
+                            row.innerHTML =
+                                '<span class="fin-legend-swatch" style="background:' + bgColors[i] + ';"></span>' +
+                                '<span class="fin-legend-name">' + label + '</span>' +
+                                '<span class="fin-legend-amount">Bs. ' + totalesData[i].toLocaleString('es-BO') + '</span>' +
+                                '<span class="fin-legend-pct" style="background:' + bgColors[i] + '22;color:' + bgColors[i] + ';">' + distPct + '%</span>';
+                            legendEl.appendChild(row);
+                        });
+                    }
+                }
+
+                // 3. Donut estado de pagos
+                var ctx3 = document.getElementById('finChartEstado' + suffix);
+                if (ctx3) {
+                    var pendColor = (suffix === 'Retirados') ? '#991b1b' : '#f1f5f9';
+                    var pendHover = (suffix === 'Retirados') ? '#7f1d1d' : '#e2e8f0';
+                    new Chart(ctx3.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: (suffix === 'Retirados') ? ['Cobrado', 'Perdido'] : ['Cobrado', 'Pendiente'],
+                            datasets: [{
+                                data: [totalPag, totalPend],
+                                backgroundColor: ['#059669', pendColor],
+                                hoverBackgroundColor: ['#047857', pendHover],
+                                borderWidth: 3,
+                                borderColor: '#ffffff',
+                                hoverOffset: 10,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '72%',
+                            animation: { animateRotate: true, duration: 1000 },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(ctx) { return '  Bs. ' + ctx.parsed.toLocaleString('es-BO'); }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // ── 4. Distribución de Planes de Pago + Sexo ──
+                var distEl = document.getElementById('finDistData' + suffix);
+                if (distEl) {
+                    try {
+                        var distData = JSON.parse(distEl.textContent || distEl.innerText || '{}');
+                        renderDistCharts(suffix, distData);
+                    } catch (e) { /* noop */ }
+                }
+
+                rendered[suffix] = true;
+            }
+
+            // Render para "Planes de pago" (barras horizontales) y "Sexo" (donut)
+            var paletaPlanes = ['#8b5cf6','#06b6d4','#22c55e','#f59e0b','#ef4444','#0ea5e9','#a855f7','#10b981','#f97316'];
+            function renderDistCharts(suffix, dist) {
+                var planes = dist.planes || {};
+                var labelsP = Object.keys(planes);
+                var dataP   = labelsP.map(function(k) { return Number(planes[k]) || 0; });
+
+                var ctxP = document.getElementById('finChartPlanes' + suffix);
+                if (ctxP && labelsP.length) {
+                    var bgP = labelsP.map(function(_, i) { return paletaPlanes[i % paletaPlanes.length]; });
+                    new Chart(ctxP, {
+                        type: 'bar',
+                        data: {
+                            labels: labelsP,
+                            datasets: [{
+                                label: 'Estudiantes',
+                                data: dataP,
+                                backgroundColor: bgP,
+                                hoverBackgroundColor: bgP.map(function(c) { return c + 'cc'; }),
+                                borderRadius: 8,
+                                borderSkipped: false,
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: { label: function(ctx) { return '  ' + ctx.parsed.x + ' estudiante(s)'; } }
+                                }
+                            },
+                            scales: {
+                                x: { beginAtZero: true, ticks: { precision: 0, color: '#64748b' }, grid: { color: 'rgba(15,23,42,.04)' } },
+                                y: { ticks: { color: '#1e293b', font: { weight: '600' } }, grid: { display: false } }
+                            }
+                        }
+                    });
+
+                    var legend = document.getElementById('finPlanesLegend' + suffix);
+                    if (legend) {
+                        legend.innerHTML = '';
+                        var totalP = dataP.reduce(function(a, b) { return a + b; }, 0);
+                        labelsP.forEach(function(lbl, i) {
+                            var pct = totalP > 0 ? ((dataP[i] / totalP) * 100).toFixed(1) : 0;
+                            var row = document.createElement('span');
+                            row.className = 'fin-dist-legend-row';
+                            row.innerHTML =
+                                '<span class="swatch" style="background:' + bgP[i] + ';"></span>' +
+                                lbl + ' · <strong>' + dataP[i] + '</strong> <span style="color:#94a3b8;">(' + pct + '%)</span>';
+                            legend.appendChild(row);
+                        });
+                    }
+                }
+
+                var sexo = dist.sexo || {};
+                var labelsS = Object.keys(sexo);
+                var dataS   = labelsS.map(function(k) { return Number(sexo[k]) || 0; });
+                var ctxS = document.getElementById('finChartSexo' + suffix);
+                if (ctxS && labelsS.length) {
+                    var colorMapSexo = { 'M': '#3b82f6', 'F': '#ec4899', 'Otro': '#94a3b8' };
+                    var bgS = labelsS.map(function(k) { return colorMapSexo[k] || '#94a3b8'; });
+                    var labelTxt = labelsS.map(function(k) { return k === 'M' ? 'Masculino' : (k === 'F' ? 'Femenino' : 'Otro'); });
+                    new Chart(ctxS, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labelTxt,
+                            datasets: [{
+                                data: dataS,
+                                backgroundColor: bgS,
+                                hoverBackgroundColor: bgS.map(function(c) { return c + 'dd'; }),
+                                borderWidth: 3, borderColor: '#fff', hoverOffset: 10,
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false, cutout: '68%',
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(ctx) {
+                                            var total = dataS.reduce(function(a, b) { return a + b; }, 0);
+                                            var pct = total > 0 ? (ctx.parsed / total * 100).toFixed(1) : 0;
+                                            return '  ' + ctx.parsed + ' (' + pct + '%)';
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     });
                 }
             }
 
-            // ── 2. Barras CSS (pure HTML — no canvas needed) ────────────
+            // Render the active tab immediately, lazy-render others when shown
+            renderSection('Completo');
 
-            // ── 3. Donut estado de pagos ─────────────────────────────────
-            var ctx3 = document.getElementById('finChartEstado');
-            if (ctx3) {
-                new Chart(ctx3.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Cobrado', 'Pendiente'],
-                        datasets: [{
-                            data: [totalPag, totalPend],
-                            backgroundColor: ['#059669', '#f1f5f9'],
-                            hoverBackgroundColor: ['#047857', '#e2e8f0'],
-                            borderWidth: 3,
-                            borderColor: '#ffffff',
-                            hoverOffset: 10,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '72%',
-                        animation: { animateRotate: true, duration: 1000 },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(ctx) {
-                                        return '  Bs. ' + ctx.parsed.toLocaleString('es-BO');
-                                    }
-                                }
-                            }
-                        }
-                    }
+            ['fin-tab-completo', 'fin-tab-ingresos', 'fin-tab-retirados'].forEach(function(id) {
+                var btn = document.getElementById(id);
+                if (!btn) return;
+                btn.addEventListener('shown.bs.tab', function() {
+                    var target = btn.getAttribute('data-bs-target') || '';
+                    if (target.indexOf('ingresos') !== -1) renderSection('IngresosReales');
+                    else if (target.indexOf('retirados') !== -1) renderSection('Retirados');
+                    else renderSection('Completo');
                 });
-            }
+            });
         })();
     })();
 
@@ -4792,10 +5891,13 @@
 
             // Header
             let th = '<tr>';
-            th += '<th>Estudiante</th>';
+            th += '<th class="plt-th-carnet"><i class="ri-id-card-line" style="margin-right:4px;color:#fc7b04;"></i>Carnet</th>';
+            th += '<th class="plt-th-estudiante"><i class="ri-user-3-line" style="margin-right:4px;color:#fc7b04;"></i>Estudiante</th>';
+            th += '<th class="plt-th-estado" title="Estado Contable (tab Finanzas)"><i class="ri-wallet-3-line" style="color:#0ea5e9;margin-right:3px;"></i>Contable</th>';
+            th += '<th class="plt-th-estado" title="Estado Académico (tab Área Académica)"><i class="ri-graduation-cap-line" style="color:#6366f1;margin-right:3px;"></i>Académico</th>';
             modulos.forEach(function(m) {
-                th += '<th title="' + escHtml(m.nombre) + '">';
-                th += escHtml(m.nombre);
+                th += '<th class="plt-th-modulo" title="' + escHtml(m.nombre) + '">';
+                th += '<div class="plt-th-modulo-name"><i class="ri-book-2-line"></i><span>' + escHtml(m.nombre) + '</span></div>';
                 if (!m.moodle_course_id) {
                     th += '<span class="plt-th-alert"><i class="ri-alert-line"></i> Sin curso</span>';
                 }
@@ -4817,16 +5919,34 @@
                 const nombreDisplay = nombreOrdenado || est.nombre || '—';
                 const ini = _initials(nombreDisplay);
                 tb += '<tr>';
-                tb += '<td>' +
+                tb += '<td class="plt-cell-ci">' +
+                        '<span class="plt-ci-chip">' + escHtml(est.carnet || '—') + '</span>' +
+                      '</td>';
+                tb += '<td class="plt-cell-estudiante">' +
                     '<div class="plt-student-cell">' +
                         '<div class="plt-avatar">' + ini + '</div>' +
                         '<div>' +
-                            '<div class="plt-student-name">' + escHtml(nombreDisplay) + '</div>' +
+                            '<div class="plt-student-name" title="' + escHtml(nombreDisplay) + '">' + escHtml(nombreDisplay) + '</div>' +
                             (!est.tiene_cuenta_moodle
                                 ? '<div class="plt-no-moodle"><i class="ri-user-x-line"></i> Sin cuenta Moodle</div>'
                                 : '') +
                         '</div>' +
                     '</div>' +
+                    '</td>';
+
+                const contOn = est.activo_contable !== false;
+                const acadOn = est.activo_academico !== false;
+                tb += '<td style="text-align:center;">' +
+                    '<span class="plt-estado-chip ' + (contOn ? 'plt-estado-on' : 'plt-estado-off') + '" title="Estado contable: ' + (contOn ? 'Activo' : 'Baja') + '">' +
+                        '<i class="' + (contOn ? 'ri-checkbox-circle-fill' : 'ri-close-circle-fill') + '"></i> ' +
+                        (contOn ? 'Activo' : 'Baja') +
+                    '</span>' +
+                    '</td>';
+                tb += '<td style="text-align:center;">' +
+                    '<span class="plt-estado-chip ' + (acadOn ? 'plt-estado-on' : 'plt-estado-off') + '" title="Estado académico: ' + (acadOn ? 'Activo' : 'Baja') + '">' +
+                        '<i class="' + (acadOn ? 'ri-checkbox-circle-fill' : 'ri-close-circle-fill') + '"></i> ' +
+                        (acadOn ? 'Activo' : 'Baja') +
+                    '</span>' +
                     '</td>';
 
                 modulos.forEach(function(m) {

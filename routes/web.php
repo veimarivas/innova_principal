@@ -67,6 +67,11 @@ Route::prefix('virtual')->name('virtual.')->middleware(['auth', 'isMoodle'])->gr
         ->name('docente.modulo')
         ->middleware('checkDocente');
 
+    // PDF: lista de estudiantes inscritos en el módulo (para el docente)
+    Route::get('/docente/modulo/{moduloId}/lista-pdf', [VirtualDashboardController::class, 'listaMatriculacionesPdf'])
+        ->name('docente.modulo.lista-pdf')
+        ->middleware('checkDocente');
+
     // API para el módulo del docente (mismos controladores que el admin, middleware checkDocente)
     Route::prefix('docente/modulos/{moduloId}')->middleware('checkDocente')->group(function () {
         // Actividades
@@ -413,6 +418,10 @@ Route::prefix('admin/ofertas-academicas')->middleware(['auth', 'isAdmin'])->grou
     Route::get('/{id}/inscripciones', [OfertasAcademicaController::class, 'listarInscripciones'])->name('admin.ofertas.inscripciones');
     Route::put('/{id}/cambiar-fase', [OfertasAcademicaController::class, 'cambiarFase'])->name('admin.ofertas.cambiarFase');
     Route::post('/{id}/inscripciones', [OfertasAcademicaController::class, 'registrarInscripcion'])->name('admin.ofertas.registrarInscripcion');
+    Route::patch('/inscripciones/{inscripcionId}/toggle-estado', [OfertasAcademicaController::class, 'toggleEstadoInscripcion'])->name('admin.ofertas.inscripcion.toggleEstado');
+    Route::patch('/{ofertaId}/matriculacion/nota-nivelacion', [OfertasAcademicaController::class, 'guardarNotaNivelacion'])->name('admin.ofertas.matriculacion.notaNivelacion');
+    Route::patch('/{ofertaId}/matriculacion/habilitar-nivelacion', [OfertasAcademicaController::class, 'toggleNivelacionHabilitada'])->name('admin.ofertas.matriculacion.habilitarNivelacion');
+    Route::get('/inscripciones/{inscripcionId}/detalle-estado-contable', [OfertasAcademicaController::class, 'detalleEstadoContable'])->name('admin.ofertas.inscripcion.detalleContable');
     Route::get('/inscripciones/{inscripcionId}/cuotas', [OfertasAcademicaController::class, 'getCuotasInscripcion'])->name('admin.ofertas.inscripcion.cuotas');
     Route::post('/inscripciones/comprobante', [OfertasAcademicaController::class, 'subirComprobanteInscripcion'])->name('admin.ofertas.inscripcion.comprobante');
 });

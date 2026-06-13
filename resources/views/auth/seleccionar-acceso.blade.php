@@ -52,6 +52,7 @@ body::after  { width: 360px; height: 360px; bottom: -140px; left: -100px; }
     display: grid; gap: 18px;
     grid-template-columns: repeat(2, 1fr);
 }
+.cards.cards--single { grid-template-columns: 1fr; max-width: 460px; margin-inline: auto; }
 @media (max-width: 720px) { .cards { grid-template-columns: 1fr; } }
 
 .card-acceso {
@@ -143,12 +144,20 @@ body::after  { width: 360px; height: 360px; bottom: -140px; left: -100px; }
             <div class="alerta"><i class="ri-error-warning-line"></i> {{ session('error') }}</div>
         @endif
 
+        @php $mostrarVirtual = $user->puedeVirtualReal(); @endphp
+
         <div class="greeting">
             <h1>Hola, <span>{{ $user->name }}</span></h1>
-            <p>Tu cuenta tiene <strong>dos modos de acceso</strong>. ¿Cómo deseas continuar?</p>
+            <p>
+                @if ($mostrarVirtual)
+                    Tu cuenta tiene <strong>dos modos de acceso</strong>. ¿Cómo deseas continuar?
+                @else
+                    Continúa al panel administrativo.
+                @endif
+            </p>
         </div>
 
-        <div class="cards">
+        <div class="cards {{ $mostrarVirtual ? '' : 'cards--single' }}">
             <a href="{{ route('acceso.entrar', 'admin') }}" class="card-acceso card-admin">
                 <div class="card-icon"><i class="ri-shield-user-line"></i></div>
                 <h3 class="card-title">Panel Administrativo</h3>
@@ -163,19 +172,21 @@ body::after  { width: 360px; height: 360px; bottom: -140px; left: -100px; }
                 </button>
             </a>
 
-            <a href="{{ route('acceso.entrar', 'virtual') }}" class="card-acceso card-virtual">
-                <div class="card-icon"><i class="ri-presentation-line"></i></div>
-                <h3 class="card-title">Portal Virtual</h3>
-                <p class="card-desc">Accede a tus cursos, clases y actividades como docente o estudiante.</p>
-                <ul class="card-features">
-                    <li><i class="ri-check-line"></i> Cursos y módulos</li>
-                    <li><i class="ri-check-line"></i> Actividades y entregas</li>
-                    <li><i class="ri-check-line"></i> Calificaciones</li>
-                </ul>
-                <button type="button" class="card-cta">
-                    Entrar al Portal Virtual <i class="ri-arrow-right-line"></i>
-                </button>
-            </a>
+            @if ($mostrarVirtual)
+                <a href="{{ route('acceso.entrar', 'virtual') }}" class="card-acceso card-virtual">
+                    <div class="card-icon"><i class="ri-presentation-line"></i></div>
+                    <h3 class="card-title">Portal Virtual</h3>
+                    <p class="card-desc">Accede a tus cursos, clases y actividades como docente o estudiante.</p>
+                    <ul class="card-features">
+                        <li><i class="ri-check-line"></i> Cursos y módulos</li>
+                        <li><i class="ri-check-line"></i> Actividades y entregas</li>
+                        <li><i class="ri-check-line"></i> Calificaciones</li>
+                    </ul>
+                    <button type="button" class="card-cta">
+                        Entrar al Portal Virtual <i class="ri-arrow-right-line"></i>
+                    </button>
+                </a>
+            @endif
         </div>
 
         <div class="footer-row">

@@ -24,6 +24,7 @@ use App\Models\Matriculacione;
 use App\Models\Modulo;
 use App\Models\MoodleMatricula;
 use App\Models\User;
+use App\Services\MoodleService;
 use Illuminate\Http\Request;
 use App\Models\PagoRespaldo;
 use Illuminate\Support\Facades\Validator;
@@ -290,11 +291,21 @@ class OfertasAcademicaController extends Controller
             ->get();
 
         $participantesFinanzas = [];
-        $resumenPorConcepto = [
+        $emptyResumen = fn() => [
             'Matrícula' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'porcentaje' => 0],
             'Colegiatura' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'porcentaje' => 0],
             'Certificación' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'porcentaje' => 0],
         ];
+        // Agregados separados para poder componer las 3 vistas (completo, ingresos reales, retirados)
+        $resumenActivos = $emptyResumen();
+        $resumenPorConceptoRetirados = $emptyResumen();
+        // Buckets EXCLUSIVOS para "Ingresos Reales" — solo cuentan inscripciones con estado === 'Inscrito'
+        $resumenIRInscritoActivo   = $emptyResumen();
+        $resumenIRInscritoRetirado = $emptyResumen();
+
+        $cantidadActivos = 0;
+        $cantidadRetirados = 0;
+        $cantidadInscritoActivo = 0; // estado === 'Inscrito' y no retirado (para KPI de Ingresos Reales)
         $totalPlan = 0;
         $totalPagado = 0;
 
@@ -303,16 +314,34 @@ class OfertasAcademicaController extends Controller
 
             $estudiante = $inscripcion->estudiante;
             $persona = $estudiante->persona;
-            
+            $esRetirado = !((bool) ($inscripcion->activo ?? true));
+            $esEstadoInscrito = ($inscripcion->estado === 'Inscrito');
+            if ($esRetirado) {
+                $cantidadRetirados++;
+            } else {
+                $cantidadActivos++;
+                if ($esEstadoInscrito) {
+                    $cantidadInscritoActivo++;
+                }
+            }
+
             // Datos por concepto para este estudiante
             $conceptosEstudiante = [
                 'Matrícula' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0],
                 'Colegiatura' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0],
                 'Certificación' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0],
             ];
-            
+
+            // Detectar cuotas vencidas para sugerir cambio de estado contable
+            $hoy = now()->toDateString();
+            $tieneCuotaVencida = false;
+
             // Procesar cuotas por concepto
             foreach ($inscripcion->cuotas as $cuota) {
+                $pagadoTmp = $cuota->pagosCuota->sum('monto_bs');
+                if ($pagadoTmp < (float) $cuota->monto_bs && $cuota->fecha_vencimiento && $cuota->fecha_vencimiento <= $hoy) {
+                    $tieneCuotaVencida = true;
+                }
                 $nombreRaw = $cuota->nombre ?? 'Otro';
                 // Normalizar: "Matrícula - Cuota 1" -> "Matrícula", "Matrícula 1" -> "Matrícula"
                 $concepto = trim(preg_replace('/(?:-|cuota|nro\.?|n°|#)\s*\d+/i', '', $nombreRaw));
@@ -335,9 +364,26 @@ class OfertasAcademicaController extends Controller
                     $conceptosEstudiante[$concepto]['pagado'] += $pagadoCuota;
                     $conceptosEstudiante[$concepto]['pendiente'] += $pendienteCuota;
                     
-                    $resumenPorConcepto[$concepto]['total'] += $totalCuota;
-                    $resumenPorConcepto[$concepto]['pagado'] += $pagadoCuota;
-                    $resumenPorConcepto[$concepto]['pendiente'] += $pendienteCuota;
+                    if ($esRetirado) {
+                        $resumenPorConceptoRetirados[$concepto]['total'] += $totalCuota;
+                        $resumenPorConceptoRetirados[$concepto]['pagado'] += $pagadoCuota;
+                        $resumenPorConceptoRetirados[$concepto]['pendiente'] += $pendienteCuota;
+                        // Para "Ingresos Reales" solo considerar estado = Inscrito
+                        if ($esEstadoInscrito) {
+                            $resumenIRInscritoRetirado[$concepto]['total'] += $totalCuota;
+                            $resumenIRInscritoRetirado[$concepto]['pagado'] += $pagadoCuota;
+                            $resumenIRInscritoRetirado[$concepto]['pendiente'] += $pendienteCuota;
+                        }
+                    } else {
+                        $resumenActivos[$concepto]['total'] += $totalCuota;
+                        $resumenActivos[$concepto]['pagado'] += $pagadoCuota;
+                        $resumenActivos[$concepto]['pendiente'] += $pendienteCuota;
+                        if ($esEstadoInscrito) {
+                            $resumenIRInscritoActivo[$concepto]['total'] += $totalCuota;
+                            $resumenIRInscritoActivo[$concepto]['pagado'] += $pagadoCuota;
+                            $resumenIRInscritoActivo[$concepto]['pendiente'] += $pendienteCuota;
+                        }
+                    }
                 } else {
                     // Concepto no reconocido, agrupar en "Otro"
                     if (!isset($conceptosEstudiante['Otro'])) {
@@ -367,7 +413,9 @@ class OfertasAcademicaController extends Controller
                 'estudiante_id' => $estudiante->id,
                 'nombre_completo' => trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? '')),
                 'carnet' => $persona->carnet ?? '—',
+                'sexo' => $persona->sexo ?? null,
                 'plan_pago' => $inscripcion->planesPago?->nombre ?? '—',
+                'plan_pago_id' => $inscripcion->planes_pago_id,
                 'vendedor' => $vendedorNombre,
                 'vendedor_persona_id' => $inscripcion->trabajador_cargo?->trabajador?->persona?->id,
                 'fecha_inscripcion' => $inscripcion->fecha_registro,
@@ -380,18 +428,57 @@ class OfertasAcademicaController extends Controller
                 'saldo' => $saldoInscripcion,
                 'porcentaje_pagado' => $porcentaje,
                 'estado' => $inscripcion->estado,
+                'activo' => !$esRetirado,
+                'inscripcion_id'   => $inscripcion->id,
+                'activo_contable'  => (bool) ($inscripcion->activo_contable ?? true),
+                'activo_academico' => (bool) ($inscripcion->activo_academico ?? true),
+                'tiene_cuota_vencida' => $tieneCuotaVencida,
+                'sugerencia_contable' => (function() use ($tieneCuotaVencida, $inscripcion) {
+                    $contableActivo = (bool) ($inscripcion->activo_contable ?? true);
+                    if ($tieneCuotaVencida && $contableActivo) {
+                        return 'desactivar'; // tiene mora, sugerir bloquear
+                    }
+                    if (!$tieneCuotaVencida && !$contableActivo) {
+                        return 'activar';    // está al día y fue dado de baja contable, sugerir habilitar
+                    }
+                    return null;
+                })(),
             ];
 
             $totalPlan += $totalInscripcion;
             $totalPagado += $pagadoInscripcion;
         }
 
-        // Calcular porcentajes del resumen global
-        foreach ($resumenPorConcepto as $concepto => $datos) {
-            $resumenPorConcepto[$concepto]['porcentaje'] = $datos['total'] > 0 
-                ? ($datos['pagado'] / $datos['total']) * 100 
-                : 0;
+        // Componer las 3 vistas a partir de los agregados base
+        // 1. Completo = activos + retirados (todos los inscritos, todas las inscripciones)
+        // 2. Ingresos Reales = SOLO estado=Inscrito (activos completos + cobrado de retirados con estado=Inscrito)
+        // 3. Retirados = solo retirados (lo perdido = pendiente)
+        $resumenPorConcepto = $emptyResumen();
+        $resumenPorConceptoIngresosReales = $emptyResumen();
+        foreach ($resumenActivos as $concepto => $a) {
+            $r = $resumenPorConceptoRetirados[$concepto] ?? ['total'=>0,'pagado'=>0,'pendiente'=>0];
+
+            // Completo: incluye Pre-Inscritos / Confirmados / Inscritos (activos y retirados)
+            $resumenPorConcepto[$concepto]['total']     = $a['total'] + $r['total'];
+            $resumenPorConcepto[$concepto]['pagado']    = $a['pagado'] + $r['pagado'];
+            $resumenPorConcepto[$concepto]['pendiente'] = $a['pendiente'] + $r['pendiente'];
+
+            // Ingresos Reales: SOLO estado=Inscrito
+            $iA = $resumenIRInscritoActivo[$concepto]   ?? ['total'=>0,'pagado'=>0,'pendiente'=>0];
+            $iR = $resumenIRInscritoRetirado[$concepto] ?? ['total'=>0,'pagado'=>0,'pendiente'=>0];
+            $resumenPorConceptoIngresosReales[$concepto]['total']     = $iA['total'] + $iR['pagado'];
+            $resumenPorConceptoIngresosReales[$concepto]['pagado']    = $iA['pagado'] + $iR['pagado'];
+            $resumenPorConceptoIngresosReales[$concepto]['pendiente'] = $iA['pendiente'];
         }
+
+        $aplicarPorcentaje = function (&$resumen) {
+            foreach ($resumen as $c => $d) {
+                $resumen[$c]['porcentaje'] = $d['total'] > 0 ? ($d['pagado'] / $d['total']) * 100 : 0;
+            }
+        };
+        $aplicarPorcentaje($resumenPorConcepto);
+        $aplicarPorcentaje($resumenPorConceptoIngresosReales);
+        $aplicarPorcentaje($resumenPorConceptoRetirados);
 
         $trabajadores = TrabajadoresCargo::select('trabajadores_cargos.*')
             ->with(['trabajador.persona', 'cargo'])
@@ -400,10 +487,55 @@ class OfertasAcademicaController extends Controller
             ->get();
 
         // ── Área Académica: lista de estudiantes con su perfil completo ──────
+        // Pre-cargar matriculaciones para sugerir baja académica (módulos concluidos con nota_regular < nota_minima)
+        $notaMinima = (float) ($oferta->nota_minima ?? 0);
+        $modulosConcluidos = $oferta->modulos->filter(fn($m) => ($m->estado ?? '') === 'Concluido')->keyBy('id');
+
+        $matriculacionesPorIns = \App\Models\Matriculacione::whereIn('inscripcione_id', $inscripciones->pluck('id'))
+            ->whereIn('modulo_id', $modulosConcluidos->keys())
+            ->get()
+            ->groupBy('inscripcione_id');
+
+        // Mapa de notas por (inscripcion, modulo) para render server-side cuando módulo está Concluido
+        $notasMatriculaciones = [];
+        foreach ($matriculacionesPorIns as $insId => $matris) {
+            foreach ($matris as $mat) {
+                $notasMatriculaciones[$insId][$mat->modulo_id] = [
+                    'nota_regular'    => $mat->nota_regular !== null ? (float) $mat->nota_regular : null,
+                    'nota_nivelacion' => $mat->nota_nivelacion !== null ? (float) $mat->nota_nivelacion : null,
+                    'nivelacion_habilitada' => (bool) ($mat->nivelacion_habilitada ?? false),
+                ];
+            }
+        }
+
         $areaAcademicaEstudiantes = [];
         foreach ($inscripciones as $inscripcion) {
+            // Solo considerar inscripciones con estado === 'Inscrito' en el área académica
+            if ($inscripcion->estado !== 'Inscrito') continue;
             if (!$inscripcion->estudiante || !$inscripcion->estudiante->persona) continue;
             $persona = $inscripcion->estudiante->persona;
+
+            // Detectar módulos reprobados (concluidos con nota_regular < nota_minima)
+            $modulosReprobados = [];
+            $matris = $matriculacionesPorIns->get($inscripcion->id, collect());
+            foreach ($matris as $mat) {
+                $mod = $modulosConcluidos->get($mat->modulo_id);
+                if (!$mod) continue;
+                $notaReg = $mat->nota_regular !== null ? (float) $mat->nota_regular : null;
+                if ($notaReg !== null && $notaReg < $notaMinima) {
+                    $modulosReprobados[] = [
+                        'modulo_id'        => $mod->id,
+                        'modulo_nombre'    => $mod->nombre,
+                        'nota_regular'     => $notaReg,
+                        'nota_nivelacion'  => $mat->nota_nivelacion !== null ? (float) $mat->nota_nivelacion : null,
+                        'nota_minima'      => $notaMinima,
+                    ];
+                }
+            }
+
+            $academicoActivo = (bool) ($inscripcion->activo_academico ?? true);
+            $cantidadReprobados = count($modulosReprobados);
+            $sugerenciaAcademica = ($cantidadReprobados >= 2 && $academicoActivo) ? 'desactivar' : null;
 
             $estudios = [];
             foreach ($persona->estudios as $est) {
@@ -441,6 +573,11 @@ class OfertasAcademicaController extends Controller
                 'estado_civil'     => $persona->estado_civil ?? '—',
                 'estudios'         => $estudios,
                 'estado'           => $inscripcion->estado,
+                'activo_academico' => $academicoActivo,
+                'modulos_reprobados' => $modulosReprobados,
+                'cantidad_reprobados' => $cantidadReprobados,
+                'sugerencia_academica' => $sugerenciaAcademica,
+                'nota_minima'      => $notaMinima,
             ];
         }
 
@@ -455,9 +592,11 @@ class OfertasAcademicaController extends Controller
         return view('admin.ofertas-academicas.detalle', compact(
             'oferta', 'respAcademico', 'respMarketing',
             'trabajadores',
-            'participantesFinanzas', 'resumenPorConcepto',
+            'participantesFinanzas',
+            'resumenPorConcepto', 'resumenPorConceptoIngresosReales', 'resumenPorConceptoRetirados',
+            'cantidadActivos', 'cantidadRetirados', 'cantidadInscritoActivo',
             'totalPlan', 'totalPagado',
-            'areaAcademicaEstudiantes'
+            'areaAcademicaEstudiantes', 'notasMatriculaciones'
         ));
     }
 
@@ -1358,20 +1497,55 @@ class OfertasAcademicaController extends Controller
     public function listarInscripciones($ofertaId)
     {
         try {
-            $oferta = OfertasAcademica::with('programa')->find($ofertaId);
+            $oferta = OfertasAcademica::with(['programa', 'modulos'])->find($ofertaId);
             $nombrePrograma = $oferta?->programa?->nombre ?? 'Programa';
 
-            $inscripciones = Inscripcione::with(['estudiante.persona.usuario', 'planesPago', 'trabajador_cargo.trabajador.persona'])
+            $inscripciones = Inscripcione::with([
+                    'estudiante.persona.usuario',
+                    'planesPago',
+                    'trabajador_cargo.trabajador.persona',
+                    'cuotas.pagosCuota',
+                ])
                 ->where('ofertas_academica_id', $ofertaId)
                 ->orderBy('created_at', 'desc')
                 ->get();
 
+            // Pre-cálculo para sugerencias contable / académica
+            $hoyStr = now()->toDateString();
+            $notaMinima = (float) ($oferta?->nota_minima ?? 0);
+            $modulosConcluidos = $oferta
+                ? $oferta->modulos->filter(fn($m) => ($m->estado ?? '') === 'Concluido')->pluck('id')->all()
+                : [];
+            $reprobadosPorIns = [];
+            if (!empty($modulosConcluidos)) {
+                $reprobadosPorIns = \App\Models\Matriculacione::whereIn('inscripcione_id', $inscripciones->pluck('id'))
+                    ->whereIn('modulo_id', $modulosConcluidos)
+                    ->get()
+                    ->filter(fn($m) => $m->nota_regular !== null && (float) $m->nota_regular < $notaMinima)
+                    ->groupBy('inscripcione_id')
+                    ->map->count()
+                    ->all();
+            }
+
             return response()->json([
-                'data' => $inscripciones->map(function ($i) use ($nombrePrograma, $ofertaId) {
+                'oferta_fase_id' => (int) ($oferta?->fase_id ?? 0),
+                'data' => $inscripciones->map(function ($i) use ($nombrePrograma, $ofertaId, $hoyStr, $reprobadosPorIns) {
                     $estudiante = $i->estudiante?->persona;
                     $nombreEstudiante = $estudiante
                         ? trim(($estudiante->nombres ?? '') . ' ' . ($estudiante->apellido_paterno ?? '') . ' ' . ($estudiante->apellido_materno ?? ''))
                         : 'Sin nombre';
+
+                    // ¿Tiene alguna cuota vencida no pagada al día de hoy?
+                    $tieneCuotaVencida = false;
+                    foreach ($i->cuotas as $cu) {
+                        $pagado = (float) $cu->pagosCuota->sum('monto_bs');
+                        if ($pagado < (float) $cu->monto_bs && $cu->fecha_vencimiento && $cu->fecha_vencimiento <= $hoyStr) {
+                            $tieneCuotaVencida = true;
+                            break;
+                        }
+                    }
+
+                    $cantidadReprobados = $reprobadosPorIns[$i->id] ?? 0;
 
                     $moodleUsername = null;
                     $moodlePassword = null;
@@ -1411,11 +1585,297 @@ class OfertasAcademicaController extends Controller
                         'moodle_password' => $moodlePassword,
                         'tiene_cuenta_moodle' => $tieneCuentaMoodle,
                         'tiene_cuenta_sistema' => $tieneCuentaSistema,
+                        'activo' => (bool) ($i->activo ?? true),
+                        'activo_contable' => (bool) ($i->activo_contable ?? true),
+                        'activo_academico' => (bool) ($i->activo_academico ?? true),
+                        'tiene_cuota_vencida' => $tieneCuotaVencida,
+                        'cantidad_reprobados' => $cantidadReprobados,
                     ];
                 })
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Registrar / actualizar nota_nivelacion (2da instancia) de una matriculación.
+     * La nota no puede ser mayor que ofertas_academicas.nota_minima.
+     */
+    public function guardarNotaNivelacion(Request $request, $ofertaId)
+    {
+        $request->validate([
+            'inscripcion_id' => 'required|integer|exists:inscripciones,id',
+            'modulo_id'      => 'required|integer|exists:modulos,id',
+            'nota_nivelacion' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        $oferta = OfertasAcademica::find($ofertaId);
+        if (!$oferta) {
+            return response()->json(['success' => false, 'message' => 'Oferta no encontrada.'], 404);
+        }
+        $notaMinima = (float) ($oferta->nota_minima ?? 0);
+        $nuevaNota = $request->nota_nivelacion;
+
+        if ($nuevaNota !== null && (float) $nuevaNota > $notaMinima) {
+            return response()->json([
+                'success' => false,
+                'message' => "La nota de 2da instancia no puede ser mayor a la nota mínima ({$notaMinima}).",
+            ], 422);
+        }
+
+        $mat = \App\Models\Matriculacione::firstOrNew([
+            'inscripcione_id' => $request->inscripcion_id,
+            'modulo_id'       => $request->modulo_id,
+        ]);
+        $mat->nota_nivelacion = $nuevaNota;
+        // Si se está registrando un valor, dar por habilitada la nivelación
+        if ($nuevaNota !== null) {
+            $mat->nivelacion_habilitada = true;
+        }
+        $mat->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'nota_regular'    => $mat->nota_regular !== null ? (float) $mat->nota_regular : null,
+                'nota_nivelacion' => $mat->nota_nivelacion !== null ? (float) $mat->nota_nivelacion : null,
+                'nivelacion_habilitada' => (bool) $mat->nivelacion_habilitada,
+                'nota_minima'     => $notaMinima,
+            ],
+        ]);
+    }
+
+    /**
+     * Habilita o deshabilita la 2da instancia (nivelación) para una matriculación.
+     */
+    public function toggleNivelacionHabilitada(Request $request, $ofertaId)
+    {
+        $request->validate([
+            'inscripcion_id' => 'required|integer|exists:inscripciones,id',
+            'modulo_id'      => 'required|integer|exists:modulos,id',
+            'habilitada'     => 'required|boolean',
+        ]);
+
+        $mat = \App\Models\Matriculacione::firstOrNew([
+            'inscripcione_id' => $request->inscripcion_id,
+            'modulo_id'       => $request->modulo_id,
+        ]);
+
+        $mat->nivelacion_habilitada = (bool) $request->habilitada;
+        // Si se deshabilita, limpiar la nota previa
+        if (!$request->habilitada) {
+            $mat->nota_nivelacion = null;
+        }
+        $mat->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'nota_regular'    => $mat->nota_regular !== null ? (float) $mat->nota_regular : null,
+                'nota_nivelacion' => $mat->nota_nivelacion !== null ? (float) $mat->nota_nivelacion : null,
+                'nivelacion_habilitada' => (bool) $mat->nivelacion_habilitada,
+            ],
+        ]);
+    }
+
+    /**
+     * Detalle de cuotas para el modal de estado contable.
+     * Devuelve cuotas pendientes con días de atraso y montos para sugerir baja/alta.
+     */
+    public function detalleEstadoContable($inscripcionId)
+    {
+        $inscripcion = Inscripcione::with(['cuotas.pagosCuota', 'estudiante.persona', 'planesPago'])->find($inscripcionId);
+
+        if (!$inscripcion) {
+            return response()->json(['success' => false, 'message' => 'Inscripción no encontrada.'], 404);
+        }
+
+        $hoy = \Carbon\Carbon::today();
+        $persona = $inscripcion->estudiante?->persona;
+
+        $cuotasVencidas = [];
+        $cuotasPorVencer = [];
+        $cuotasPagadas = [];
+        $montoVencido = 0;
+        $montoPorVencer = 0;
+
+        foreach ($inscripcion->cuotas->sortBy('n_cuota') as $cuota) {
+            $monto    = (float) ($cuota->monto_bs ?? 0);
+            $pagado   = (float) $cuota->pagosCuota->sum('monto_bs');
+            $pendiente = max(0, $monto - $pagado);
+            $fechaVenc = $cuota->fecha_vencimiento ? \Carbon\Carbon::parse($cuota->fecha_vencimiento) : null;
+            $diasAtraso = ($fechaVenc && $fechaVenc->isPast() && $pendiente > 0)
+                ? $hoy->diffInDays($fechaVenc)
+                : 0;
+
+            $row = [
+                'id'                => $cuota->id,
+                'n_cuota'           => $cuota->n_cuota,
+                'nombre'            => $cuota->nombre,
+                'monto'             => $monto,
+                'pagado'            => $pagado,
+                'pendiente'         => $pendiente,
+                'fecha_vencimiento' => $fechaVenc?->format('Y-m-d'),
+                'fecha_vencimiento_fmt' => $fechaVenc?->format('d/m/Y'),
+                'dias_atraso'       => $diasAtraso,
+                'estado'            => $cuota->estado,
+            ];
+
+            if ($pendiente <= 0.001) {
+                $cuotasPagadas[] = $row;
+            } elseif ($fechaVenc && $fechaVenc->lte($hoy)) {
+                $cuotasVencidas[] = $row;
+                $montoVencido += $pendiente;
+            } else {
+                $cuotasPorVencer[] = $row;
+                $montoPorVencer += $pendiente;
+            }
+        }
+
+        $contableActivo = (bool) ($inscripcion->activo_contable ?? true);
+        $tieneVencidas = count($cuotasVencidas) > 0;
+
+        if ($tieneVencidas && $contableActivo) {
+            $sugerencia = 'desactivar';
+        } elseif (!$tieneVencidas && !$contableActivo) {
+            $sugerencia = 'activar';
+        } else {
+            $sugerencia = null;
+        }
+
+        $nombre = $persona
+            ? trim(($persona->nombres ?? '') . ' ' . ($persona->apellido_paterno ?? '') . ' ' . ($persona->apellido_materno ?? ''))
+            : '—';
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'inscripcion_id'   => $inscripcion->id,
+                'estudiante'       => $nombre ?: '—',
+                'carnet'           => $persona?->carnet ?? '—',
+                'plan_pago'        => $inscripcion->planesPago?->nombre ?? '—',
+                'activo_contable'  => $contableActivo,
+                'sugerencia'       => $sugerencia,
+                'cuotas_vencidas'  => $cuotasVencidas,
+                'cuotas_por_vencer' => $cuotasPorVencer,
+                'cuotas_pagadas'   => $cuotasPagadas,
+                'monto_vencido'    => $montoVencido,
+                'monto_por_vencer' => $montoPorVencer,
+                'cantidad_vencidas' => count($cuotasVencidas),
+            ],
+        ]);
+    }
+
+    /**
+     * Cambia el estado activo de una inscripción (general / contable / académico).
+     */
+    public function toggleEstadoInscripcion(Request $request, $inscripcionId)
+    {
+        $request->validate([
+            'campo' => 'required|in:activo,activo_contable,activo_academico',
+            'valor' => 'required|boolean',
+        ]);
+
+        $inscripcion = Inscripcione::find($inscripcionId);
+        if (!$inscripcion) {
+            return response()->json(['success' => false, 'message' => 'Inscripción no encontrada.'], 404);
+        }
+
+        $campo = $request->campo;
+        $valor = (bool) $request->valor;
+        $moodleAfectado = false;
+
+        DB::transaction(function () use ($inscripcion, $campo, $valor, &$moodleAfectado) {
+            $inscripcion->{$campo} = $valor;
+
+            // Propagación cuando se modifica el estado general "activo":
+            // - Baja general (valor=false) → también dar de baja contable y académico.
+            // - Alta general (valor=true)  → reactivar contable y académico.
+            // Además, suspender/reactivar el acceso Moodle en todos los módulos de la oferta.
+            if ($campo === 'activo') {
+                $inscripcion->activo_contable  = $valor;
+                $inscripcion->activo_academico = $valor;
+                $moodleAfectado = true;
+            }
+
+            $inscripcion->save();
+        });
+
+        if ($moodleAfectado) {
+            $this->sincronizarAccesoMoodleOferta($inscripcion, !$valor);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $inscripcion->id,
+                'activo' => (bool) $inscripcion->activo,
+                'activo_contable' => (bool) $inscripcion->activo_contable,
+                'activo_academico' => (bool) $inscripcion->activo_academico,
+            ],
+        ]);
+    }
+
+    /**
+     * Suspende o reactiva el acceso Moodle del estudiante en TODOS los módulos
+     * (con curso Moodle) de la oferta a la que pertenece la inscripción.
+     * Best-effort: cualquier fallo individual se registra pero no aborta el cambio
+     * de estado en BD (el toggle ya se guardó).
+     */
+    private function sincronizarAccesoMoodleOferta(Inscripcione $inscripcion, bool $suspender): void
+    {
+        try {
+            $modulos = Modulo::where('ofertas_academica_id', $inscripcion->ofertas_academica_id)
+                ->whereNotNull('moodle_course_id')
+                ->get();
+
+            if ($modulos->isEmpty()) return;
+
+            $matriculas = MoodleMatricula::where('inscripcion_id', $inscripcion->id)
+                ->whereIn('modulo_id', $modulos->pluck('id'))
+                ->whereNotNull('moodle_user_id')
+                ->get()
+                ->keyBy('modulo_id');
+
+            if ($matriculas->isEmpty()) return;
+
+            $moodle = app(MoodleService::class);
+
+            foreach ($modulos as $modulo) {
+                $mat = $matriculas->get($modulo->id);
+                if (!$mat) continue;
+
+                try {
+                    $res = $moodle->suspendEnrollment(
+                        $mat->moodle_user_id,
+                        $modulo->moodle_course_id,
+                        $suspender
+                    );
+                    if ($res === false || (is_array($res) && isset($res['error']))) {
+                        Log::warning('sincronizarAccesoMoodleOferta: fallo en módulo', [
+                            'inscripcion_id' => $inscripcion->id,
+                            'modulo_id' => $modulo->id,
+                            'suspender' => $suspender,
+                            'res' => $res,
+                        ]);
+                        continue;
+                    }
+                    $mat->acceso_suspendido = $suspender;
+                    $mat->save();
+                } catch (\Throwable $e) {
+                    Log::error('sincronizarAccesoMoodleOferta: excepción por módulo', [
+                        'inscripcion_id' => $inscripcion->id,
+                        'modulo_id' => $modulo->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::error('sincronizarAccesoMoodleOferta: fallo general', [
+                'inscripcion_id' => $inscripcion->id,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 

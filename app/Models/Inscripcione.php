@@ -14,6 +14,9 @@ class Inscripcione extends Model
         'trabajadores_cargo_id',
         'planes_pago_id',
         'estado',
+        'activo',
+        'activo_contable',
+        'activo_academico',
         'adelanto_bs',
         'fecha_registro',
         'observacion',
@@ -25,6 +28,9 @@ class Inscripcione extends Model
     protected $casts = [
         'fecha_registro' => 'datetime:Y-m-d H:i:s',
         'adelanto_bs' => 'decimal:2',
+        'activo' => 'boolean',
+        'activo_contable' => 'boolean',
+        'activo_academico' => 'boolean',
     ];
 
     public function ofertaAcademica()

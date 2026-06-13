@@ -39,9 +39,14 @@
         <p class="ins-state-text">No hay inscripciones registradas</p>
     </div>
 
+    @php
+        $insFaseDesarrollo = (int) ($oferta->fase_id ?? 0) === 4;
+    @endphp
+    <script>window.OFERTA_FASE_DESARROLLO = {{ $insFaseDesarrollo ? 'true' : 'false' }};</script>
+
     {{-- Table --}}
     <div class="ins-table-wrap" id="inscripcionesTableWrap" style="display:none;">
-        <table class="ins-tbl" id="tabla-inscripciones">
+        <table class="ins-tbl {{ $insFaseDesarrollo ? 'ins-tbl--desarrollo' : '' }}" id="tabla-inscripciones">
             <thead>
                 <tr>
                     <th class="ins-th-num">#</th>
@@ -50,6 +55,11 @@
                     <th>Correo</th>
                     <th class="text-center">Plan de Pago</th>
                     <th class="text-center">Estado</th>
+                    @if ($insFaseDesarrollo)
+                        <th class="text-center" title="Activo / Retirado (solo Inscritos)">Activo</th>
+                        <th class="text-center" title="Estado Contable (solo Inscritos)">Contable</th>
+                        <th class="text-center" title="Estado Académico (solo Inscritos)">Académico</th>
+                    @endif
                     <th class="text-center">Sistema</th>
                     <th class="text-center">Moodle</th>
                     <th class="text-center">Acciones</th>
@@ -146,3 +156,118 @@
         </div>
     </div>
 </div>
+
+{{-- ═══════════════ Modal combinado: Sugerir baja general ═══════════════ --}}
+<div class="modal fade" id="modalGeneralBaja" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.18);">
+            <div class="modal-header" style="background:linear-gradient(135deg,#7f1d1d 0%,#b91c1c 50%,#dc2626 100%);color:#fff;padding:1.1rem 1.5rem;border:none;">
+                <div class="d-flex align-items-center gap-3" style="flex:1;">
+                    <div style="width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="ri-user-unfollow-line" style="font-size:1.4rem;"></i>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <h5 class="modal-title mb-0" style="font-size:1rem;font-weight:700;color:#fff;">Sugerencia de baja general</h5>
+                        <div id="modalGeneralSubtitulo" style="font-size:.73rem;opacity:.85;margin-top:.15rem;color:rgba(255,255,255,.9);">—</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" style="padding:0;">
+                <div id="modalGeneralLoading" class="text-center" style="padding:3rem 1.5rem;">
+                    <div class="spinner-border" style="color:#dc2626;width:2.25rem;height:2.25rem;" role="status"></div>
+                    <p class="mt-3 mb-0" style="font-size:.85rem;color:#64748b;font-weight:500;">Cargando detalle…</p>
+                </div>
+
+                <div id="modalGeneralContent" style="display:none;">
+                    <div style="padding:12px 18px;background:rgba(220,38,38,.08);border-bottom:1px solid #fecaca;color:#7f1d1d;font-size:.82rem;font-weight:600;display:flex;gap:10px;align-items:center;">
+                        <i class="ri-error-warning-fill" style="font-size:1.1rem;"></i>
+                        <span>El estudiante tiene <strong>mora contable</strong> y <strong>2 o más módulos reprobados</strong>. Se sugiere darlo de baja general.</span>
+                    </div>
+
+                    {{-- Contable --}}
+                    <div class="fin-mc-section">
+                        <div class="fin-mc-section-title fin-mc-section-title--danger" style="justify-content:space-between;">
+                            <span><i class="ri-money-dollar-circle-line"></i> Detalle Contable</span>
+                            <span id="modalGeneralContBanner" style="font-size:.7rem;font-weight:600;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:999px;">—</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table fin-mc-tbl mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Cuota</th>
+                                        <th class="text-end">Pendiente</th>
+                                        <th class="text-center">Vencimiento</th>
+                                        <th class="text-center">Días atraso</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modalGeneralContTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- Académica --}}
+                    <div class="fin-mc-section" style="border-top:1px solid #f1f5f9;">
+                        <div class="fin-mc-section-title fin-mc-section-title--danger" style="justify-content:space-between;">
+                            <span><i class="ri-graduation-cap-line"></i> Detalle Académico</span>
+                            <span id="modalGeneralAcadBanner" style="font-size:.7rem;font-weight:600;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:999px;">—</span>
+                        </div>
+                        <div id="modalGeneralAcadWrap" class="table-responsive">
+                            <table class="table aa-mc-tbl mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Módulo</th>
+                                        <th class="text-center">Nota Regular</th>
+                                        <th class="text-center">Mínima</th>
+                                        <th class="text-center">Diferencia</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modalGeneralAcadTbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="modalGeneralAcadEmpty" style="display:none;padding:14px;text-align:center;color:#64748b;font-size:.82rem;">
+                            <i class="ri-information-line" style="margin-right:5px;"></i>
+                            Para ver el detalle de los módulos reprobados, abrí primero el tab Área Académica.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:.85rem 1.25rem;justify-content:space-between;background:#f8fafc;">
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal" style="border:1px solid #cbd5e1;font-weight:600;">
+                    <i class="ri-close-line"></i> Cerrar
+                </button>
+                <button type="button" class="btn btn-sm" id="modalGeneralAccion" style="background:linear-gradient(135deg,#7f1d1d,#b91c1c);font-weight:700;color:#fff;border:none;padding:.45rem 1.1rem;border-radius:8px;">
+                    <i class="ri-user-unfollow-line"></i> Dar de baja general
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Wrap de celda con toggle + sugerencia en el tab Inscripciones */
+    .ins-cell-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .ins-cell-sug {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: .65rem; font-weight: 700;
+        padding: 2px 8px; border-radius: 999px;
+        cursor: pointer; white-space: nowrap;
+        font-family: 'Sora','DM Sans',sans-serif;
+        border: 1px solid transparent;
+        animation: insCellSugPulse 2.4s ease-in-out infinite;
+        transition: transform .15s ease, filter .15s ease;
+    }
+    .ins-cell-sug i { font-size: .8rem; }
+    .ins-cell-sug--down { background: rgba(220,38,38,.10); color: #b91c1c; border-color: rgba(220,38,38,.28); }
+    .ins-cell-sug--up   { background: rgba(5,150,105,.10); color: #047857; border-color: rgba(5,150,105,.28); }
+    .ins-cell-sug-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .ins-cell-sug-eye { opacity: .65; margin-left: 2px; }
+    @keyframes insCellSugPulse { 0%,100% { opacity: .9; } 50% { opacity: .55; } }
+
+    /* Tinte de fila según el estado general (activo / baja) — solo cuando aplica */
+    .ins-row--gen-on  > td { background-color: rgba(16, 185, 129, 0.06) !important; }
+    .ins-row--gen-off > td { background-color: rgba(220, 38, 38, 0.06) !important; }
+    .ins-row--gen-on > td, .ins-row--gen-off > td { transition: background-color .25s ease; }
+</style>

@@ -1797,6 +1797,150 @@
             .oferta-kpi-strip { gap: 4px; }
             .oferta-kpi { min-width: 58px; padding: 6px 7px; }
         }
+
+        /* ── Tabs principales de Contabilidad (Detalle Completo / Ingresos Reales / Retirados) ── */
+        .cont-main-tabs-card {
+            background: var(--cont-surface);
+            border: 1px solid var(--cont-border);
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 22px;
+            box-shadow: var(--cont-shadow-sm);
+        }
+        .cont-main-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; border: 0; margin: 0; padding: 0; list-style: none; }
+        .cont-main-tabs .nav-item { margin: 0; }
+        .cont-main-tab-btn {
+            width: 100%;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto auto;
+            column-gap: 12px;
+            align-items: center;
+            padding: 12px 16px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: var(--cont-text);
+            font-family: 'Sora','DM Sans',sans-serif;
+            text-align: left;
+            position: relative;
+            transition: all .25s ease;
+        }
+        .cont-main-tab-btn i {
+            grid-row: 1 / span 2;
+            font-size: 1.45rem;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--cont-surface-alt);
+            border-radius: 10px;
+            color: var(--cont-text-muted);
+            transition: all .25s ease;
+        }
+        .cont-main-tab-btn span { font-weight: 700; font-size: .92rem; line-height: 1.2; }
+        .cont-main-tab-btn small { font-size: .7rem; font-weight: 500; color: var(--cont-text-muted); line-height: 1.2; }
+        .cont-main-tab-btn:hover { background: var(--cont-surface-alt); }
+        .cont-main-tab-btn.active {
+            background: linear-gradient(135deg, rgba(99,102,241,.07), rgba(13,148,136,.05));
+            border-color: rgba(99,102,241,.25);
+            box-shadow: 0 4px 12px rgba(99,102,241,.10);
+        }
+        .cont-main-tab-btn.active i { background: linear-gradient(135deg,#6366f1,#0d9488); color: #fff; }
+        .cont-main-tab-btn.active span { color: #1e1b4b; }
+        #cont-tab-ingresos.active { background: linear-gradient(135deg, rgba(5,150,105,.08), rgba(16,185,129,.04)); border-color: rgba(5,150,105,.25); box-shadow: 0 4px 12px rgba(5,150,105,.10); }
+        #cont-tab-ingresos.active i { background: linear-gradient(135deg,#059669,#10b981); }
+        #cont-tab-retirados.active { background: linear-gradient(135deg, rgba(220,38,38,.08), rgba(248,113,113,.04)); border-color: rgba(220,38,38,.25); box-shadow: 0 4px 12px rgba(220,38,38,.10); }
+        #cont-tab-retirados.active i { background: linear-gradient(135deg,#dc2626,#f87171); }
+
+        .cont-main-tab-badge {
+            position: absolute;
+            top: 8px; right: 10px;
+            background: #dc2626;
+            color: #fff;
+            font-size: .65rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .cont-main-tab-intro {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--cont-surface-alt);
+            border: 1px solid var(--cont-border-light);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 22px;
+        }
+        .cont-main-tab-intro--danger { background: linear-gradient(135deg, rgba(220,38,38,.04), rgba(248,113,113,.02)); border-color: rgba(220,38,38,.18); }
+        .cont-main-tab-intro-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .cont-main-tab-intro-title { font-family: 'Sora','DM Sans',sans-serif; font-weight: 700; font-size: 1rem; color: var(--cont-text); margin-bottom: 2px; }
+        .cont-main-tab-intro-sub { font-size: .8rem; color: #475569; line-height: 1.5; }
+
+        /* ── Sub-tabs por oferta ── */
+        .cont-sub-tabs {
+            display: flex;
+            gap: 4px;
+            border: 0;
+            margin: 0 0 14px;
+            padding: 6px;
+            list-style: none;
+            background: var(--cont-surface-alt);
+            border-radius: 10px;
+        }
+        .cont-sub-tabs .nav-item { margin: 0; flex: 1; }
+        .cont-sub-tab-btn {
+            width: 100%;
+            background: transparent;
+            border: 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--cont-text-muted);
+            cursor: pointer;
+            transition: all .2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            position: relative;
+        }
+        .cont-sub-tab-btn:hover { color: var(--cont-text); }
+        .cont-sub-tab-btn.active {
+            background: var(--cont-surface);
+            color: var(--cont-text);
+            box-shadow: var(--cont-shadow-sm);
+        }
+        .cont-sub-tab-btn i { font-size: .95rem; }
+        .cont-sub-tab-badge {
+            background: #dc2626; color: #fff; font-size: .6rem; font-weight: 700;
+            padding: 1px 7px; border-radius: 20px; min-width: 18px; text-align: center; margin-left: 2px;
+        }
+
+        .cont-sub-tab-summary {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            align-items: center; padding: 8px 14px;
+            background: var(--cont-surface-alt);
+            border: 1px solid var(--cont-border-light);
+            border-radius: 10px; margin-bottom: 12px;
+            font-size: .78rem; color: var(--cont-text);
+        }
+        .cont-sub-tab-summary .sep { color: var(--cont-text-muted); opacity: .5; }
+        .cont-sub-tab-summary strong { font-family: 'Sora','DM Sans',sans-serif; }
+        .cont-sub-tab-summary--danger { background: linear-gradient(135deg, rgba(220,38,38,.04), rgba(248,113,113,.02)); border-color: rgba(220,38,38,.18); }
+
+        @media (max-width: 900px) {
+            .cont-main-tabs { grid-template-columns: 1fr; }
+            .cont-main-tab-btn small { font-size: .65rem; }
+            .cont-sub-tabs { flex-wrap: wrap; }
+            .cont-sub-tabs .nav-item { flex: 1 1 100%; }
+        }
     </style>
 @endsection
 
@@ -1838,88 +1982,6 @@
             </div>
         </div>
 
-        <div class="cont-kpi-grid">
-            <div class="cont-kpi-card kpi-inscritos">
-                <div class="cont-kpi-body">
-                    <div class="cont-kpi-header">
-                        <div class="cont-kpi-icon inscritos">
-                            <i class="ri-user-star-line"></i>
-                        </div>
-                        <span class="cont-kpi-trend up">
-                            <i class="ri-arrow-up-line"></i> {{ number_format($porcentajeGlobal, 1) }}%
-                        </span>
-                    </div>
-                    <div class="cont-kpi-value">{{ number_format($totalesGlobales['total_inscritos']) }}</div>
-                    <div class="cont-kpi-label">Total Inscritos</div>
-                </div>
-                <div class="cont-kpi-bar">
-                    <div class="cont-kpi-bar-fill"
-                        style="width: {{ min($porcentajeGlobal, 100) }}%; background: linear-gradient(90deg, #6366f1, #8b5cf6);">
-                    </div>
-                </div>
-            </div>
-
-            <div class="cont-kpi-card kpi-programado">
-                <div class="cont-kpi-body">
-                    <div class="cont-kpi-header">
-                        <div class="cont-kpi-icon programado">
-                            <i class="ri-calculator-line"></i>
-                        </div>
-                    </div>
-                    <div class="cont-kpi-value">Bs. {{ number_format($totalesGlobales['total_programado'], 0, ',', '.') }}
-                    </div>
-                    <div class="cont-kpi-label">Total Programado</div>
-                </div>
-                <div class="cont-kpi-bar">
-                    <div class="cont-kpi-bar-fill"
-                        style="width: 100%; background: linear-gradient(90deg, #64748b, #94a3b8);"></div>
-                </div>
-            </div>
-
-            <div class="cont-kpi-card kpi-pagado">
-                <div class="cont-kpi-body">
-                    <div class="cont-kpi-header">
-                        <div class="cont-kpi-icon pagado">
-                            <i class="ri-checkbox-circle-line"></i>
-                        </div>
-                        <span class="cont-kpi-trend up">
-                            <i class="ri-arrow-up-line"></i>
-                            {{ number_format(($totalPagado / max($totalesGlobales['total_programado'], 1)) * 100, 1) }}%
-                        </span>
-                    </div>
-                    <div class="cont-kpi-value">Bs. {{ number_format($totalesGlobales['total_pagado'], 0, ',', '.') }}
-                    </div>
-                    <div class="cont-kpi-label">Total Cobrado</div>
-                </div>
-                <div class="cont-kpi-bar">
-                    <div class="cont-kpi-bar-fill"
-                        style="width: {{ ($totalPagado / max($totalesGlobales['total_programado'], 1)) * 100 }}%; background: linear-gradient(90deg, #059669, #10b981);">
-                    </div>
-                </div>
-            </div>
-
-            <div class="cont-kpi-card kpi-pendiente">
-                <div class="cont-kpi-body">
-                    <div class="cont-kpi-header">
-                        <div class="cont-kpi-icon pendiente">
-                            <i class="ri-time-line"></i>
-                        </div>
-                        <span class="cont-kpi-trend {{ $trendClass }}">
-                            <i class="ri-{{ $trendClass === 'up' ? 'arrow-up' : 'arrow-down' }}-line"></i>
-                            {{ number_format(($totalPendiente / max($totalesGlobales['total_programado'], 1)) * 100, 1) }}%
-                        </span>
-                    </div>
-                    <div class="cont-kpi-value">Bs. {{ number_format($totalesGlobales['total_pendiente'], 0, ',', '.') }}
-                    </div>
-                    <div class="cont-kpi-label">Total Pendiente</div>
-                </div>
-                <div class="cont-kpi-bar">
-                    <div class="cont-kpi-bar-fill"
-                        style="width: {{ ($totalPendiente / max($totalesGlobales['total_programado'], 1)) * 100 }}%; background: linear-gradient(90deg, #dc2626, #f87171);">
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="cont-filters"
             style="background:var(--cont-surface);border:1px solid var(--cont-border);border-radius:14px;padding:14px 18px;margin-bottom:22px;box-shadow:var(--cont-shadow-sm);">
             <form method="GET" action="{{ route('admin.contabilidad.dashboard') }}" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
@@ -1959,156 +2021,127 @@
             </div>
         </div>
 
+        @php
+            $contLabels = ['programado' => 'Programado', 'cobrado' => 'Cobrado', 'pendiente' => 'Pendiente'];
+        @endphp
 
-        <div class="cont-charts-row">
+        {{-- ═══════════════ TABS PRINCIPALES DE CONTABILIDAD ═══════════════ --}}
+        <div class="cont-main-tabs-card">
+            <ul class="cont-main-tabs nav" id="contResumenTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="cont-main-tab-btn nav-link active" id="cont-tab-completo" data-bs-toggle="tab" data-bs-target="#cont-pane-completo" type="button" role="tab">
+                        <i class="ri-list-check-2"></i>
+                        <span>Detalle Completo</span>
+                        <small>Todos los inscritos</small>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="cont-main-tab-btn nav-link" id="cont-tab-ingresos" data-bs-toggle="tab" data-bs-target="#cont-pane-ingresos" type="button" role="tab">
+                        <i class="ri-line-chart-line"></i>
+                        <span>Ingresos Reales</span>
+                        <small>Activos + cobrado de retirados</small>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="cont-main-tab-btn nav-link" id="cont-tab-retirados" data-bs-toggle="tab" data-bs-target="#cont-pane-retirados" type="button" role="tab">
+                        <i class="ri-user-unfollow-line"></i>
+                        <span>Pérdida por Retiros</span>
+                        <small>Estudiantes dados de baja</small>
+                        @if (($inscritosRetiradosGlobal ?? 0) > 0)
+                            <span class="cont-main-tab-badge">{{ $inscritosRetiradosGlobal }}</span>
+                        @endif
+                    </button>
+                </li>
+            </ul>
+        </div>
 
-            {{-- ── 1. Distribución por Concepto ─────────────────────── --}}
-            <div class="cont-chart-card" style="border-top: 3px solid #6366f1;">
-                <div class="cont-chart-header">
-                    <div class="cont-chart-title">
-                        <i class="ri-pie-chart-2-line"></i>
-                        Distribución por Concepto
-                    </div>
-                    <span class="cont-chart-badge">{{ $nombreMes }} {{ $gestion }}</span>
-                </div>
-                <div class="chart-doughnut-wrap">
-                    <canvas id="chartConceptos"></canvas>
-                    <div class="chart-center-label">
-                        <div class="chart-center-value">Bs.&nbsp;{{ number_format($totalesGlobales['total_programado'], 0, ',', '.') }}</div>
-                        <div class="chart-center-sub">Total prog.</div>
+        <div class="tab-content cont-main-tab-content" id="contResumenTabsContent">
+
+            {{-- ═══ TAB 1: DETALLE COMPLETO ═══ --}}
+            <div class="tab-pane fade show active" id="cont-pane-completo" role="tabpanel" aria-labelledby="cont-tab-completo">
+                <div class="cont-main-tab-intro">
+                    <div class="cont-main-tab-intro-icon" style="background:rgba(99,102,241,.12);color:#6366f1;"><i class="ri-list-check-2"></i></div>
+                    <div>
+                        <div class="cont-main-tab-intro-title">Detalle Completo</div>
+                        <div class="cont-main-tab-intro-sub">Todo lo que se debería cobrar a todos los inscritos del período (activos y retirados).</div>
                     </div>
                 </div>
-                <div class="chart-legend-list" id="legendConceptos"></div>
+                @include('admin.contabilidad._contabilidad-global-section', [
+                    'totales'           => $totalesGlobales,
+                    'conceptos'         => $conceptosGlobales,
+                    'suffix'            => 'Completo',
+                    'labels'            => $contLabels,
+                    'kpiCountLabel'     => 'Total Inscritos',
+                    'kpiCountIcon'      => 'ri-user-star-line',
+                    'kpiCountIconBg'    => 'rgba(99,102,241,.12)',
+                    'kpiCountIconColor' => '#6366f1',
+                    'pendienteVariant'  => 'normal',
+                    'colorConceptos'    => $colorConceptos,
+                ])
             </div>
 
-            {{-- ── 2. Porcentaje de Cobro (barras CSS) ──────────────── --}}
-            <div class="cont-chart-card" style="border-top: 3px solid #0d9488;">
-                <div class="cont-chart-header">
-                    <div class="cont-chart-title">
-                        <i class="ri-bar-chart-horizontal-line"></i>
-                        Porcentaje de Cobro
-                    </div>
-                    <span class="cont-chart-badge">por concepto</span>
-                </div>
-                <div class="chart-hbars">
-                    @foreach ($conceptosGlobales as $concepto => $datos)
-                        <?php
-                        $pctBar     = $datos['total'] > 0 ? ($datos['pagado'] / $datos['total']) * 100 : 0;
-                        $dotColor   = $colorConceptos[$concepto] ?? '#64748b';
-                        $pctClr     = $pctBar >= 70 ? '#059669' : ($pctBar >= 40 ? '#d97706' : '#dc2626');
-                        $barGrad    = $pctBar >= 70
-                            ? 'linear-gradient(90deg,#059669,#34d399)'
-                            : ($pctBar >= 40 ? 'linear-gradient(90deg,#d97706,#fbbf24)' : 'linear-gradient(90deg,#dc2626,#f87171)');
-                        $twVal = number_format(min($pctBar, 100), 2, '.', '');
-                        ?>
-                        <div class="chart-hbar-item">
-                            <div class="chart-hbar-meta">
-                                <div class="chart-hbar-concept">
-                                    <span class="chart-hbar-concept-dot" style="background:{{ $dotColor }};"></span>
-                                    {{ $concepto }}
-                                </div>
-                                <div class="chart-hbar-right">
-                                    <span class="chart-hbar-pct" style="color:{{ $pctClr }};">{{ number_format($pctBar, 1) }}%</span>
-                                    <span class="chart-hbar-of">cobrado</span>
-                                </div>
-                            </div>
-                            <div class="chart-hbar-track">
-                                <div class="chart-hbar-fill" style="--tw:{{ $twVal }}%; background:{{ $barGrad }};"></div>
-                            </div>
-                            <div class="chart-hbar-amounts">
-                                <span class="chart-hbar-cobrado" style="color:{{ $pctClr }};">Bs.&nbsp;{{ number_format($datos['pagado'], 0, ',', '.') }}</span>
-                                <span class="chart-hbar-total">de Bs.&nbsp;{{ number_format($datos['total'], 0, ',', '.') }}</span>
-                            </div>
+            {{-- ═══ TAB 2: INGRESOS REALES ═══ --}}
+            <div class="tab-pane fade" id="cont-pane-ingresos" role="tabpanel" aria-labelledby="cont-tab-ingresos">
+                <div class="cont-main-tab-intro">
+                    <div class="cont-main-tab-intro-icon" style="background:rgba(5,150,105,.12);color:#059669;"><i class="ri-line-chart-line"></i></div>
+                    <div>
+                        <div class="cont-main-tab-intro-title">Ingresos Reales</div>
+                        <div class="cont-main-tab-intro-sub">
+                            Programado de los inscritos activos + lo que ya se cobró a los retirados.
+                            El pendiente solo incluye lo cobrable de activos.
                         </div>
-                    @endforeach
+                    </div>
                 </div>
+                @include('admin.contabilidad._contabilidad-global-section', [
+                    'totales'           => $totalesGlobalesIngresosReales,
+                    'conceptos'         => $conceptosGlobalesIngresosReales,
+                    'suffix'            => 'IngresosReales',
+                    'labels'            => ['programado' => 'Realizable', 'cobrado' => 'Cobrado', 'pendiente' => 'Por Cobrar'],
+                    'kpiCountLabel'     => 'Estudiantes Activos',
+                    'kpiCountIcon'      => 'ri-user-follow-line',
+                    'kpiCountIconBg'    => 'rgba(5,150,105,.12)',
+                    'kpiCountIconColor' => '#059669',
+                    'pendienteVariant'  => 'normal',
+                    'colorConceptos'    => $colorConceptos,
+                ])
             </div>
 
-            {{-- ── 3. Estado de Pagos ──────────────────────────────── --}}
-            <div class="cont-chart-card" style="border-top: 3px solid #059669;">
-                <div class="cont-chart-header">
-                    <div class="cont-chart-title">
-                        <i class="ri-donut-chart-line"></i>
-                        Estado de Pagos
-                    </div>
-                    <span class="cont-chart-badge">Global</span>
-                </div>
-                <div class="chart-doughnut-wrap">
-                    <canvas id="chartEstado"></canvas>
-                    <div class="chart-center-label">
-                        <div class="chart-estado-pct-big" style="color:{{ $colorPorcentaje }};">{{ number_format($porcentajeGlobal, 1) }}%</div>
-                        <div class="chart-center-sub">Cobrado</div>
+            {{-- ═══ TAB 3: PÉRDIDA POR RETIROS ═══ --}}
+            <div class="tab-pane fade" id="cont-pane-retirados" role="tabpanel" aria-labelledby="cont-tab-retirados">
+                <div class="cont-main-tab-intro cont-main-tab-intro--danger">
+                    <div class="cont-main-tab-intro-icon" style="background:rgba(220,38,38,.12);color:#dc2626;"><i class="ri-user-unfollow-line"></i></div>
+                    <div>
+                        <div class="cont-main-tab-intro-title">Pérdida por Retiros</div>
+                        <div class="cont-main-tab-intro-sub">
+                            Detalle de los estudiantes retirados: lo que se les debía cobrar, lo que se alcanzó a cobrar
+                            y lo que ya no se podrá cobrar (pérdida).
+                        </div>
                     </div>
                 </div>
-                <div class="chart-estado-cards">
-                    <div class="chart-estado-mini" style="border-left-color:#059669;">
-                        <div class="chart-estado-mini-value" style="color:#059669;">Bs.&nbsp;{{ number_format($totalPagado, 0, ',', '.') }}</div>
-                        <div class="chart-estado-mini-label"><i class="ri-checkbox-circle-line"></i> Cobrado</div>
+                @if (($inscritosRetiradosGlobal ?? 0) === 0)
+                    <div style="background:var(--cont-surface-alt);border:1px dashed var(--cont-border);border-radius:14px;padding:42px 22px;text-align:center;color:var(--cont-text-muted);">
+                        <i class="ri-user-unfollow-line" style="font-size:2.2rem;display:block;margin-bottom:10px;opacity:.55;"></i>
+                        <div style="font-size:.95rem;font-weight:600;color:#475569;margin-bottom:4px;">Sin retiros registrados</div>
+                        <div style="font-size:.82rem;">No hay estudiantes dados de baja en las ofertas del período.</div>
                     </div>
-                    <div class="chart-estado-mini" style="border-left-color:#dc2626;">
-                        <div class="chart-estado-mini-value" style="color:#dc2626;">Bs.&nbsp;{{ number_format($totalPendiente, 0, ',', '.') }}</div>
-                        <div class="chart-estado-mini-label"><i class="ri-time-line"></i> Pendiente</div>
-                    </div>
-                </div>
+                @else
+                    @include('admin.contabilidad._contabilidad-global-section', [
+                        'totales'           => $totalesGlobalesRetiradosFinal,
+                        'conceptos'         => $conceptosGlobalesRetirados,
+                        'suffix'            => 'Retirados',
+                        'labels'            => ['programado' => 'Programado', 'cobrado' => 'Cobrado', 'pendiente' => 'Perdido'],
+                        'kpiCountLabel'     => 'Estudiantes Retirados',
+                        'kpiCountIcon'      => 'ri-user-unfollow-line',
+                        'kpiCountIconBg'    => 'rgba(220,38,38,.12)',
+                        'kpiCountIconColor' => '#dc2626',
+                        'pendienteVariant'  => 'perdida',
+                        'colorConceptos'    => $colorConceptos,
+                    ])
+                @endif
             </div>
 
         </div>
-
-        <h3 class="cont-section-title">Resumen por Concepto</h3>
-        <div class="rc-grid">
-            @foreach ($conceptosGlobales as $concepto => $datos)
-                <?php
-                $rcPct    = $datos['total'] > 0 ? ($datos['pagado'] / $datos['total']) * 100 : 0;
-                $rcColor  = $colorConceptos[$concepto] ?? '#64748b';
-                $rcPctClr = $rcPct >= 70 ? '#059669' : ($rcPct >= 40 ? '#d97706' : '#dc2626');
-                $rcGrad   = $rcPct >= 70
-                    ? 'linear-gradient(90deg,#059669,#34d399)'
-                    : ($rcPct >= 40 ? 'linear-gradient(90deg,#d97706,#fbbf24)' : 'linear-gradient(90deg,#dc2626,#f87171)');
-                $rcTw     = number_format(min($rcPct, 100), 2, '.', '');
-                $rcIcon   = $concepto === 'Matrícula' ? 'file-text-line' : ($concepto === 'Colegiatura' ? 'calendar-check-line' : 'award-line');
-                ?>
-                <div class="rc-card">
-                    <div class="rc-card-accent" style="background: {{ $rcColor }};"></div>
-                    <div class="rc-card-body">
-                        <div class="rc-top">
-                            <div class="rc-icon-wrap">
-                                <div class="rc-icon" style="background:{{ $rcColor }}18; color:{{ $rcColor }};">
-                                    <i class="ri-{{ $rcIcon }}"></i>
-                                </div>
-                                <div>
-                                    <div class="rc-name">{{ $concepto }}</div>
-                                    <div class="rc-cuotas">
-                                        <i class="ri-coins-line"></i>
-                                        {{ $datos['cantidad_cuotas'] }} cuota(s)
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="text-align: right; flex-shrink: 0;">
-                                <div class="rc-pct-badge" style="color:{{ $rcPctClr }};">{{ number_format($rcPct, 1) }}%</div>
-                                <div class="rc-pct-label">cobrado</div>
-                            </div>
-                        </div>
-                        <div class="rc-track">
-                            <div class="rc-fill" style="--tw:{{ $rcTw }}%; background:{{ $rcGrad }};"></div>
-                        </div>
-                        <div class="rc-stats">
-                            <div class="rc-stat">
-                                <div class="rc-stat-value">Bs.&nbsp;{{ number_format($datos['total'], 0, ',', '.') }}</div>
-                                <div class="rc-stat-label">Programado</div>
-                            </div>
-                            <div class="rc-stat">
-                                <div class="rc-stat-value" style="color:#059669;">Bs.&nbsp;{{ number_format($datos['pagado'], 0, ',', '.') }}</div>
-                                <div class="rc-stat-label">Cobrado</div>
-                            </div>
-                            <div class="rc-stat">
-                                <div class="rc-stat-value" style="color:#dc2626;">Bs.&nbsp;{{ number_format($datos['pendiente'], 0, ',', '.') }}</div>
-                                <div class="rc-stat-label">Pendiente</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
+        {{-- ═══════════════ FIN TABS PRINCIPALES ═══════════════ --}}
 
         <h3 class="cont-section-title">Detalle por Oferta Académica</h3>
 
@@ -2185,66 +2218,93 @@
                     </div>
                 </div>
 
-                {{-- Detalle expandido por concepto --}}
+                {{-- Detalle expandido por concepto (3 sub-tabs) --}}
                 <div id="oferta-{{ $oferta['id'] }}" class="oferta-body">
-                    <div class="oferta-conceptos-grid">
-                        @foreach (['Matrícula', 'Colegiatura', 'Certificación'] as $concepto)
-                            <?php
-                            $cbDatos  = $oferta['resumen_por_concepto'][$concepto] ?? ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'cantidad_cuotas' => 0, 'cuotas' => []];
-                            $cbColor  = $colorConceptos[$concepto] ?? '#64748b';
-                            $cbPct    = $cbDatos['total'] > 0 ? ($cbDatos['pagado'] / $cbDatos['total']) * 100 : 0;
-                            $cbPctClr = $cbPct >= 70 ? '#059669' : ($cbPct >= 40 ? '#d97706' : '#dc2626');
-                            $cbGrad   = $cbPct >= 70
-                                ? 'linear-gradient(90deg,#059669,#34d399)'
-                                : ($cbPct >= 40 ? 'linear-gradient(90deg,#d97706,#fbbf24)' : 'linear-gradient(90deg,#dc2626,#f87171)');
-                            $cbTw     = number_format(min($cbPct, 100), 2, '.', '');
-                            $cbIcon   = $concepto === 'Matrícula' ? 'file-text-line' : ($concepto === 'Colegiatura' ? 'calendar-check-line' : 'award-line');
-                            $cbEmpty  = $cbDatos['total'] == 0;
-                            ?>
-                            <div class="oferta-concepto-block {{ $cbEmpty ? 'oferta-empty-concepto' : '' }}">
-                                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:{{ $cbColor }};border-radius:0;"></div>
-                                <div class="oferta-cb-header">
-                                    <div class="oferta-cb-icon" style="background:{{ $cbColor }}18; color:{{ $cbColor }};">
-                                        <i class="ri-{{ $cbIcon }}"></i>
-                                    </div>
-                                    <div>
-                                        <div class="oferta-cb-name">{{ $concepto }}</div>
-                                        <div class="oferta-cb-cuotas">
-                                            <i class="ri-coins-line"></i>
-                                            {{ $cbDatos['cantidad_cuotas'] ?? count($cbDatos['cuotas'] ?? []) }} cuota(s)
-                                        </div>
-                                    </div>
-                                </div>
-                                @if (!$cbEmpty)
-                                    <div class="oferta-cb-pct-row">
-                                        <div class="oferta-cb-pct" style="color:{{ $cbPctClr }};">{{ number_format($cbPct, 1) }}%</div>
-                                        <div class="oferta-cb-pct-label">cobrado</div>
-                                    </div>
-                                    <div class="oferta-cb-track">
-                                        <div class="oferta-cb-fill" style="--tw:{{ $cbTw }}%; background:{{ $cbGrad }};"></div>
-                                    </div>
-                                    <div class="oferta-cb-stats">
-                                        <div class="oferta-cb-stat">
-                                            <div class="oferta-cb-stat-value" style="color:#059669;">Bs.&nbsp;{{ number_format($cbDatos['pagado'], 0, ',', '.') }}</div>
-                                            <div class="oferta-cb-stat-label">Cobrado</div>
-                                        </div>
-                                        <div class="oferta-cb-stat">
-                                            <div class="oferta-cb-stat-value" style="color:#dc2626;">Bs.&nbsp;{{ number_format($cbDatos['pendiente'], 0, ',', '.') }}</div>
-                                            <div class="oferta-cb-stat-label">Pendiente</div>
-                                        </div>
-                                        <div class="oferta-cb-stat full">
-                                            <div class="oferta-cb-stat-value">Bs.&nbsp;{{ number_format($cbDatos['total'], 0, ',', '.') }}</div>
-                                            <div class="oferta-cb-stat-label">Total programado</div>
-                                        </div>
-                                    </div>
-                                @else
-                                    <div class="oferta-no-data">
-                                        <i class="ri-inbox-line"></i>
-                                        Sin registros
-                                    </div>
+                    <ul class="cont-sub-tabs nav" id="ofertaSubTabs-{{ $oferta['id'] }}" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="cont-sub-tab-btn nav-link active" data-bs-toggle="tab" data-bs-target="#oferta-{{ $oferta['id'] }}-completo" type="button" role="tab">
+                                <i class="ri-list-check-2"></i> Detalle Completo
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="cont-sub-tab-btn nav-link" data-bs-toggle="tab" data-bs-target="#oferta-{{ $oferta['id'] }}-ingresos" type="button" role="tab">
+                                <i class="ri-line-chart-line"></i> Ingresos Reales
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="cont-sub-tab-btn nav-link" data-bs-toggle="tab" data-bs-target="#oferta-{{ $oferta['id'] }}-retirados" type="button" role="tab">
+                                <i class="ri-user-unfollow-line"></i> Pérdida por Retiros
+                                @if (($oferta['inscritos_retirados'] ?? 0) > 0)
+                                    <span class="cont-sub-tab-badge">{{ $oferta['inscritos_retirados'] }}</span>
                                 @endif
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content cont-sub-tab-content">
+                        {{-- Completo --}}
+                        <div class="tab-pane fade show active" id="oferta-{{ $oferta['id'] }}-completo" role="tabpanel">
+                            <div class="cont-sub-tab-summary">
+                                <span><i class="ri-user-line"></i> {{ $oferta['inscritos'] }} inscritos</span>
+                                <span class="sep">·</span>
+                                <span>Prog. <strong>Bs. {{ number_format($oferta['total_programado'], 0, ',', '.') }}</strong></span>
+                                <span class="sep">·</span>
+                                <span style="color:#059669;">Cobrado <strong>Bs. {{ number_format($oferta['total_pagado'], 0, ',', '.') }}</strong></span>
+                                <span class="sep">·</span>
+                                <span style="color:#dc2626;">Pendiente <strong>Bs. {{ number_format($oferta['total_pendiente'], 0, ',', '.') }}</strong></span>
                             </div>
-                        @endforeach
+                            @include('admin.contabilidad._contabilidad-oferta-conceptos', [
+                                'resumen' => $oferta['resumen_por_concepto'],
+                                'colorConceptos' => $colorConceptos,
+                                'labels' => ['cobrado' => 'Cobrado', 'pendiente' => 'Pendiente', 'programado' => 'Programado'],
+                                'pendienteVariant' => 'normal',
+                            ])
+                        </div>
+
+                        {{-- Ingresos Reales --}}
+                        <div class="tab-pane fade" id="oferta-{{ $oferta['id'] }}-ingresos" role="tabpanel">
+                            <div class="cont-sub-tab-summary">
+                                <span><i class="ri-user-follow-line" style="color:#059669;"></i> {{ $oferta['inscritos_activos'] }} activos</span>
+                                <span class="sep">·</span>
+                                <span>Realizable <strong>Bs. {{ number_format($oferta['total_programado_ingresos'], 0, ',', '.') }}</strong></span>
+                                <span class="sep">·</span>
+                                <span style="color:#059669;">Cobrado <strong>Bs. {{ number_format($oferta['total_pagado_ingresos'], 0, ',', '.') }}</strong></span>
+                                <span class="sep">·</span>
+                                <span style="color:#dc2626;">Por Cobrar <strong>Bs. {{ number_format($oferta['total_pendiente_ingresos'], 0, ',', '.') }}</strong></span>
+                            </div>
+                            @include('admin.contabilidad._contabilidad-oferta-conceptos', [
+                                'resumen' => $oferta['resumen_por_concepto_ingresos_reales'],
+                                'colorConceptos' => $colorConceptos,
+                                'labels' => ['cobrado' => 'Cobrado', 'pendiente' => 'Por Cobrar', 'programado' => 'Realizable'],
+                                'pendienteVariant' => 'normal',
+                            ])
+                        </div>
+
+                        {{-- Retirados --}}
+                        <div class="tab-pane fade" id="oferta-{{ $oferta['id'] }}-retirados" role="tabpanel">
+                            @if (($oferta['inscritos_retirados'] ?? 0) === 0)
+                                <div style="background:var(--cont-surface-alt);border:1px dashed var(--cont-border);border-radius:12px;padding:28px 18px;text-align:center;color:var(--cont-text-muted);">
+                                    <i class="ri-user-unfollow-line" style="font-size:1.6rem;display:block;margin-bottom:6px;opacity:.55;"></i>
+                                    <div style="font-size:.85rem;font-weight:600;color:#475569;">Sin retiros en esta oferta</div>
+                                </div>
+                            @else
+                                <div class="cont-sub-tab-summary cont-sub-tab-summary--danger">
+                                    <span><i class="ri-user-unfollow-line" style="color:#dc2626;"></i> {{ $oferta['inscritos_retirados'] }} retirados</span>
+                                    <span class="sep">·</span>
+                                    <span>Prog. <strong>Bs. {{ number_format($oferta['total_programado_retirados'], 0, ',', '.') }}</strong></span>
+                                    <span class="sep">·</span>
+                                    <span style="color:#059669;">Cobrado <strong>Bs. {{ number_format($oferta['total_pagado_retirados'], 0, ',', '.') }}</strong></span>
+                                    <span class="sep">·</span>
+                                    <span style="color:#991b1b;">Perdido <strong>Bs. {{ number_format($oferta['total_pendiente_retirados'], 0, ',', '.') }}</strong></span>
+                                </div>
+                                @include('admin.contabilidad._contabilidad-oferta-conceptos', [
+                                    'resumen' => $oferta['resumen_por_concepto_retirados'],
+                                    'colorConceptos' => $colorConceptos,
+                                    'labels' => ['cobrado' => 'Cobrado', 'pendiente' => 'Perdido', 'programado' => 'Programado'],
+                                    'pendienteVariant' => 'perdida',
+                                ])
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2279,102 +2339,125 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const conceptos = ['Matrícula', 'Colegiatura', 'Certificación'];
-            const totales = [{{ $conceptosGlobales['Matrícula']['total'] ?? 0 }},
-                {{ $conceptosGlobales['Colegiatura']['total'] ?? 0 }},
-                {{ $conceptosGlobales['Certificación']['total'] ?? 0 }}
-            ];
-            const pagados = [{{ $conceptosGlobales['Matrícula']['pagado'] ?? 0 }},
-                {{ $conceptosGlobales['Colegiatura']['pagado'] ?? 0 }},
-                {{ $conceptosGlobales['Certificación']['pagado'] ?? 0 }}
-            ];
-            const porcentajes = [
-                {{ $conceptosGlobales['Matrícula']['total'] > 0 ? ($conceptosGlobales['Matrícula']['pagado'] / $conceptosGlobales['Matrícula']['total']) * 100 : 0 }},
-                {{ $conceptosGlobales['Colegiatura']['total'] > 0 ? ($conceptosGlobales['Colegiatura']['pagado'] / $conceptosGlobales['Colegiatura']['total']) * 100 : 0 }},
-                {{ $conceptosGlobales['Certificación']['total'] > 0 ? ($conceptosGlobales['Certificación']['pagado'] / $conceptosGlobales['Certificación']['total']) * 100 : 0 }}
-            ];
             const colores = ['#6366f1', '#0891b2', '#d97706'];
 
-            // ── 1. Distribución por Concepto ─────────────────────────
-            new Chart(document.getElementById('chartConceptos'), {
-                type: 'doughnut',
-                data: {
-                    labels: conceptos,
-                    datasets: [{
-                        data: totales,
-                        backgroundColor: colores,
-                        hoverBackgroundColor: colores.map(c => c + 'dd'),
-                        borderWidth: 3,
-                        borderColor: '#ffffff',
-                        hoverOffset: 12,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '68%',
-                    animation: { animateRotate: true, duration: 900 },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(ctx) {
-                                    const sum = totales.reduce((a, b) => a + b, 0);
-                                    const pct = sum > 0 ? (ctx.parsed / sum * 100).toFixed(1) : 0;
-                                    return `  Bs. ${ctx.parsed.toLocaleString('es-BO')}  (${pct}%)`;
+            const datasetsResumen = {
+                'Completo':       @json($conceptosGlobales ?? []),
+                'IngresosReales': @json($conceptosGlobalesIngresosReales ?? []),
+                'Retirados':      @json($conceptosGlobalesRetirados ?? []),
+            };
+            const renderedSections = {};
+
+            function renderSection(suffix) {
+                if (renderedSections[suffix]) return;
+                const data = datasetsResumen[suffix];
+                if (!data) return;
+
+                const totales = conceptos.map(c => Number((data[c] || {}).total) || 0);
+                const pagados = conceptos.map(c => Number((data[c] || {}).pagado) || 0);
+                const totalProg = totales.reduce((a, b) => a + b, 0);
+                const totalPag  = pagados.reduce((a, b) => a + b, 0);
+                const totalPend = totalProg - totalPag;
+
+                const ctx1 = document.getElementById('chartConceptos' + suffix);
+                if (ctx1) {
+                    new Chart(ctx1, {
+                        type: 'doughnut',
+                        data: {
+                            labels: conceptos,
+                            datasets: [{
+                                data: totales,
+                                backgroundColor: colores,
+                                hoverBackgroundColor: colores.map(c => c + 'dd'),
+                                borderWidth: 3,
+                                borderColor: '#ffffff',
+                                hoverOffset: 12,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '68%',
+                            animation: { animateRotate: true, duration: 900 },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(ctx) {
+                                            const sum = totales.reduce((a, b) => a + b, 0);
+                                            const pct = sum > 0 ? (ctx.parsed / sum * 100).toFixed(1) : 0;
+                                            return `  Bs. ${ctx.parsed.toLocaleString('es-BO')}  (${pct}%)`;
+                                        }
+                                    }
                                 }
                             }
                         }
+                    });
+
+                    const legendEl = document.getElementById('legendConceptos' + suffix);
+                    if (legendEl) {
+                        legendEl.innerHTML = '';
+                        conceptos.forEach(function(label, i) {
+                            const distPct = totalProg > 0 ? (totales[i] / totalProg * 100).toFixed(1) : '0.0';
+                            const row = document.createElement('div');
+                            row.className = 'chart-legend-row';
+                            row.innerHTML =
+                                `<span class="chart-legend-swatch" style="background:${colores[i]};"></span>` +
+                                `<span class="chart-legend-name">${label}</span>` +
+                                `<span class="chart-legend-amount">Bs. ${totales[i].toLocaleString('es-BO')}</span>` +
+                                `<span class="chart-legend-pct-badge" style="background:${colores[i]}22;color:${colores[i]};">${distPct}%</span>`;
+                            legendEl.appendChild(row);
+                        });
                     }
                 }
-            });
 
-            // Leyenda personalizada conceptos
-            const sumTotales = totales.reduce((a, b) => a + b, 0);
-            const legendEl = document.getElementById('legendConceptos');
-            conceptos.forEach(function(label, i) {
-                const distPct = sumTotales > 0 ? (totales[i] / sumTotales * 100).toFixed(1) : '0.0';
-                const row = document.createElement('div');
-                row.className = 'chart-legend-row';
-                row.innerHTML =
-                    `<span class="chart-legend-swatch" style="background:${colores[i]};"></span>` +
-                    `<span class="chart-legend-name">${label}</span>` +
-                    `<span class="chart-legend-amount">Bs. ${totales[i].toLocaleString('es-BO')}</span>` +
-                    `<span class="chart-legend-pct-badge" style="background:${colores[i]}22;color:${colores[i]};">${distPct}%</span>`;
-                legendEl.appendChild(row);
-            });
-
-            // ── 2. chartPorcentaje — ahora es HTML/CSS puro, sin canvas ─
-
-            // ── 3. Estado de Pagos ───────────────────────────────────
-            new Chart(document.getElementById('chartEstado'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Cobrado', 'Pendiente'],
-                    datasets: [{
-                        data: [{{ $totalPagado }}, {{ $totalPendiente }}],
-                        backgroundColor: ['#059669', '#f1f5f9'],
-                        hoverBackgroundColor: ['#047857', '#e2e8f0'],
-                        borderWidth: 3,
-                        borderColor: '#ffffff',
-                        hoverOffset: 10,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '72%',
-                    animation: { animateRotate: true, duration: 1000 },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(ctx) {
-                                    return `  Bs. ${ctx.parsed.toLocaleString('es-BO')}`;
+                const ctx3 = document.getElementById('chartEstado' + suffix);
+                if (ctx3) {
+                    const pendColor = (suffix === 'Retirados') ? '#991b1b' : '#f1f5f9';
+                    const pendHover = (suffix === 'Retirados') ? '#7f1d1d' : '#e2e8f0';
+                    new Chart(ctx3, {
+                        type: 'doughnut',
+                        data: {
+                            labels: (suffix === 'Retirados') ? ['Cobrado', 'Perdido'] : ['Cobrado', 'Pendiente'],
+                            datasets: [{
+                                data: [totalPag, totalPend],
+                                backgroundColor: ['#059669', pendColor],
+                                hoverBackgroundColor: ['#047857', pendHover],
+                                borderWidth: 3,
+                                borderColor: '#ffffff',
+                                hoverOffset: 10,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '72%',
+                            animation: { animateRotate: true, duration: 1000 },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(ctx) { return `  Bs. ${ctx.parsed.toLocaleString('es-BO')}`; }
+                                    }
                                 }
                             }
                         }
-                    }
+                    });
                 }
+
+                renderedSections[suffix] = true;
+            }
+
+            renderSection('Completo');
+            ['cont-tab-completo', 'cont-tab-ingresos', 'cont-tab-retirados'].forEach(function(id) {
+                const btn = document.getElementById(id);
+                if (!btn) return;
+                btn.addEventListener('shown.bs.tab', function() {
+                    const target = btn.getAttribute('data-bs-target') || '';
+                    if (target.indexOf('ingresos') !== -1) renderSection('IngresosReales');
+                    else if (target.indexOf('retirados') !== -1) renderSection('Retirados');
+                    else renderSection('Completo');
+                });
             });
 
             // Gráfico de Ingresos Diarios

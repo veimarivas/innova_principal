@@ -3872,6 +3872,55 @@
         color: #dc2626;
     }
 
+    /* Toggle Estado Contable / Académico */
+    .ins-estado-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        background: transparent;
+        border: 1px solid transparent;
+        padding: 3px 7px 3px 4px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all .2s ease;
+        font-size: .7rem;
+        font-weight: 700;
+        font-family: 'Sora','DM Sans',sans-serif;
+        line-height: 1;
+    }
+    .ins-estado-toggle-track {
+        position: relative;
+        width: 28px;
+        height: 16px;
+        border-radius: 999px;
+        background: #cbd5e1;
+        transition: background .2s ease;
+        flex-shrink: 0;
+    }
+    .ins-estado-toggle-knob {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,.18);
+        transition: left .2s ease;
+    }
+    .ins-estado-toggle.on .ins-estado-toggle-track { background: #10b981; }
+    .ins-estado-toggle.on .ins-estado-toggle-knob  { left: 14px; }
+    .ins-estado-toggle.off .ins-estado-toggle-track { background: #dc2626; }
+    .ins-estado-toggle.on  { color: #047857; background: rgba(16,185,129,.08); }
+    .ins-estado-toggle.off { color: #b91c1c; background: rgba(220,38,38,.08); }
+    .ins-estado-toggle:hover { filter: brightness(.97); border-color: rgba(0,0,0,.06); }
+    .ins-estado-toggle.loading { opacity: .55; pointer-events: none; }
+    .ins-estado-toggle-na {
+        color: #cbd5e1;
+        font-weight: 700;
+        font-size: .9rem;
+    }
+
     /* Action buttons */
     .ins-actions {
         display: flex;
@@ -4035,57 +4084,130 @@
         font-size: .8rem;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
-        overflow: hidden;
-        min-width: 480px;
+        min-width: 1100px;
     }
 
     .plt-tbl thead tr {
-        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        background: linear-gradient(180deg, #fff3e6 0%, #ffe7cf 100%);
     }
 
     .plt-tbl thead th {
-        padding: .65rem .75rem;
-        font-size: .65rem;
-        font-weight: 700;
+        padding: .75rem .75rem;
+        font-size: .68rem;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: .4px;
-        color: #475569;
-        border-bottom: 2px solid #e2e8f0;
-        vertical-align: bottom;
+        letter-spacing: .5px;
+        color: #7c2d12;
+        border-bottom: 2px solid #fed7aa;
+        vertical-align: middle;
+        font-family: 'Sora','DM Sans',sans-serif;
+        position: relative;
+    }
+    .plt-tbl thead th i { vertical-align: -1px; }
+
+    /* Cabeceras de estado (Contable / Académico) y módulos — centradas */
+    .plt-tbl thead th.plt-th-estado {
+        text-align: center;
+        white-space: nowrap;
+        min-width: 110px;
     }
 
-    /* Columna "Estudiante" — sticky, no se trunca */
-    .plt-tbl thead th:first-child {
+    /* Columnas Carnet / Estudiante — sticky a la izquierda */
+    .plt-tbl thead th.plt-th-carnet,
+    .plt-tbl thead th.plt-th-estudiante,
+    .plt-tbl tbody td.plt-cell-ci,
+    .plt-tbl tbody td.plt-cell-estudiante {
         position: sticky;
-        left: 0;
-        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
         z-index: 2;
-        min-width: 190px;
+        background: #ffffff;
+    }
+    .plt-tbl thead th.plt-th-carnet,
+    .plt-tbl thead th.plt-th-estudiante {
+        background: linear-gradient(180deg, #fff3e6 0%, #ffe7cf 100%);
+        z-index: 4;
+    }
+    .plt-tbl thead th.plt-th-carnet,
+    .plt-tbl tbody td.plt-cell-ci {
+        left: 0;
+        min-width: 120px;
+        width: 120px;
+        text-align: left;
         white-space: nowrap;
     }
+    .plt-tbl thead th.plt-th-estudiante,
+    .plt-tbl tbody td.plt-cell-estudiante {
+        left: 120px;
+        min-width: 240px;
+        max-width: 300px;
+        text-align: left;
+        white-space: nowrap;
+        box-shadow: inset -1px 0 0 #fed7aa, 6px 0 10px -6px rgba(252,123,4,.18);
+    }
+    .plt-tbl tbody tr:hover td.plt-cell-ci,
+    .plt-tbl tbody tr:hover td.plt-cell-estudiante {
+        background: #fff8f0;
+    }
 
-    /* Columnas de módulo — compactas con wrap */
-    .plt-tbl thead th:not(:first-child) {
+    /* Columnas de módulo — más anchas para que el nombre se lea bien */
+    .plt-tbl thead th.plt-th-modulo {
         text-align: center;
-        min-width: 100px;
-        max-width: 130px;
-        width: 115px;
+        min-width: 180px;
+        max-width: 240px;
+        width: 200px;
         white-space: normal;
-        word-break: break-word;
+        word-break: normal;
+        overflow-wrap: break-word;
         line-height: 1.35;
         hyphens: auto;
+    }
+    .plt-tbl thead th.plt-th-modulo .plt-th-modulo-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        justify-content: center;
+        font-size: .78rem;
+        color: #7c2d12;
+        text-transform: none;
+        letter-spacing: 0;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+    .plt-tbl thead th.plt-th-modulo .plt-th-modulo-name span {
+        text-align: center;
+        white-space: normal;
+    }
+    .plt-tbl thead th.plt-th-modulo .plt-th-modulo-name i {
+        color: #fc7b04;
+        font-size: .9rem;
+        flex-shrink: 0;
     }
 
     /* Separador visual entre nombre módulo y alerta sin-curso */
     .plt-tbl thead th .plt-th-alert {
         display: block;
         font-size: .62rem;
-        font-weight: 500;
+        font-weight: 600;
         color: #ef4444;
         margin-top: .3rem;
         white-space: nowrap;
         text-transform: none;
         letter-spacing: 0;
+    }
+
+    /* Celda Carnet */
+    .plt-tbl tbody td.plt-cell-ci { padding: .55rem .65rem; }
+    .plt-tbl tbody td.plt-cell-estudiante { padding: .6rem .75rem; }
+    .plt-ci-chip {
+        display: inline-block;
+        background: linear-gradient(135deg, #fff3e6, #ffe7cf);
+        color: #9a3412;
+        border: 1px solid #fed7aa;
+        font-family: 'JetBrains Mono','Sora',monospace;
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+        letter-spacing: .3px;
     }
 
     .plt-tbl tbody tr {
@@ -4107,21 +4229,8 @@
         border-bottom: 1px solid #f1f5f9;
     }
 
-    .plt-tbl tbody td:first-child {
-        position: sticky;
-        left: 0;
-        background: white;
-        z-index: 1;
-        border-right: 1px solid #e2e8f0;
-        box-shadow: 2px 0 6px rgba(0,0,0,.04);
-    }
-
-    .plt-tbl tbody tr:hover td:first-child {
-        background: rgba(252,123,4,.025);
-    }
-
-    /* Celdas de módulo — centrado y padding reducido */
-    .plt-tbl tbody td:not(:first-child) {
+    /* Celdas (módulos + estado) — centrado por defecto */
+    .plt-tbl tbody td {
         text-align: center;
         padding: .5rem .5rem;
     }
@@ -4342,6 +4451,42 @@
         box-shadow: inset -1px 0 0 #ede5d5, 4px 0 8px -4px rgba(15, 10, 5, 0.08); }
     .oferta-details-theme-wrapper .aa-table tbody tr:hover .aa-sticky-col {
         background: #fffaf3;
+    }
+
+    /* Cuando la tabla está scrolleada horizontalmente: oscurecer las sticky cols
+       y matar cualquier tinte de fila (.aa-row--acad-on/off usa rgba con !important)
+       para que se vean completamente opacas al desplazar a la derecha. */
+    .oferta-details-theme-wrapper .aa-table-wrap.is-scrolled .aa-table tbody tr.aa-row--acad-on > td.aa-sticky-col,
+    .oferta-details-theme-wrapper .aa-table-wrap.is-scrolled .aa-table tbody tr.aa-row--acad-off > td.aa-sticky-col,
+    .oferta-details-theme-wrapper .aa-table-wrap.is-scrolled .aa-table tbody td.aa-sticky-col {
+        background: #cbd5e1 !important; /* slate-300 — opaco, sin transparencia */
+        background-color: #cbd5e1 !important;
+        color: #0f172a;
+        box-shadow: 6px 0 14px -4px rgba(15, 10, 5, 0.30);
+    }
+    .oferta-details-theme-wrapper .aa-table-wrap.is-scrolled .aa-table thead th.aa-sticky-col {
+        background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%) !important;
+        color: #ffffff;
+        box-shadow: 6px 0 14px -4px rgba(15, 10, 5, 0.32);
+    }
+    .oferta-details-theme-wrapper .aa-table-wrap.is-scrolled .aa-table tbody tr.aa-row--acad-on:hover > td.aa-sticky-col,
+    .oferta-details-theme-wrapper .aa-table-wrap.is-scrolled .aa-table tbody tr.aa-row--acad-off:hover > td.aa-sticky-col,
+    .oferta-details-theme-wrapper .aa-table-wrap.is-scrolled .aa-table tbody tr:hover .aa-sticky-col {
+        background: #b6c2d2 !important;
+        background-color: #b6c2d2 !important;
+    }
+    /* Forzar texto y avatares legibles sobre el fondo oscurecido */
+    .oferta-details-theme-wrapper .aa-table-wrap.is-scrolled .aa-table tbody td.aa-sticky-col .aa-est-nombre,
+    .oferta-details-theme-wrapper .aa-table-wrap.is-scrolled .aa-table tbody td.aa-sticky-col .aa-ci-chip {
+        color: #0f172a;
+    }
+    /* Conservar la separación visual de la columna 3 (Estudiante) cuando hay scroll */
+    .oferta-details-theme-wrapper .aa-table-wrap.is-scrolled .aa-table .aa-stk-3 {
+        box-shadow: inset -2px 0 0 #475569, 8px 0 14px -4px rgba(15, 10, 5, 0.28);
+    }
+    /* Transición suave entre los dos estados */
+    .oferta-details-theme-wrapper .aa-table .aa-sticky-col {
+        transition: background-color .2s ease, box-shadow .2s ease;
     }
     .oferta-details-theme-wrapper .aa-table .aa-cell-num {
         font-weight: 700;

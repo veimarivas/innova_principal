@@ -43,11 +43,14 @@ class AcademicoController extends Controller
             ]);
         }
 
-        // Matrículas de estudiantes en Moodle (excluir docentes)
+        // Matrículas de estudiantes en Moodle (excluir docentes y bloqueados en este módulo)
         $matriculas = MoodleMatricula::where('modulo_id', $moduloId)
             ->whereNotNull('inscripcion_id')
             ->whereNotNull('moodle_user_id')
             ->whereNull('docente_id')
+            ->where(function ($q) {
+                $q->whereNull('acceso_suspendido')->orWhere('acceso_suspendido', false);
+            })
             ->get();
 
         if ($matriculas->isEmpty()) {
@@ -55,6 +58,7 @@ class AcademicoController extends Controller
             $inscripcionesConMoodle = Inscripcione::where('ofertas_academica_id', $modulo->ofertas_academica_id)
                 ->whereNotNull('moodle_user_id')
                 ->whereIn('estado', ['Inscrito', 'Confirmado', 'Activo', 'activo'])
+                ->where('activo', true)
                 ->with('estudiante.persona')
                 ->get();
 
@@ -100,12 +104,23 @@ class AcademicoController extends Controller
             }
         }
 
-        // Datos de cada estudiante vía inscripciones
+        // Datos de cada estudiante vía inscripciones (solo inscripciones activas)
         $inscripcionIds = $matriculas->pluck('inscripcion_id')->filter()->values();
         $inscripciones  = Inscripcione::whereIn('id', $inscripcionIds)
+            ->where('activo', true)
             ->with('estudiante.persona')
             ->get()
             ->keyBy('id');
+
+        // Descartar matrículas cuyo inscripción esté dada de baja (activo=0)
+        $matriculas = $matriculas->filter(fn($m) => $inscripciones->has($m->inscripcion_id))->values();
+
+        if ($matriculas->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No hay estudiantes activos disponibles para este módulo.',
+            ]);
+        }
 
         $moodleUserIds = $matriculas->pluck('moodle_user_id')->filter()->unique()->values()->toArray();
 

@@ -798,7 +798,8 @@ class VirtualDashboardController extends Controller
 
         $inscripciones = Inscripcione::where('ofertas_academica_id', $ofertaId)
             ->whereIn('estado', ['Inscrito', 'Confirmado', 'activo', 'Activo'])
-            ->with(['estudiante.persona', 'matriculaciones'])
+            ->where('activo', true)
+            ->with(['estudiante.persona.ciudad', 'matriculaciones'])
             ->get();
 
         $moodleMatriculas = MoodleMatricula::where('modulo_id', $moduloId)
@@ -807,26 +808,119 @@ class VirtualDashboardController extends Controller
 
         $inscritos = [];
         foreach ($inscripciones as $inscripcion) {
-            $matricula       = $inscripcion->matriculaciones()->where('modulo_id', $moduloId)->first();
             $moodleMatricula = $moodleMatriculas->get($inscripcion->id);
 
+            // Ocultar al docente los estudiantes bloqueados en este módulo Moodle.
+            if ($moodleMatricula && (bool) $moodleMatricula->acceso_suspendido) {
+                continue;
+            }
+
+            $p = $inscripcion->estudiante?->persona;
+            $fechaNac = $p?->fecha_nacimiento;
+            if ($fechaNac && !($fechaNac instanceof \Carbon\Carbon)) {
+                try { $fechaNac = \Carbon\Carbon::parse($fechaNac); } catch (\Throwable $e) { $fechaNac = null; }
+            }
+
             $inscritos[] = [
-                'id'                 => $inscripcion->id,
-                'estudiante_nombre'  => $inscripcion->estudiante?->persona
-                    ? trim(($inscripcion->estudiante->persona->nombres ?? '') . ' '
-                        . ($inscripcion->estudiante->persona->apellido_paterno ?? '') . ' '
-                        . ($inscripcion->estudiante->persona->apellido_materno ?? ''))
-                    : 'Sin nombre',
-                'estudiante_ci'      => $inscripcion->estudiante?->persona?->carnet ?? '—',
-                'celular'            => $inscripcion->estudiante?->persona?->celular ?? '—',
-                'correo'             => $inscripcion->estudiante?->persona?->correo ?? '—',
-                'matriculado'        => $matricula !== null,
-                'en_moodle'          => $moodleMatricula !== null && $moodleMatricula->moodle_user_id !== null,
-                'acceso_suspendido'  => (bool) ($moodleMatricula?->acceso_suspendido),
-                'tiene_cuenta_moodle'=> !empty($inscripcion->moodle_user_id),
+                'id'               => $inscripcion->id,
+                'apellido_paterno' => $p->apellido_paterno ?? '',
+                'apellido_materno' => $p->apellido_materno ?? '',
+                'nombres'          => $p->nombres ?? '',
+                'estudiante_ci'    => $p?->carnet ?? '—',
+                'celular'          => $p?->celular ?? '—',
+                'correo'           => $p?->correo ?? '—',
+                'sexo'             => $p?->sexo ?? null,
+                'estado_civil'     => $p?->estado_civil ?? null,
+                'fecha_nacimiento' => $fechaNac ? $fechaNac->format('d/m/Y') : null,
+                'edad'             => $fechaNac ? $fechaNac->age : null,
+                'ciudad'           => $p?->ciudad?->nombre ?? null,
+                'direccion'        => $p?->direccion ?? null,
+                'telefono'         => $p?->telefono ?? null,
             ];
         }
 
+        // Orden A → Z por apellido paterno, materno y nombres.
+        usort($inscritos, function ($a, $b) {
+            return strcmp(
+                mb_strtolower(($a['apellido_paterno'] ?? '') . ' ' . ($a['apellido_materno'] ?? '') . ' ' . ($a['nombres'] ?? '')),
+                mb_strtolower(($b['apellido_paterno'] ?? '') . ' ' . ($b['apellido_materno'] ?? '') . ' ' . ($b['nombres'] ?? ''))
+            );
+        });
+
         return view('virtual.docente-modulo', compact('modulo', 'inscritos', 'ofertaId'));
+    }
+
+    /**
+     * Genera un PDF con la lista de estudiantes inscritos en el módulo del docente.
+     * Incluye logo, datos de la oferta, módulo y docente.
+     */
+    public function listaMatriculacionesPdf(int $moduloId)
+    {
+        $modulo = Modulo::with([
+                'docente.persona',
+                'ofertaAcademica.programa',
+                'ofertaAcademica.posgrado',
+            ])
+            ->findOrFail($moduloId);
+
+        $inscripciones = Inscripcione::where('ofertas_academica_id', $modulo->ofertas_academica_id)
+            ->whereIn('estado', ['Inscrito', 'Confirmado', 'activo', 'Activo'])
+            ->where('activo', true)
+            ->with(['estudiante.persona'])
+            ->get();
+
+        $moodleMatriculas = MoodleMatricula::where('modulo_id', $moduloId)
+            ->get()
+            ->keyBy('inscripcion_id');
+
+        $inscritos = [];
+        foreach ($inscripciones as $inscripcion) {
+            $mm = $moodleMatriculas->get($inscripcion->id);
+            if ($mm && (bool) $mm->acceso_suspendido) continue;
+
+            $p = $inscripcion->estudiante?->persona;
+            $inscritos[] = [
+                'apellido_paterno' => $p->apellido_paterno ?? '',
+                'apellido_materno' => $p->apellido_materno ?? '',
+                'nombres'          => $p->nombres ?? '',
+                'carnet'           => $p?->carnet ?? '—',
+            ];
+        }
+        usort($inscritos, function ($a, $b) {
+            return strcmp(
+                mb_strtolower(($a['apellido_paterno'] ?? '') . ' ' . ($a['apellido_materno'] ?? '') . ' ' . ($a['nombres'] ?? '')),
+                mb_strtolower(($b['apellido_paterno'] ?? '') . ' ' . ($b['apellido_materno'] ?? '') . ' ' . ($b['nombres'] ?? ''))
+            );
+        });
+
+        $oferta = $modulo->ofertaAcademica;
+        $nombreDocente = $modulo->docente?->persona
+            ? trim(($modulo->docente->persona->nombres ?? '') . ' '
+                . ($modulo->docente->persona->apellido_paterno ?? '') . ' '
+                . ($modulo->docente->persona->apellido_materno ?? ''))
+            : 'Sin docente asignado';
+
+        $logoPath = public_path('images/logo-principal.png');
+        $logoBase64 = null;
+        if (is_file($logoPath)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        }
+
+        $data = [
+            'modulo'         => $modulo,
+            'oferta'         => $oferta,
+            'nombreDocente'  => $nombreDocente,
+            'inscritos'      => $inscritos,
+            'logoBase64'     => $logoBase64,
+            'fechaImpresion' => now()->format('d/m/Y H:i'),
+        ];
+
+        $pdf = Pdf::loadView('virtual.docente.lista-matriculaciones-pdf', $data);
+        $pdf->setPaper('A4', 'portrait');
+
+        $slugMod = preg_replace('/[^A-Za-z0-9_-]+/', '_', $modulo->nombre ?? 'modulo');
+        $filename = 'lista_estudiantes_' . $slugMod . '_' . now()->format('Ymd_His') . '.pdf';
+
+        return $pdf->stream($filename);
     }
 }

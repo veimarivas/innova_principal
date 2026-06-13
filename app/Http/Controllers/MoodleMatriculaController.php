@@ -429,9 +429,12 @@ class MoodleMatriculaController extends Controller
                 'apellido_paterno'  => $persona->apellido_paterno ?? '',
                 'apellido_materno'  => $persona->apellido_materno ?? '',
                 'nombres'           => $persona->nombres ?? '',
+                'carnet'            => $persona->carnet ?? '',
                 'celular'           => $persona->celular ?? '',
                 'moodle_user_id'    => $moodleUserId,
                 'tiene_cuenta_moodle' => $moodleUserId !== null,
+                'activo_contable'   => (bool) ($inscripcion->activo_contable ?? true),
+                'activo_academico'  => (bool) ($inscripcion->activo_academico ?? true),
                 'modulos'           => $modulosData,
             ];
         }

@@ -265,6 +265,45 @@
     border-radius: 6px;
 }
 .mat-section-title span { font-size:.92rem; font-weight:800; color:#1e293b; }
+.mat-count-badge {
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:26px; height:22px; padding:0 8px;
+    background: rgba(252,123,4,.12); color:#9a4904;
+    border:1px solid rgba(252,123,4,.28);
+    border-radius:999px;
+    font-size:.72rem; font-weight:800;
+    letter-spacing:.02em;
+}
+.mat-nombre { display:flex; flex-direction:column; line-height:1.2; }
+.mat-nombre .mat-apellidos { font-size:.85rem; font-weight:700; color:#1e293b; }
+.mat-nombre .mat-nombres   { font-size:.74rem; font-weight:500; color:#64748b; }
+
+.mat-chip {
+    display:inline-flex; align-items:center; gap:4px;
+    font-size:.7rem; font-weight:700;
+    padding:2px 9px; border-radius:999px;
+    border:1px solid transparent; white-space:nowrap;
+}
+.mat-chip i { font-size:.85rem; }
+.mat-chip-m  { background:rgba(59,130,246,.12); color:#1d4ed8; border-color:rgba(59,130,246,.28); }
+.mat-chip-f  { background:rgba(236,72,153,.12); color:#be185d; border-color:rgba(236,72,153,.28); }
+.mat-chip-na { background:rgba(100,116,139,.10); color:#64748b; border-color:rgba(100,116,139,.22); }
+
+.mat-fnac-val { font-size:.78rem; font-weight:700; color:#1e293b; }
+.mat-fnac-edad { font-size:.68rem; color:#64748b; margin-top:1px; }
+.mat-civil { font-size:.78rem; color:#475569; }
+.mat-cel-sub {
+    margin-top:2px; font-size:.7rem; color:#64748b;
+    display:flex; align-items:center; gap:3px;
+}
+.mat-cel-sub i, .mat-cel i, .mat-correo i, .mat-ubic i { color:#94a3b8; margin-right:3px; }
+.mat-ubic { font-size:.78rem; }
+.mat-ubic-ciudad { font-weight:600; color:#334155; }
+.mat-ubic-dir {
+    margin-top:2px; font-size:.7rem; color:#64748b;
+    max-width:200px;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
 .mat-readonly-badge {
     display:inline-flex; align-items:center; gap:.3rem;
     padding:.24rem .7rem; border-radius:20px; font-size:.7rem; font-weight:700;
@@ -272,6 +311,23 @@
     border:1px solid rgba(100,116,139,.15);
     letter-spacing:.02em;
 }
+.mat-btn-print {
+    display:inline-flex; align-items:center; gap:.35rem;
+    padding:.35rem .8rem; border-radius:8px;
+    background: linear-gradient(135deg, #fc7b04, #d46604);
+    color: #fff; border: none;
+    font-size: .76rem; font-weight: 700;
+    letter-spacing: .02em;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(252,123,4,.28);
+    transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+}
+.mat-btn-print:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow: 0 6px 16px rgba(252,123,4,.36);
+}
+.mat-btn-print i { font-size: .95rem; }
 /* ══════════════════════════════════════════════════════════
    BOTONES Y UTILIDADES
 ══════════════════════════════════════════════════════════ */
@@ -415,53 +471,26 @@
         ══════════════════════════════════════════════════ --}}
         <div class="tab-pane active" id="tab-matriculaciones">
 
-            @php
-                $matTotal       = count($inscritos);
-                $matModulo      = count(array_filter($inscritos, fn($i) => $i['matriculado']));
-                $mooActivos     = count(array_filter($inscritos, fn($i) => $i['en_moodle'] && !$i['acceso_suspendido']));
-                $mooSuspendidos = count(array_filter($inscritos, fn($i) => $i['en_moodle'] && $i['acceso_suspendido']));
-            @endphp
+            @php $matTotal = count($inscritos); @endphp
 
             {{-- Header de sección --}}
             <div class="mat-section-header">
                 <div class="mat-section-title">
                     <i class="ri-user-follow-line"></i>
                     <span>Estudiantes Inscritos</span>
+                    <span class="mat-count-badge">{{ $matTotal }}</span>
                 </div>
-                <span class="mat-readonly-badge">
-                    <i class="ri-eye-line"></i> Solo lectura
-                </span>
-            </div>
-
-            {{-- Stats rápidos --}}
-            <div class="mat-stats-row">
-                <div class="mat-stat-item">
-                    <div class="mat-stat-icon s-total"><i class="ri-group-line"></i></div>
-                    <div>
-                        <div class="mat-stat-val">{{ $matTotal }}</div>
-                        <div class="mat-stat-lbl">Total inscritos</div>
-                    </div>
-                </div>
-                <div class="mat-stat-item">
-                    <div class="mat-stat-icon s-matriculado"><i class="ri-shield-check-line"></i></div>
-                    <div>
-                        <div class="mat-stat-val">{{ $matModulo }}</div>
-                        <div class="mat-stat-lbl">Matriculados módulo</div>
-                    </div>
-                </div>
-                <div class="mat-stat-item">
-                    <div class="mat-stat-icon s-activo"><i class="ri-check-double-line"></i></div>
-                    <div>
-                        <div class="mat-stat-val">{{ $mooActivos }}</div>
-                        <div class="mat-stat-lbl">Activos en Moodle</div>
-                    </div>
-                </div>
-                <div class="mat-stat-item">
-                    <div class="mat-stat-icon s-suspendido"><i class="ri-alert-line"></i></div>
-                    <div>
-                        <div class="mat-stat-val">{{ $mooSuspendidos }}</div>
-                        <div class="mat-stat-lbl">Suspendidos</div>
-                    </div>
+                <div class="d-flex align-items-center gap-2">
+                    @if($matTotal > 0)
+                    <a href="{{ route('virtual.docente.modulo.lista-pdf', $modulo->id) }}"
+                       target="_blank" rel="noopener"
+                       class="mat-btn-print" title="Descargar lista de estudiantes en PDF">
+                        <i class="ri-file-pdf-2-line"></i> Imprimir PDF
+                    </a>
+                    @endif
+                    <span class="mat-readonly-badge">
+                        <i class="ri-eye-line"></i> Solo lectura
+                    </span>
                 </div>
             </div>
 
@@ -472,7 +501,7 @@
                 <i class="ri-search-line"></i>
                 <input type="text" id="matSearchInput"
                        class="mat-search-input"
-                       placeholder="Buscar por nombre, CI o correo…"
+                       placeholder="Buscar por nombre, CI, correo o ciudad…"
                        oninput="filtrarMatriculas(this.value)">
             </div>
 
@@ -484,28 +513,37 @@
                             <th class="mat-num">#</th>
                             <th>Estudiante</th>
                             <th>CI</th>
+                            <th>Sexo</th>
+                            <th>Fecha Nac. / Edad</th>
+                            <th>Estado civil</th>
                             <th>Celular</th>
                             <th>Correo</th>
-                            <th>Matrícula Módulo</th>
-                            <th>Estado Moodle</th>
+                            <th>Ciudad / Dirección</th>
                         </tr>
                     </thead>
                     <tbody id="matTbody">
                         @foreach($inscritos as $idx => $inscrito)
                         @php
-                            $partes   = preg_split('/\s+/', trim($inscrito['estudiante_nombre']));
+                            $nombreCompleto = trim(
+                                ($inscrito['apellido_paterno'] ?? '') . ' ' .
+                                ($inscrito['apellido_materno'] ?? '') . ' ' .
+                                ($inscrito['nombres'] ?? '')
+                            );
                             $initials = strtoupper(
-                                substr($partes[0] ?? '?', 0, 1) .
-                                substr($partes[1] ?? '',  0, 1)
+                                mb_substr($inscrito['apellido_paterno'] ?? '?', 0, 1) .
+                                mb_substr($inscrito['nombres'] ?? '',  0, 1)
                             );
                             $searchVal = strtolower(
-                                $inscrito['estudiante_nombre'] . ' ' .
-                                $inscrito['estudiante_ci']     . ' ' .
-                                $inscrito['correo']
+                                $nombreCompleto . ' ' .
+                                ($inscrito['estudiante_ci'] ?? '')  . ' ' .
+                                ($inscrito['correo'] ?? '')         . ' ' .
+                                ($inscrito['ciudad'] ?? '')
                             );
+                            $sexo = $inscrito['sexo'] ?? null;
+                            $sexoLabel = $sexo === 'M' ? 'Masculino' : ($sexo === 'F' ? 'Femenino' : '—');
+                            $sexoIcon  = $sexo === 'M' ? 'ri-men-line' : ($sexo === 'F' ? 'ri-women-line' : 'ri-user-line');
                         @endphp
-                        <tr class="mat-row"
-                            data-search="{{ $searchVal }}">
+                        <tr class="mat-row" data-search="{{ $searchVal }}">
                             <td class="mat-num">{{ $idx + 1 }}</td>
                             <td>
                                 <div class="mat-student-cell">
@@ -513,42 +551,48 @@
                                          style="background:{{ $modColor }}1a;color:{{ $modColor }};border:1.5px solid {{ $modColor }}38;">
                                         {{ $initials ?: '?' }}
                                     </div>
-                                    <div class="mat-nombre">{{ $inscrito['estudiante_nombre'] }}</div>
+                                    <div class="mat-nombre" title="{{ $nombreCompleto }}">
+                                        <span class="mat-apellidos">{{ trim(($inscrito['apellido_paterno'] ?? '') . ' ' . ($inscrito['apellido_materno'] ?? '')) ?: '—' }}</span>
+                                        <span class="mat-nombres">{{ $inscrito['nombres'] ?? '' }}</span>
+                                    </div>
                                 </div>
                             </td>
                             <td class="mat-ci">{{ $inscrito['estudiante_ci'] }}</td>
-                            <td class="mat-cel">{{ $inscrito['celular'] }}</td>
-                            <td class="mat-correo" title="{{ $inscrito['correo'] }}">
-                                {{ $inscrito['correo'] }}
+                            <td class="mat-sexo">
+                                <span class="mat-chip mat-chip-{{ $sexo === 'M' ? 'm' : ($sexo === 'F' ? 'f' : 'na') }}">
+                                    <i class="{{ $sexoIcon }}"></i> {{ $sexoLabel }}
+                                </span>
                             </td>
-                            <td>
-                                @if($inscrito['matriculado'])
-                                    <span class="mat-badge mat-badge-ok">
-                                        <i class="ri-check-line"></i> Matriculado
-                                    </span>
+                            <td class="mat-fnac">
+                                @if($inscrito['fecha_nacimiento'])
+                                    <div class="mat-fnac-val">{{ $inscrito['fecha_nacimiento'] }}</div>
+                                    @if($inscrito['edad'] !== null)
+                                        <div class="mat-fnac-edad">{{ $inscrito['edad'] }} años</div>
+                                    @endif
                                 @else
-                                    <span class="mat-badge mat-badge-no">
-                                        <i class="ri-close-line"></i> No matriculado
-                                    </span>
+                                    —
                                 @endif
                             </td>
-                            <td>
-                                @if($inscrito['en_moodle'] && $inscrito['acceso_suspendido'])
-                                    <span class="mat-badge mat-badge-warn">
-                                        <i class="ri-forbid-line"></i> Suspendido
-                                    </span>
-                                @elseif($inscrito['en_moodle'])
-                                    <span class="mat-badge mat-badge-ok">
-                                        <i class="ri-check-double-line"></i> Activo
-                                    </span>
-                                @elseif($inscrito['tiene_cuenta_moodle'])
-                                    <span class="mat-badge mat-badge-pending">
-                                        <i class="ri-alert-line"></i> Sin matrícula
-                                    </span>
+                            <td class="mat-civil">{{ $inscrito['estado_civil'] ?: '—' }}</td>
+                            <td class="mat-cel">
+                                @if($inscrito['celular'] && $inscrito['celular'] !== '—')
+                                    <i class="ri-phone-line"></i> {{ $inscrito['celular'] }}
                                 @else
-                                    <span class="mat-badge mat-badge-no">
-                                        <i class="ri-close-line"></i> Sin cuenta
-                                    </span>
+                                    —
+                                @endif
+                                @if(!empty($inscrito['telefono']))
+                                    <div class="mat-cel-sub"><i class="ri-customer-service-2-line"></i> {{ $inscrito['telefono'] }}</div>
+                                @endif
+                            </td>
+                            <td class="mat-correo" title="{{ $inscrito['correo'] }}">
+                                <i class="ri-mail-line"></i> {{ $inscrito['correo'] }}
+                            </td>
+                            <td class="mat-ubic">
+                                <div class="mat-ubic-ciudad"><i class="ri-map-pin-line"></i> {{ $inscrito['ciudad'] ?: '—' }}</div>
+                                @if(!empty($inscrito['direccion']))
+                                    <div class="mat-ubic-dir" title="{{ $inscrito['direccion'] }}">
+                                        <i class="ri-road-map-line"></i> {{ $inscrito['direccion'] }}
+                                    </div>
                                 @endif
                             </td>
                         </tr>
@@ -1298,6 +1342,76 @@
 // ============================================================
 // BÚSQUEDA EN TABLA DE MATRICULACIONES
 // ============================================================
+// ============================================================
+// IMPRIMIR LISTA DE ESTUDIANTES (abre nueva ventana)
+// ============================================================
+function imprimirListaMatriculaciones() {
+    const tpl = document.getElementById('matPrintTemplate');
+    if (!tpl) { alert('No hay datos para imprimir.'); return; }
+    const html = tpl.innerHTML;
+    const css  = `
+        @page { size: A4; margin: 14mm 12mm 16mm 12mm; }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; color: #111; }
+        .mp-page { width: 100%; }
+        .mp-header { display: flex; align-items: center; gap: 14px; padding-bottom: 10px;
+            border-bottom: 3px solid #fc7b04; }
+        .mp-header-left { flex: 0 0 110px; }
+        .mp-logo { max-width: 110px; max-height: 70px; object-fit: contain; }
+        .mp-header-center { flex: 1; text-align: center; }
+        .mp-title { font-size: 15pt; font-weight: 800; letter-spacing: 1.5px; color: #1e1e1e; }
+        .mp-subtitle { font-size: 11pt; font-weight: 700; color: #fc7b04; margin-top: 2px; }
+        .mp-codigo { font-size: 8.5pt; color: #444; margin-top: 3px; }
+        .mp-header-right { flex: 0 0 130px; text-align: right; }
+        .mp-date-lbl { font-size: 7.5pt; color: #777; text-transform: uppercase; letter-spacing: .04em; }
+        .mp-date-val { font-size: 9.5pt; font-weight: 700; color: #1e1e1e; margin-top: 2px; }
+        .mp-info { margin: 12px 0 10px; padding: 8px 12px;
+            background: #f8f8f4; border-left: 4px solid #fc7b04; border-radius: 3px; }
+        .mp-info-row { display: flex; gap: 24px; padding: 3px 0; }
+        .mp-info-cell { display: flex; gap: 6px; align-items: baseline; flex: 1; }
+        .mp-info-lbl { font-size: 8pt; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: .04em; min-width: 110px; }
+        .mp-info-val { font-size: 10pt; font-weight: 600; color: #1e1e1e; }
+        .mp-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10pt; }
+        .mp-table thead th { background: #fc7b04; color: #fff; padding: 6px 8px; font-weight: 700;
+            font-size: 9pt; text-align: left; border: 1px solid #c95f00; }
+        .mp-table tbody td { padding: 5px 8px; border: 1px solid #d4d4d4; vertical-align: middle; }
+        .mp-table tbody tr:nth-child(even) td { background: #fafafa; }
+        .mp-c-n { width: 32px; text-align: center; font-weight: 700; }
+        .mp-c-ci { width: 90px; font-family: 'Consolas', monospace; }
+        .mp-c-nombre { font-weight: 600; }
+        .mp-c-firma { width: 160px; }
+        .mp-footer { margin-top: 36px; }
+        .mp-sign-row { display: flex; gap: 40px; justify-content: space-around; margin-top: 50px; }
+        .mp-sign-box { text-align: center; flex: 1; }
+        .mp-sign-line { border-top: 1px solid #1e1e1e; margin-bottom: 4px; }
+        .mp-sign-lbl { font-size: 9pt; font-weight: 700; color: #1e1e1e; text-transform: uppercase; letter-spacing: .04em; }
+        .mp-sign-name { font-size: 8.5pt; color: #555; margin-top: 2px; }
+        @media print { .mp-table { page-break-inside: auto; } .mp-table tr { page-break-inside: avoid; } }
+    `;
+    const w = window.open('', '_blank', 'width=900,height=1100');
+    if (!w) { alert('Permite las ventanas emergentes para imprimir la lista.'); return; }
+    w.document.open();
+    w.document.write(
+        '<!doctype html><html lang="es"><head><meta charset="utf-8">' +
+        '<title>Lista de Estudiantes — {{ addslashes($modulo->nombre ?? '') }}</title>' +
+        '<style>' + css + '</style></head><body>' + html + '</body></html>'
+    );
+    w.document.close();
+    // Esperar a que el logo se cargue antes de imprimir
+    const img = w.document.querySelector('.mp-logo');
+    const launch = function() {
+        try { w.focus(); w.print(); } catch (e) {}
+    };
+    if (img && !img.complete) {
+        img.addEventListener('load',  launch, { once: true });
+        img.addEventListener('error', launch, { once: true });
+        // Fallback por si el load nunca dispara
+        setTimeout(launch, 1500);
+    } else {
+        setTimeout(launch, 250);
+    }
+}
+
 function filtrarMatriculas(q) {
     const term  = q.toLowerCase().trim();
     const rows  = document.querySelectorAll('#matTbody .mat-row');

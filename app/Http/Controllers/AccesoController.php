@@ -35,9 +35,14 @@ class AccesoController extends Controller
             return redirect('/admin/dashboard');
         }
 
-        if ($modo === 'virtual' && $user->puedeVirtual()) {
+        if ($modo === 'virtual' && $user->puedeVirtualReal()) {
             session(['modo_acceso' => 'virtual']);
             return redirect('/virtual/dashboard');
+        }
+
+        // Si pidió "virtual" pero no es docente ni estudiante, redirigir al admin si corresponde
+        if ($modo === 'virtual' && $user->puedeAdmin()) {
+            return redirect('/admin/dashboard')->with('error', 'Tu cuenta no tiene perfil de estudiante ni docente, por lo que no puede ingresar al Portal Virtual.');
         }
 
         return redirect()->route('seleccionar-acceso')->with('error', 'No tienes ese tipo de acceso.');

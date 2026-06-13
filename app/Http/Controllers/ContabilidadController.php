@@ -145,86 +145,148 @@ class ContabilidadController extends Controller
             'total_inscritos' => 0,
         ];
 
-        $conceptosGlobales = [
-            'Matrícula' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'cantidad_cuotas' => 0],
-            'Colegiatura' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'cantidad_cuotas' => 0],
-            'Certificación' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'cantidad_cuotas' => 0],
+        $emptyConceptos = fn() => [
+            'Matrícula' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'porcentaje' => 0, 'cantidad_cuotas' => 0, 'cuotas' => []],
+            'Colegiatura' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'porcentaje' => 0, 'cantidad_cuotas' => 0, 'cuotas' => []],
+            'Certificación' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'porcentaje' => 0, 'cantidad_cuotas' => 0, 'cuotas' => []],
         ];
+        $conceptosGlobales              = $emptyConceptos();
+        $conceptosGlobalesIngresosReales = $emptyConceptos();
+        $conceptosGlobalesRetirados     = $emptyConceptos();
+
+        $totalesGlobalesActivos = ['total_programado' => 0, 'total_pagado' => 0, 'total_pendiente' => 0];
+        $totalesGlobalesRetirados = ['total_programado' => 0, 'total_pagado' => 0, 'total_pendiente' => 0];
+        $inscritosActivosGlobal   = 0;
+        $inscritosRetiradosGlobal = 0;
 
         foreach ($ofertas as $oferta) {
-            $totalProgramado = 0;
-            $totalPagado = 0;
-            $totalPendiente = 0;
             $inscritosCount = 0;
+            $inscritosActivos = 0;
+            $inscritosRetirados = 0;
 
-            $resumenPorConcepto = [
-                'Matrícula' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'porcentaje' => 0, 'cuotas' => []],
-                'Colegiatura' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'porcentaje' => 0, 'cuotas' => []],
-                'Certificación' => ['total' => 0, 'pagado' => 0, 'pendiente' => 0, 'porcentaje' => 0, 'cuotas' => []],
-            ];
+            // Agregados base por concepto: activos y retirados (luego se componen las 3 vistas)
+            $resumenActivos   = $emptyConceptos();
+            $resumenRetirados = $emptyConceptos();
+
+            // Totales base por oferta (activos vs retirados)
+            $totProgA = 0; $totPagA = 0; $totPendA = 0;
+            $totProgR = 0; $totPagR = 0; $totPendR = 0;
 
             $inscripcionesConPagos = 0;
 
             foreach ($oferta->inscripciones as $inscripcion) {
                 $inscritosCount++;
+                $esRetirado = !((bool) ($inscripcion->activo ?? true));
+                if ($esRetirado) { $inscritosRetirados++; } else { $inscritosActivos++; }
+
                 $tienePagos = false;
-                
-                $inscripcionId = $inscripcion->id;
-                $pagadoAcumuladoIns = $pagosAcumulados[$inscripcionId] ?? 0;
 
                 foreach ($inscripcion->cuotas as $cuota) {
                     $totalCuota = (float) ($cuota->monto_bs ?? 0);
-                    
-                    // Calcular pagado de la cuota basado en pagos del período
+
+                    // Pagado de la cuota dentro del período seleccionado
                     $pagosCuota = \App\Models\PagosCuota::where('cuota_id', $cuota->id)
                         ->whereHas('pago', function ($q) use ($inicio, $fin) {
                             $q->whereBetween('fecha_pago', [$inicio, $fin]);
                         })
                         ->sum('monto_bs');
-                    
+
                     $pagadoCuota = (float) $pagosCuota;
                     $pendienteCuota = max(0, $totalCuota - $pagadoCuota);
 
-                    if ($pagadoCuota > 0) {
-                        $tienePagos = true;
-                    }
-
-                    $totalProgramado += $totalCuota;
-                    $totalPagado += $pagadoCuota;
-                    $totalPendiente += $pendienteCuota;
+                    if ($pagadoCuota > 0) { $tienePagos = true; }
 
                     $concepto = $this->determinarConcepto($cuota->nombre);
-                    if (isset($resumenPorConcepto[$concepto])) {
-                        $resumenPorConcepto[$concepto]['total'] += $totalCuota;
-                        $resumenPorConcepto[$concepto]['pagado'] += $pagadoCuota;
-                        $resumenPorConcepto[$concepto]['pendiente'] += $pendienteCuota;
-                        $resumenPorConcepto[$concepto]['cuotas'][] = [
-                            'n_cuota' => $cuota->n_cuota,
-                            'nombre' => $cuota->nombre,
-                            'monto' => $totalCuota,
-                            'pagado' => $pagadoCuota,
+                    $target = $esRetirado ? $resumenRetirados : $resumenActivos;
+                    if (isset($target[$concepto])) {
+                        $bucket = $esRetirado ? 'resumenRetirados' : 'resumenActivos';
+                        ${$bucket}[$concepto]['total']     += $totalCuota;
+                        ${$bucket}[$concepto]['pagado']    += $pagadoCuota;
+                        ${$bucket}[$concepto]['pendiente'] += $pendienteCuota;
+                        ${$bucket}[$concepto]['cuotas'][] = [
+                            'n_cuota'   => $cuota->n_cuota,
+                            'nombre'    => $cuota->nombre,
+                            'monto'     => $totalCuota,
+                            'pagado'    => $pagadoCuota,
                             'pendiente' => $pendienteCuota,
-                            'estado' => $cuota->estado,
+                            'estado'    => $cuota->estado,
                         ];
+
+                        if ($esRetirado) {
+                            $totProgR += $totalCuota; $totPagR += $pagadoCuota; $totPendR += $pendienteCuota;
+                        } else {
+                            $totProgA += $totalCuota; $totPagA += $pagadoCuota; $totPendA += $pendienteCuota;
+                        }
                     }
                 }
 
-                if ($tienePagos) {
-                    $inscripcionesConPagos++;
-                }
+                if ($tienePagos) { $inscripcionesConPagos++; }
             }
 
-            foreach ($resumenPorConcepto as $concepto => &$datos) {
-                if ($datos['total'] > 0) {
-                    $datos['porcentaje'] = ($datos['pagado'] / $datos['total']) * 100;
-                    $datos['cantidad_cuotas'] = count($datos['cuotas']);
-                    
-                    $conceptosGlobales[$concepto]['total'] += $datos['total'];
-                    $conceptosGlobales[$concepto]['pagado'] += $datos['pagado'];
-                    $conceptosGlobales[$concepto]['pendiente'] += $datos['pendiente'];
-                    $conceptosGlobales[$concepto]['cantidad_cuotas'] += count($datos['cuotas']);
-                }
+            // Componer las 3 vistas a partir de activos/retirados
+            $resumenPorConcepto              = $emptyConceptos();
+            $resumenPorConceptoIngresosReales = $emptyConceptos();
+            foreach ($resumenActivos as $c => $a) {
+                $r = $resumenRetirados[$c];
+
+                // 1. Completo = activos + retirados
+                $resumenPorConcepto[$c]['total']     = $a['total'] + $r['total'];
+                $resumenPorConcepto[$c]['pagado']    = $a['pagado'] + $r['pagado'];
+                $resumenPorConcepto[$c]['pendiente'] = $a['pendiente'] + $r['pendiente'];
+                $resumenPorConcepto[$c]['cuotas']    = array_merge($a['cuotas'], $r['cuotas']);
+                $resumenPorConcepto[$c]['cantidad_cuotas'] = count($resumenPorConcepto[$c]['cuotas']);
+
+                // 2. Ingresos Reales = activos completos + lo cobrado de retirados (pendiente solo de activos)
+                $resumenPorConceptoIngresosReales[$c]['total']     = $a['total'] + $r['pagado'];
+                $resumenPorConceptoIngresosReales[$c]['pagado']    = $a['pagado'] + $r['pagado'];
+                $resumenPorConceptoIngresosReales[$c]['pendiente'] = $a['pendiente'];
+                $resumenPorConceptoIngresosReales[$c]['cuotas']    = $a['cuotas'];
+                $resumenPorConceptoIngresosReales[$c]['cantidad_cuotas'] = count($a['cuotas']);
+
+                // 3. Retirados (pendiente = pérdida)
+                $r['cantidad_cuotas'] = count($r['cuotas']);
+                $resumenRetirados[$c] = $r;
             }
+
+            $aplicarPorcentaje = function (array &$resumen) {
+                foreach ($resumen as $c => $d) {
+                    $resumen[$c]['porcentaje'] = $d['total'] > 0 ? ($d['pagado'] / $d['total']) * 100 : 0;
+                }
+            };
+            $aplicarPorcentaje($resumenPorConcepto);
+            $aplicarPorcentaje($resumenPorConceptoIngresosReales);
+            $aplicarPorcentaje($resumenRetirados);
+
+            // Acumular en globales (3 vistas)
+            foreach (['Matrícula','Colegiatura','Certificación'] as $c) {
+                $conceptosGlobales[$c]['total']           += $resumenPorConcepto[$c]['total'];
+                $conceptosGlobales[$c]['pagado']          += $resumenPorConcepto[$c]['pagado'];
+                $conceptosGlobales[$c]['pendiente']       += $resumenPorConcepto[$c]['pendiente'];
+                $conceptosGlobales[$c]['cantidad_cuotas'] += $resumenPorConcepto[$c]['cantidad_cuotas'];
+
+                $conceptosGlobalesIngresosReales[$c]['total']           += $resumenPorConceptoIngresosReales[$c]['total'];
+                $conceptosGlobalesIngresosReales[$c]['pagado']          += $resumenPorConceptoIngresosReales[$c]['pagado'];
+                $conceptosGlobalesIngresosReales[$c]['pendiente']       += $resumenPorConceptoIngresosReales[$c]['pendiente'];
+                $conceptosGlobalesIngresosReales[$c]['cantidad_cuotas'] += $resumenPorConceptoIngresosReales[$c]['cantidad_cuotas'];
+
+                $conceptosGlobalesRetirados[$c]['total']           += $resumenRetirados[$c]['total'];
+                $conceptosGlobalesRetirados[$c]['pagado']          += $resumenRetirados[$c]['pagado'];
+                $conceptosGlobalesRetirados[$c]['pendiente']       += $resumenRetirados[$c]['pendiente'];
+                $conceptosGlobalesRetirados[$c]['cantidad_cuotas'] += $resumenRetirados[$c]['cantidad_cuotas'];
+            }
+
+            $totalesGlobalesActivos['total_programado'] += $totProgA;
+            $totalesGlobalesActivos['total_pagado']     += $totPagA;
+            $totalesGlobalesActivos['total_pendiente']  += $totPendA;
+            $totalesGlobalesRetirados['total_programado'] += $totProgR;
+            $totalesGlobalesRetirados['total_pagado']     += $totPagR;
+            $totalesGlobalesRetirados['total_pendiente']  += $totPendR;
+            $inscritosActivosGlobal   += $inscritosActivos;
+            $inscritosRetiradosGlobal += $inscritosRetirados;
+
+            $totalProgramado = $totProgA + $totProgR;
+            $totalPagado     = $totPagA + $totPagR;
+            $totalPendiente  = $totPendA + $totPendR;
 
             $ofertasData[] = [
                 'id' => $oferta->id,
@@ -233,18 +295,26 @@ class ContabilidadController extends Controller
                 'programa' => $oferta->programa?->nombre,
                 'fase' => $oferta->fase?->nombre,
                 'inscritos' => $inscritosCount,
+                'inscritos_activos'   => $inscritosActivos,
+                'inscritos_retirados' => $inscritosRetirados,
                 'inscripciones_con_pagos' => $inscripcionesConPagos,
                 'total_programado' => $totalProgramado,
                 'total_pagado' => $totalPagado,
                 'total_pendiente' => $totalPendiente,
                 'porcentaje_pagado' => $totalProgramado > 0 ? ($totalPagado / $totalProgramado) * 100 : 0,
                 'resumen_por_concepto' => $resumenPorConcepto,
+                'resumen_por_concepto_ingresos_reales' => $resumenPorConceptoIngresosReales,
+                'resumen_por_concepto_retirados' => $resumenRetirados,
+                'total_programado_ingresos' => $totProgA + $totPagR,
+                'total_pagado_ingresos'     => $totPagA + $totPagR,
+                'total_pendiente_ingresos'  => $totPendA,
+                'total_programado_retirados' => $totProgR,
+                'total_pagado_retirados'     => $totPagR,
+                'total_pendiente_retirados'  => $totPendR,
             ];
 
             $totalesGlobales['total_programado'] += $totalProgramado;
-            // $totalesGlobales['total_pagado'] ya tiene el valor acumulado de BD
-            // $totalesGlobales['total_pendiente'] se calcula después
-            $totalesGlobales['total_inscritos'] += $inscritosCount;
+            $totalesGlobales['total_inscritos']  += $inscritosCount;
         }
 
         // Calcular pendiente global: Programado - Cobrado Acumulado
@@ -254,14 +324,39 @@ class ContabilidadController extends Controller
             ? ($cobradoAcumulado / $totalesGlobales['total_programado']) * 100 
             : 0;
 
-        foreach ($conceptosGlobales as $concepto => &$datos) {
-            if ($datos['total'] > 0) {
-                $datos['porcentaje'] = ($datos['pagado'] / $datos['total']) * 100;
+        $calcPorcentaje = function (array &$res) {
+            foreach ($res as $c => $d) {
+                $res[$c]['porcentaje'] = $d['total'] > 0 ? ($d['pagado'] / $d['total']) * 100 : 0;
             }
-        }
+        };
+        $calcPorcentaje($conceptosGlobales);
+        $calcPorcentaje($conceptosGlobalesIngresosReales);
+        $calcPorcentaje($conceptosGlobalesRetirados);
+
+        // Totales globales para los tabs "Ingresos Reales" y "Retirados"
+        $totalesGlobalesIngresosReales = [
+            'total_programado' => $totalesGlobalesActivos['total_programado'] + $totalesGlobalesRetirados['total_pagado'],
+            'total_pagado'     => $totalesGlobalesActivos['total_pagado']     + $totalesGlobalesRetirados['total_pagado'],
+            'total_pendiente'  => $totalesGlobalesActivos['total_pendiente'],
+            'total_inscritos'  => $inscritosActivosGlobal,
+        ];
+        $totalesGlobalesIngresosReales['porcentaje_pagado'] = $totalesGlobalesIngresosReales['total_programado'] > 0
+            ? ($totalesGlobalesIngresosReales['total_pagado'] / $totalesGlobalesIngresosReales['total_programado']) * 100 : 0;
+
+        $totalesGlobalesRetiradosFinal = [
+            'total_programado' => $totalesGlobalesRetirados['total_programado'],
+            'total_pagado'     => $totalesGlobalesRetirados['total_pagado'],
+            'total_pendiente'  => $totalesGlobalesRetirados['total_pendiente'],
+            'total_inscritos'  => $inscritosRetiradosGlobal,
+        ];
+        $totalesGlobalesRetiradosFinal['porcentaje_pagado'] = $totalesGlobalesRetiradosFinal['total_programado'] > 0
+            ? ($totalesGlobalesRetiradosFinal['total_pagado'] / $totalesGlobalesRetiradosFinal['total_programado']) * 100 : 0;
 
         return view('admin.contabilidad.index', compact(
-            'ofertasData', 'totalesGlobales', 'conceptosGlobales',
+            'ofertasData',
+            'totalesGlobales', 'totalesGlobalesIngresosReales', 'totalesGlobalesRetiradosFinal',
+            'conceptosGlobales', 'conceptosGlobalesIngresosReales', 'conceptosGlobalesRetirados',
+            'inscritosActivosGlobal', 'inscritosRetiradosGlobal',
             'gestion', 'mes', 'gestiones', 'meses', 'nombreMes', 'inicio', 'fin',
             'labelsDias', 'datosMatricula', 'datosColegiatura', 'datosCertificacion', 'diasEnMes'
         ));

@@ -13,6 +13,11 @@ class Matriculacione extends Model
         'modulo_id',
         'nota_regular',
         'nota_nivelacion',
+        'nivelacion_habilitada',
+    ];
+
+    protected $casts = [
+        'nivelacion_habilitada' => 'boolean',
     ];
 
     public function inscripcion()
